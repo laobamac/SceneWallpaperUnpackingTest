@@ -14,20 +14,19 @@
 		"bloomhdrscatter" : 1.619,
 		"bloomhdrstrength" : 2.0,
 		"bloomhdrthreshold" : 1.0,
-		"bloomstrength" : 2.0,
-		"bloomthreshold" : 0.64999998,
-		"bloomtint" : "1.00000 1.00000 1.00000",
+		"bloomstrength" : 0.38999999,
+		"bloomthreshold" : 0.41,
 		"camerafade" : true,
 		"cameraparallax" : false,
 		"cameraparallaxamount" : 0.5,
 		"cameraparallaxdelay" : 0.1,
-		"cameraparallaxmouseinfluence" : 0.5,
+		"cameraparallaxmouseinfluence" : 0.0,
 		"camerapreview" : true,
 		"camerashake" : false,
 		"camerashakeamplitude" : 0.5,
 		"camerashakeroughness" : 1.0,
 		"camerashakespeed" : 3.0,
-		"clearcolor" : "0.70000 0.70000 0.70000",
+		"clearcolor" : "0.00000 0.00000 0.00000",
 		"clearenabled" : true,
 		"farz" : 10000.0,
 		"fov" : 50.0,
@@ -38,276 +37,640 @@
 			"height" : 2160,
 			"width" : 3840
 		},
-		"perspectiveoverridefov" : 30.0,
 		"skylightcolor" : "0.30000 0.30000 0.30000",
 		"zoom" : 1.0
 	},
 	"objects" : 
 	[
 		{
-			"castshadow" : false,
+			"alignment" : "center",
+			"alpha" : 1.0,
+			"brightness" : 1.0,
+			"color" : "1.00000 1.00000 1.00000",
+			"colorBlendMode" : 0,
+			"copybackground" : true,
+			"id" : 95,
+			"image" : "models/util/fullscreenlayer.json",
+			"ledsource" : false,
+			"locktransforms" : false,
+			"name" : "------------------------------------",
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"solid" : true,
+			"visible" : true
+		},
+		{
+			"alignment" : "center",
+			"alpha" : 1.0,
+			"angles" : "0.00000 0.00000 0.00000",
+			"brightness" : 1.0,
+			"color" : "1.00000 1.00000 1.00000",
+			"colorBlendMode" : 0,
+			"copybackground" : true,
 			"effects" : 
 			[
 				{
-					"file" : "effects/waterripple/effect.json",
-					"id" : 19,
+					"file" : "effects/waterflow/effect.json",
+					"id" : 202,
 					"name" : "",
 					"passes" : 
 					[
 						{
 							"constantshadervalues" : 
 							{
-								"animationspeed" : 0.15000001,
-								"ratio" : 1.0,
-								"ripplestrength" : 0.1,
-								"scale" : 1.0,
-								"scrolldirection" : 2.8008518,
-								"scrollspeed" : 0.0
+								"phasescale" : 2.0,
+								"speed" : 0.25,
+								"strength" : 1.25
 							},
-							"id" : 20,
-							"textures" : [ null, "masks/waterripple_mask_dbde33fc", "effects/waterripplenormal" ]
+							"id" : 9,
+							"textures" : 
+							[
+								null,
+								"masks/waterflow_mask_5d67e8b423d5028dea60fb72f47649d574526311",
+								"effects/waterflowphase"
+							]
 						}
 					],
 					"visible" : 
 					{
-						"user" : "waterripple",
-						"value" : true
-					}
-				},
-				{
-					"file" : "effects/foliagesway/effect.json",
-					"id" : 45,
-					"name" : "1",
-					"passes" : 
-					[
-						{
-							"constantshadervalues" : 
-							{
-								"phase" : 0.5,
-								"power" : 1.0,
-								"ratio" : 0.30000001,
-								"scale" : 0.050000001,
-								"scrolldirection" : 0.0,
-								"speeduv" : 5.0,
-								"strength" : 0.40000001
-							},
-							"id" : 46,
-							"textures" : [ null, "masks/foliagesway_mask_a2dfa4f6", null ]
-						}
-					],
-					"visible" : 
-					{
-						"user" : "treeflower",
-						"value" : true
-					}
-				},
-				{
-					"file" : "effects/foliagesway/effect.json",
-					"id" : 173,
-					"name" : "2",
-					"passes" : 
-					[
-						{
-							"constantshadervalues" : 
-							{
-								"phase" : 0.5,
-								"power" : 1.0,
-								"ratio" : 0.30000001,
-								"scale" : 0.050000001,
-								"scrolldirection" : 0.82934147,
-								"speeduv" : 5,
-								"strength" : 0.5
-							},
-							"id" : 174,
-							"textures" : [ null, "masks/foliagesway_mask_6796d2e9", null ]
-						}
-					],
-					"visible" : 
-					{
-						"user" : "trends",
+						"user" : "snow",
 						"value" : true
 					}
 				}
 			],
-			"id" : 16,
-			"image" : "models/电脑.json",
-			"locktransforms" : true,
-			"name" : "kh",
+			"id" : 108,
+			"image" : "models/bd.json",
+			"ledsource" : false,
+			"locktransforms" : false,
+			"name" : "Background",
 			"origin" : "1920.00000 1080.00000 0.00000",
-			"size" : "3840.00000 2160.00000"
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"scale" : "2.00000 2.00000 2.00000",
+			"size" : "1920.00000 1113.00000",
+			"solid" : true,
+			"visible" : true
 		},
 		{
-			"anchor" : "none",
-			"backgroundbrightness" : 1.0,
-			"backgroundcolor" : "0.00000 0.00000 0.00000",
-			"blockalign" : false,
-			"castshadow" : false,
-			"depthtest" : "enabled",
-			"font" : "fonts/Alcubierre.otf",
-			"horizontalalign" : "center",
-			"id" : 59,
-			"limitrows" : false,
-			"limituseellipsis" : false,
-			"limitwidth" : false,
-			"locktransforms" : true,
-			"maxrows" : 1,
-			"maxwidth" : 500.0,
-			"name" : "Date",
-			"opaquebackground" : false,
-			"origin" : "3384.08813 345.60620 0.00000",
-			"padding" : 32,
-			"parallaxDepth" : "0.00000 0.00000",
-			"pointsize" : 32.0,
-			"scale" : "0.43631 0.43631 0.43631",
-			"size" : "589.00000 156.00000",
-			"text" : 
+			"alignment" : "center",
+			"alpha" : 1.0,
+			"brightness" : 1.0,
+			"color" : "1.00000 1.00000 1.00000",
+			"colorBlendMode" : 0,
+			"copybackground" : true,
+			"id" : 98,
+			"image" : "models/util/fullscreenlayer.json",
+			"ledsource" : false,
+			"locktransforms" : false,
+			"name" : "------------------------------------",
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"solid" : true,
+			"visible" : true
+		},
+		{
+			"angles" : "0.00000 0.00000 0.00000",
+			"id" : 280,
+			"instanceoverride" : 
 			{
-				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '2983913047';\n// Please note: Do not remove this line or asset references may break.\n/**\n * @param {String} value (for property 'text')\n */\nexport var scriptProperties = createScriptProperties()\n\t// Whether you want to see the seconds or not\n\t.addCheckbox({\n\t\tname: 'showYear',\n\t\tlabel: '显示年份',\n\t\tvalue: true\n\t})\n\t// This will be used to separate each element\n\t.addText({\n\t\tname: 'delimiter',\n\t\tlabel: '定界符',\n\t\tvalue: ':'\n\t})\n\t.addCheckbox({\n\t\tname: 'showDate',\n\t\tlabel: '不显示日期',\n\t\tvalue: false\n\t})\n\t.addCheckbox({\n\t\tname: 'showCD',\n\t\tlabel: '隐藏日期时间',\n\t\tvalue: false\n\t})\n\t.finish();\nexport function update(value) {\n\tlet now = new Date();\n\tvar year = now.getFullYear();\n\tlet month = (\"00\" + (now.getMonth()+1)).slice(-2);\n\tlet day = (\"00\" + now.getDate()).slice(-2);\n\tvalue = year + scriptProperties.delimiter + month + scriptProperties.delimiter + day;\n\tif (!scriptProperties.showYear) {\n\t\tvalue = month + scriptProperties.delimiter +day;\n\t}\n\tif (scriptProperties.showDate) {\n\t\tvalue = '\\0';\n\t}\n\tif (scriptProperties.showCD) {\n\t\tvalue = '\\0';\n\t}\n\treturn value;\n}\n",
-				"scriptproperties" : 
+				"count" : 
 				{
-					"delimiter" : ".",
-					"showCD" : false,
-					"showDate" : false,
-					"showYear" : true
+					"user" : "snowamount",
+					"value" : 1.0
 				},
-				"value" : "2023.06.02"
+				"id" : null,
+				"rate" : 
+				{
+					"user" : "speed",
+					"value" : 1.0
+				},
+				"size" : 3.0,
+				"speed" : 1.4
 			},
-			"verticalalign" : "center",
+			"locktransforms" : false,
+			"name" : "Snow perspective",
+			"origin" : "1920.00000 2222.46606 0.00000",
+			"parallaxDepth" : "1.00000 1.00000",
+			"particle" : "particles/presets/snowperspective.json",
+			"scale" : "1.00000 1.00000 0.10000",
 			"visible" : 
 			{
-				"user" : "date",
+				"user" : "snow",
 				"value" : true
 			}
 		},
 		{
-			"anchor" : "none",
-			"backgroundbrightness" : 1.0,
-			"backgroundcolor" : "0.00000 0.00000 0.00000",
-			"blockalign" : false,
-			"castshadow" : false,
-			"depthtest" : "enabled",
-			"font" : "fonts/Alcubierre.otf",
-			"horizontalalign" : "center",
-			"id" : 61,
-			"limitrows" : false,
-			"limituseellipsis" : false,
-			"limitwidth" : false,
-			"locktransforms" : true,
-			"maxrows" : 1,
-			"maxwidth" : 500.0,
-			"name" : "Week",
-			"opaquebackground" : false,
-			"origin" : "3137.33179 350.30591 0.00000",
-			"padding" : 32,
-			"parallaxDepth" : "0.00000 0.00000",
-			"pointsize" : 32.0,
-			"scale" : "0.47657 0.52173 0.48937",
-			"size" : "265.00000 156.00000",
-			"text" : 
+			"alignment" : "center",
+			"alpha" : 1.0,
+			"brightness" : 1.0,
+			"color" : "1.00000 1.00000 1.00000",
+			"colorBlendMode" : 0,
+			"copybackground" : true,
+			"id" : 93,
+			"image" : "models/util/fullscreenlayer.json",
+			"ledsource" : false,
+			"locktransforms" : false,
+			"name" : "------------------------------------",
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"solid" : true,
+			"visible" : true
+		},
+		{
+			"alignment" : "center",
+			"alpha" : 1.0,
+			"angles" : "0.00000 0.00000 0.00000",
+			"brightness" : 1.0,
+			"color" : "1.00000 1.00000 1.00000",
+			"colorBlendMode" : 0,
+			"config" : 
 			{
-				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '2983913047';\n// Please note: Do not remove this line or asset references may break.\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'showWeek',\n\t\tlabel: '不显示星期',\n\t\tvalue: false\n\t})\n\t.addCheckbox({\n\t\tname: 'showCD',\n\t\tlabel: '隐藏日期时间',\n\t\tvalue: false\n\t})\n\t.finish();\n/**\n * @param {String} value (for property 'text')\n */\nexport function update(value) {\n\tlet today = new Date();\n\tvar day = new Array(\"Sun\",\"Mon\",\"Tue\",\"Wed\",\"Thur\",\"Fri\",\"Sat\");\n\tvar week = day[today.getDay()];\n\tif (scriptProperties.showWeek) {\n\t\tweek = '\\0';\n\t}\n\tif (scriptProperties.showCD) {\n\t\tweek = '\\0';\n\t}\n\treturn week;\n}\n",
-				"scriptproperties" : 
-				{
-					"showCD" : false,
-					"showWeek" : false
-				},
-				"value" : "Mon"
+				"passthrough" : true
 			},
-			"verticalalign" : "center",
+			"copybackground" : true,
+			"effects" : 
+			[
+				{
+					"file" : "effects/blurprecise/effect.json",
+					"id" : 271,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"combos" : 
+							{
+								"KERNEL" : 0
+							},
+							"constantshadervalues" : 
+							{
+								"scale" : 
+								{
+									"user" : "blur",
+									"value" : "5 5"
+								}
+							},
+							"id" : 21
+						},
+						{
+							"combos" : 
+							{
+								"KERNEL" : 0,
+								"VERTICAL" : 1
+							},
+							"constantshadervalues" : 
+							{
+								"scale" : 
+								{
+									"user" : "blur",
+									"value" : "5 5"
+								}
+							},
+							"id" : 22
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 268,
+			"image" : "models/util/composelayer.json",
+			"ledsource" : false,
+			"locktransforms" : false,
+			"name" : "Compose",
+			"origin" : "1920.00000 1080.00000 0.00000",
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"scale" : "1.00000 1.00000 1.00000",
+			"size" : "3840.00000 2160.00000",
+			"solid" : true,
+			"visible" : true
+		},
+		{
+			"alignment" : "center",
+			"alpha" : 1.0,
+			"angles" : "0.00000 0.00000 0.00000",
+			"brightness" : 1.0,
+			"color" : "1.00000 1.00000 1.00000",
+			"colorBlendMode" : 0,
+			"copybackground" : true,
+			"effects" : 
+			[
+				{
+					"file" : "effects/opacity/effect.json",
+					"id" : 112,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"alpha" : 1.0
+							},
+							"id" : 27,
+							"textures" : [ null, "masks/opacity_mask_ee0d9bbc6d0516b8583c8fb3e841485c0b7ec4e8" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/shake/effect.json",
+					"id" : 54,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"combos" : 
+							{
+								"DIRECTION" : 1
+							},
+							"constantshadervalues" : 
+							{
+								"bounds" : "0.994 0.997",
+								"friction" : "1 1",
+								"speed" : 1.25,
+								"strength" : 0.075000003
+							},
+							"id" : 29,
+							"textures" : 
+							[
+								null,
+								"masks/shake_mask_3b2888a1c221606928b7c89c721a485f33cafa8f",
+								null,
+								"masks/shake_mask_ba26ea51987e58b4d232a241a3761e817d5f6f1a"
+							]
+						}
+					],
+					"visible" : 
+					{
+						"user" : "blinking",
+						"value" : true
+					}
+				},
+				{
+					"file" : "effects/shake/effect.json",
+					"id" : 96,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"combos" : 
+							{
+								"DIRECTION" : 1
+							},
+							"constantshadervalues" : 
+							{
+								"bounds" : "0.994 0.997",
+								"friction" : "1 1",
+								"speed" : 1.25,
+								"strength" : 0.075000003
+							},
+							"id" : 33,
+							"textures" : 
+							[
+								null,
+								"masks/shake_mask_65358453a88c769e1735459f0eb066779142bcea",
+								null,
+								"masks/shake_mask_c5d7eb0f1d78e628036f745969c968b7fcbafb3b"
+							]
+						}
+					],
+					"visible" : 
+					{
+						"user" : "blinking",
+						"value" : true
+					}
+				},
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 163,
+					"name" : "hair",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 0.0,
+								"perspective" : 0.0,
+								"scale" : 29.77,
+								"speed" : 1,
+								"strength" : 0.050000001
+							},
+							"id" : 36,
+							"textures" : 
+							[
+								null,
+								"masks/waterwaves_mask_7ff6c0034365c6f63a2e7ffa686547e9262e1203"
+							]
+						}
+					],
+					"visible" : 
+					{
+						"user" : "bodymovement",
+						"value" : true
+					}
+				},
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 292,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -0.78539819,
+								"perspective" : 0.0,
+								"scale" : 0.0099999998,
+								"speed" : 1,
+								"strength" : 0.059999999
+							},
+							"id" : 38,
+							"textures" : 
+							[
+								null,
+								"masks/waterwaves_mask_dec500c117f49ee4527969da3b27f92ee0aaa228"
+							]
+						}
+					],
+					"visible" : 
+					{
+						"user" : "bodymovement",
+						"value" : true
+					}
+				},
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 117,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 1.5707964,
+								"perspective" : 0.0,
+								"scale" : 0.0099999998,
+								"speed" : 1,
+								"strength" : 0.059999999
+							},
+							"id" : 40,
+							"textures" : 
+							[
+								null,
+								"masks/waterwaves_mask_3c278e88cb29f3286e6ce6f6a4beccb11822283d"
+							]
+						}
+					],
+					"visible" : 
+					{
+						"user" : "bodymovement",
+						"value" : true
+					}
+				}
+			],
+			"id" : 13,
+			"image" : "models/wallhaven-mdjwjy.json",
+			"ledsource" : false,
+			"locktransforms" : false,
+			"name" : "Body",
+			"origin" : "1920.00000 1080.00000 0.00000",
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"scale" : "2.00000 2.00000 2.00000",
+			"size" : "1920.00000 1113.00000",
+			"solid" : true,
+			"visible" : true
+		},
+		{
+			"alignment" : "center",
+			"alpha" : 1.0,
+			"brightness" : 1.0,
+			"color" : "1.00000 1.00000 1.00000",
+			"colorBlendMode" : 0,
+			"copybackground" : true,
+			"id" : 91,
+			"image" : "models/util/fullscreenlayer.json",
+			"ledsource" : false,
+			"locktransforms" : false,
+			"name" : "------------------------------------",
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"solid" : true,
+			"visible" : true
+		},
+		{
+			"angles" : "0.00000 0.00000 0.00000",
+			"id" : 182,
+			"instanceoverride" : 
+			{
+				"count" : 
+				{
+					"user" : "snowamount",
+					"value" : 1.0
+				},
+				"id" : 45,
+				"rate" : 
+				{
+					"user" : "speed",
+					"value" : 1.0
+				},
+				"size" : 3.0,
+				"speed" : 1.5
+			},
+			"locktransforms" : false,
+			"name" : "Snow perspective",
+			"origin" : "1920.00000 2222.46606 0.00000",
+			"parallaxDepth" : "1.00000 1.00000",
+			"particle" : "particles/presets/snowperspective.json",
+			"scale" : "1.00000 1.00000 0.70000",
 			"visible" : 
 			{
-				"user" : "week",
+				"user" : "snow",
 				"value" : true
 			}
 		},
 		{
+			"alignment" : "center",
+			"alpha" : 1.0,
+			"brightness" : 1.0,
+			"color" : "1.00000 1.00000 1.00000",
+			"colorBlendMode" : 0,
+			"copybackground" : true,
+			"id" : 415,
+			"image" : "models/util/fullscreenlayer.json",
+			"ledsource" : false,
+			"locktransforms" : false,
+			"name" : "------------------------------------",
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"solid" : true,
+			"visible" : true
+		},
+		{
+			"alignment" : "center",
+			"alpha" : 1.0,
+			"angles" : "0.00000 0.00000 0.00000",
+			"brightness" : 1.0,
+			"color" : "0.00000 0.00000 0.00000",
+			"colorBlendMode" : 0,
+			"copybackground" : true,
+			"effects" : 
+			[
+				{
+					"file" : "effects/workshop/2084198056/Simple_Audio_Bars/effect.json",
+					"id" : 425,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"Bar Bounds" : "0 1",
+								"Bar Color" : 
+								{
+									"user" : "color",
+									"value" : "1.000 0.722 1.000"
+								},
+								"Bar Opacity" : 1.0,
+								"Bar count" : 16.0
+							},
+							"id" : 48
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/tint/effect.json",
+					"id" : 458,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"combos" : 
+							{
+								"BLENDMODE" : 0
+							},
+							"constantshadervalues" : 
+							{
+								"alpha" : 1.0,
+								"color" : 
+								{
+									"user" : "color",
+									"value" : "1 1 1"
+								}
+							},
+							"id" : 49
+						}
+					],
+					"visible" : 
+					{
+						"user" : "icuestatic",
+						"value" : true
+					}
+				}
+			],
+			"id" : 418,
+			"image" : "models/util/solidlayer.json",
+			"ledsource" : true,
+			"locktransforms" : false,
+			"name" : "ICUE",
+			"origin" : "1920.00000 1080.00000 0.00000",
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"scale" : "1.00000 1.00000 1.00000",
+			"size" : "3840.00000 2160.00000",
+			"solid" : true,
+			"visible" : false
+		},
+		{
+			"alpha" : 1.0,
 			"anchor" : "none",
+			"angles" : "0.00000 0.00000 0.00000",
 			"backgroundbrightness" : 1.0,
 			"backgroundcolor" : "0.00000 0.00000 0.00000",
 			"blockalign" : false,
-			"castshadow" : false,
-			"depthtest" : "enabled",
+			"brightness" : 1.0,
+			"color" : "1.00000 1.00000 1.00000",
+			"colorBlendMode" : 0,
+			"copybackground" : true,
 			"font" : "fonts/Alcubierre.otf",
-			"horizontalalign" : "center",
-			"id" : 63,
+			"horizontalalign" : "left",
+			"id" : 127,
+			"ledsource" : false,
 			"limitrows" : false,
 			"limituseellipsis" : false,
 			"limitwidth" : false,
-			"locktransforms" : true,
+			"locktransforms" : false,
 			"maxrows" : 1,
 			"maxwidth" : 500.0,
 			"name" : "Clock",
 			"opaquebackground" : false,
-			"origin" : "3219.58374 447.83374 0.00000",
+			"origin" : "1475.89551 1166.98950 0.00000",
 			"padding" : 32,
-			"parallaxDepth" : "0.00000 0.00000",
-			"pointsize" : 33.0,
-			"scale" : "0.93164 0.93164 0.93164",
-			"size" : "306.00000 161.00000",
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"pointsize" : 60.0,
+			"scale" : "1.00000 1.00000 1.00000",
+			"size" : "501.00000 293.00000",
+			"solid" : true,
 			"text" : 
 			{
-				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '2983913047';\n// Please note: Do not remove this line or asset references may break.\n\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'use12hFormat',\n\t\tlabel: '使用12时',\n\t\tvalue: false\n\t})\n\t// This will be used to separate each element\n\t.addText({\n\t\tname: 'delimiter',\n\t\tlabel: '定界符',\n\t\tvalue: ':'\n\t})\n\t.addCheckbox({\n\t\tname: 'showTime',\n\t\tlabel: '不显示时间',\n\t\tvalue: false\n\t})\n\t.addCheckbox({\n\t\tname: 'showCD',\n\t\tlabel: '隐藏日期时间',\n\t\tvalue: false\n\t})\n\t.finish();\n/**\n * @param {String} value (for property 'text')\n */\nexport function update(value) {\n\tlet time = new Date();\n\tvar hours = time.getHours();\n\tif (scriptProperties.use12hFormat) {\n\t\thours %= 12;\n\t\tif (hours == 0) {\n\t\t\thours = 12;\n\t\t}\n\t}\n\thours = (\"00\" + hours).slice(-2);\n\tlet minutes = (\"00\" + time.getMinutes()).slice(-2);\n\tvalue = hours + scriptProperties.delimiter + minutes;\n\tif (scriptProperties.showTime) {\n\t\tvalue = '\\0';\n\t}\n\tif (scriptProperties.showCD) {\n\t\tvalue = '\\0';\n\t}\n\treturn value;\n}\n",
+				"script" : "'use strict';\n\nexport var scriptProperties = createScriptProperties()\n\t// Whether you want a 24h or 12h style format\n\t.addCheckbox({\n\t\tname: 'use24hFormat',\n\t\tlabel: 'ui_editor_properties_use_24h_format',\n\t\tvalue: true\n\t})\n\t// Whether you want to see the seconds or not\n\t.addCheckbox({\n\t\tname: 'showSeconds',\n\t\tlabel: 'ui_editor_properties_show_seconds',\n\t\tvalue: false\n\t})\n\t// This will be used to separate each element\n\t.addText({\n\t\tname: 'delimiter',\n\t\tlabel: 'ui_editor_properties_delimiter',\n\t\tvalue: ':'\n\t})\n\t.finish();\n\n/**\n * @param {String} value (for property 'text')\n */\nexport function update(value) {\n\tlet time = new Date();\n\tvar hours = time.getHours();\n\tif (!scriptProperties.use24hFormat) {\n\t\thours %= 12;\n\t\tif (hours == 0) {\n\t\t\thours = 12;\n\t\t}\n\t}\n\thours = (\"00\" + hours).slice(-2);\n\tlet minutes = (\"00\" + time.getMinutes()).slice(-2);\n\tvalue = hours + scriptProperties.delimiter + minutes;\n\tif (scriptProperties.showSeconds) {\n\t\tlet seconds = (\"00\" + time.getSeconds()).slice(-2);\n\t\tvalue += scriptProperties.delimiter + seconds;\n\t}\n\treturn value;\n}\n",
 				"scriptproperties" : 
 				{
 					"delimiter" : ":",
-					"showCD" : false,
-					"showTime" : false,
-					"use12hFormat" : 
+					"showSeconds" : 
 					{
-						"user" : "show12h",
+						"user" : "showseconds",
+						"value" : true
+					},
+					"use24hFormat" : 
+					{
+						"user" : "_24hourformat",
 						"value" : false
 					}
 				},
-				"value" : "02:36"
+				"value" : "12:34"
 			},
 			"verticalalign" : "center",
 			"visible" : 
 			{
 				"user" : "clock",
-				"value" : true
+				"value" : false
 			}
 		},
 		{
-			"anchor" : "none",
-			"backgroundbrightness" : 1.0,
-			"backgroundcolor" : "0.00000 0.00000 0.00000",
-			"blockalign" : false,
-			"castshadow" : false,
-			"depthtest" : "enabled",
-			"font" : "fonts/Alcubierre.otf",
-			"horizontalalign" : "center",
-			"id" : 66,
-			"limitrows" : false,
-			"limituseellipsis" : false,
-			"limitwidth" : false,
-			"locktransforms" : true,
-			"maxrows" : 1,
-			"maxwidth" : 500.0,
-			"name" : "Seconds",
-			"opaquebackground" : false,
-			"origin" : "3476.91528 426.68298 0.00000",
-			"padding" : 32,
-			"parallaxDepth" : "0.00000 0.00000",
-			"pointsize" : 32.0,
-			"scale" : "0.47017 0.47017 0.47017",
-			"size" : "143.00000 156.00000",
-			"text" : 
-			{
-				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '2983913047';\n// Please note: Do not remove this line or asset references may break.\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'showSeconds',\n\t\tlabel: '不显示秒',\n\t\tvalue: false\n\t})\n\t.addCheckbox({\n\t\tname: 'showCD',\n\t\tlabel: '隐藏日期时间',\n\t\tvalue: false\n\t})\n\t.finish();\nexport function update(value) {\n\tlet time = new Date();\n\tlet seconds = (\"00\" + time.getSeconds()).slice(-2);\n\tif (scriptProperties.showSeconds) {\n\tseconds = '\\0';\n\t}\n\tif (scriptProperties.showCD) {\n\tseconds = '\\0';\n\t}\n\treturn seconds;\n}\n",
-				"scriptproperties" : 
-				{
-					"showCD" : false,
-					"showSeconds" : false
-				},
-				"value" : "20"
-			},
-			"verticalalign" : "center",
-			"visible" : 
-			{
-				"user" : "seconds1",
-				"value" : true
-			}
+			"alignment" : "center",
+			"alpha" : 1.0,
+			"brightness" : 1.0,
+			"color" : "1.00000 1.00000 1.00000",
+			"colorBlendMode" : 0,
+			"copybackground" : true,
+			"id" : 100,
+			"image" : "models/util/fullscreenlayer.json",
+			"ledsource" : false,
+			"locktransforms" : false,
+			"name" : "------------------------------------",
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"solid" : true,
+			"visible" : true
+		},
+		{
+			"angles" : "0.00000 0.00000 0.00000",
+			"id" : 265,
+			"locktransforms" : false,
+			"maxtime" : 5.0,
+			"mintime" : 1.0,
+			"muteineditor" : true,
+			"name" : "Music.mp3",
+			"origin" : "0.00000 0.00000 0.00000",
+			"parallaxDepth" : "1.00000 1.00000",
+			"playbackmode" : "loop",
+			"scale" : "1.00000 1.00000 1.00000",
+			"sound" : [ "sounds/Music.mp3" ],
+			"startsilent" : false,
+			"volume" : 0.5
 		}
 	],
-	"version" : 4
+	"version" : 0
 }
