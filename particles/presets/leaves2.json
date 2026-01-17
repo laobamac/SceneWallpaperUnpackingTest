@@ -4,7 +4,7 @@
 	[
 		{
 			"id" : 13,
-			"name" : "particles/presets/leaves1b.json"
+			"name" : "particles/presets/leaves2b.json"
 		}
 	],
 	"controlpoint" : 
@@ -85,7 +85,7 @@
 		},
 		{
 			"id" : 5,
-			"max" : "255 255 255",
+			"max" : "255 236 0",
 			"min" : "255 255 255",
 			"name" : "colorrandom"
 		},
@@ -108,7 +108,7 @@
 			"name" : "angularvelocityrandom"
 		}
 	],
-	"material" : "materials/presets/leaves1.json",
+	"material" : "materials/presets/leaves2.json",
 	"maxcount" : 50,
 	"operator" : 
 	[
