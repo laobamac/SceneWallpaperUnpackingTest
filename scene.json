@@ -1,258 +1,313 @@
 {
 	"camera" : 
 	{
-		"center" : "0.000 0.000 -1.000",
-		"eye" : "0.000 0.000 0.000",
-		"up" : "0.000 1.000 0.000"
+		"center" : "0.00000 0.00000 -1.00000",
+		"eye" : "0.00000 0.00000 0.00000",
+		"up" : "0.00000 1.00000 0.00000"
 	},
 	"general" : 
 	{
-		"ambientcolor" : "0.300 0.300 0.300",
+		"ambientcolor" : "0.30000 0.30000 0.30000",
 		"bloom" : false,
-		"bloomstrength" : 1.8600000143051147,
-		"bloomthreshold" : 0.64999997615814209,
+		"bloomhdrfeather" : 0.1,
+		"bloomhdriterations" : 8,
+		"bloomhdrscatter" : 1.619,
+		"bloomhdrstrength" : 2.0,
+		"bloomhdrthreshold" : 1.0,
+		"bloomstrength" : 2.0,
+		"bloomthreshold" : 0.64999998,
+		"bloomtint" : "1.00000 1.00000 1.00000",
 		"camerafade" : true,
 		"cameraparallax" : false,
 		"cameraparallaxamount" : 0.5,
-		"cameraparallaxdelay" : 0.10000000149011612,
-		"cameraparallaxmouseinfluence" : 0.0,
+		"cameraparallaxdelay" : 0.1,
+		"cameraparallaxmouseinfluence" : 0.5,
 		"camerapreview" : true,
 		"camerashake" : false,
 		"camerashakeamplitude" : 0.5,
 		"camerashakeroughness" : 1.0,
 		"camerashakespeed" : 3.0,
-		"clearcolor" : "0.753 0.753 0.753",
+		"clearcolor" : "0.70000 0.70000 0.70000",
 		"clearenabled" : true,
 		"farz" : 10000.0,
 		"fov" : 50.0,
-		"nearz" : 0.0099999997764825821,
+		"hdr" : false,
+		"nearz" : 0.0099999998,
 		"orthogonalprojection" : 
 		{
-			"height" : 2270,
-			"width" : 3833
+			"height" : 2160,
+			"width" : 3840
 		},
-		"skylightcolor" : "0.300 0.300 0.300"
+		"perspectiveoverridefov" : 30.0,
+		"skylightcolor" : "0.30000 0.30000 0.30000",
+		"zoom" : 1.0
 	},
 	"objects" : 
 	[
 		{
-			"angles" : "0.000 0.000 0.000",
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"id" : 13,
-			"image" : "models/in-the-early-morning-of-forest-wallpaper.json",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterripple/effect.json",
+					"id" : 19,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"animationspeed" : 0.15000001,
+								"ratio" : 1.0,
+								"ripplestrength" : 0.1,
+								"scale" : 1.0,
+								"scrolldirection" : 2.8008518,
+								"scrollspeed" : 0.0
+							},
+							"id" : 20,
+							"textures" : [ null, "masks/waterripple_mask_dbde33fc", "effects/waterripplenormal" ]
+						}
+					],
+					"visible" : 
+					{
+						"user" : "waterripple",
+						"value" : true
+					}
+				},
+				{
+					"file" : "effects/foliagesway/effect.json",
+					"id" : 45,
+					"name" : "1",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"phase" : 0.5,
+								"power" : 1.0,
+								"ratio" : 0.30000001,
+								"scale" : 0.050000001,
+								"scrolldirection" : 0.0,
+								"speeduv" : 5.0,
+								"strength" : 0.40000001
+							},
+							"id" : 46,
+							"textures" : [ null, "masks/foliagesway_mask_a2dfa4f6", null ]
+						}
+					],
+					"visible" : 
+					{
+						"user" : "treeflower",
+						"value" : true
+					}
+				},
+				{
+					"file" : "effects/foliagesway/effect.json",
+					"id" : 173,
+					"name" : "2",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"phase" : 0.5,
+								"power" : 1.0,
+								"ratio" : 0.30000001,
+								"scale" : 0.050000001,
+								"scrolldirection" : 0.82934147,
+								"speeduv" : 5,
+								"strength" : 0.5
+							},
+							"id" : 174,
+							"textures" : [ null, "masks/foliagesway_mask_6796d2e9", null ]
+						}
+					],
+					"visible" : 
+					{
+						"user" : "trends",
+						"value" : true
+					}
+				}
+			],
+			"id" : 16,
+			"image" : "models/电脑.json",
 			"locktransforms" : true,
-			"name" : "in-the-early-morning-of-forest-wallpaper",
-			"origin" : "1916.500 1135.000 0.000",
-			"parallaxDepth" : "1.000 1.000",
-			"perspective" : false,
-			"scale" : "1.000 1.000 1.000",
-			"size" : "3833.000 2270.000",
-			"solid" : true,
-			"visible" : true
+			"name" : "kh",
+			"origin" : "1920.00000 1080.00000 0.00000",
+			"size" : "3840.00000 2160.00000"
 		},
 		{
-			"angles" : "0.000 -0.000 0.137",
-			"id" : 18,
-			"image" : null,
-			"instanceoverride" : 
+			"anchor" : "none",
+			"backgroundbrightness" : 1.0,
+			"backgroundcolor" : "0.00000 0.00000 0.00000",
+			"blockalign" : false,
+			"castshadow" : false,
+			"depthtest" : "enabled",
+			"font" : "fonts/Alcubierre.otf",
+			"horizontalalign" : "center",
+			"id" : 59,
+			"limitrows" : false,
+			"limituseellipsis" : false,
+			"limitwidth" : false,
+			"locktransforms" : true,
+			"maxrows" : 1,
+			"maxwidth" : 500.0,
+			"name" : "Date",
+			"opaquebackground" : false,
+			"origin" : "3384.08813 345.60620 0.00000",
+			"padding" : 32,
+			"parallaxDepth" : "0.00000 0.00000",
+			"pointsize" : 32.0,
+			"scale" : "0.43631 0.43631 0.43631",
+			"size" : "589.00000 156.00000",
+			"text" : 
 			{
-				"alpha" : 0.66000000000000003,
-				"count" : 0.80000000000000004,
-				"id" : 19,
-				"rate" : 0.79000000000000004,
-				"speed" : 0.98999999999999999
+				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '2983913047';\n// Please note: Do not remove this line or asset references may break.\n/**\n * @param {String} value (for property 'text')\n */\nexport var scriptProperties = createScriptProperties()\n\t// Whether you want to see the seconds or not\n\t.addCheckbox({\n\t\tname: 'showYear',\n\t\tlabel: '显示年份',\n\t\tvalue: true\n\t})\n\t// This will be used to separate each element\n\t.addText({\n\t\tname: 'delimiter',\n\t\tlabel: '定界符',\n\t\tvalue: ':'\n\t})\n\t.addCheckbox({\n\t\tname: 'showDate',\n\t\tlabel: '不显示日期',\n\t\tvalue: false\n\t})\n\t.addCheckbox({\n\t\tname: 'showCD',\n\t\tlabel: '隐藏日期时间',\n\t\tvalue: false\n\t})\n\t.finish();\nexport function update(value) {\n\tlet now = new Date();\n\tvar year = now.getFullYear();\n\tlet month = (\"00\" + (now.getMonth()+1)).slice(-2);\n\tlet day = (\"00\" + now.getDate()).slice(-2);\n\tvalue = year + scriptProperties.delimiter + month + scriptProperties.delimiter + day;\n\tif (!scriptProperties.showYear) {\n\t\tvalue = month + scriptProperties.delimiter +day;\n\t}\n\tif (scriptProperties.showDate) {\n\t\tvalue = '\\0';\n\t}\n\tif (scriptProperties.showCD) {\n\t\tvalue = '\\0';\n\t}\n\treturn value;\n}\n",
+				"scriptproperties" : 
+				{
+					"delimiter" : ".",
+					"showCD" : false,
+					"showDate" : false,
+					"showYear" : true
+				},
+				"value" : "2023.06.02"
 			},
-			"locktransforms" : false,
-			"model" : null,
-			"name" : "Light shafts 0",
-			"origin" : "1145.664 495.590 0.000",
-			"parallaxDepth" : "1.000 1.000",
-			"particle" : "particles/presets/light_shafts_0.json",
-			"scale" : "7.785 2.711 1.167",
-			"visible" : true
-		},
-		{
-			"angles" : "0.000 0.000 -0.010",
-			"id" : 47,
-			"image" : null,
-			"instanceoverride" : 
+			"verticalalign" : "center",
+			"visible" : 
 			{
-				"alpha" : 0.48999999999999999,
-				"id" : 48
-			},
-			"locktransforms" : false,
-			"model" : null,
-			"name" : "Fog 1",
-			"origin" : "2005.959 788.390 0.000",
-			"parallaxDepth" : "1.000 1.000",
-			"particle" : "particles/presets/fog1.json",
-			"scale" : "1.935 1.000 1.000",
-			"visible" : true
+				"user" : "date",
+				"value" : true
+			}
 		},
 		{
-			"angles" : "0.000 0.000 0.000",
-			"id" : 55,
-			"image" : null,
-			"instanceoverride" : 
+			"anchor" : "none",
+			"backgroundbrightness" : 1.0,
+			"backgroundcolor" : "0.00000 0.00000 0.00000",
+			"blockalign" : false,
+			"castshadow" : false,
+			"depthtest" : "enabled",
+			"font" : "fonts/Alcubierre.otf",
+			"horizontalalign" : "center",
+			"id" : 61,
+			"limitrows" : false,
+			"limituseellipsis" : false,
+			"limitwidth" : false,
+			"locktransforms" : true,
+			"maxrows" : 1,
+			"maxwidth" : 500.0,
+			"name" : "Week",
+			"opaquebackground" : false,
+			"origin" : "3137.33179 350.30591 0.00000",
+			"padding" : 32,
+			"parallaxDepth" : "0.00000 0.00000",
+			"pointsize" : 32.0,
+			"scale" : "0.47657 0.52173 0.48937",
+			"size" : "265.00000 156.00000",
+			"text" : 
 			{
-				"alpha" : 0.69999999999999996,
-				"id" : 56
+				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '2983913047';\n// Please note: Do not remove this line or asset references may break.\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'showWeek',\n\t\tlabel: '不显示星期',\n\t\tvalue: false\n\t})\n\t.addCheckbox({\n\t\tname: 'showCD',\n\t\tlabel: '隐藏日期时间',\n\t\tvalue: false\n\t})\n\t.finish();\n/**\n * @param {String} value (for property 'text')\n */\nexport function update(value) {\n\tlet today = new Date();\n\tvar day = new Array(\"Sun\",\"Mon\",\"Tue\",\"Wed\",\"Thur\",\"Fri\",\"Sat\");\n\tvar week = day[today.getDay()];\n\tif (scriptProperties.showWeek) {\n\t\tweek = '\\0';\n\t}\n\tif (scriptProperties.showCD) {\n\t\tweek = '\\0';\n\t}\n\treturn week;\n}\n",
+				"scriptproperties" : 
+				{
+					"showCD" : false,
+					"showWeek" : false
+				},
+				"value" : "Mon"
 			},
-			"locktransforms" : false,
-			"model" : null,
-			"name" : "Fog 1",
-			"origin" : "1883.398 1292.232 0.000",
-			"parallaxDepth" : "1.000 1.000",
-			"particle" : "particles/presets/fog2.json",
-			"scale" : "1.000 1.000 1.000",
-			"visible" : true
-		},
-		{
-			"angles" : "0.000 0.000 0.000",
-			"id" : 79,
-			"image" : null,
-			"instanceoverride" : 
+			"verticalalign" : "center",
+			"visible" : 
 			{
-				"colorn" : "0.7843137254901961 0.7843137254901961 0.3803921568627451",
-				"count" : 0.5,
-				"id" : 80
-			},
-			"locktransforms" : false,
-			"model" : null,
-			"name" : "Leaves 1",
-			"origin" : "2829.364 1403.119 0.000",
-			"parallaxDepth" : "1.000 1.000",
-			"particle" : "particles/presets/leaves1.json",
-			"scale" : "0.505 0.505 1.000",
-			"visible" : true
+				"user" : "week",
+				"value" : true
+			}
 		},
 		{
-			"angles" : "0.000 -0.000 1.576",
-			"id" : 115,
-			"image" : null,
-			"instanceoverride" : 
+			"anchor" : "none",
+			"backgroundbrightness" : 1.0,
+			"backgroundcolor" : "0.00000 0.00000 0.00000",
+			"blockalign" : false,
+			"castshadow" : false,
+			"depthtest" : "enabled",
+			"font" : "fonts/Alcubierre.otf",
+			"horizontalalign" : "center",
+			"id" : 63,
+			"limitrows" : false,
+			"limituseellipsis" : false,
+			"limitwidth" : false,
+			"locktransforms" : true,
+			"maxrows" : 1,
+			"maxwidth" : 500.0,
+			"name" : "Clock",
+			"opaquebackground" : false,
+			"origin" : "3219.58374 447.83374 0.00000",
+			"padding" : 32,
+			"parallaxDepth" : "0.00000 0.00000",
+			"pointsize" : 33.0,
+			"scale" : "0.93164 0.93164 0.93164",
+			"size" : "306.00000 161.00000",
+			"text" : 
 			{
-				"colorn" : "0.7843137254901961 0.7843137254901961 0.3803921568627451",
-				"count" : 0.52000000000000002,
-				"id" : 117
+				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '2983913047';\n// Please note: Do not remove this line or asset references may break.\n\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'use12hFormat',\n\t\tlabel: '使用12时',\n\t\tvalue: false\n\t})\n\t// This will be used to separate each element\n\t.addText({\n\t\tname: 'delimiter',\n\t\tlabel: '定界符',\n\t\tvalue: ':'\n\t})\n\t.addCheckbox({\n\t\tname: 'showTime',\n\t\tlabel: '不显示时间',\n\t\tvalue: false\n\t})\n\t.addCheckbox({\n\t\tname: 'showCD',\n\t\tlabel: '隐藏日期时间',\n\t\tvalue: false\n\t})\n\t.finish();\n/**\n * @param {String} value (for property 'text')\n */\nexport function update(value) {\n\tlet time = new Date();\n\tvar hours = time.getHours();\n\tif (scriptProperties.use12hFormat) {\n\t\thours %= 12;\n\t\tif (hours == 0) {\n\t\t\thours = 12;\n\t\t}\n\t}\n\thours = (\"00\" + hours).slice(-2);\n\tlet minutes = (\"00\" + time.getMinutes()).slice(-2);\n\tvalue = hours + scriptProperties.delimiter + minutes;\n\tif (scriptProperties.showTime) {\n\t\tvalue = '\\0';\n\t}\n\tif (scriptProperties.showCD) {\n\t\tvalue = '\\0';\n\t}\n\treturn value;\n}\n",
+				"scriptproperties" : 
+				{
+					"delimiter" : ":",
+					"showCD" : false,
+					"showTime" : false,
+					"use12hFormat" : 
+					{
+						"user" : "show12h",
+						"value" : false
+					}
+				},
+				"value" : "02:36"
 			},
-			"locktransforms" : false,
-			"model" : null,
-			"name" : "Leaves 1",
-			"origin" : "1125.132 1556.817 0.000",
-			"parallaxDepth" : "1.000 1.000",
-			"particle" : "particles/presets/leaves1.json",
-			"scale" : "0.505 0.505 1.000",
-			"visible" : true
-		},
-		{
-			"angles" : "0.000 -0.000 0.004",
-			"id" : 99,
-			"image" : null,
-			"instanceoverride" : 
+			"verticalalign" : "center",
+			"visible" : 
 			{
-				"count" : 0.47999999999999998,
-				"id" : 100
-			},
-			"locktransforms" : false,
-			"model" : null,
-			"name" : "Leaves 2",
-			"origin" : "2838.723 592.809 0.000",
-			"parallaxDepth" : "1.000 1.000",
-			"particle" : "particles/presets/leaves2.json",
-			"scale" : "0.594 0.504 1.000",
-			"visible" : true
+				"user" : "clock",
+				"value" : true
+			}
 		},
 		{
-			"angles" : "0.000 -0.000 2.322",
-			"id" : 131,
-			"image" : null,
-			"instanceoverride" : 
+			"anchor" : "none",
+			"backgroundbrightness" : 1.0,
+			"backgroundcolor" : "0.00000 0.00000 0.00000",
+			"blockalign" : false,
+			"castshadow" : false,
+			"depthtest" : "enabled",
+			"font" : "fonts/Alcubierre.otf",
+			"horizontalalign" : "center",
+			"id" : 66,
+			"limitrows" : false,
+			"limituseellipsis" : false,
+			"limitwidth" : false,
+			"locktransforms" : true,
+			"maxrows" : 1,
+			"maxwidth" : 500.0,
+			"name" : "Seconds",
+			"opaquebackground" : false,
+			"origin" : "3476.91528 426.68298 0.00000",
+			"padding" : 32,
+			"parallaxDepth" : "0.00000 0.00000",
+			"pointsize" : 32.0,
+			"scale" : "0.47017 0.47017 0.47017",
+			"size" : "143.00000 156.00000",
+			"text" : 
 			{
-				"count" : 0.5,
-				"id" : 132
+				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '2983913047';\n// Please note: Do not remove this line or asset references may break.\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'showSeconds',\n\t\tlabel: '不显示秒',\n\t\tvalue: false\n\t})\n\t.addCheckbox({\n\t\tname: 'showCD',\n\t\tlabel: '隐藏日期时间',\n\t\tvalue: false\n\t})\n\t.finish();\nexport function update(value) {\n\tlet time = new Date();\n\tlet seconds = (\"00\" + time.getSeconds()).slice(-2);\n\tif (scriptProperties.showSeconds) {\n\tseconds = '\\0';\n\t}\n\tif (scriptProperties.showCD) {\n\tseconds = '\\0';\n\t}\n\treturn seconds;\n}\n",
+				"scriptproperties" : 
+				{
+					"showCD" : false,
+					"showSeconds" : false
+				},
+				"value" : "20"
 			},
-			"locktransforms" : false,
-			"model" : null,
-			"name" : "Leaves 2",
-			"origin" : "1054.802 619.310 0.000",
-			"parallaxDepth" : "1.000 1.000",
-			"particle" : "particles/presets/leaves2.json",
-			"scale" : "0.594 0.504 1.000",
-			"visible" : true
-		},
-		{
-			"angles" : "0.000 -0.000 0.940",
-			"id" : 147,
-			"image" : null,
-			"instanceoverride" : 
+			"verticalalign" : "center",
+			"visible" : 
 			{
-				"count" : 0.47999999999999998,
-				"id" : 148
-			},
-			"locktransforms" : false,
-			"model" : null,
-			"name" : "Leaves 4",
-			"origin" : "2084.565 1329.021 0.000",
-			"parallaxDepth" : "1.000 1.000",
-			"particle" : "particles/presets/leaves4.json",
-			"scale" : "0.567 0.562 1.000",
-			"visible" : true
-		},
-		{
-			"angles" : "0.000 0.000 0.000",
-			"id" : 174,
-			"image" : null,
-			"instanceoverride" : 
-			{
-				"alpha" : 0.56000000000000005,
-				"colorn" : "1 0 0",
-				"id" : 175,
-				"rate" : 0.27000000000000002
-			},
-			"locktransforms" : false,
-			"model" : null,
-			"name" : "Magic sparkle",
-			"origin" : "3351.177 1970.402 0.000",
-			"parallaxDepth" : "1.000 1.000",
-			"particle" : "particles/presets/magic_sparkle.json",
-			"scale" : "0.300 0.300 1.000",
-			"visible" : true
-		},
-		{
-			"angles" : "0.000 0.000 0.000",
-			"id" : 186,
-			"image" : null,
-			"instanceoverride" : 
-			{
-				"alpha" : 0.56000000000000005,
-				"colorn" : "1 0 0",
-				"id" : null,
-				"rate" : 0.27000000000000002
-			},
-			"locktransforms" : false,
-			"model" : null,
-			"name" : "Magic sparkle",
-			"origin" : "3387.504 1969.593 0.000",
-			"parallaxDepth" : "1.000 1.000",
-			"particle" : "particles/presets/magic_sparkle.json",
-			"scale" : "0.300 0.300 1.000",
-			"visible" : true
-		},
-		{
-			"angles" : "0.000 0.000 0.000",
-			"id" : 445,
-			"image" : null,
-			"instanceoverride" : null,
-			"locktransforms" : false,
-			"model" : null,
-			"name" : "Fireflies",
-			"origin" : "3530.349 1220.329 0.000",
-			"parallaxDepth" : "1.000 1.000",
-			"particle" : "particles/presets/fireflies.json",
-			"scale" : "0.778 1.000 1.000",
-			"visible" : true
+				"user" : "seconds1",
+				"value" : true
+			}
 		}
-	]
+	],
+	"version" : 4
 }
