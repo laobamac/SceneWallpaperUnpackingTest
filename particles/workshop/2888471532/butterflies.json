@@ -1,0 +1,103 @@
+{
+	"animationmode" : "sequence",
+	"children" : null,
+	"controlpoint" : 
+	[
+		{
+			"angles" : null,
+			"id" : 0
+		},
+		{
+			"angles" : null,
+			"id" : 1
+		},
+		{
+			"angles" : null,
+			"id" : 2
+		},
+		{
+			"angles" : null,
+			"id" : 3
+		},
+		{
+			"angles" : null,
+			"id" : 4
+		},
+		{
+			"angles" : null,
+			"id" : 5
+		},
+		{
+			"angles" : null,
+			"id" : 6
+		},
+		{
+			"angles" : null,
+			"id" : 7
+		}
+	],
+	"emitter" : 
+	[
+		{
+			"id" : 7,
+			"name" : "boxrandom",
+			"rate" : 2
+		}
+	],
+	"flags" : 0,
+	"initializer" : 
+	[
+		{
+			"id" : 2,
+			"max" : 12,
+			"min" : 10,
+			"name" : "lifetimerandom"
+		},
+		{
+			"id" : 3,
+			"max" : 90,
+			"min" : 60,
+			"name" : "sizerandom"
+		},
+		{
+			"id" : 4,
+			"max" : "160 120 0",
+			"min" : "70 60 0",
+			"name" : "velocityrandom"
+		},
+		{
+			"id" : 5,
+			"min" : "255 255 255",
+			"name" : "colorrandom"
+		},
+		{
+			"id" : 6,
+			"max" : "0 0 0.4363323129985824",
+			"name" : "rotationrandom"
+		}
+	],
+	"material" : "materials/workshop/2888471532/particle/halo_4.json",
+	"maxcount" : 20,
+	"operator" : 
+	[
+		{
+			"id" : 8,
+			"name" : "movement"
+		},
+		{
+			"fadeintime" : 0.1,
+			"fadeouttime" : 0.80000001,
+			"id" : 9,
+			"name" : "alphafade"
+		}
+	],
+	"renderer" : 
+	[
+		{
+			"id" : 1,
+			"name" : "sprite"
+		}
+	],
+	"sequencemultiplier" : 10,
+	"starttime" : 0
+}

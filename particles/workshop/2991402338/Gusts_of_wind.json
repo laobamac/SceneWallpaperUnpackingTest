@@ -1,0 +1,125 @@
+{
+	"animationmode" : "sequence",
+	"controlpoint" : 
+	[
+		{
+			"flags" : 0,
+			"id" : 0,
+			"offset" : "0 0 0"
+		},
+		{
+			"flags" : 0,
+			"id" : 1,
+			"offset" : "0 0 0"
+		},
+		{
+			"flags" : 0,
+			"id" : 2,
+			"offset" : "0 0 0"
+		},
+		{
+			"flags" : 0,
+			"id" : 3,
+			"offset" : "0 0 0"
+		},
+		{
+			"flags" : 0,
+			"id" : 4,
+			"offset" : "0 0 0"
+		},
+		{
+			"flags" : 0,
+			"id" : 5,
+			"offset" : "0 0 0"
+		},
+		{
+			"flags" : 0,
+			"id" : 6,
+			"offset" : "0 0 0"
+		},
+		{
+			"flags" : 0,
+			"id" : 7,
+			"offset" : "0 0 0"
+		}
+	],
+	"emitter" : 
+	[
+		{
+			"distancemax" : 512,
+			"distancemin" : 0,
+			"id" : 8,
+			"name" : "sphererandom",
+			"rate" : 10
+		}
+	],
+	"flags" : 0,
+	"initializer" : 
+	[
+		{
+			"id" : 2,
+			"max" : 7,
+			"min" : 1,
+			"name" : "lifetimerandom"
+		},
+		{
+			"id" : 3,
+			"max" : 50,
+			"min" : 15,
+			"name" : "sizerandom"
+		},
+		{
+			"id" : 4,
+			"max" : "500 40 20",
+			"min" : "100 0 0",
+			"name" : "velocityrandom"
+		},
+		{
+			"id" : 5,
+			"min" : "255 255 255",
+			"name" : "colorrandom"
+		},
+		{
+			"id" : 6,
+			"name" : "rotationrandom"
+		},
+		{
+			"id" : 7,
+			"max" : 0.5,
+			"min" : 0.15000001,
+			"name" : "alpharandom"
+		}
+	],
+	"material" : "materials/workshop/2991402338/particle/fog1_1_1.json",
+	"maxcount" : 100,
+	"operator" : 
+	[
+		{
+			"gravity" : "0.4 1 0",
+			"id" : 9,
+			"name" : "movement"
+		},
+		{
+			"id" : 10,
+			"name" : "alphafade"
+		},
+		{
+			"drag" : 1,
+			"id" : 11,
+			"name" : "angularmovement"
+		},
+		{
+			"id" : 12,
+			"mask" : "0 0 2",
+			"name" : "oscillateposition"
+		}
+	],
+	"renderer" : 
+	[
+		{
+			"id" : 1,
+			"name" : "sprite"
+		}
+	],
+	"starttime" : 2
+}

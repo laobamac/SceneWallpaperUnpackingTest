@@ -1,0 +1,1447 @@
+{
+	"camera" : 
+	{
+		"center" : "0.00000 0.00000 -1.00000",
+		"eye" : "0.00000 0.00000 0.00000",
+		"up" : "0.00000 1.00000 0.00000"
+	},
+	"general" : 
+	{
+		"ambientcolor" : "0.30000 0.30000 0.30000",
+		"bloom" : false,
+		"bloomhdrfeather" : 0.1,
+		"bloomhdriterations" : 8,
+		"bloomhdrscatter" : 1.619,
+		"bloomhdrstrength" : 2.0,
+		"bloomhdrthreshold" : 1.0,
+		"bloomstrength" : 2.0,
+		"bloomthreshold" : 0.64999998,
+		"bloomtint" : "1.00000 1.00000 1.00000",
+		"camerafade" : true,
+		"cameraparallax" : false,
+		"cameraparallaxamount" : 0.5,
+		"cameraparallaxdelay" : 0.1,
+		"cameraparallaxmouseinfluence" : 0.5,
+		"camerapreview" : true,
+		"camerashake" : false,
+		"camerashakeamplitude" : 0.5,
+		"camerashakeroughness" : 1.0,
+		"camerashakespeed" : 3.0,
+		"clearcolor" : "0.70000 0.70000 0.70000",
+		"clearenabled" : true,
+		"farz" : 10000.0,
+		"fov" : 50.0,
+		"gravitydirection" : "0.00000 -1.00000 0.00000",
+		"gravitystrength" : 1.0,
+		"hdr" : false,
+		"nearz" : 0.0099999998,
+		"orthogonalprojection" : 
+		{
+			"height" : 2160,
+			"width" : 3840
+		},
+		"perspectiveoverridefov" : 90.0,
+		"skylightcolor" : "0.30000 0.30000 0.30000",
+		"winddirection" : "0.70700 0.70700 0.00000",
+		"windenabled" : false,
+		"windstrength" : 1.0,
+		"zoom" : 1.0
+	},
+	"objects" : 
+	[
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"id" : 115,
+			"image" : "models/背景.json",
+			"locktransforms" : true,
+			"name" : "背景",
+			"origin" : "1920.00000 1080.00000 0.00000",
+			"size" : "3840.00000 2160.00000"
+		},
+		{
+			"angles" : "-0.00000 -0.00000 -0.05740",
+			"disablepropagation" : false,
+			"id" : 556,
+			"instanceoverride" : 
+			{
+				"count" : 0.44,
+				"id" : 557
+			},
+			"locktransforms" : true,
+			"name" : "叶子 1",
+			"origin" : "787.00763 1278.57397 0.00000",
+			"particle" : "particles/presets/leaves1.json",
+			"scale" : "-1.00000 1.00000 1.00000",
+			"solid" : true,
+			"visible" : 
+			{
+				"user" : "leaves",
+				"value" : true
+			}
+		},
+		{
+			"disablepropagation" : false,
+			"id" : 330,
+			"instanceoverride" : 
+			{
+				"colorn" : "0.99216 0.99216 0.58431",
+				"count" : 0.13,
+				"id" : 340
+			},
+			"locktransforms" : true,
+			"name" : "bokeh",
+			"origin" : "1920.00000 597.12488 0.00000",
+			"particle" : "particles/workshop/2491377235/presets/dust_motes_0.json",
+			"scale" : "1.50000 1.50000 1.00000",
+			"solid" : true,
+			"visible" : 
+			{
+				"user" : "bokeh",
+				"value" : true
+			}
+		},
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/workshop/2487531853/lens_flare_sun/effect.json",
+					"id" : 561,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"Color" : "1.00000 1.00000 1.00000",
+								"Opacity" : 1,
+								"Position offset" : "0.1 1.3",
+								"Scale" : 0.025,
+								"Sun Scale" : 32.0,
+								"angle" : 0.0,
+								"pointerspeed" : 0,
+								"rotationspeed" : 1.0,
+								"speed" : 0.25,
+								"speed secondary" : 0.125
+							},
+							"id" : 562
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 559,
+			"image" : "models/util/projectlayer.json",
+			"name" : "全组合层",
+			"origin" : "1920.00000 1080.00000 0.00000",
+			"parallaxDepth" : "0.00000 0.00000",
+			"size" : "3840.00000 2160.00000",
+			"visible" : 
+			{
+				"user" : "sunshine",
+				"value" : true
+			}
+		},
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"config" : 
+			{
+				"passthrough" : true
+			},
+			"copybackground" : false,
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/workshop/3021673417/Simple_Audio_Bars/effect.json",
+					"id" : 481,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"combos" : 
+							{
+								"ANTIALIAS" : 1,
+								"CLIP_HIGH" : 1,
+								"RESOLUTION" : 64
+							},
+							"constantshadervalues" : 
+							{
+								"Anti-alias blurring" : "0.5 0.5",
+								"Bar Color" : 
+								{
+									"animation" : 
+									{
+										"c0" : 
+										[
+											{
+												"back" : 
+												{
+													"enabled" : true,
+													"magic" : true,
+													"x" : -1,
+													"y" : -0.0
+												},
+												"frame" : 0,
+												"front" : 
+												{
+													"enabled" : true,
+													"magic" : true,
+													"x" : 1,
+													"y" : 0
+												},
+												"lockangle" : true,
+												"locklength" : true,
+												"value" : 1
+											},
+											{
+												"back" : 
+												{
+													"enabled" : true,
+													"magic" : true,
+													"x" : -1,
+													"y" : -0.0
+												},
+												"frame" : 60,
+												"front" : 
+												{
+													"enabled" : true,
+													"magic" : true,
+													"x" : 1,
+													"y" : 0
+												},
+												"lockangle" : true,
+												"locklength" : true,
+												"value" : 1
+											}
+										],
+										"c1" : 
+										[
+											{
+												"back" : 
+												{
+													"enabled" : true,
+													"magic" : true,
+													"x" : -1,
+													"y" : -0.0
+												},
+												"frame" : 0,
+												"front" : 
+												{
+													"enabled" : true,
+													"magic" : true,
+													"x" : 1,
+													"y" : 0
+												},
+												"lockangle" : true,
+												"locklength" : true,
+												"value" : 0.57254905
+											},
+											{
+												"back" : 
+												{
+													"enabled" : true,
+													"magic" : true,
+													"x" : -1,
+													"y" : -0.0
+												},
+												"frame" : 60,
+												"front" : 
+												{
+													"enabled" : true,
+													"magic" : true,
+													"x" : 1,
+													"y" : 0
+												},
+												"lockangle" : true,
+												"locklength" : true,
+												"value" : 0.85490197
+											}
+										],
+										"c2" : 
+										[
+											{
+												"back" : 
+												{
+													"enabled" : true,
+													"magic" : true,
+													"x" : -1,
+													"y" : -0.0
+												},
+												"frame" : 0,
+												"front" : 
+												{
+													"enabled" : true,
+													"magic" : true,
+													"x" : 1,
+													"y" : 0
+												},
+												"lockangle" : true,
+												"locklength" : true,
+												"value" : 0.57254905
+											},
+											{
+												"back" : 
+												{
+													"enabled" : true,
+													"magic" : true,
+													"x" : -1,
+													"y" : -0.0
+												},
+												"frame" : 60,
+												"front" : 
+												{
+													"enabled" : true,
+													"magic" : true,
+													"x" : 1,
+													"y" : 0
+												},
+												"lockangle" : true,
+												"locklength" : true,
+												"value" : 0.57254905
+											}
+										],
+										"options" : 
+										{
+											"fps" : 30,
+											"length" : 120,
+											"mode" : "loop",
+											"smoothing" : null,
+											"wraploop" : true
+										},
+										"previewvalue" : "1 0.5725490196078431 0.5725490196078431"
+									},
+									"value" : "1 0.5725490196078431 0.5725490196078431"
+								},
+								"Bar Count" : 128,
+								"Bar Spacing" : 0.75,
+								"Lower/Upper Bar Bounds" : "0 1",
+								"ui_editor_properties_opacity" : 1
+							},
+							"id" : 482
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/scroll/effect.json",
+					"id" : 540,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"repeat" : "1 1",
+								"speedx" : -0.12,
+								"speedy" : 0
+							},
+							"id" : 541
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 480,
+			"image" : "models/util/composelayer.json",
+			"locktransforms" : true,
+			"name" : "Audio bar",
+			"origin" : "1909.00647 88.94817 0.00000",
+			"scale" : "1.01000 0.50000 1.00000",
+			"size" : "2560.00000 360.00000",
+			"visible" : 
+			{
+				"user" : "audiobar",
+				"value" : true
+			}
+		},
+		{
+			"disablepropagation" : false,
+			"id" : 424,
+			"instanceoverride" : 
+			{
+				"colorn" : "1.00000 0.41569 0.30196",
+				"count" : 0.050000001,
+				"id" : 427,
+				"size" : 2.0
+			},
+			"locktransforms" : true,
+			"name" : "butterflies",
+			"origin" : "684.04852 550.73669 0.00000",
+			"particle" : "particles/workshop/2888471532/butterflies.json",
+			"solid" : true,
+			"visible" : 
+			{
+				"user" : "butterflies",
+				"value" : true
+			}
+		},
+		{
+			"angles" : "-0.00000 -0.00000 -0.08447",
+			"disablepropagation" : false,
+			"id" : 373,
+			"instanceoverride" : 
+			{
+				"colorn" : "1.00000 0.29804 0.00000",
+				"count" : 2.0,
+				"id" : 376,
+				"size" : 1.46,
+				"speed" : 1.04
+			},
+			"locktransforms" : true,
+			"name" : "Wind particles",
+			"origin" : "1659.00220 476.30814 0.00000",
+			"particle" : "particles/workshop/2991402338/Gusts_of_wind.json",
+			"scale" : "2.00000 2.00000 1.00000",
+			"solid" : true,
+			"visible" : 
+			{
+				"user" : "windparticles",
+				"value" : true
+			}
+		},
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 394,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -2.5279462,
+								"exponent" : 1.0,
+								"scale" : 2.5,
+								"speed" : 2.3,
+								"strength" : 0.2
+							},
+							"id" : 395,
+							"textures" : [ null, "masks/waterwaves_mask_85ca92f1" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 469,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 2.8798988,
+								"exponent" : 1.0,
+								"scale" : 2.5,
+								"speed" : 2.3,
+								"strength" : 0.19
+							},
+							"id" : 470,
+							"textures" : [ null, "masks/waterwaves_mask_9ce64135" ]
+						}
+					],
+					"visible" : false
+				}
+			],
+			"id" : 23,
+			"image" : "models/23左长发.json",
+			"locktransforms" : true,
+			"name" : "23左长发",
+			"origin" : "1270.50000 630.00000 0.00000",
+			"size" : "917.00000 1100.00000"
+		},
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 326,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 2.7629449,
+								"exponent" : 1.0,
+								"scale" : 3,
+								"speed" : 2.3,
+								"strength" : 0.25
+							},
+							"id" : 327,
+							"textures" : [ null, "masks/waterwaves_mask_824c1ea0" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 27,
+			"image" : "models/22右长发.json",
+			"locktransforms" : true,
+			"name" : "22右长发",
+			"origin" : "2087.50000 674.00000 0.00000",
+			"size" : "995.00000 1120.00000"
+		},
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 275,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 2.6279726,
+								"exponent" : 1.0,
+								"scale" : 3,
+								"speed" : 2.3,
+								"strength" : 0.28
+							},
+							"id" : 276,
+							"textures" : [ null, "masks/waterwaves_mask_0205dea1" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 31,
+			"image" : "models/21后围.json",
+			"locktransforms" : true,
+			"name" : "21后围",
+			"origin" : "1814.50000 870.50000 0.00000",
+			"size" : "327.00000 293.00000"
+		},
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 227,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 2.5696197,
+								"exponent" : 1.0,
+								"scale" : 2.5,
+								"speed" : 2.3,
+								"strength" : 0.28
+							},
+							"id" : 228,
+							"textures" : [ null, "masks/waterwaves_mask_1434c83f" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 35,
+			"image" : "models/20右衣.json",
+			"locktransforms" : true,
+			"name" : "20右衣",
+			"origin" : "1901.00000 506.00000 0.00000",
+			"size" : "634.00000 716.00000"
+		},
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 183,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -2.8602023,
+								"exponent" : 1.0,
+								"scale" : 2.5,
+								"speed" : 2.3,
+								"strength" : 0.28
+							},
+							"id" : 184,
+							"textures" : [ null, "masks/waterwaves_mask_80b07ec8" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 39,
+			"image" : "models/19左衣.json",
+			"locktransforms" : true,
+			"name" : "19左衣",
+			"origin" : "1373.23230 486.67969 0.00000",
+			"size" : "399.00000 754.00000"
+		},
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"id" : 43,
+			"image" : "models/18腿.json",
+			"locktransforms" : true,
+			"name" : "18腿",
+			"origin" : "1621.50000 167.50000 0.00000",
+			"size" : "459.00000 413.00000"
+		},
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 546,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -3.0630872,
+								"exponent" : 1,
+								"scale" : 2,
+								"speed" : 2.3,
+								"strength" : 0.2
+							},
+							"id" : 547,
+							"textures" : [ null, "masks/waterwaves_mask_400617ba" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 47,
+			"image" : "models/17衣补.json",
+			"locktransforms" : true,
+			"name" : "17衣补",
+			"origin" : "1566.00000 754.00000 0.00000",
+			"size" : "315.00000 197.00000"
+		},
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"id" : 51,
+			"image" : "models/16腰.json",
+			"locktransforms" : true,
+			"name" : "16腰",
+			"origin" : "1581.77905 733.11365 0.00000",
+			"size" : "236.00000 134.00000"
+		},
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 680,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 2.7688975,
+								"exponent" : 1.0,
+								"scale" : 3,
+								"speed" : 2.3,
+								"strength" : 0.23999999
+							},
+							"id" : 681,
+							"textures" : [ null, "masks/waterwaves_mask_8ea4349e" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 55,
+			"image" : "models/15裙子.json",
+			"locktransforms" : true,
+			"name" : "15裙子",
+			"origin" : "1614.00000 442.00000 0.00000",
+			"size" : "782.00000 552.00000"
+		},
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 289,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -2.6642628,
+								"exponent" : 1,
+								"scale" : 3,
+								"speed" : 2.3,
+								"strength" : 0.25
+							},
+							"id" : 0,
+							"textures" : [ null, "masks/waterwaves_mask_7c7f80f9" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 59,
+			"image" : "models/14右辫后.json",
+			"locktransforms" : true,
+			"name" : "14右辫后",
+			"origin" : "1722.00000 1012.50000 0.00000",
+			"size" : "274.00000 467.00000"
+		},
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"id" : 63,
+			"image" : "models/13主体.json",
+			"locktransforms" : true,
+			"name" : "13主体",
+			"origin" : "1569.50000 1082.00000 0.00000",
+			"size" : "489.00000 536.00000"
+		},
+		{
+			"animationlayers" : 
+			[
+				{
+					"additive" : false,
+					"animation" : 595,
+					"blend" : 1.0,
+					"blendin" : false,
+					"blendout" : false,
+					"blendtime" : 0.5,
+					"id" : 598,
+					"name" : "动画 1",
+					"rate" : 1.0,
+					"visible" : true
+				}
+			],
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"id" : 67,
+			"image" : "models/12左手.json",
+			"locktransforms" : true,
+			"name" : "12左手",
+			"origin" : "1384.00000 991.50000 0.00000",
+			"size" : "270.00000 369.00000"
+		},
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 508,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -3.0630872,
+								"exponent" : 1.0,
+								"scale" : 2,
+								"speed" : 2.3,
+								"strength" : 0.2
+							},
+							"id" : 509,
+							"textures" : [ null, "masks/waterwaves_mask_400617ba" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 71,
+			"image" : "models/11衣服.json",
+			"locktransforms" : true,
+			"name" : "11衣服",
+			"origin" : "1566.62842 755.57123 0.00000",
+			"size" : "315.00000 197.00000"
+		},
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 432,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -3.0361419,
+								"exponent" : 1.0,
+								"scale" : 0.5,
+								"speed" : 2.3,
+								"strength" : 0.40000001
+							},
+							"id" : 433,
+							"textures" : [ null, "masks/waterwaves_mask_daef0a1d" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 466,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -2.8099504,
+								"exponent" : 1.0,
+								"scale" : 3,
+								"speed" : 2.3,
+								"strength" : 0.31999999
+							},
+							"id" : 467,
+							"textures" : [ null, "masks/waterwaves_mask_df64c212" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 75,
+			"image" : "models/10牌子.json",
+			"locktransforms" : true,
+			"name" : "10牌子",
+			"origin" : "1628.51501 469.02145 0.00000",
+			"size" : "207.00000 364.00000"
+		},
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 400,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -2.5365391,
+								"exponent" : 1.0,
+								"scale" : 2.5,
+								"speed" : 2.3,
+								"strength" : 0.28
+							},
+							"id" : 401,
+							"textures" : [ null, "masks/waterwaves_mask_ca1c9f52" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 79,
+			"image" : "models/09后围巾.json",
+			"locktransforms" : true,
+			"name" : "09后围巾",
+			"origin" : "1510.63550 812.95538 0.00000",
+			"size" : "157.00000 144.00000"
+		},
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 366,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -2.7805901,
+								"exponent" : 1.0,
+								"scale" : 2.3,
+								"speed" : 2.3,
+								"strength" : 0.28
+							},
+							"id" : 369,
+							"textures" : [ null, "masks/waterwaves_mask_61c24ca3" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 83,
+			"image" : "models/08前围巾.json",
+			"locktransforms" : true,
+			"name" : "08前围巾",
+			"origin" : "1533.50000 796.50000 0.00000",
+			"size" : "161.00000 187.00000"
+		},
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 307,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -3.010608,
+								"exponent" : 1.0,
+								"scale" : 3,
+								"speed" : 2.3,
+								"strength" : 0.31999999
+							},
+							"id" : 308,
+							"textures" : [ null, "masks/waterwaves_mask_7f94428c" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 91,
+			"image" : "models/06左长辫.json",
+			"locktransforms" : true,
+			"name" : "06左长辫",
+			"origin" : "1447.00000 818.00000 0.00000",
+			"size" : "336.00000 672.00000"
+		},
+		{
+			"animationlayers" : 
+			[
+				{
+					"additive" : false,
+					"animation" : 608,
+					"blend" : 1.0,
+					"blendin" : false,
+					"blendout" : false,
+					"blendtime" : 0.5,
+					"id" : 611,
+					"name" : "动画 1",
+					"rate" : 1.0,
+					"visible" : true
+				}
+			],
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"id" : 87,
+			"image" : "models/07右手.json",
+			"locktransforms" : true,
+			"name" : "07右手",
+			"origin" : "1465.00000 468.50000 0.00000",
+			"size" : "724.00000 1169.00000"
+		},
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 391,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -2.7052603,
+								"exponent" : 1.0,
+								"scale" : 3,
+								"speed" : 2.3,
+								"strength" : 0.27000001
+							},
+							"id" : 392,
+							"textures" : [ null, "masks/waterwaves_mask_36f7ef24" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 95,
+			"image" : "models/05发带.json",
+			"locktransforms" : true,
+			"name" : "05发带",
+			"origin" : "1471.00000 1107.00000 0.00000",
+			"size" : "220.00000 226.00000"
+		},
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 367,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -2.6797435,
+								"exponent" : 1.0,
+								"scale" : 2.5,
+								"speed" : 2.3,
+								"strength" : 0.27000001
+							},
+							"id" : 368,
+							"textures" : [ null, "masks/waterwaves_mask_17e9e308" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 99,
+			"image" : "models/04发圈.json",
+			"locktransforms" : true,
+			"name" : "04发圈",
+			"origin" : "1534.50000 1177.00000 0.00000",
+			"size" : "133.00000 106.00000"
+		},
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 257,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -2.6642628,
+								"exponent" : 1.0,
+								"scale" : 3,
+								"speed" : 2.3,
+								"strength" : 0.25
+							},
+							"id" : 258,
+							"textures" : [ null, "masks/waterwaves_mask_7c7f80f9" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 103,
+			"image" : "models/03右长辫.json",
+			"locktransforms" : true,
+			"name" : "03右长辫",
+			"origin" : "1721.00000 1012.50000 0.00000",
+			"size" : "274.00000 467.00000"
+		},
+		{
+			"animationlayers" : 
+			[
+				{
+					"additive" : false,
+					"animation" : 274,
+					"blend" : 1.0,
+					"blendin" : false,
+					"blendout" : false,
+					"blendtime" : 0.5,
+					"id" : 287,
+					"name" : "动画 1",
+					"rate" : 1.0,
+					"visible" : true
+				}
+			],
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"id" : 107,
+			"image" : "models/02眼组.json",
+			"locktransforms" : true,
+			"name" : "02眼组",
+			"origin" : "1708.13916 1156.36768 0.00000",
+			"size" : "176.00000 183.00000"
+		},
+		{
+			"castshadow" : false,
+			"clampuvs" : true,
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 154,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 2.7688975,
+								"exponent" : 1.0,
+								"scale" : 2,
+								"speed" : 2.3,
+								"strength" : 0.23
+							},
+							"id" : 155,
+							"textures" : [ null, "masks/waterwaves_mask_1259679f" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/workshop/3488490208/shadow_____________/effect.json",
+					"id" : 655,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"combos" : 
+							{
+								"BLENDMODE" : 6
+							},
+							"constantshadervalues" : 
+							{
+								"alpha" : 0.15000001,
+								"shadowColor" : "0 0 0",
+								"shadowDrawBorder" : 0.5,
+								"shadowOffset" : "2 -2 0"
+							},
+							"id" : 656
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 111,
+			"image" : "models/01刘海.json",
+			"locktransforms" : true,
+			"name" : "01刘海",
+			"origin" : "1743.00000 1209.50000 0.00000",
+			"size" : "282.00000 229.00000"
+		},
+		{
+			"angles" : "-0.00000 -0.00000 -0.10324",
+			"disablepropagation" : false,
+			"id" : 416,
+			"instanceoverride" : 
+			{
+				"colorn" : "1.00000 0.53725 0.41176",
+				"count" : 0.77999997,
+				"id" : 419
+			},
+			"locktransforms" : true,
+			"name" : "Ember",
+			"origin" : "1585.36035 -187.31357 0.00000",
+			"particle" : "particles/workshop/2419741250/presets/ember.json",
+			"scale" : "1.09977 1.09977 1.09977",
+			"solid" : true
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.24474",
+			"disablepropagation" : false,
+			"id" : 549,
+			"instanceoverride" : 
+			{
+				"colorn" : "1.00000 0.96863 0.95294",
+				"count" : 0.25999999,
+				"id" : 550,
+				"size" : 1.35
+			},
+			"locktransforms" : true,
+			"name" : "叶子 1",
+			"origin" : "4065.49902 542.60352 0.00000",
+			"particle" : "particles/presets/leaves1.json",
+			"solid" : true,
+			"visible" : 
+			{
+				"user" : "leaves",
+				"value" : true
+			}
+		},
+		{
+			"alpha" : 0.81,
+			"anchor" : "none",
+			"angles" : "0.00000 -0.00000 0.00000",
+			"backgroundbrightness" : 1.0,
+			"backgroundcolor" : "0.00000 0.00000 0.00000",
+			"blockalign" : false,
+			"castshadow" : false,
+			"clampuvs" : true,
+			"color" : "1.00000 0.00000 0.00000",
+			"depthtest" : "enabled",
+			"disablepropagation" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/workshop/2552475732/gradient_color/effect.json",
+					"id" : 336,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"Amount" : 2.0699999,
+								"Color 1" : "1 0 0",
+								"Color 2" : "1 0.47843137254901963 0",
+								"Hue Speed" : 0,
+								"Opacity" : 1,
+								"Oscillate" : 0.0
+							},
+							"id" : 337
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/shimmer/effect.json",
+					"id" : 338,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"ui_editor_properties_brightness" : 0.60000002,
+								"ui_editor_properties_color" : "1 1 1",
+								"ui_editor_properties_delay" : 2.0,
+								"ui_editor_properties_direction" : -1.2293034,
+								"ui_editor_properties_granularity" : 1,
+								"ui_editor_properties_offset" : 0.0,
+								"ui_editor_properties_speed" : 0.25999999
+							},
+							"id" : 339
+						}
+					],
+					"visible" : true
+				}
+			],
+			"font" : "fonts/workshop/3489089062/Black Freeday.ttf",
+			"horizontalalign" : "center",
+			"id" : 698,
+			"limitrows" : false,
+			"limituseellipsis" : false,
+			"limitwidth" : false,
+			"maxrows" : 1,
+			"maxwidth" : 500.0,
+			"name" : "D a y",
+			"opaquebackground" : false,
+			"origin" : 
+			{
+				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '3489089062';\n\nexport var scriptProperties = createScriptProperties()\n    .addCheckbox({\n        name: 'isMovable',\n        label: 'Is movable/可拖动',\n        value: false\n    })\n    .finish();\n\nconst storageName = \"storedPosRoundMIC\";\nlet isDragging = false, dragOffset, timer;\n\n// 重置位置的函数\nexport function resetPosition() {\n    localStorage.remove(storageName); // 清除存储的位置\n    thisLayer.origin = thisLayer.originalOrigin; // 恢复初始位置\n}\n\nexport function cursorDown(event) {\n    if (!scriptProperties.isMovable || !shared.miDragable) return;\n    \n    timer = Date.now();\n    isDragging = true;\n    dragOffset = thisLayer.origin.subtract(event.worldPosition);\n}\n\nexport function cursorUp(event) {\n    isDragging = false;\n    if (scriptProperties.isMovable && shared.miDragable) {\n        localStorage.set(storageName, thisLayer.origin);\n    }\n}\n\nexport function cursorMove(event) {\n    if (!isDragging || !scriptProperties.isMovable || !shared.miDragable) return;\n    \n    const overClick = Date.now() - timer > 50;\n    if (!overClick) dragOffset = thisLayer.origin.subtract(event.worldPosition);\n    \n    thisLayer.origin = event.worldPosition.add(dragOffset);\n}\n\nexport function init() {\n    // 初始化拖动状态\n    shared.miDragable = localStorage.get(\"miDragable\") ?? scriptProperties.isMovable;\n    \n    // 尝试从存储中获取位置\n    const storedPos = localStorage.get(storageName);\n    \n    // 如果存储中有位置数据且启用了拖动，则应用存储的位置\n    if (shared.miDragable && storedPos) {\n        thisLayer.origin = storedPos;\n    }\n    \n    // 返回当前层的位置\n    return thisLayer.origin;\n}\n",
+				"scriptproperties" : 
+				{
+					"isMovable" : 
+					{
+						"user" : "clickontheclocktodrapit",
+						"value" : true
+					}
+				},
+				"value" : "1920.00000 2051.35449 0.00000"
+			},
+			"padding" : 32,
+			"parallaxDepth" : "0.00000 0.00000",
+			"pointsize" : 28.0,
+			"scale" : "1.40000 1.40000 1.00000",
+			"size" : "533.00000 238.00000",
+			"text" : 
+			{
+				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '3489089062';\n// Please note: Do not remove this line or asset references may break.\n\nexport var scriptProperties = createScriptProperties().finish();\n\nexport function update(value) {\n    let today = new Date();\n    var days = [\"Sunday\", \"Monday\", \"Tuesday\", \"Wednesday\", \"Thursday\", \"Friday\", \"Saturday\"];\n    return days[today.getDay()];\n}\n",
+				"value" : "Wednesday"
+			},
+			"verticalalign" : "center",
+			"visible" : 
+			{
+				"user" : "clock",
+				"value" : true
+			}
+		},
+		{
+			"anchor" : "none",
+			"angles" : "0.00000 -0.00000 0.00000",
+			"backgroundbrightness" : 1.0,
+			"backgroundcolor" : "0.00000 0.00000 0.00000",
+			"blockalign" : false,
+			"castshadow" : false,
+			"clampuvs" : true,
+			"color" : "0.43922 0.04314 0.04314",
+			"depthtest" : "enabled",
+			"disablepropagation" : false,
+			"font" : "systemfont_arial",
+			"horizontalalign" : "center",
+			"id" : 699,
+			"limitrows" : false,
+			"limituseellipsis" : false,
+			"limitwidth" : false,
+			"maxrows" : 1,
+			"maxwidth" : 500.0,
+			"name" : "Clock",
+			"opaquebackground" : false,
+			"origin" : "0.00000 -46.78589 0.00000",
+			"padding" : 32,
+			"parent" : 698,
+			"pointsize" : 12.0,
+			"scale" : 
+			{
+				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '3489089062';\n// Please note: Do not remove this line or asset references may break.\n\nimport * as WEMath from 'WEMath';\n\nexport var scriptProperties = createScriptProperties()\n    .addSlider({\n        name: 'hoScale',\n        label: '悬停大小/Hover Scale',  // 双语标签\n        value: 1.5,\n        min: 0.1,\n        max: 2,\n        integer: false\n    })\n    .addSlider({\n        name: 'speed',\n        label: '缩放速度/Scale Speed',  // 双语标签\n        value: 10,\n        min: 1,\n        max: 100,\n        integer: false\n    })\n    .finish();\n\nlet initScale, newScale, hover = false, propertyCheck = true, speed;\n\nexport function update(value) {\n    if (hover) {\n        value = new Vec3(\n            WEMath.mix(value.x, newScale.x, speed),\n            WEMath.mix(value.y, newScale.y, speed),\n            WEMath.mix(value.z, newScale.z, speed)\n        );\n    } else {\n        value = new Vec3(\n            WEMath.mix(value.x, initScale.x, speed),\n            WEMath.mix(value.y, initScale.y, speed),\n            WEMath.mix(value.z, initScale.z, speed)\n        );\n    }\n    return value;\n}\n\nexport function init(value) {\n    initScale = value;\n    return value;\n}\n\nexport function cursorEnter(event) {\n    hover = true;\n}\n\nexport function cursorLeave(event) {\n    hover = false;\n}\n\nexport function applyUserProperties(changedUserProperties) {\n    if (scriptProperties.hoScale != undefined && propertyCheck) {\n        newScale = new Vec3(initScale.multiply(scriptProperties.hoScale));\n        speed = scriptProperties.speed/100;\n        propertyCheck = false;\n    }\n}\n",
+				"scriptproperties" : 
+				{
+					"hoScale" : 1.2,
+					"speed" : 10
+				},
+				"value" : "0.75000 0.75000 1.00000"
+			},
+			"size" : "104.00000 58.00000",
+			"text" : 
+			{
+				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '3489089062';\n// Please note: Do not remove this line or asset references may break.\n// Please note: Do not remove this line or asset references may break.\n\nexport var scriptProperties = createScriptProperties()\n    .addCheckbox({\n        name: 'use24hFormat',\n        label: '24小时制',\n        value: true\n    })\n    .addText({\n        name: 'delimiter',\n        label: '分隔符',\n        value: ':'\n    })\n    .finish();\n\nexport function update(value) {\n    let time = new Date();\n    var hours = time.getHours();\n    let showLeadingZero = scriptProperties.use24hFormat;\n    \n    // 定义不同空格类型\n    const numberSpace = '\\u200B';    // 数字间窄空格 \\u2009\n    const beforeColon = '\\u200A'; // :前四分之一空格\n    const afterColon = '\\u200A';     // :后普通空格\n\n    if (!scriptProperties.use24hFormat) {\n        hours %= 12;\n        if (hours == 0) hours = 12;\n    }\n    \n    // 处理小时部分（数字间加窄空格）\n    hours = showLeadingZero ? (\"00\" + hours).slice(-2) : hours.toString();\n    let spacedHours = hours.toString().split('').join(numberSpace);\n    \n    // 处理分钟部分（数字间加窄空格）\n    let minutes = (\"00\" + time.getMinutes()).slice(-2);\n    let spacedMinutes = minutes.split('').join(numberSpace);\n    \n    // 组合最终格式（5 : 1 7）\n    return spacedHours + beforeColon + scriptProperties.delimiter + afterColon + spacedMinutes;\n}\n",
+				"scriptproperties" : 
+				{
+					"delimiter" : ":",
+					"use24hFormat" : true
+				},
+				"value" : "4 :53"
+			},
+			"verticalalign" : "bottom"
+		},
+		{
+			"anchor" : "none",
+			"angles" : "0.00000 -0.00000 0.00000",
+			"backgroundbrightness" : 1.0,
+			"backgroundcolor" : "0.00000 0.00000 0.00000",
+			"blockalign" : false,
+			"castshadow" : false,
+			"clampuvs" : true,
+			"color" : "0.45882 0.08627 0.05882",
+			"depthtest" : "enabled",
+			"disablepropagation" : false,
+			"font" : "systemfont_arial",
+			"horizontalalign" : "center",
+			"id" : 701,
+			"limitrows" : false,
+			"limituseellipsis" : false,
+			"limitwidth" : false,
+			"maxrows" : 1,
+			"maxwidth" : 500.0,
+			"name" : "Date",
+			"opaquebackground" : false,
+			"origin" : "0.00000 -54.06921 0.00000",
+			"padding" : 32,
+			"parent" : 698,
+			"pointsize" : 5.0,
+			"scale" : "1.25000 1.25000 1.00000",
+			"size" : "66.00000 24.00000",
+			"text" : 
+			{
+				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '3489089062';\n// Please note: Do not remove this line or asset references may break.\n\nexport function update(value) {\n    let time = new Date();\n    let months = [\n        'J\\u200Aa\\u200An',  // J a n\n        'F\\u200Ae\\u200Ab',  // F e b\n        'M\\u200Aa\\u200Ar',  // M a r\n        'A\\u200Ap\\u200Ar',  // A p r\n        'M\\u200Aa\\u200Ay',  // M a y\n        'J\\u200Au\\u200An',  // J u n\n        'J\\u200Au\\u200Al',  // J u l\n        'A\\u200Au\\u200Ag',  // A u g\n        'S\\u200Ae\\u200Ap',  // S e p\n        'O\\u200Ac\\u200At',  // O c t\n        'N\\u200Ao\\u200Av',  // N o v\n        'D\\u200Ae\\u200Ac'   // D e c\n    ];\n    \n    const day = time.getDate().toString();\n    const spacedDay = day.split('').join('\\u200A'); // 日期数字间加发丝空格（如 2 5）\n    \n    // 保持日期和月份之间的原有普通空格\n    return spacedDay + ' ' + months[time.getMonth()]; // 输出示例：2 5 J a n\n}\n",
+				"value" : "28 May"
+			},
+			"verticalalign" : "center"
+		},
+		{
+			"alpha" : 0.60000002,
+			"anchor" : "none",
+			"backgroundbrightness" : 1.0,
+			"backgroundcolor" : "0.00000 0.00000 0.00000",
+			"blockalign" : false,
+			"castshadow" : false,
+			"clampuvs" : true,
+			"colorBlendMode" : 11,
+			"depthtest" : "enabled",
+			"disablepropagation" : false,
+			"font" : "systemfont_comicsans",
+			"horizontalalign" : "center",
+			"id" : 382,
+			"limitrows" : false,
+			"limituseellipsis" : false,
+			"limitwidth" : false,
+			"locktransforms" : true,
+			"maxrows" : 1,
+			"maxwidth" : 500.0,
+			"name" : "",
+			"opaquebackground" : false,
+			"origin" : "3092.79175 249.28082 0.00000",
+			"padding" : 32,
+			"pointsize" : 9.0,
+			"size" : "344.00000 116.00000",
+			"text" : "effect:bai22331",
+			"verticalalign" : "center",
+			"visible" : 
+			{
+				"user" : "watermarkpleaseturnoff",
+				"value" : true
+			}
+		},
+		{
+			"disablepropagation" : false,
+			"id" : 224,
+			"maxtime" : 5.0,
+			"mintime" : 1.0,
+			"muteineditor" : true,
+			"name" : "赵乃吉 - 少一点天分 (破碎版伴奏).mp3",
+			"playbackmode" : "loop",
+			"solid" : true,
+			"sound" : [ "sounds/赵乃吉 - 少一点天分 (破碎版伴奏).mp3" ],
+			"startsilent" : false,
+			"volume" : 0.89999998
+		}
+	],
+	"version" : 5
+}

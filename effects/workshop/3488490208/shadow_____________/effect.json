@@ -1,0 +1,19 @@
+{
+	"dependencies" : 
+	[
+		"materials/workshop/3488490208/effects/shadow_____________.json",
+		"shaders/workshop/3488490208/effects/shadow_____________.frag",
+		"shaders/workshop/3488490208/effects/shadow_____________.vert"
+	],
+	"editable" : false,
+	"group" : "localeffects",
+	"name" : "Shadow/添加阴影",
+	"passes" : 
+	[
+		{
+			"material" : "materials/workshop/3488490208/effects/shadow_____________.json"
+		}
+	],
+	"replacementkey" : "shadow_____________",
+	"version" : 1
+}
