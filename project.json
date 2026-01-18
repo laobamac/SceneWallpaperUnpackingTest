@@ -1,118 +1,193 @@
 {
 	"approved" : true,
 	"contentrating" : "Everyone",
-	"description" : "[h1] ---------------------------------[/h1]\r\n[b]🎨 Artwork by[url=https://www.artstation.com/danny008] Bao Songyuan[/url][/b]\r\n[h1] ---------------------------------[/h1]\r\n[h1]Tags[/h1]\r\n[h1] ---------------------------------[/h1]\r\n- Audio Responsive \r\n- Audio Visualizer\r\n- Snow\r\n- Girl \r\n- Art\r\n- Anime\r\n- ICUE Support\r\n[h1] ---------------------------------[/h1]\r\n",
+	"description" : "Source/原画：https://www.pixiv.net/artworks/123655095\r\nArtist/画师：虎皮玄椒\r\neffect producer/动效：bai22331\r\nmusic/音乐：Hea2t - 初夏的风\r\ntips：若叶睦，Mutsu Wakaka，It's_MyGO!!!!!，AveMujica，迷途之子，颂乐人偶,Wakaba Mutsumi，Mortis",
 	"file" : "scene.json",
 	"general" : 
 	{
 		"properties" : 
 		{
-			"_24hourformat" : 
+			"_24" : 
 			{
-				"condition" : "clock.value",
-				"index" : 5,
-				"order" : 105,
-				"text" : "24 Hour Format",
+				"index" : 16,
+				"order" : 116,
+				"text" : "24小时时间格式",
 				"type" : "bool",
 				"value" : true
 			},
-			"blur" : 
+			"audiobar" : 
 			{
-				"condition" : "snow.value",
-				"fraction" : true,
+				"index" : 6,
+				"order" : 106,
+				"text" : "音频条audio bar",
+				"type" : "bool",
+				"value" : true
+			},
+			"audiobarcolor" : 
+			{
+				"index" : 7,
+				"order" : 107,
+				"text" : "音频条颜色audiobar color",
+				"type" : "color",
+				"value" : "0.8 1 0.9176470588235294"
+			},
+			"bokeh" : 
+			{
+				"index" : 12,
+				"order" : 112,
+				"text" : "光晕sunshine bokeh",
+				"type" : "bool",
+				"value" : true
+			},
+			"bokeh1" : 
+			{
+				"index" : 9,
+				"order" : 109,
+				"text" : "气泡bokeh",
+				"type" : "bool",
+				"value" : true
+			},
+			"centerbbbrbigbbrahrefhttpsspacebilibilicom425570450bai22331babigp" : 
+			{
+				"index" : 1,
+				"order" : 101,
+				"text" : "<center><b>壁纸全凭个人兴趣制作,完全免费,只分享在小红车使用,转载请标明出处,感谢各位订阅</b><br/><big><b>我的个人主页<br/><a href=\"https://space.bilibili.com/425570450\">bai22331的B站空间(点击跳转)</a><big></p>",
+				"type" : "bool",
+				"value" : true
+			},
+			"centerbigbbrahrefhttpswwwpixivnetartworks123655095pixivabigp" : 
+			{
 				"index" : 3,
-				"max" : 10,
-				"min" : 5,
 				"order" : 103,
-				"precision" : 2,
-				"step" : 0.1,
-				"text" : "Blur",
-				"type" : "slider",
-				"value" : 7.5
+				"text" : "<center><big><b>画师:虎皮玄椒<br/><a href=\"https://www.pixiv.net/artworks/123655095\">pixiv原画链接(点击跳转)</a><big></p>",
+				"type" : "bool",
+				"value" : true
+			},
+			"centerbigbbrbrimgsrchttpsmqpiccnpscv510syph2cc6sa1eabo949slxh1ewfhqtmeugtj9ek67v8ajmqrembscjehvyddpwtu2rlz5rnhvmslewjmgsbxigo2zbh86ix8rasqgr863pfjvoslvrhaubejmuq6v5sulc3abbo7ahsaewb7aedbyirfviewer_4width250abigp" : 
+			{
+				"index" : 18,
+				"order" : 118,
+				"text" : "<center><big><b>如果喜欢能否小小支持下，你们的支持是我最大的更新动力<br/>微信<br/><img src=https://m.qpic.cn/psc?/V510sYpH2cc6SA1EaBo949SLXH1ewFHq/TmEUgtj9EK6.7V8ajmQrEMBSCjEHVydDPWTu2RLZ5rNHvmsLeWJMgsBXigo2zB.*H86ix8rAsQgR863PfJVosLvrHAuBE*jMUQ6V5sulC3A!/b&bo=7AHsAewB7AEDByI!&rf=viewer_4 width=\"250\"</a><big></p>",
+				"type" : "bool",
+				"value" : true
 			},
 			"clock" : 
 			{
+				"index" : 13,
+				"order" : 113,
+				"text" : "时间clock",
+				"type" : "bool",
+				"value" : true
+			},
+			"firefly" : 
+			{
+				"index" : 10,
+				"order" : 110,
+				"text" : "萤火虫firefly",
+				"type" : "bool",
+				"value" : true
+			},
+			"fog" : 
+			{
+				"index" : 8,
+				"order" : 108,
+				"text" : "雾fog",
+				"type" : "bool",
+				"value" : true
+			},
+			"imgsrchttpi0hdslbcombfsarchivec8fd97a40bf79f03e7b76cbc87236f612caef7b2png" : 
+			{
+				"index" : 2,
+				"order" : 102,
+				"text" : "<img src=\"http://i0.hdslb.com/bfs/archive/c8fd97a40bf79f03e7b76cbc87236f612caef7b2.png\">",
+				"type" : "bool",
+				"value" : true
+			},
+			"imgsrchttpphotogzphotostoreqqcompscv12uhwit3z28ypbqqfvz5yrrgysxmvkrcqsfratqlfzr86n9euodn4nrlgp3ax9rtwtsnrhi7j6ys7cpxuv4uy0yhigma9023bydad5n5tpcicj6v5qbbohgeiaaaaaaacjxqrfviewer_4width2000height1" : 
+			{
 				"index" : 4,
 				"order" : 104,
-				"text" : "<hr><h3>Add Clock</h3><hr>",
+				"text" : "<img src=\"http://photogz.photo.store.qq.com/psc?/V12uhwIt3z28yp/bqQfVz5yrrGYSXMvKr.cqSF.*RaTqLFzr86N9EuoDN4nRLGP3a.X9rtw.tsnRh*i7J6Ys7CPxuV4UY0yhigma9023ByDaD5n5tpcicJ6V5Q!/b&bo=HgEIAAAAAAACJxQ!&rf=viewer_4\\\" width=\\\"2000\\\" height=\\\"1\\\">",
 				"type" : "bool",
-				"value" : false
+				"value" : true
+			},
+			"imgsrchttpphotogzphotostoreqqcompscv12uhwit3z28ypbqqfvz5yrrgysxmvkrcqsfratqlfzr86n9euodn4nrlgp3ax9rtwtsnrhi7j6ys7cpxuv4uy0yhigma9023bydad5n5tpcicj6v5qbbohgeiaaaaaaacjxqrfviewer_4width2000height11" : 
+			{
+				"index" : 17,
+				"order" : 117,
+				"text" : "<img src=\"http://photogz.photo.store.qq.com/psc?/V12uhwIt3z28yp/bqQfVz5yrrGYSXMvKr.cqSF.*RaTqLFzr86N9EuoDN4nRLGP3a.X9rtw.tsnRh*i7J6Ys7CPxuV4UY0yhigma9023ByDaD5n5tpcicJ6V5Q!/b&bo=HgEIAAAAAAACJxQ!&rf=viewer_4\\\" width=\\\"2000\\\" height=\\\"1\\\">",
+				"type" : "bool",
+				"value" : true
+			},
+			"parallax" : 
+			{
+				"index" : 5,
+				"order" : 105,
+				"text" : "视差parallax",
+				"type" : "bool",
+				"value" : true
 			},
 			"schemecolor" : 
 			{
+				"index" : 0,
 				"order" : 100,
 				"text" : "ui_browse_properties_scheme_color",
 				"type" : "color",
-				"value" : "0.459 0.522 0.627"
+				"value" : "0.8392156862745098 1 0.9764705882352941"
 			},
-			"showseconds" : 
+			"sunshine" : 
 			{
-				"condition" : "clock.value",
-				"index" : 6,
-				"order" : 106,
-				"text" : "Show Seconds",
+				"index" : 11,
+				"order" : 111,
+				"text" : "光束sunshine",
 				"type" : "bool",
 				"value" : true
 			},
-			"size" : 
-			{
-				"condition" : "clock.value",
-				"fraction" : true,
-				"index" : 7,
-				"max" : 100,
-				"min" : 0,
-				"order" : 107,
-				"precision" : 2,
-				"step" : 0.1,
-				"text" : "Size",
-				"type" : "slider",
-				"value" : 30
-			},
-			"snow" : 
+			"watermark" : 
 			{
 				"index" : 0,
 				"order" : 100,
-				"text" : "<hr><h3> Snow</h3><hr>",
+				"text" : "水印watermark(记得关please turn off)",
 				"type" : "bool",
 				"value" : true
 			},
-			"snowamount" : 
+			"xclockpositonx" : 
 			{
-				"condition" : "snow.value",
 				"fraction" : true,
-				"index" : 1,
-				"max" : 2,
+				"index" : 14,
+				"max" : 1,
 				"min" : 0,
-				"order" : 101,
-				"precision" : 2,
-				"step" : 0.1,
-				"text" : "Snow Count",
+				"order" : 114,
+				"precision" : 4,
+				"step" : 0.001,
+				"text" : "时间位置x轴clock positon x",
 				"type" : "slider",
-				"value" : 1
+				"value" : 0.5
 			},
-			"speed" : 
+			"yclockpositony" : 
 			{
-				"condition" : "snow.value",
 				"fraction" : true,
-				"index" : 2,
-				"max" : 2,
+				"index" : 15,
+				"max" : 1,
 				"min" : 0,
-				"order" : 102,
-				"precision" : 2,
-				"step" : 0.1,
-				"text" : "Snow Speed",
+				"order" : 115,
+				"precision" : 4,
+				"step" : 0.001,
+				"text" : "时间位置y轴clock positon y",
 				"type" : "slider",
-				"value" : 1
+				"value" : 0.93
 			}
 		},
 		"supportsaudioprocessing" : true
 	},
 	"preview" : "preview.gif",
-	"tags" : [ "Girls" ],
-	"title" : "Miyuki",
+	"ratingsex" : "none",
+	"ratingviolence" : "none",
+	"tags" : [ "Anime" ],
+	"title" : "[若叶睦]清夏 - It's MyGO!!!!!/AveMujica",
 	"type" : "scene",
-	"version" : 5,
+	"version" : 2,
 	"visibility" : "public",
-	"workshopid" : "2196669141",
-	"workshopurl" : "steam://url/CommunityFilePage/2196669141"
+	"workshopid" : "3558034522",
+	"workshopurl" : "steam://url/CommunityFilePage/3558034522"
 }

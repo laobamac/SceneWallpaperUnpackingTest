@@ -16,5 +16,22 @@
 		"materials/effects/waterwaves.json",
 		"shaders/effects/waterwaves.frag",
 		"shaders/effects/waterwaves.vert"
+	],
+	"gizmos" :
+	[
+		{
+			"type" : "EffectPerspectiveUV",
+			"condition" :
+			{
+				"PERSPECTIVE" : 1
+			},
+			"vars" :
+			{
+				"p0" : "point0",
+				"p1" : "point1",
+				"p2" : "point2",
+				"p3" : "point3"
+			}
+		}
 	]
 }

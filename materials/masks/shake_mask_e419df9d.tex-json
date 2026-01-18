@@ -1,0 +1,8 @@
+{
+  "bleedtransparentcolors": true,
+  "clampuvs": true,
+  "format": "rg88",
+  "nomip": "true",
+  "nointerpolation": "false",
+  "nonpoweroftwo": "true"
+}
