@@ -129,18 +129,6 @@ class Renderer: NSObject, MTKViewDelegate {
                     }
                     renderable.parentId = obj.parent
                     orderedList.append(renderable)
-                    
-                    if obj.id == 106 {
-                        let manualOffsetX: Float = 0.0
-                        let manualOffsetY: Float = 0.0
-                            
-                        let currentPos = renderable.localPosition
-                        renderable.localPosition = SIMD3<Float>(
-                            currentPos.x + manualOffsetX,
-                            currentPos.y + manualOffsetY,
-                            currentPos.z
-                        )
-                    }
                 }
             }
             
