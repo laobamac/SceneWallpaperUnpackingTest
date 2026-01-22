@@ -290,7 +290,7 @@ def parse_mdl(file_path):
                             # 36 bytes per frame (3 floats * 3 vectors = 9 floats * 4 bytes)
                             frames_num = byte_size // 36
                             
-                            # Optional: Just read raw bytes to save memory/speed if not needed
+                            # Just read raw bytes to save memory/speed if not needed
                             # reader.read_bytes(byte_size)
                             
                             # Parse detailed frames
