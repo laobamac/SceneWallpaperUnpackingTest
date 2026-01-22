@@ -1,13 +1,16 @@
 #include <metal_stdlib>
 using namespace metal;
 
-// -------------------------------------------------------------------------
-// 结构体定义
-// -------------------------------------------------------------------------
-
 struct VertexIn {
     float3 position [[attribute(0)]];
     float2 texCoord [[attribute(1)]];
+};
+
+struct PuppetVertexIn {
+    float3 position  [[attribute(0)]];
+    float2 texCoord  [[attribute(1)]];
+    ushort4 joints   [[attribute(2)]];
+    float4 weights   [[attribute(3)]];
 };
 
 struct VertexOut {
@@ -30,6 +33,10 @@ struct ObjectUniforms {
     float4 padding;
 };
 
+struct PuppetUniforms {
+    float4x4 bones[100];
+};
+
 struct EffectParams {
     int type;
     int maskIndex;
@@ -49,10 +56,6 @@ enum EffectType {
     EffectTypeShake = 3
 };
 
-// -------------------------------------------------------------------------
-// 顶点着色器
-// -------------------------------------------------------------------------
-
 vertex VertexOut vertex_main(VertexIn in [[stage_in]],
                              constant GlobalUniforms &globals [[buffer(1)]],
                              constant ObjectUniforms &object [[buffer(2)]]) {
@@ -64,9 +67,40 @@ vertex VertexOut vertex_main(VertexIn in [[stage_in]],
     return out;
 }
 
-// -------------------------------------------------------------------------
-// 片元着色器
-// -------------------------------------------------------------------------
+vertex VertexOut vertex_puppet(PuppetVertexIn in [[stage_in]],
+                               constant GlobalUniforms &globals [[buffer(1)]],
+                               constant ObjectUniforms &object [[buffer(2)]],
+                               constant PuppetUniforms &puppet [[buffer(3)]])
+{
+    VertexOut out;
+    
+    // Skinning
+    float4x4 skinMatrix = float4x4(0.0);
+    bool hasBones = false;
+    for (int i = 0; i < 4; i++) {
+        int boneIndex = int(in.joints[i]);
+        float weight = in.weights[i];
+        if (weight > 0.0) {
+            skinMatrix += puppet.bones[boneIndex] * weight;
+            hasBones = true;
+        }
+    }
+    
+    if (!hasBones) {
+        skinMatrix = float4x4(1.0);
+    }
+    
+    float4 pos = float4(in.position, 1.0);
+    float4 localPos = skinMatrix * pos;
+    float4 worldPos = object.modelMatrix * localPos;
+    
+    out.position = globals.projectionMatrix * globals.viewMatrix * worldPos;
+    
+    out.texCoord = in.texCoord;
+    out.localCoord = in.texCoord - 0.5;
+    
+    return out;
+}
 
 fragment float4 fragment_main(VertexOut in [[stage_in]],
                               constant GlobalUniforms &globals [[buffer(1)]],
@@ -80,66 +114,34 @@ fragment float4 fragment_main(VertexOut in [[stage_in]],
     float2 uv = in.texCoord;
     float2 originalUV = uv;
     
-    // ----------------------------------------------------
-    // 特效处理
-    // ----------------------------------------------------
     for (int i = 0; i < effectCount; i++) {
         EffectParams e = effects[i];
-        
-        // --- SCROLL (滚动) ---
         if (e.type == EffectTypeScroll) {
-            float2 scrollOffset = float2(e.direction.x, e.direction.y) * globals.time * 0.1; // 降低速度系数
-            uv = uv - scrollOffset; // 减去偏移以模拟纹理移动
-            uv = uv - floor(uv);    // 保持在 0-1
-        }
-        
-        // --- WATERWAVE (水波纹) ---
-        else if (e.type == EffectTypeWaterWave) {
+            float2 scrollOffset = float2(e.direction.x, e.direction.y) * globals.time * 0.1;
+            uv = uv - scrollOffset;
+            uv = uv - floor(uv);
+        } else if (e.type == EffectTypeWaterWave) {
             float mask = 1.0;
             if (e.maskIndex >= 0 && e.maskIndex < 8) {
                 mask = maskTextures[e.maskIndex].sample(textureSampler, originalUV).r;
             }
-            
             float2 dir = e.direction;
-            float2 texCoordMotion = uv;
-            
-            float distance = globals.time * e.speed + dot(texCoordMotion, dir) * e.scale;
-            float val = sin(distance);
-            float s = sign(val);
-            val = pow(abs(val), e.exponent);
-            
-            float2 offsetDir = float2(dir.y, -dir.x);
-            float strength = e.strength * e.strength * 0.5; // 降低强度
-            
-            uv += val * s * offsetDir * strength * mask;
-        }
-        
-        // --- SHAKE (修复抽搐问题) ---
-        else if (e.type == EffectTypeShake) {
+            float distance = globals.time * e.speed + dot(uv, dir) * e.scale;
+            float val = pow(abs(sin(distance)), e.exponent) * sign(sin(distance));
+            uv += val * float2(dir.y, -dir.x) * e.strength * mask * 0.5;
+        } else if (e.type == EffectTypeShake) {
             float mask = 1.0;
             if (e.maskIndex >= 0 && e.maskIndex < 8) {
                 mask = maskTextures[e.maskIndex].sample(textureSampler, originalUV).r;
             }
-            
-            // 修复：使用平滑的 sin 函数代替 fract，消除回弹抽搐
-            float time = globals.time * e.speed;
-            
-            // 生成平滑的随机感运动
-            float2 noise = float2(
-                sin(time),
-                cos(time * 0.8)
-            );
-            
-            // 应用摩擦力和边界 (简化版)
-            noise *= e.strength * mask;
-            
-            // 对 UV 进行偏移
-            uv += noise * 0.02; // 限制最大幅度
+            float2 noise = float2(sin(globals.time * e.speed), cos(globals.time * e.speed * 0.8));
+            uv += noise * e.strength * mask * 0.02;
         }
     }
     
     float4 color = baseTexture.sample(textureSampler, uv);
     color *= object.color;
+    
     color.a *= object.alpha;
     
     if (color.a < 0.01) discard_fragment();

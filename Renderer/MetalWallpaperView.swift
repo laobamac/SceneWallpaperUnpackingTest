@@ -9,7 +9,6 @@ import SwiftUI
 import MetalKit
 
 struct MetalWallpaperView: NSViewRepresentable {
-    // 绑定的文件夹路径，当此值变化时，触发加载
     var folderURL: URL?
 
     func makeCoordinator() -> Coordinator {
@@ -37,7 +36,6 @@ struct MetalWallpaperView: NSViewRepresentable {
     }
 
     func updateNSView(_ nsView: MTKView, context: Context) {
-        // 检查 URL 是否变化
         if let url = folderURL, url != context.coordinator.loadedURL {
             context.coordinator.renderer?.loadScene(folder: url)
             context.coordinator.loadedURL = url

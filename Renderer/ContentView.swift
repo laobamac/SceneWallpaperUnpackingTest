@@ -14,7 +14,6 @@ struct ContentView: View {
                 Color.black.edgesIgnoringSafeArea(.all)
             }
             
-            // UI 控制层 (当鼠标悬停时显示，或未加载时显示)
             VStack {
                 if wallpaperFolder == nil {
                     Text("Wallpaper Engine Metal Renderer")

@@ -28,15 +28,51 @@ struct GlobalUniforms {
     var padding: SIMD3<Float> = .zero
 }
 
+struct PuppetUniforms {
+    var bones: (matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4,
+                matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4,
+                matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4,
+                matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4,
+                matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4,
+                matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4,
+                matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4,
+                matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4,
+                matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4,
+                matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4, matrix_float4x4)
+    
+    init() {
+        let identity = matrix_identity_float4x4
+        bones = (identity, identity, identity, identity, identity, identity, identity, identity, identity, identity,
+                 identity, identity, identity, identity, identity, identity, identity, identity, identity, identity,
+                 identity, identity, identity, identity, identity, identity, identity, identity, identity, identity,
+                 identity, identity, identity, identity, identity, identity, identity, identity, identity, identity,
+                 identity, identity, identity, identity, identity, identity, identity, identity, identity, identity,
+                 identity, identity, identity, identity, identity, identity, identity, identity, identity, identity,
+                 identity, identity, identity, identity, identity, identity, identity, identity, identity, identity,
+                 identity, identity, identity, identity, identity, identity, identity, identity, identity, identity,
+                 identity, identity, identity, identity, identity, identity, identity, identity, identity, identity,
+                 identity, identity, identity, identity, identity, identity, identity, identity, identity, identity)
+    }
+}
+
+struct PuppetVertex {
+    var px: Float, py: Float, pz: Float
+    var pad1: Float = 0
+    var u: Float, v: Float
+    var j1: UInt16, j2: UInt16, j3: UInt16, j4: UInt16
+    var w1: Float, w2: Float, w3: Float, w4: Float
+}
+
 class Renderer: NSObject, MTKViewDelegate {
     let device: MTLDevice
     let commandQueue: MTLCommandQueue
     var pipelineState: MTLRenderPipelineState!
+    var puppetPipelineState: MTLRenderPipelineState!
     var samplerState: MTLSamplerState!
+    var depthStencilState: MTLDepthStencilState!
     var textureLoader: MTKTextureLoader
     
     var baseFolder: URL?
-    // 存储所有渲染对象，按ID索引以便查找父节点
     var renderables: [RenderableObject] = []
     
     var startTime: Date = Date()
@@ -54,20 +90,20 @@ class Renderer: NSObject, MTKViewDelegate {
     
     func setupPipeline() {
         guard let library = device.makeDefaultLibrary() else { return }
-        let vertexFunc = library.makeFunction(name: "vertex_main")
         let fragmentFunc = library.makeFunction(name: "fragment_main")
         
+        // 1. Standard Pipeline
         let descriptor = MTLRenderPipelineDescriptor()
-        descriptor.label = "Uber Pipeline"
-        descriptor.vertexFunction = vertexFunc
+        descriptor.label = "Standard Pipeline"
+        descriptor.vertexFunction = library.makeFunction(name: "vertex_main")
         descriptor.fragmentFunction = fragmentFunc
         descriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
-        
         descriptor.colorAttachments[0].isBlendingEnabled = true
         descriptor.colorAttachments[0].rgbBlendOperation = .add
         descriptor.colorAttachments[0].alphaBlendOperation = .add
         descriptor.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
         descriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
+        descriptor.depthAttachmentPixelFormat = .invalid
         
         let vertexDescriptor = MTLVertexDescriptor()
         vertexDescriptor.attributes[0].format = .float3
@@ -83,16 +119,55 @@ class Renderer: NSObject, MTKViewDelegate {
         
         try? pipelineState = device.makeRenderPipelineState(descriptor: descriptor)
         
+        // 2. Puppet Pipeline
+        let puppetDesc = MTLRenderPipelineDescriptor()
+        puppetDesc.label = "Puppet Pipeline"
+        puppetDesc.vertexFunction = library.makeFunction(name: "vertex_puppet")
+        puppetDesc.fragmentFunction = fragmentFunc
+        puppetDesc.colorAttachments[0].pixelFormat = .bgra8Unorm
+        puppetDesc.colorAttachments[0].isBlendingEnabled = true
+        puppetDesc.colorAttachments[0].rgbBlendOperation = .add
+        puppetDesc.colorAttachments[0].alphaBlendOperation = .add
+        puppetDesc.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
+        puppetDesc.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
+        puppetDesc.depthAttachmentPixelFormat = .invalid
+        
+        let pvDesc = MTLVertexDescriptor()
+        pvDesc.attributes[0].format = .float3
+        pvDesc.attributes[0].offset = 0
+        pvDesc.attributes[0].bufferIndex = 0
+        pvDesc.attributes[1].format = .float2
+        pvDesc.attributes[1].offset = 16
+        pvDesc.attributes[1].bufferIndex = 0
+        pvDesc.attributes[2].format = .ushort4
+        pvDesc.attributes[2].offset = 24
+        pvDesc.attributes[2].bufferIndex = 0
+        pvDesc.attributes[3].format = .float4
+        pvDesc.attributes[3].offset = 32
+        pvDesc.attributes[3].bufferIndex = 0
+        pvDesc.layouts[0].stride = 48
+        pvDesc.layouts[0].stepRate = 1
+        pvDesc.layouts[0].stepFunction = .perVertex
+        puppetDesc.vertexDescriptor = pvDesc
+        
+        try? puppetPipelineState = device.makeRenderPipelineState(descriptor: puppetDesc)
+        
         let samplerDesc = MTLSamplerDescriptor()
         samplerDesc.minFilter = .linear
         samplerDesc.magFilter = .linear
-        samplerDesc.sAddressMode = .repeat
-        samplerDesc.tAddressMode = .repeat
+        samplerDesc.sAddressMode = .clampToEdge
+        samplerDesc.tAddressMode = .clampToEdge
         samplerDesc.normalizedCoordinates = true
         samplerState = device.makeSamplerState(descriptor: samplerDesc)
+        
+        let depthDesc = MTLDepthStencilDescriptor()
+        depthDesc.isDepthWriteEnabled = false
+        depthDesc.depthCompareFunction = .always
+        depthStencilState = device.makeDepthStencilState(descriptor: depthDesc)
     }
     
     func loadScene(folder: URL) {
+        print("\n=== STARTING SCENE LOAD ===")
         let secured = folder.startAccessingSecurityScopedResource()
         defer { if secured { folder.stopAccessingSecurityScopedResource() } }
         
@@ -115,14 +190,12 @@ class Renderer: NSObject, MTKViewDelegate {
                 self.projectionSize = CGSize(width: Double(proj.width), height: Double(proj.height))
             }
             
-            // 1. 创建所有对象
             var tempRenderables: [Int: RenderableObject] = [:]
             var orderedList: [RenderableObject] = []
             
             for obj in sceneRoot.objects {
                 if !obj.isVisible { continue }
                 if let renderable = createRenderable(from: obj) {
-                    // 如果有ID，记录下来
                     if let id = obj.id {
                         tempRenderables[id] = renderable
                         renderable.id = id
@@ -132,7 +205,6 @@ class Renderer: NSObject, MTKViewDelegate {
                 }
             }
             
-            // 2. 建立父子关系 (Hierarchy Linking)
             for renderable in orderedList {
                 if let pid = renderable.parentId, let parentObj = tempRenderables[pid] {
                     renderable.parent = parentObj
@@ -148,8 +220,17 @@ class Renderer: NSObject, MTKViewDelegate {
     
     func createRenderable(from obj: SceneObject) -> RenderableObject? {
         guard let imagePath = obj.image, let base = baseFolder else { return nil }
-        
         let modelURL = base.appendingPathComponent(imagePath)
+        
+        let fileName = modelURL.deletingPathExtension().lastPathComponent
+        let puppetDataURL = modelURL.deletingLastPathComponent().appendingPathComponent("\(fileName)_puppet_data.json")
+        let puppetObjURL = modelURL.deletingLastPathComponent().appendingPathComponent("\(fileName)_puppet.obj")
+        
+        if FileManager.default.fileExists(atPath: puppetDataURL.path) {
+            print("[Loader] Puppet Detected: \(fileName)")
+            return createPuppetRenderable(from: obj, dataURL: puppetDataURL, objURL: puppetObjURL)
+        }
+        
         guard let modelData = try? Data(contentsOf: modelURL),
               let modelDef = try? JSONDecoder().decode(ModelJSON.self, from: modelData),
               let matPath = modelDef.material else { return nil }
@@ -166,10 +247,143 @@ class Renderer: NSObject, MTKViewDelegate {
             finalTexURL = base.appendingPathComponent("materials").appendingPathComponent(URL(fileURLWithPath: texName).lastPathComponent + ".png")
         }
         
-        // 使用 bottomLeft 加载纹理，这是 Metal 的标准
         guard let texture = try? textureLoader.newTexture(URL: finalTexURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false]) else { return nil }
         
-        // 解析 Transform
+        let (pos, rotation, size, scale) = parseTransforms(obj)
+        let (effects, masks) = parseEffects(obj, base: base)
+        
+        return RenderableObject(position: pos, rotation: rotation, size: size, scale: scale, texture: texture, effects: effects, masks: masks, pipeline: pipelineState, depthState: depthStencilState)
+    }
+    
+    func createPuppetRenderable(from obj: SceneObject, dataURL: URL, objURL: URL) -> RenderableObject? {
+        guard let jsonData = try? Data(contentsOf: dataURL),
+              let puppetData = try? JSONDecoder().decode(PuppetData.self, from: jsonData),
+              let objContent = try? String(contentsOf: objURL, encoding: .utf8) else { return nil }
+        
+        guard let matFile = puppetData.info.material_file, let base = baseFolder else { return nil }
+        let matURL = base.appendingPathComponent(matFile)
+        guard let matData = try? Data(contentsOf: matURL),
+              let matDef = try? JSONDecoder().decode(MaterialJSON.self, from: matData),
+              let firstPass = matDef.passes.first,
+              let texName = firstPass.textures.first else { return nil }
+        
+        let texURL = base.appendingPathComponent("materials/\(texName).png")
+        var finalTexURL = texURL
+        if !FileManager.default.fileExists(atPath: texURL.path) {
+             finalTexURL = base.appendingPathComponent("materials").appendingPathComponent(URL(fileURLWithPath: texName).lastPathComponent + ".png")
+        }
+        
+        guard let texture = try? textureLoader.newTexture(URL: finalTexURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false]) else { return nil }
+
+        var rawPositions: [SIMD3<Float>] = []
+        var rawUVs: [SIMD2<Float>] = []
+        var finalVertices: [PuppetVertex] = []
+        var finalIndices: [UInt32] = []
+        
+        var uniqueVertexMap: [String: UInt32] = [:]
+        
+        let skinMap = Dictionary(uniqueKeysWithValues: puppetData.skinning.map { ($0.vertex_id, $0) })
+        
+        var minPos = SIMD3<Float>(10000, 10000, 10000)
+        var maxPos = SIMD3<Float>(-10000, -10000, -10000)
+        
+        let lines = objContent.components(separatedBy: .newlines)
+        
+        for line in lines {
+            let cleanLine = line.trimmingCharacters(in: .whitespacesAndNewlines)
+            if cleanLine.isEmpty || cleanLine.hasPrefix("#") { continue }
+            let parts = cleanLine.components(separatedBy: .whitespaces).filter { !$0.isEmpty }
+            
+            if parts[0] == "v" {
+                if parts.count >= 4, let x = Float(parts[1]), let y = Float(parts[2]), let z = Float(parts[3]) {
+                    let p = SIMD3<Float>(x, y, z)
+                    rawPositions.append(p)
+                    minPos = simd_min(minPos, p)
+                    maxPos = simd_max(maxPos, p)
+                }
+            } else if parts[0] == "vt" {
+                if parts.count >= 3, let u = Float(parts[1]), let v = Float(parts[2]) {
+                    rawUVs.append(SIMD2<Float>(u, 1.0 - v)) // 自动翻转UV
+                }
+            } else if parts[0] == "f" {
+                var faceIndices: [UInt32] = []
+                for i in 1..<parts.count {
+                    let component = parts[i]
+                    let subParts = component.components(separatedBy: "/")
+                    guard let posIdxRaw = Int(subParts[0]) else { continue }
+                    let posIdx = posIdxRaw - 1
+                    
+                    var uvIdx = 0
+                    if subParts.count > 1, let tIdx = Int(subParts[1]) {
+                        uvIdx = tIdx - 1
+                    } else { uvIdx = posIdx }
+                    
+                    let key = "\(posIdx)/\(uvIdx)"
+                    
+                    if let existingIndex = uniqueVertexMap[key] {
+                        faceIndices.append(existingIndex)
+                    } else {
+                        let newIndex = UInt32(finalVertices.count)
+                        let position = (posIdx >= 0 && posIdx < rawPositions.count) ? rawPositions[posIdx] : SIMD3<Float>(0,0,0)
+                        let texCoord = (uvIdx >= 0 && uvIdx < rawUVs.count) ? rawUVs[uvIdx] : SIMD2<Float>(0,0)
+                        
+                        var j1: UInt16 = 0, j2: UInt16 = 0, j3: UInt16 = 0, j4: UInt16 = 0
+                        var w1: Float = 0, w2: Float = 0, w3: Float = 0, w4: Float = 0
+                        
+                        if let skin = skinMap[posIdx] {
+                            j1 = UInt16(min(skin.bone_indices[0], 99))
+                            j2 = UInt16(min(skin.bone_indices[1], 99))
+                            j3 = UInt16(min(skin.bone_indices[2], 99))
+                            j4 = UInt16(min(skin.bone_indices[3], 99))
+                            w1 = skin.weights[0]; w2 = skin.weights[1]; w3 = skin.weights[2]; w4 = skin.weights[3]
+                        }
+                        
+                        finalVertices.append(PuppetVertex(px: position.x, py: position.y, pz: position.z,
+                                                          u: texCoord.x, v: texCoord.y,
+                                                          j1: j1, j2: j2, j3: j3, j4: j4,
+                                                          w1: w1, w2: w2, w3: w3, w4: w4))
+                        
+                        uniqueVertexMap[key] = newIndex
+                        faceIndices.append(newIndex)
+                    }
+                }
+                
+                if faceIndices.count >= 3 {
+                    finalIndices.append(faceIndices[0]); finalIndices.append(faceIndices[1]); finalIndices.append(faceIndices[2])
+                }
+                if faceIndices.count >= 4 {
+                    finalIndices.append(faceIndices[0]); finalIndices.append(faceIndices[2]); finalIndices.append(faceIndices[3])
+                }
+            }
+        }
+        
+        let width = maxPos.x - minPos.x
+        let isPixelCoords = width > 2.0
+        
+        let (pos, rotation, size, scale) = parseTransforms(obj)
+        let (effects, masks) = parseEffects(obj, base: base)
+        
+        return PuppetRenderable(
+            device: device,
+            vertices: finalVertices,
+            indices: finalIndices,
+            skeleton: puppetData.skeleton,
+            animations: puppetData.animations,
+            position: pos,
+            rotation: rotation,
+            size: size,
+            scale: scale,
+            texture: texture,
+            effects: effects,
+            masks: masks,
+            pipeline: puppetPipelineState,
+            depthState: depthStencilState,
+            usePixelCoords: isPixelCoords
+        )
+    }
+
+    
+    func parseTransforms(_ obj: SceneObject) -> (SIMD3<Float>, SIMD3<Float>, SIMD2<Float>, SIMD3<Float>) {
         let originStrs = (obj.origin?.value ?? "0 0 0").components(separatedBy: " ").compactMap { Float($0) }
         let sizeStrs = (obj.size?.value ?? "100 100").components(separatedBy: " ").compactMap { Float($0) }
         let scaleStrs = (obj.scale?.value ?? "1 1 1").components(separatedBy: " ").compactMap { Float($0) }
@@ -187,13 +401,14 @@ class Renderer: NSObject, MTKViewDelegate {
         
         var rotation = SIMD3<Float>(0,0,0)
         if angleStrs.count >= 3 {
-            // JSON 通常是 deg，我们需要 rad
             rotation.x = angleStrs[0] * .pi / 180.0
             rotation.y = angleStrs[1] * .pi / 180.0
             rotation.z = angleStrs[2] * .pi / 180.0
         }
-        
-        // 解析特效
+        return (pos, rotation, size, scale)
+    }
+    
+    func parseEffects(_ obj: SceneObject, base: URL) -> ([EffectParams], [MTLTexture?]) {
         var effectParams: [EffectParams] = []
         var maskTextures: [MTLTexture?] = []
         
@@ -212,6 +427,7 @@ class Renderer: NSObject, MTKViewDelegate {
                     if let masks = pass.textures, masks.count > 1, let maskPath = masks[1] {
                         let maskURL = base.appendingPathComponent("materials/\(maskPath).png")
                         let altMaskURL = base.appendingPathComponent("materials").appendingPathComponent(URL(fileURLWithPath: maskPath).lastPathComponent + ".png")
+                        
                         if let maskTex = try? textureLoader.newTexture(URL: maskURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false]) {
                             maskTextures.append(maskTex)
                             param.maskIndex = Int32(maskTextures.count - 1)
@@ -247,8 +463,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 }
             }
         }
-        
-        return RenderableObject(position: pos, rotation: rotation, size: size, scale: scale, texture: texture, effects: effectParams, masks: maskTextures)
+        return (effectParams, maskTextures)
     }
     
     // MARK: - MTKViewDelegate
@@ -258,21 +473,19 @@ class Renderer: NSObject, MTKViewDelegate {
     
     func draw(in view: MTKView) {
         guard let drawable = view.currentDrawable,
-              let descriptor = view.currentRenderPassDescriptor,
-              let pipelineState = pipelineState,
-              let samplerState = samplerState else { return }
+              let descriptor = view.currentRenderPassDescriptor else { return }
+        
+        descriptor.colorAttachments[0].clearColor = MTLClearColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
         
         let commandBuffer = commandQueue.makeCommandBuffer()!
         let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor)!
         
-        encoder.setRenderPipelineState(pipelineState)
+        encoder.setCullMode(.none)
         
-        let time = Float(Date().timeIntervalSince(startTime))
-        
-        // 投影矩阵: 0..W, 0..H (Bottom Left is 0,0)
         let proj = Matrix4x4.orthographic(left: 0, right: Float(projectionSize.width),
                                           bottom: 0, top: Float(projectionSize.height),
-                                          near: -1000, far: 1000)
+                                          near: -5000, far: 5000)
+        let time = Float(Date().timeIntervalSince(startTime))
         var globals = GlobalUniforms(projectionMatrix: proj, viewMatrix: matrix_identity_float4x4, time: time)
         
         encoder.setVertexBytes(&globals, length: MemoryLayout<GlobalUniforms>.size, index: 1)
@@ -280,6 +493,9 @@ class Renderer: NSObject, MTKViewDelegate {
         encoder.setFragmentSamplerState(samplerState, index: 0)
         
         for obj in renderables {
+            if let puppet = obj as? PuppetRenderable {
+                puppet.updateAnimation(time: time)
+            }
             obj.draw(encoder: encoder)
         }
         
@@ -289,7 +505,7 @@ class Renderer: NSObject, MTKViewDelegate {
     }
 }
 
-// MARK: - Renderable Object with Hierarchy
+// MARK: - Renderable Objects (Standard)
 class RenderableObject {
     var id: Int = -1
     var parentId: Int?
@@ -303,16 +519,17 @@ class RenderableObject {
     let texture: MTLTexture
     let effects: [EffectParams]
     let masks: [MTLTexture?]
+    let pipeline: MTLRenderPipelineState
+    let depthState: MTLDepthStencilState?
     
-    // 修复后的顶点：V轴翻转 (0->0, 1->1) 以匹配 Metal 纹理坐标原点
     let vertices: [Float] = [
-        -0.5, -0.5, 0, 0, 0, // Bottom-Left: UV(0, 0) -> Texture Bottom-Left
-         0.5, -0.5, 0, 1, 0, // Bottom-Right: UV(1, 0)
-        -0.5,  0.5, 0, 0, 1, // Top-Left: UV(0, 1) -> Texture Top-Left
-         0.5,  0.5, 0, 1, 1  // Top-Right: UV(1, 1)
+        -0.5, -0.5, 0, 0, 0,
+         0.5, -0.5, 0, 1, 0,
+        -0.5,  0.5, 0, 0, 1,
+         0.5,  0.5, 0, 1, 1
     ]
     
-    init(position: SIMD3<Float>, rotation: SIMD3<Float>, size: SIMD2<Float>, scale: SIMD3<Float>, texture: MTLTexture, effects: [EffectParams], masks: [MTLTexture?]) {
+    init(position: SIMD3<Float>, rotation: SIMD3<Float>, size: SIMD2<Float>, scale: SIMD3<Float>, texture: MTLTexture, effects: [EffectParams], masks: [MTLTexture?], pipeline: MTLRenderPipelineState, depthState: MTLDepthStencilState? = nil) {
         self.localPosition = position
         self.localRotation = rotation
         self.size = size
@@ -320,19 +537,13 @@ class RenderableObject {
         self.texture = texture
         self.effects = effects
         self.masks = masks
+        self.pipeline = pipeline
+        self.depthState = depthState
     }
     
-    // 递归计算 World Matrix
     var worldMatrix: matrix_float4x4 {
-        // Local: Translation * Rotation * Scale (for size)
-        // 注意：WE 中 scale 属性通常是附加缩放，size 属性是基本大小
-        // 我们在 draw 里面构建 geometry scale，这里处理 Transform hierarchy
-        
-        // 1. 本地变换
         var local = Matrix4x4.translation(x: localPosition.x, y: localPosition.y, z: localPosition.z)
-        local = local * Matrix4x4.rotation(angle: localRotation.z, axis: SIMD3<Float>(0, 0, 1)) // 主要处理2D Z轴旋转
-        
-        // 2. 如果有父节点，乘上父节点的 World Matrix
+        local = local * Matrix4x4.rotation(angle: localRotation.z, axis: SIMD3<Float>(0, 0, 1))
         if let p = parent {
             return p.worldMatrix * local
         }
@@ -340,8 +551,9 @@ class RenderableObject {
     }
     
     func draw(encoder: MTLRenderCommandEncoder) {
-        // 最终 Model Matrix = Parent... * Local * GeometryScale
-        // GeometryScale 将 1x1 的单位 Quad 放大到物体尺寸
+        encoder.setRenderPipelineState(pipeline)
+        if let ds = depthState { encoder.setDepthStencilState(ds) }
+        
         let geometryScale = Matrix4x4.scale(x: size.x * scale.x, y: size.y * scale.y, z: 1)
         let finalModelMatrix = worldMatrix * geometryScale
         
@@ -360,11 +572,218 @@ class RenderableObject {
              encoder.setFragmentBytes(&dummy, length: MemoryLayout<EffectParams>.size, index: 3)
         }
         encoder.setFragmentBytes(&count, length: MemoryLayout<Int32>.size, index: 4)
+        
         encoder.setFragmentTexture(texture, index: 0)
         for (i, mask) in masks.enumerated() {
             if i < 8 { encoder.setFragmentTexture(mask, index: 1 + i) }
         }
+        
         encoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
+    }
+}
+
+// MARK: - Puppet Renderable (Animation Logic)
+class PuppetRenderable: RenderableObject {
+    let device: MTLDevice
+    let vertexBuffer: MTLBuffer
+    let indexBuffer: MTLBuffer
+    let indexCount: Int
+    let uniformBuffer: MTLBuffer
+    var puppetUniforms: PuppetUniforms
+    let usePixelCoords: Bool
+    
+    let skeleton: [PuppetBone]
+    let animations: [PuppetAnimation]
+    var inverseBindMatrices: [matrix_float4x4] = []
+    
+    // Debug Throttle
+    var debugTick: Int = 0
+    
+    init(device: MTLDevice, vertices: [PuppetVertex], indices: [UInt32],
+         skeleton: [PuppetBone], animations: [PuppetAnimation],
+         position: SIMD3<Float>, rotation: SIMD3<Float>, size: SIMD2<Float>, scale: SIMD3<Float>,
+         texture: MTLTexture, effects: [EffectParams], masks: [MTLTexture?], pipeline: MTLRenderPipelineState,
+         depthState: MTLDepthStencilState?, usePixelCoords: Bool) {
+        
+        self.device = device
+        self.vertexBuffer = device.makeBuffer(bytes: vertices, length: vertices.count * MemoryLayout<PuppetVertex>.stride, options: .storageModeShared)!
+        self.indexBuffer = device.makeBuffer(bytes: indices, length: indices.count * MemoryLayout<UInt32>.size, options: .storageModeShared)!
+        self.indexCount = indices.count
+        self.usePixelCoords = usePixelCoords
+        self.skeleton = skeleton
+        self.animations = animations
+        
+        self.puppetUniforms = PuppetUniforms()
+        self.uniformBuffer = device.makeBuffer(length: MemoryLayout<PuppetUniforms>.size, options: .storageModeShared)!
+        
+        super.init(position: position, rotation: rotation, size: size, scale: scale, texture: texture, effects: effects, masks: masks, pipeline: pipeline, depthState: depthState)
+        
+        computeInverseBindMatrices()
+        
+        let ptr = uniformBuffer.contents()
+        ptr.copyMemory(from: &puppetUniforms, byteCount: MemoryLayout<PuppetUniforms>.size)
+    }
+    
+    func getGlobalBindMatrix(boneIndex: Int, localMatrices: [matrix_float4x4]) -> matrix_float4x4 {
+        if boneIndex < 0 || boneIndex >= skeleton.count {
+            return matrix_identity_float4x4
+        }
+        
+        let bone = skeleton[boneIndex]
+        let local = localMatrices[boneIndex]
+        
+        if bone.parent >= 0 && bone.parent < skeleton.count {
+            if bone.parent == boneIndex { return local }
+            
+            let parentGlobal = getGlobalBindMatrix(boneIndex: bone.parent, localMatrices: localMatrices)
+            return parentGlobal * local
+        }
+        
+        return local
+    }
+    
+    func computeInverseBindMatrices() {
+        print("[Puppet] Computing Inverse Bind Matrices for \(skeleton.count) bones...")
+        inverseBindMatrices = Array(repeating: matrix_identity_float4x4, count: skeleton.count)
+        
+        var localMatrices = Array(repeating: matrix_identity_float4x4, count: skeleton.count)
+        for i in 0..<skeleton.count {
+            let m = skeleton[i].matrix
+            localMatrices[i] = matrix_float4x4(columns: (
+                SIMD4<Float>(m[0], m[1], m[2], m[3]),
+                SIMD4<Float>(m[4], m[5], m[6], m[7]),
+                SIMD4<Float>(m[8], m[9], m[10], m[11]),
+                SIMD4<Float>(m[12], m[13], m[14], m[15])
+            ))
+        }
+        
+        for i in 0..<skeleton.count {
+            let global = getGlobalBindMatrix(boneIndex: i, localMatrices: localMatrices)
+            
+            if abs(global.determinant) < 0.000001 {
+                print("  [Warn] Bone \(i) singular matrix. Using Identity.")
+                inverseBindMatrices[i] = matrix_identity_float4x4
+            } else {
+                inverseBindMatrices[i] = global.inverse
+            }
+        }
+    }
+    
+    func getGlobalAnimMatrix(boneIndex: Int, localMatrices: [matrix_float4x4], computed: inout [Bool], result: inout [matrix_float4x4]) -> matrix_float4x4 {
+        if boneIndex < 0 || boneIndex >= skeleton.count { return matrix_identity_float4x4 }
+        if computed[boneIndex] { return result[boneIndex] }
+        
+        let bone = skeleton[boneIndex]
+        let local = localMatrices[boneIndex]
+        var global = local
+        
+        if bone.parent >= 0 && bone.parent < skeleton.count && bone.parent != boneIndex {
+            let parentGlobal = getGlobalAnimMatrix(boneIndex: bone.parent, localMatrices: localMatrices, computed: &computed, result: &result)
+            global = parentGlobal * local
+        }
+        
+        result[boneIndex] = global
+        computed[boneIndex] = true
+        return global
+    }
+    
+    func updateAnimation(time: Float) {
+        debugTick += 1
+        let shouldLog = (debugTick % 120 == 0)
+        
+        if animations.isEmpty { return }
+        
+        let anim = animations[0]
+        let fps = anim.fps > 0 ? anim.fps : 30.0
+        let duration = Float(anim.length) / fps
+        let t = (duration > 0) ? fmod(time, duration) : 0
+        let frameIndex = t * fps
+        
+        if shouldLog { print("[Puppet] Animating: \(anim.name) T: \(String(format: "%.2f", t)) Frame: \(Int(frameIndex))") }
+        
+        var localMatrices = Array(repeating: matrix_identity_float4x4, count: skeleton.count)
+        
+        for i in 0..<skeleton.count {
+            let bone = skeleton[i]
+            
+            if let track = anim.tracks.first(where: { $0.track_id == bone.id }), !track.frames.isEmpty {
+                let totalFrames = track.frames.count
+                let idx0 = Int(frameIndex) % totalFrames
+                let idx1 = (idx0 + 1) % totalFrames
+                let fraction = frameIndex - Float(Int(frameIndex))
+                
+                let k1 = track.frames[idx0]
+                let k2 = track.frames[idx1]
+                
+                let p = mix(SIMD3<Float>(k1.p[0], k1.p[1], k1.p[2]), SIMD3<Float>(k2.p[0], k2.p[1], k2.p[2]), t: fraction)
+                let r = mix(SIMD3<Float>(k1.r[0], k1.r[1], k1.r[2]), SIMD3<Float>(k2.r[0], k2.r[1], k2.r[2]), t: fraction)
+                let s = mix(SIMD3<Float>(k1.s[0], k1.s[1], k1.s[2]), SIMD3<Float>(k2.s[0], k2.s[1], k2.s[2]), t: fraction)
+                
+                let matT = Matrix4x4.translation(x: p.x, y: p.y, z: p.z)
+                let matR = Matrix4x4.fromEuler(r)
+                let matS = Matrix4x4.scale(x: s.x, y: s.y, z: s.z)
+                
+                localMatrices[i] = matT * matR * matS
+            } else {
+                let m = bone.matrix
+                localMatrices[i] = matrix_float4x4(columns: (
+                    SIMD4<Float>(m[0], m[1], m[2], m[3]),
+                    SIMD4<Float>(m[4], m[5], m[6], m[7]),
+                    SIMD4<Float>(m[8], m[9], m[10], m[11]),
+                    SIMD4<Float>(m[12], m[13], m[14], m[15])
+                ))
+            }
+        }
+        
+        var globalComputed = Array(repeating: false, count: skeleton.count)
+        var globalMatrices = Array(repeating: matrix_identity_float4x4, count: skeleton.count)
+        
+        for i in 0..<skeleton.count {
+            let global = getGlobalAnimMatrix(boneIndex: i, localMatrices: localMatrices, computed: &globalComputed, result: &globalMatrices)
+            
+            let skinMatrix = global * inverseBindMatrices[i]
+            
+            if i < 100 {
+                withUnsafeMutableBytes(of: &puppetUniforms.bones) { ptr in
+                    let ptrBase = ptr.baseAddress!.assumingMemoryBound(to: matrix_float4x4.self)
+                    ptrBase[i] = skinMatrix
+                }
+            }
+        }
+        
+        let ptr = uniformBuffer.contents()
+        ptr.copyMemory(from: &puppetUniforms, byteCount: MemoryLayout<PuppetUniforms>.size)
+    }
+    
+    override func draw(encoder: MTLRenderCommandEncoder) {
+        encoder.setRenderPipelineState(pipeline)
+        if let ds = depthState { encoder.setDepthStencilState(ds) }
+        
+        let geometryScale: matrix_float4x4
+        if usePixelCoords {
+            geometryScale = Matrix4x4.scale(x: scale.x, y: scale.y, z: scale.z)
+        } else {
+            geometryScale = Matrix4x4.scale(x: size.x * scale.x, y: size.y * scale.y, z: scale.z)
+        }
+        
+        let finalModelMatrix = worldMatrix * geometryScale
+        
+        var objUniforms = ObjectUniforms(modelMatrix: finalModelMatrix, alpha: 1.0, color: SIMD4<Float>(1,1,1,1))
+        
+        encoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
+        encoder.setVertexBytes(&objUniforms, length: MemoryLayout<ObjectUniforms>.size, index: 2)
+        encoder.setVertexBuffer(uniformBuffer, offset: 0, index: 3)
+        encoder.setFragmentBytes(&objUniforms, length: MemoryLayout<ObjectUniforms>.size, index: 2)
+        
+        var count: Int32 = 0
+        encoder.setFragmentBytes(&count, length: MemoryLayout<Int32>.size, index: 4)
+        encoder.setFragmentTexture(texture, index: 0)
+        
+        encoder.drawIndexedPrimitives(type: .triangle,
+                                      indexCount: indexCount,
+                                      indexType: .uint32,
+                                      indexBuffer: indexBuffer,
+                                      indexBufferOffset: 0)
     }
 }
 
@@ -412,5 +831,12 @@ struct Matrix4x4 {
             SIMD4<Float>(x * z * ci + y * st, y * z * ci - x * st, ct + z * z * ci, 0),
             SIMD4<Float>(0, 0, 0, 1)
         ))
+    }
+    
+    static func fromEuler(_ e: SIMD3<Float>) -> matrix_float4x4 {
+        let mx = rotation(angle: e.x, axis: SIMD3<Float>(1, 0, 0))
+        let my = rotation(angle: e.y, axis: SIMD3<Float>(0, 1, 0))
+        let mz = rotation(angle: e.z, axis: SIMD3<Float>(0, 0, 1))
+        return mz * my * mx
     }
 }
