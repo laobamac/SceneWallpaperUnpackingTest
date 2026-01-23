@@ -1,6 +1,6 @@
 {
 	"contentrating" : "Everyone",
-	"description" : "图片来源：紫罗兰永恒花园\nver1.0:精修了远处水岸与近处草岸交接的水面，细调了水波",
+	"description" : "ねむい、ねこ。\n\npixiv id: 78888804\nBGM: 喵喵歌（淘寶双１１背景音樂）",
 	"file" : "scene.json",
 	"general" : 
 	{
@@ -11,14 +11,12 @@
 				"order" : 0,
 				"text" : "ui_browse_properties_scheme_color",
 				"type" : "color",
-				"value" : "0.620 0.800 0.867"
+				"value" : "0.678 0.769 0.812"
 			}
 		}
 	},
 	"preview" : "preview.jpg",
-	"tags" : [ "Landscape" ],
-	"title" : "水波草地(紫罗兰永恒花园)",
-	"type" : "scene",
-	"visibility" : "public",
-	"workshopid" : "1497574828"
+	"tags" : [ "Anime" ],
+	"title" : "おやすにゃ🐱💤",
+	"type" : "scene"
 }

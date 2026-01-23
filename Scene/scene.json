@@ -1,34 +1,37 @@
 {
 	"camera" : 
 	{
-		"center" : "-241.445 113.835 -1.000",
-		"eye" : "-241.445 113.835 0.000",
+		"center" : "0.000 0.000 0.000",
+		"eye" : "0.000 0.000 1.000",
 		"up" : "0.000 1.000 0.000"
 	},
 	"general" : 
 	{
-		"ambientcolor" : "0.3 0.3 0.3",
+		"ambientcolor" : "0.300 0.300 0.300",
 		"bloom" : false,
-		"bloomstrength" : 2,
+		"bloomstrength" : 2.0,
 		"bloomthreshold" : 0.64999997615814209,
 		"camerafade" : true,
 		"cameraparallax" : false,
 		"cameraparallaxamount" : 0.5,
 		"cameraparallaxdelay" : 0.10000000149011612,
-		"cameraparallaxmouseinfluence" : 0,
+		"cameraparallaxmouseinfluence" : 0.0,
 		"camerapreview" : true,
 		"camerashake" : false,
 		"camerashakeamplitude" : 0.5,
-		"camerashakeroughness" : 1,
-		"camerashakespeed" : 3,
-		"clearcolor" : "0.7 0.7 0.7",
-		"clearenabled" : null,
+		"camerashakeroughness" : 1.0,
+		"camerashakespeed" : 3.0,
+		"clearcolor" : "0.700 0.700 0.700",
+		"clearenabled" : true,
+		"farz" : 10000.0,
+		"fov" : 50.0,
+		"nearz" : 0.0099999997764825821,
 		"orthogonalprojection" : 
 		{
-			"height" : 1080,
-			"width" : 1920
+			"height" : 1125,
+			"width" : 2000
 		},
-		"skylightcolor" : "0.3 0.3 0.3"
+		"skylightcolor" : "0.300 0.300 0.300"
 	},
 	"objects" : 
 	[
@@ -39,37 +42,139 @@
 			"effects" : 
 			[
 				{
-					"file" : "effects/waterripple/effect.json",
+					"file" : "effects/shake/effect.json",
+					"id" : 22,
+					"name" : "",
 					"passes" : 
 					[
 						{
 							"constantshadervalues" : 
 							{
-								"ui_editor_properties_animation_speed" : 0.070000000298023224,
-								"ui_editor_properties_ratio" : 1.2000000476837158,
-								"ui_editor_properties_ripple_scale" : 0.75,
-								"ui_editor_properties_ripple_strength" : 0.079999998211860657
+								"strength" : 0.050000000000000003
 							},
+							"id" : 23,
 							"textures" : 
 							[
 								null,
-								"effects/waterripplenormal",
-								"masks/waterripple_mask_ee0d9bbc6d0516b8583c8fb3e841485c0b7ec4e8"
+								"masks/shake_mask_681d95af21112ea41fc4cd51aa49d9c553ef1173",
+								"util/white"
 							]
 						}
 					],
-					"username" : "",
+					"visible" : true
+				},
+				{
+					"file" : "effects/shake/effect.json",
+					"id" : 43,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"strength" : 0.050000000000000003
+							},
+							"id" : 44,
+							"textures" : 
+							[
+								null,
+								"masks/shake_mask_843377ec5689457129ad9ee2dd9c051f084db05d",
+								"util/white"
+							]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/shake/effect.json",
+					"id" : 55,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"speed" : 3,
+								"strength" : 0.029999999999999999
+							},
+							"id" : 56,
+							"textures" : 
+							[
+								null,
+								"masks/shake_mask_bdbea347ab7838b0661ae6af118d7d24d301b354",
+								"util/white"
+							]
+						}
+					],
 					"visible" : true
 				}
 			],
-			"id" : 81,
-			"image" : "models/2018-07-19 (2).json",
-			"locktransforms" : false,
-			"name" : "2018-07-19 (2)",
-			"origin" : "960.000 540.000 0.000",
+			"id" : 13,
+			"image" : "models/78888804_p0.json",
+			"ledsource" : false,
+			"locktransforms" : true,
+			"name" : "78888804_p0",
+			"origin" : "1000.000 562.500 0.000",
 			"parallaxDepth" : "1.000 1.000",
+			"perspective" : false,
 			"scale" : "1.000 1.000 1.000",
-			"size" : "1920.000 1080.000",
+			"size" : "2000.000 1125.000",
+			"solid" : true,
+			"visible" : true
+		},
+		{
+			"angles" : "0.000 0.000 0.000",
+			"id" : 17,
+			"locktransforms" : false,
+			"maxtime" : 5.0,
+			"mintime" : 1.0,
+			"muteineditor" : true,
+			"name" : "miao-miao-ge.mp3",
+			"origin" : "0.000 0.000 0.000",
+			"parallaxDepth" : "1.000 1.000",
+			"playbackmode" : "loop",
+			"scale" : "1.000 1.000 1.000",
+			"sound" : [ "sounds/miao-miao-ge.mp3" ],
+			"startsilent" : false,
+			"volume" : 0.80000001192092896
+		},
+		{
+			"angles" : "0.000 -0.000 0.569",
+			"id" : 69,
+			"image" : null,
+			"instanceoverride" : 
+			{
+				"alpha" : 0.5,
+				"colorn" : "0.6784313725490196 0.8470588235294118 0.9019607843137255",
+				"id" : 70
+			},
+			"locktransforms" : false,
+			"model" : null,
+			"name" : "Light shafts 1",
+			"origin" : "685.332 255.084 0.000",
+			"parallaxDepth" : "1.000 1.000",
+			"particle" : "particles/presets/light_shafts_1.json",
+			"scale" : "2.000 2.000 2.000",
+			"visible" : true
+		},
+		{
+			"angles" : "0.000 0.000 0.000",
+			"id" : 133,
+			"image" : null,
+			"instanceoverride" : 
+			{
+				"alpha" : 0.5,
+				"colorn" : "0.4745098039215686 0.5215686274509804 0.5725490196078431",
+				"count" : 0.5,
+				"id" : 134
+			},
+			"locktransforms" : false,
+			"model" : null,
+			"name" : "Sakura",
+			"origin" : "1000.000 562.500 0.000",
+			"parallaxDepth" : "1.000 1.000",
+			"particle" : "particles/presets/leaves5.json",
+			"scale" : "1.000 1.000 1.000",
 			"visible" : true
 		}
 	]
