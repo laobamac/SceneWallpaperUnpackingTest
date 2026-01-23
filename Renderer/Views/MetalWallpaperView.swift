@@ -2,7 +2,7 @@
 //  MetalWallpaperView.swift
 //  Renderer
 //
-//  Created by laobamac on 2026/1/18.
+//  Created by laobamac on 2026/1/23.
 //
 
 import SwiftUI
@@ -22,16 +22,11 @@ struct MetalWallpaperView: NSViewRepresentable {
             mtkView.device = device
             mtkView.clearColor = MTLClearColor(red: 0.1, green: 0.1, blue: 0.1, alpha: 1.0)
             mtkView.colorPixelFormat = .bgra8Unorm
-            
-            // FIX: Enable Depth and Stencil buffer for the view
-            // This is required for the "Eye Clipping" logic in Renderer to work
             mtkView.depthStencilPixelFormat = .depth32Float_stencil8
-            
             mtkView.preferredFramesPerSecond = 60
-            mtkView.enableSetNeedsDisplay = false // Enable automatic render loop
+            mtkView.enableSetNeedsDisplay = false
             mtkView.isPaused = false
             
-            // Initialize Renderer
             let renderer = Renderer(device: device)
             context.coordinator.renderer = renderer
             mtkView.delegate = renderer
@@ -50,7 +45,7 @@ struct MetalWallpaperView: NSViewRepresentable {
     class Coordinator: NSObject {
         var parent: MetalWallpaperView
         var renderer: Renderer?
-        var loadedURL: URL? // Prevent duplicate loading
+        var loadedURL: URL?
 
         init(_ parent: MetalWallpaperView) {
             self.parent = parent

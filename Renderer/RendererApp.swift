@@ -1,3 +1,10 @@
+//
+//  RendererApp.swift
+//  Renderer
+//
+//  Created by laobamac on 2026/1/23.
+//
+
 import SwiftUI
 
 @main

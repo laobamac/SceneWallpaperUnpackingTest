@@ -1,5 +1,11 @@
+//
+//  SceneModels.swift
+//  Renderer
+//
+//  Created by laobamac on 2026/1/23.
+//
+
 import Foundation
-import simd
 
 // MARK: - Scene JSON Structures
 struct SceneRoot: Codable {
@@ -137,7 +143,7 @@ struct MaterialPass: Codable {
     let shader: String
 }
 
-// MARK: - Puppet / MDL Data Models (Extended for Universal Rendering)
+// MARK: - Puppet / MDL Data Models
 
 struct PuppetData: Codable {
     let info: PuppetInfo
@@ -162,9 +168,6 @@ struct PuppetBone: Codable {
     let name: String
     let parent: Int
     let matrix: [Float]
-    
-    // 渲染标签
-    // 值可以是 "clipped" (被遮挡层/瞳孔) 或 "mask" (遮罩层/眼白)
     let render_tag: String?
 }
 

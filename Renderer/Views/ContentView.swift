@@ -1,3 +1,10 @@
+//
+//  ContentView.swift
+//  Renderer
+//
+//  Created by laobamac on 2026/1/23.
+//
+
 import SwiftUI
 
 struct ContentView: View {
@@ -6,7 +13,6 @@ struct ContentView: View {
 
     var body: some View {
         ZStack {
-            // 背景渲染层
             if let folder = wallpaperFolder {
                 MetalWallpaperView(folderURL: folder)
                     .edgesIgnoringSafeArea(.all)
@@ -32,7 +38,6 @@ struct ContentView: View {
                         .foregroundColor(.gray)
                         .padding(.top, 10)
                 } else {
-                    // 加载后提供一个小的浮动按钮来切换壁纸
                     if isHovering {
                         VStack {
                             Spacer()
@@ -55,7 +60,6 @@ struct ContentView: View {
                 isHovering = hover
             }
         }
-        // 设置默认窗口大小
         .frame(minWidth: 800, minHeight: 600)
     }
     
