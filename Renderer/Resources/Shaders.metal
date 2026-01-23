@@ -139,6 +139,7 @@ fragment float4 fragment_main(VertexOut in [[stage_in]],
             float2 noise = float2(sin(globals.time * e.speed), cos(globals.time * e.speed * 0.8));
             uv += noise * e.strength * mask * 0.02;
         } else if (e.type == EffectTypeFoliageSway) {
+            // FoliageSway
             float mask = 1.0;
             if (e.maskIndex >= 0 && e.maskIndex < 8) {
                 mask = maskTextures[e.maskIndex].sample(textureSampler, originalUV).r;
@@ -147,7 +148,7 @@ fragment float4 fragment_main(VertexOut in [[stage_in]],
             float spatial = (originalUV.x + originalUV.y) / max(e.scale, 0.001);
             float val = sin(t + spatial + e.exponent);
             
-            uv += e.direction * val * e.strength * mask * 0.005; // 降低系数防止过强
+            uv += e.direction * val * e.strength * mask * 0.005;
         } else if (e.type == EffectTypeWaterRipple) {
             // WaterRipple Logic
             float mask = 1.0;
@@ -155,17 +156,16 @@ fragment float4 fragment_main(VertexOut in [[stage_in]],
                 mask = maskTextures[e.maskIndex].sample(textureSampler, originalUV).r;
             }
             
-            // 法线贴图在 Mask 的下一个索引
             float3 normal = float3(0.5, 0.5, 1.0);
             int normalIdx = e.maskIndex + 1;
+            
             if (normalIdx >= 0 && normalIdx < 8) {
-                // 计算法线滚动的 UV
-                float2 scroll = e.direction * globals.time * e.speed; // 使用 animationspeed 滚动
+                float activeSpeed = e.speed + e.friction.x;
+                float2 scroll = e.direction * globals.time * activeSpeed;
                 float2 normalUV = originalUV * e.scale + scroll;
                 normal = maskTextures[normalIdx].sample(textureSampler, normalUV).rgb;
             }
             
-            // 将 [0,1] 映射到 [-1,1]
             float2 offset = (normal.xy * 2.0 - 1.0) * e.strength * mask * 0.1;
             uv += offset;
         }

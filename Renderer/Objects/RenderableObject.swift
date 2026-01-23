@@ -121,33 +121,38 @@ class RenderableObject {
         }
         
         for effect in effects {
+            let fileLower = effect.file.lowercased()
             var type: Int32 = 0
-            if effect.file.contains("waterwaves") { type = 2 }
-            else if effect.file.contains("shake") { type = 3 }
-            else if effect.file.contains("scroll") { type = 1 }
-            else if effect.file.contains("foliagesway") { type = 4 }
-            else if effect.file.contains("waterripple") { type = 5 } // 新增 WaterRipple
+            if fileLower.contains("waterwaves") { type = 2 }
+            else if fileLower.contains("shake") { type = 3 }
+            else if fileLower.contains("scroll") { type = 1 }
+            else if fileLower.contains("foliagesway") { type = 4 }
+            else if fileLower.contains("waterripple") { type = 5 } // WaterRipple
             
             if type == 0 { continue }
             
             if let pass = effect.passes?.first, let constants = pass.constantshadervalues {
                 var param = EffectParams(type: type, maskIndex: -1, speed: 1, scale: 1, strength: 0.1, exponent: 1, direction: .zero, bounds: .zero, friction: .zero)
                 
-                // 加载 Mask (通常是 textures[1])
+                var hasMask = false
                 if let masks = pass.textures, masks.count > 1, let maskPath = masks[1] {
                     let maskURL = resolveTex(path: maskPath)
                     if let maskTex = try? textureLoader.newTexture(URL: maskURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false]) {
                         maskTextures.append(maskTex)
                         param.maskIndex = Int32(maskTextures.count - 1)
+                        hasMask = true
                     }
                 }
                 
-                // 加载 Normal Map (通常是 textures[2]) - 仅限 WaterRipple
-                if type == 5, let texs = pass.textures, texs.count > 2, let normPath = texs[2] {
-                    let normURL = resolveTex(path: normPath)
-                    if let normTex = try? textureLoader.newTexture(URL: normURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false]) {
-                        maskTextures.append(normTex)
-                        // 我们不需要单独存 normalIndex，约定：WaterRipple 的 Mask 后一位就是 Normal
+                if type == 5, let texs = pass.textures {
+                    var normPath: String? = nil
+                    if texs.count > 2 { normPath = texs[2] }
+                    
+                    if let path = normPath {
+                        let normURL = resolveTex(path: path)
+                        if let normTex = try? textureLoader.newTexture(URL: normURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false]) {
+                            maskTextures.append(normTex)
+                        }
                     }
                 }
                 
@@ -157,6 +162,15 @@ class RenderableObject {
                     }
                     return 0
                 }
+                func getFirstVal(_ keys: [String]) -> Float {
+                    for key in keys {
+                        let v = getVal(key)
+                        if v != 0 { return v }
+                        if constants[key] != nil { return v }
+                    }
+                    return 0
+                }
+                
                 func getVec2(_ key: String) -> SIMD2<Float> {
                     if let v = constants[key], case .string(let s) = v {
                         let p = s.components(separatedBy: " ").compactMap{Float($0)}
@@ -166,7 +180,7 @@ class RenderableObject {
                 }
                 
                 if type == 2 { // WaterWave
-                    param.speed = getVal("speed")
+                    param.speed = getFirstVal(["speed", "animationspeed"])
                     param.scale = getVal("scale")
                     param.strength = getVal("strength")
                     param.exponent = getVal("exponent")
@@ -188,12 +202,14 @@ class RenderableObject {
                     let dirVal = getVal("scrolldirection")
                     param.direction = SIMD2<Float>(sin(dirVal), cos(dirVal))
                 } else if type == 5 { // WaterRipple
-                    param.speed = getVal("animationspeed")
-                    param.strength = getVal("ripplestrength")
-                    param.scale = getVal("scale")
-                    let dirVal = getVal("scrolldirection")
+                    // 兼容多种命名
+                    param.speed = getFirstVal(["animationspeed", "speed"])
+                    param.strength = getFirstVal(["ripplestrength", "strength", "amount"])
+                    param.scale = getFirstVal(["scale", "ripplescale"])
+                    let dirVal = getFirstVal(["scrolldirection", "direction", "angle"])
                     param.direction = SIMD2<Float>(sin(dirVal), cos(dirVal))
-                    param.friction.x = getVal("scrollspeed") // 复用 friction.x 存储 scrollspeed
+                    // 将 scrollspeed 存入 friction.x
+                    param.friction.x = getFirstVal(["scrollspeed"])
                 }
                 effectParams.append(param)
             }
