@@ -1,5 +1,6 @@
 {
 	"version" : 1,
+	"replacementkey" : "shake",
 	"name" : "ui_editor_effect_shake_title",
 	"description" : "ui_editor_effect_shake_description",
 	"group" : "animate",

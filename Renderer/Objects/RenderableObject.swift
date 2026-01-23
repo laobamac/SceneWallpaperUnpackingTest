@@ -150,7 +150,7 @@ class RenderableObject {
                     for key in keys {
                         let v = getVal(key)
                         if v != 0 { return v }
-                        // Check exact match in constants just in case getVal didn't catch it (though getVal covers main + prefix)
+                        // Check exact match in constants just in case getVal didn't catch it
                         if constants[key] != nil { return v }
                     }
                     return 0
@@ -172,44 +172,33 @@ class RenderableObject {
                 if type == 5 {
                     // WaterRipple Specific Loading
                     // Goal: maskTextures must end up as [..., Mask, Normal] so Shader (maskIndex, maskIndex+1) works.
-                    // Standard: [null, Mask, Normal]
-                    // This Scene: [null, Normal, Mask] (Inverted)
-                    
                     var maskPath: String? = nil
                     var normPath: String? = nil
                     
-                    // 1. Initial Assign (Standard Assumption)
                     if let texs = pass.textures {
                         if texs.count > 1 { maskPath = texs[1] }
                         if texs.count > 2 { normPath = texs[2] }
                     }
                     
-                    // 2. Smart Detection for Inversion
-                    // If Index 1 looks like a Normal and Index 2 looks like a Mask, swap them.
-                    // Only swap if specific keywords are found to avoid breaking legitimate standard files.
+                    // Smart Detection for Inverted (Normal/Mask swap)
                     if let m = maskPath, let n = normPath {
                         let mLower = m.lowercased()
                         let nLower = n.lowercased()
-                        
                         let idx1IsNormal = mLower.contains("norm") && !mLower.contains("mask")
                         let idx2IsMask = nLower.contains("mask")
                         
                         if idx1IsNormal && idx2IsMask {
-                            // Detected Inverted format (Scene/scene.json case)
                             let temp = maskPath
                             maskPath = normPath
                             normPath = temp
                         }
                     } else if let m = maskPath, normPath == nil {
-                        // Edge case: Only Index 1 exists.
-                        // If it looks like a Normal map, treat it as Normal (Case: [null, Normal])
                         if m.lowercased().contains("norm") && !m.lowercased().contains("mask") {
                             normPath = maskPath
                             maskPath = nil
                         }
                     }
                     
-                    // 3. Load Textures
                     var maskTex: MTLTexture? = nil
                     var normTex: MTLTexture? = nil
                     
@@ -222,21 +211,15 @@ class RenderableObject {
                         normTex = try? textureLoader.newTexture(URL: url, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false])
                     }
                     
-                    // 4. Append to Global List in Correct Order [Mask, Normal]
                     if let m = maskTex, let n = normTex {
-                        // Standard complete case
                         maskTextures.append(m)
                         param.maskIndex = Int32(maskTextures.count - 1)
                         maskTextures.append(n)
                     } else if let m = maskTex {
-                        // Only Mask (Ripple without normal, just distortion?)
                         maskTextures.append(m)
                         param.maskIndex = Int32(maskTextures.count - 1)
                     } else if let n = normTex {
-                        // Only Normal (Mask defaults to 1.0 via invalid index, Normal at index+1)
                         maskTextures.append(n)
-                        // maskIndex + 1 must equal (count - 1)
-                        // maskIndex = count - 2
                         param.maskIndex = Int32(maskTextures.count) - 2
                     }
                     
@@ -267,6 +250,8 @@ class RenderableObject {
                     param.strength = getVal("strength")
                     param.bounds = getVec2("bounds")
                     param.friction = getVec2("friction")
+                    // Default direction to vertical (0, 1) for Pulse/Blink if not specified by Flow map (which we approximate here)
+                    param.direction = SIMD2<Float>(0, 1)
                 } else if type == 4 { // FoliageSway
                     param.speed = getVal("speeduv")
                     param.strength = getVal("strength")

@@ -132,12 +132,36 @@ fragment float4 fragment_main(VertexOut in [[stage_in]],
             float val = pow(abs(sin(distance)), e.exponent) * sign(sin(distance));
             uv += val * float2(dir.y, -dir.x) * e.strength * mask * 0.5;
         } else if (e.type == EffectTypeShake) {
+            // Updated Shake Logic (Pulse / Blink support)
             float mask = 1.0;
             if (e.maskIndex >= 0 && e.maskIndex < 8) {
                 mask = maskTextures[e.maskIndex].sample(textureSampler, originalUV).r;
             }
-            float2 noise = float2(sin(globals.time * e.speed), cos(globals.time * e.speed * 0.8));
-            uv += noise * e.strength * mask * 0.02;
+            
+            // Standard WE Shake uses a sine wave + bounds for blinking/breathing
+            float t = globals.time * e.speed;
+            // Normalize sine to 0..1 range
+            float sineVal = (sin(t) + 1.0) * 0.5;
+            
+            // Apply Bounds (Thresholding)
+            // bounds.x = min, bounds.y = max. shader logic: (val - min) / (max - min)
+            float bMin = e.bounds.x;
+            float bMax = e.bounds.y;
+            float range = bMax - bMin;
+            if (range < 0.001) range = 1.0; // Prevent div by zero, default to full range
+            
+            float val = saturate((sineVal - bMin) / range);
+            
+            // Direction Logic
+            // If direction is zero (missing flow map), default to vertical (0, 1) for standard blink
+            float2 dir = e.direction;
+            if (length(dir) < 0.001) {
+                dir = float2(0.0, 1.0);
+            }
+            
+            // Apply offset
+            uv += dir * val * e.strength * mask * 0.1; // 0.1 scale factor to match visual expectations
+            
         } else if (e.type == EffectTypeFoliageSway) {
             // FoliageSway
             float mask = 1.0;

@@ -1,22 +1,81 @@
 {
 	"contentrating" : "Everyone",
-	"description" : "ねむい、ねこ。\n\npixiv id: 78888804\nBGM: 喵喵歌（淘寶双１１背景音樂）",
+	"description" : "[b][url=https://steamcommunity.com/sharedfiles/filedetails/?id=1727210908]⋆ Check my all approved wallpapers here! ⋆[/url][/b]\n\nPlease make sure to follow artists below if you can't wait for release!\n❊ Support authors: https://www.artstation.com/artwork/Bmx1J9\n\nDo you want me to make wallpaper for you? [url=https://steamcommunity.com:/linkfilter/?url=https://historykarts.wixsite.com/historyk]Order now![/url]\nConsider [url=https://steamcommunity.com:/linkfilter/?url=https://www.paypal.me/historyk]donating[/url] if you like my works.\n\n♪ Kerusu - Remembrance\n\n❧ You can follow me here:\n• [url=https://twitter.com/historykxo]Twitter[/url] • [url=https://www.youtube.com/channel/UCaFXYcllVgLm_Dy_kt3Gq_w]YouTube[/url] • [url=https://steamcommunity.com:/linkfilter/?url=https://www.reddit.com/user/todexcs]Reddit[/url] • [url=https://steamcommunity.com:/linkfilter/?url=https://www.artstation.com/historiarts]ArtStation[/url] • [url=https://steamcommunity.com:/linkfilter/?url=https://historykarts.wixsite.com/historyk]My website[/url]\n\n[img]https://i.imgur.com/4RVP1WJ.gif[/img]",
 	"file" : "scene.json",
 	"general" : 
 	{
 		"properties" : 
 		{
+			"contrast" : 
+			{
+				"fraction" : true,
+				"max" : 1,
+				"min" : 0,
+				"order" : 100,
+				"precision" : 2,
+				"step" : 0.10000000000000001,
+				"text" : "Contrast",
+				"type" : "slider",
+				"value" : 0.40999999999999998
+			},
+			"fireworks" : 
+			{
+				"order" : 101,
+				"text" : "Fireworks (Red)",
+				"type" : "bool",
+				"value" : true
+			},
+			"fireworks_2" : 
+			{
+				"order" : 104,
+				"text" : "Fireworks (Orange)",
+				"type" : "bool",
+				"value" : true
+			},
+			"fireworks_blue_" : 
+			{
+				"order" : 105,
+				"text" : "Fireworks (Blue)",
+				"type" : "bool",
+				"value" : true
+			},
+			"fireworks_volume" : 
+			{
+				"fraction" : true,
+				"max" : 1,
+				"min" : 0,
+				"order" : 103,
+				"precision" : 2,
+				"step" : 0.10000000000000001,
+				"text" : "Fireworks Volume",
+				"type" : "slider",
+				"value" : 0.20000000000000001
+			},
+			"music_volume" : 
+			{
+				"fraction" : true,
+				"max" : 1,
+				"min" : 0,
+				"order" : 102,
+				"precision" : 2,
+				"step" : 0.10000000000000001,
+				"text" : "Music Volume",
+				"type" : "slider",
+				"value" : 0.29999999999999999
+			},
 			"schemecolor" : 
 			{
 				"order" : 0,
 				"text" : "ui_browse_properties_scheme_color",
 				"type" : "color",
-				"value" : "0.678 0.769 0.812"
+				"value" : "0 0 0"
 			}
-		}
+		},
+		"supportsaudioprocessing" : true
 	},
-	"preview" : "preview.jpg",
-	"tags" : [ "Anime" ],
-	"title" : "おやすにゃ🐱💤",
-	"type" : "scene"
+	"preview" : "preview.gif",
+	"tags" : [ "Fantasy" ],
+	"title" : "Night Market by 俊伦 何 in 4K",
+	"type" : "Scene",
+	"version" : 0
 }
