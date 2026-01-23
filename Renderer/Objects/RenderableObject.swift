@@ -134,51 +134,125 @@ class RenderableObject {
             if let pass = effect.passes?.first, let constants = pass.constantshadervalues {
                 var param = EffectParams(type: type, maskIndex: -1, speed: 1, scale: 1, strength: 0.1, exponent: 1, direction: .zero, bounds: .zero, friction: .zero)
                 
-                var hasMask = false
-                if let masks = pass.textures, masks.count > 1, let maskPath = masks[1] {
-                    let maskURL = resolveTex(path: maskPath)
-                    if let maskTex = try? textureLoader.newTexture(URL: maskURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false]) {
-                        maskTextures.append(maskTex)
-                        param.maskIndex = Int32(maskTextures.count - 1)
-                        hasMask = true
-                    }
-                }
-                
-                if type == 5, let texs = pass.textures {
-                    var normPath: String? = nil
-                    if texs.count > 2 { normPath = texs[2] }
-                    
-                    if let path = normPath {
-                        let normURL = resolveTex(path: path)
-                        if let normTex = try? textureLoader.newTexture(URL: normURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false]) {
-                            maskTextures.append(normTex)
-                        }
-                    }
-                }
-                
+                // Helper to get value with prefix fallback
                 func getVal(_ key: String) -> Float {
                     if let v = constants[key] {
                         switch v { case .float(let f): return f; case .string(let s): return (Float(s) ?? 0) }
                     }
+                    // Fallback for ui_editor_properties_ prefix
+                    if let v = constants["ui_editor_properties_" + key] {
+                        switch v { case .float(let f): return f; case .string(let s): return (Float(s) ?? 0) }
+                    }
                     return 0
                 }
+                
                 func getFirstVal(_ keys: [String]) -> Float {
                     for key in keys {
                         let v = getVal(key)
                         if v != 0 { return v }
+                        // Check exact match in constants just in case getVal didn't catch it (though getVal covers main + prefix)
                         if constants[key] != nil { return v }
                     }
                     return 0
                 }
                 
                 func getVec2(_ key: String) -> SIMD2<Float> {
-                    if let v = constants[key], case .string(let s) = v {
+                    var valStr: String? = nil
+                    if let v = constants[key], case .string(let s) = v { valStr = s }
+                    else if let v = constants["ui_editor_properties_" + key], case .string(let s) = v { valStr = s }
+                    
+                    if let s = valStr {
                         let p = s.components(separatedBy: " ").compactMap{Float($0)}
                         if p.count >= 2 { return SIMD2<Float>(p[0], p[1]) }
                     }
                     return .zero
                 }
+
+                // Texture Loading Logic
+                if type == 5 {
+                    // WaterRipple Specific Loading
+                    // Goal: maskTextures must end up as [..., Mask, Normal] so Shader (maskIndex, maskIndex+1) works.
+                    // Standard: [null, Mask, Normal]
+                    // This Scene: [null, Normal, Mask] (Inverted)
+                    
+                    var maskPath: String? = nil
+                    var normPath: String? = nil
+                    
+                    // 1. Initial Assign (Standard Assumption)
+                    if let texs = pass.textures {
+                        if texs.count > 1 { maskPath = texs[1] }
+                        if texs.count > 2 { normPath = texs[2] }
+                    }
+                    
+                    // 2. Smart Detection for Inversion
+                    // If Index 1 looks like a Normal and Index 2 looks like a Mask, swap them.
+                    // Only swap if specific keywords are found to avoid breaking legitimate standard files.
+                    if let m = maskPath, let n = normPath {
+                        let mLower = m.lowercased()
+                        let nLower = n.lowercased()
+                        
+                        let idx1IsNormal = mLower.contains("norm") && !mLower.contains("mask")
+                        let idx2IsMask = nLower.contains("mask")
+                        
+                        if idx1IsNormal && idx2IsMask {
+                            // Detected Inverted format (Scene/scene.json case)
+                            let temp = maskPath
+                            maskPath = normPath
+                            normPath = temp
+                        }
+                    } else if let m = maskPath, normPath == nil {
+                        // Edge case: Only Index 1 exists.
+                        // If it looks like a Normal map, treat it as Normal (Case: [null, Normal])
+                        if m.lowercased().contains("norm") && !m.lowercased().contains("mask") {
+                            normPath = maskPath
+                            maskPath = nil
+                        }
+                    }
+                    
+                    // 3. Load Textures
+                    var maskTex: MTLTexture? = nil
+                    var normTex: MTLTexture? = nil
+                    
+                    if let p = maskPath {
+                        let url = resolveTex(path: p)
+                        maskTex = try? textureLoader.newTexture(URL: url, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false])
+                    }
+                    if let p = normPath {
+                        let url = resolveTex(path: p)
+                        normTex = try? textureLoader.newTexture(URL: url, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false])
+                    }
+                    
+                    // 4. Append to Global List in Correct Order [Mask, Normal]
+                    if let m = maskTex, let n = normTex {
+                        // Standard complete case
+                        maskTextures.append(m)
+                        param.maskIndex = Int32(maskTextures.count - 1)
+                        maskTextures.append(n)
+                    } else if let m = maskTex {
+                        // Only Mask (Ripple without normal, just distortion?)
+                        maskTextures.append(m)
+                        param.maskIndex = Int32(maskTextures.count - 1)
+                    } else if let n = normTex {
+                        // Only Normal (Mask defaults to 1.0 via invalid index, Normal at index+1)
+                        maskTextures.append(n)
+                        // maskIndex + 1 must equal (count - 1)
+                        // maskIndex = count - 2
+                        param.maskIndex = Int32(maskTextures.count) - 2
+                    }
+                    
+                } else {
+                    // Generic Loading (Scroll, Shake, Foliage)
+                    // Convention: textures[1] = Mask
+                    if let masks = pass.textures, masks.count > 1, let maskPath = masks[1] {
+                        let maskURL = resolveTex(path: maskPath)
+                        if let maskTex = try? textureLoader.newTexture(URL: maskURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false]) {
+                            maskTextures.append(maskTex)
+                            param.maskIndex = Int32(maskTextures.count - 1)
+                        }
+                    }
+                }
                 
+                // Parameter Parsing
                 if type == 2 { // WaterWave
                     param.speed = getFirstVal(["speed", "animationspeed"])
                     param.scale = getVal("scale")
@@ -202,13 +276,11 @@ class RenderableObject {
                     let dirVal = getVal("scrolldirection")
                     param.direction = SIMD2<Float>(sin(dirVal), cos(dirVal))
                 } else if type == 5 { // WaterRipple
-                    // 兼容多种命名
-                    param.speed = getFirstVal(["animationspeed", "speed"])
-                    param.strength = getFirstVal(["ripplestrength", "strength", "amount"])
-                    param.scale = getFirstVal(["scale", "ripplescale"])
+                    param.speed = getFirstVal(["animationspeed", "speed", "animation_speed"])
+                    param.strength = getFirstVal(["ripplestrength", "strength", "amount", "ripple_strength"])
+                    param.scale = getFirstVal(["scale", "ripplescale", "ripple_scale"])
                     let dirVal = getFirstVal(["scrolldirection", "direction", "angle"])
                     param.direction = SIMD2<Float>(sin(dirVal), cos(dirVal))
-                    // 将 scrollspeed 存入 friction.x
                     param.friction.x = getFirstVal(["scrollspeed"])
                 }
                 effectParams.append(param)
