@@ -5,6 +5,6 @@
 		"depthtest": "disabled",
 		"depthwrite": "disabled",
 		"cullmode": "nocull",
-		"textures": [null, null, "effects/waterripplenormal"]
+		"textures": [null, "effects/waterripplenormal"]
 	}]
 }

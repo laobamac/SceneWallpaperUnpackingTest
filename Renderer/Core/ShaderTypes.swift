@@ -11,7 +11,7 @@ import simd
 
 /// 特效参数 (对应 Shaders.metal: EffectParams)
 struct EffectParams {
-    var type: Int32         // 0: None, 1: Scroll, 2: WaterWave, 3: Shake
+    var type: Int32         // 0: None, 1: Scroll, 2: WaterWave, 3: Shake, 4: FoliageSway, 5: WaterRipple
     var maskIndex: Int32    // -1 表示无
     var speed: Float
     var scale: Float

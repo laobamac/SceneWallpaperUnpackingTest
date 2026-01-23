@@ -1,313 +1,76 @@
 {
 	"camera" : 
 	{
-		"center" : "0.00000 0.00000 -1.00000",
-		"eye" : "0.00000 0.00000 0.00000",
-		"up" : "0.00000 1.00000 0.00000"
+		"center" : "-241.445 113.835 -1.000",
+		"eye" : "-241.445 113.835 0.000",
+		"up" : "0.000 1.000 0.000"
 	},
 	"general" : 
 	{
-		"ambientcolor" : "0.30000 0.30000 0.30000",
+		"ambientcolor" : "0.3 0.3 0.3",
 		"bloom" : false,
-		"bloomhdrfeather" : 0.1,
-		"bloomhdriterations" : 8,
-		"bloomhdrscatter" : 1.619,
-		"bloomhdrstrength" : 2.0,
-		"bloomhdrthreshold" : 1.0,
-		"bloomstrength" : 2.0,
-		"bloomthreshold" : 0.64999998,
-		"bloomtint" : "1.00000 1.00000 1.00000",
+		"bloomstrength" : 2,
+		"bloomthreshold" : 0.64999997615814209,
 		"camerafade" : true,
 		"cameraparallax" : false,
 		"cameraparallaxamount" : 0.5,
-		"cameraparallaxdelay" : 0.1,
-		"cameraparallaxmouseinfluence" : 0.5,
+		"cameraparallaxdelay" : 0.10000000149011612,
+		"cameraparallaxmouseinfluence" : 0,
 		"camerapreview" : true,
 		"camerashake" : false,
 		"camerashakeamplitude" : 0.5,
-		"camerashakeroughness" : 1.0,
-		"camerashakespeed" : 3.0,
-		"clearcolor" : "0.70000 0.70000 0.70000",
-		"clearenabled" : true,
-		"farz" : 10000.0,
-		"fov" : 50.0,
-		"hdr" : false,
-		"nearz" : 0.0099999998,
+		"camerashakeroughness" : 1,
+		"camerashakespeed" : 3,
+		"clearcolor" : "0.7 0.7 0.7",
+		"clearenabled" : null,
 		"orthogonalprojection" : 
 		{
-			"height" : 2160,
-			"width" : 3840
+			"height" : 1080,
+			"width" : 1920
 		},
-		"perspectiveoverridefov" : 30.0,
-		"skylightcolor" : "0.30000 0.30000 0.30000",
-		"zoom" : 1.0
+		"skylightcolor" : "0.3 0.3 0.3"
 	},
 	"objects" : 
 	[
 		{
-			"castshadow" : false,
+			"angles" : "0.000 0.000 0.000",
+			"colorBlendMode" : 0,
+			"copybackground" : true,
 			"effects" : 
 			[
 				{
 					"file" : "effects/waterripple/effect.json",
-					"id" : 19,
-					"name" : "",
 					"passes" : 
 					[
 						{
 							"constantshadervalues" : 
 							{
-								"animationspeed" : 0.15000001,
-								"ratio" : 1.0,
-								"ripplestrength" : 0.1,
-								"scale" : 1.0,
-								"scrolldirection" : 2.8008518,
-								"scrollspeed" : 0.0
+								"ui_editor_properties_animation_speed" : 0.070000000298023224,
+								"ui_editor_properties_ratio" : 1.2000000476837158,
+								"ui_editor_properties_ripple_scale" : 0.75,
+								"ui_editor_properties_ripple_strength" : 0.079999998211860657
 							},
-							"id" : 20,
-							"textures" : [ null, "masks/waterripple_mask_dbde33fc", "effects/waterripplenormal" ]
+							"textures" : 
+							[
+								null,
+								"effects/waterripplenormal",
+								"masks/waterripple_mask_ee0d9bbc6d0516b8583c8fb3e841485c0b7ec4e8"
+							]
 						}
 					],
-					"visible" : 
-					{
-						"user" : "waterripple",
-						"value" : true
-					}
-				},
-				{
-					"file" : "effects/foliagesway/effect.json",
-					"id" : 45,
-					"name" : "1",
-					"passes" : 
-					[
-						{
-							"constantshadervalues" : 
-							{
-								"phase" : 0.5,
-								"power" : 1.0,
-								"ratio" : 0.30000001,
-								"scale" : 0.050000001,
-								"scrolldirection" : 0.0,
-								"speeduv" : 5.0,
-								"strength" : 0.40000001
-							},
-							"id" : 46,
-							"textures" : [ null, "masks/foliagesway_mask_a2dfa4f6", null ]
-						}
-					],
-					"visible" : 
-					{
-						"user" : "treeflower",
-						"value" : true
-					}
-				},
-				{
-					"file" : "effects/foliagesway/effect.json",
-					"id" : 173,
-					"name" : "2",
-					"passes" : 
-					[
-						{
-							"constantshadervalues" : 
-							{
-								"phase" : 0.5,
-								"power" : 1.0,
-								"ratio" : 0.30000001,
-								"scale" : 0.050000001,
-								"scrolldirection" : 0.82934147,
-								"speeduv" : 5,
-								"strength" : 0.5
-							},
-							"id" : 174,
-							"textures" : [ null, "masks/foliagesway_mask_6796d2e9", null ]
-						}
-					],
-					"visible" : 
-					{
-						"user" : "trends",
-						"value" : true
-					}
+					"username" : "",
+					"visible" : true
 				}
 			],
-			"id" : 16,
-			"image" : "models/电脑.json",
-			"locktransforms" : true,
-			"name" : "kh",
-			"origin" : "1920.00000 1080.00000 0.00000",
-			"size" : "3840.00000 2160.00000"
-		},
-		{
-			"anchor" : "none",
-			"backgroundbrightness" : 1.0,
-			"backgroundcolor" : "0.00000 0.00000 0.00000",
-			"blockalign" : false,
-			"castshadow" : false,
-			"depthtest" : "enabled",
-			"font" : "fonts/Alcubierre.otf",
-			"horizontalalign" : "center",
-			"id" : 59,
-			"limitrows" : false,
-			"limituseellipsis" : false,
-			"limitwidth" : false,
-			"locktransforms" : true,
-			"maxrows" : 1,
-			"maxwidth" : 500.0,
-			"name" : "Date",
-			"opaquebackground" : false,
-			"origin" : "3384.08813 345.60620 0.00000",
-			"padding" : 32,
-			"parallaxDepth" : "0.00000 0.00000",
-			"pointsize" : 32.0,
-			"scale" : "0.43631 0.43631 0.43631",
-			"size" : "589.00000 156.00000",
-			"text" : 
-			{
-				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '2983913047';\n// Please note: Do not remove this line or asset references may break.\n/**\n * @param {String} value (for property 'text')\n */\nexport var scriptProperties = createScriptProperties()\n\t// Whether you want to see the seconds or not\n\t.addCheckbox({\n\t\tname: 'showYear',\n\t\tlabel: '显示年份',\n\t\tvalue: true\n\t})\n\t// This will be used to separate each element\n\t.addText({\n\t\tname: 'delimiter',\n\t\tlabel: '定界符',\n\t\tvalue: ':'\n\t})\n\t.addCheckbox({\n\t\tname: 'showDate',\n\t\tlabel: '不显示日期',\n\t\tvalue: false\n\t})\n\t.addCheckbox({\n\t\tname: 'showCD',\n\t\tlabel: '隐藏日期时间',\n\t\tvalue: false\n\t})\n\t.finish();\nexport function update(value) {\n\tlet now = new Date();\n\tvar year = now.getFullYear();\n\tlet month = (\"00\" + (now.getMonth()+1)).slice(-2);\n\tlet day = (\"00\" + now.getDate()).slice(-2);\n\tvalue = year + scriptProperties.delimiter + month + scriptProperties.delimiter + day;\n\tif (!scriptProperties.showYear) {\n\t\tvalue = month + scriptProperties.delimiter +day;\n\t}\n\tif (scriptProperties.showDate) {\n\t\tvalue = '\\0';\n\t}\n\tif (scriptProperties.showCD) {\n\t\tvalue = '\\0';\n\t}\n\treturn value;\n}\n",
-				"scriptproperties" : 
-				{
-					"delimiter" : ".",
-					"showCD" : false,
-					"showDate" : false,
-					"showYear" : true
-				},
-				"value" : "2023.06.02"
-			},
-			"verticalalign" : "center",
-			"visible" : 
-			{
-				"user" : "date",
-				"value" : true
-			}
-		},
-		{
-			"anchor" : "none",
-			"backgroundbrightness" : 1.0,
-			"backgroundcolor" : "0.00000 0.00000 0.00000",
-			"blockalign" : false,
-			"castshadow" : false,
-			"depthtest" : "enabled",
-			"font" : "fonts/Alcubierre.otf",
-			"horizontalalign" : "center",
-			"id" : 61,
-			"limitrows" : false,
-			"limituseellipsis" : false,
-			"limitwidth" : false,
-			"locktransforms" : true,
-			"maxrows" : 1,
-			"maxwidth" : 500.0,
-			"name" : "Week",
-			"opaquebackground" : false,
-			"origin" : "3137.33179 350.30591 0.00000",
-			"padding" : 32,
-			"parallaxDepth" : "0.00000 0.00000",
-			"pointsize" : 32.0,
-			"scale" : "0.47657 0.52173 0.48937",
-			"size" : "265.00000 156.00000",
-			"text" : 
-			{
-				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '2983913047';\n// Please note: Do not remove this line or asset references may break.\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'showWeek',\n\t\tlabel: '不显示星期',\n\t\tvalue: false\n\t})\n\t.addCheckbox({\n\t\tname: 'showCD',\n\t\tlabel: '隐藏日期时间',\n\t\tvalue: false\n\t})\n\t.finish();\n/**\n * @param {String} value (for property 'text')\n */\nexport function update(value) {\n\tlet today = new Date();\n\tvar day = new Array(\"Sun\",\"Mon\",\"Tue\",\"Wed\",\"Thur\",\"Fri\",\"Sat\");\n\tvar week = day[today.getDay()];\n\tif (scriptProperties.showWeek) {\n\t\tweek = '\\0';\n\t}\n\tif (scriptProperties.showCD) {\n\t\tweek = '\\0';\n\t}\n\treturn week;\n}\n",
-				"scriptproperties" : 
-				{
-					"showCD" : false,
-					"showWeek" : false
-				},
-				"value" : "Mon"
-			},
-			"verticalalign" : "center",
-			"visible" : 
-			{
-				"user" : "week",
-				"value" : true
-			}
-		},
-		{
-			"anchor" : "none",
-			"backgroundbrightness" : 1.0,
-			"backgroundcolor" : "0.00000 0.00000 0.00000",
-			"blockalign" : false,
-			"castshadow" : false,
-			"depthtest" : "enabled",
-			"font" : "fonts/Alcubierre.otf",
-			"horizontalalign" : "center",
-			"id" : 63,
-			"limitrows" : false,
-			"limituseellipsis" : false,
-			"limitwidth" : false,
-			"locktransforms" : true,
-			"maxrows" : 1,
-			"maxwidth" : 500.0,
-			"name" : "Clock",
-			"opaquebackground" : false,
-			"origin" : "3219.58374 447.83374 0.00000",
-			"padding" : 32,
-			"parallaxDepth" : "0.00000 0.00000",
-			"pointsize" : 33.0,
-			"scale" : "0.93164 0.93164 0.93164",
-			"size" : "306.00000 161.00000",
-			"text" : 
-			{
-				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '2983913047';\n// Please note: Do not remove this line or asset references may break.\n\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'use12hFormat',\n\t\tlabel: '使用12时',\n\t\tvalue: false\n\t})\n\t// This will be used to separate each element\n\t.addText({\n\t\tname: 'delimiter',\n\t\tlabel: '定界符',\n\t\tvalue: ':'\n\t})\n\t.addCheckbox({\n\t\tname: 'showTime',\n\t\tlabel: '不显示时间',\n\t\tvalue: false\n\t})\n\t.addCheckbox({\n\t\tname: 'showCD',\n\t\tlabel: '隐藏日期时间',\n\t\tvalue: false\n\t})\n\t.finish();\n/**\n * @param {String} value (for property 'text')\n */\nexport function update(value) {\n\tlet time = new Date();\n\tvar hours = time.getHours();\n\tif (scriptProperties.use12hFormat) {\n\t\thours %= 12;\n\t\tif (hours == 0) {\n\t\t\thours = 12;\n\t\t}\n\t}\n\thours = (\"00\" + hours).slice(-2);\n\tlet minutes = (\"00\" + time.getMinutes()).slice(-2);\n\tvalue = hours + scriptProperties.delimiter + minutes;\n\tif (scriptProperties.showTime) {\n\t\tvalue = '\\0';\n\t}\n\tif (scriptProperties.showCD) {\n\t\tvalue = '\\0';\n\t}\n\treturn value;\n}\n",
-				"scriptproperties" : 
-				{
-					"delimiter" : ":",
-					"showCD" : false,
-					"showTime" : false,
-					"use12hFormat" : 
-					{
-						"user" : "show12h",
-						"value" : false
-					}
-				},
-				"value" : "02:36"
-			},
-			"verticalalign" : "center",
-			"visible" : 
-			{
-				"user" : "clock",
-				"value" : true
-			}
-		},
-		{
-			"anchor" : "none",
-			"backgroundbrightness" : 1.0,
-			"backgroundcolor" : "0.00000 0.00000 0.00000",
-			"blockalign" : false,
-			"castshadow" : false,
-			"depthtest" : "enabled",
-			"font" : "fonts/Alcubierre.otf",
-			"horizontalalign" : "center",
-			"id" : 66,
-			"limitrows" : false,
-			"limituseellipsis" : false,
-			"limitwidth" : false,
-			"locktransforms" : true,
-			"maxrows" : 1,
-			"maxwidth" : 500.0,
-			"name" : "Seconds",
-			"opaquebackground" : false,
-			"origin" : "3476.91528 426.68298 0.00000",
-			"padding" : 32,
-			"parallaxDepth" : "0.00000 0.00000",
-			"pointsize" : 32.0,
-			"scale" : "0.47017 0.47017 0.47017",
-			"size" : "143.00000 156.00000",
-			"text" : 
-			{
-				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '2983913047';\n// Please note: Do not remove this line or asset references may break.\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'showSeconds',\n\t\tlabel: '不显示秒',\n\t\tvalue: false\n\t})\n\t.addCheckbox({\n\t\tname: 'showCD',\n\t\tlabel: '隐藏日期时间',\n\t\tvalue: false\n\t})\n\t.finish();\nexport function update(value) {\n\tlet time = new Date();\n\tlet seconds = (\"00\" + time.getSeconds()).slice(-2);\n\tif (scriptProperties.showSeconds) {\n\tseconds = '\\0';\n\t}\n\tif (scriptProperties.showCD) {\n\tseconds = '\\0';\n\t}\n\treturn seconds;\n}\n",
-				"scriptproperties" : 
-				{
-					"showCD" : false,
-					"showSeconds" : false
-				},
-				"value" : "20"
-			},
-			"verticalalign" : "center",
-			"visible" : 
-			{
-				"user" : "seconds1",
-				"value" : true
-			}
+			"id" : 81,
+			"image" : "models/2018-07-19 (2).json",
+			"locktransforms" : false,
+			"name" : "2018-07-19 (2)",
+			"origin" : "960.000 540.000 0.000",
+			"parallaxDepth" : "1.000 1.000",
+			"scale" : "1.000 1.000 1.000",
+			"size" : "1920.000 1080.000",
+			"visible" : true
 		}
-	],
-	"version" : 4
+	]
 }

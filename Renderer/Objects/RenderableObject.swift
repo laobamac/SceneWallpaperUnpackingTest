@@ -125,17 +125,29 @@ class RenderableObject {
             if effect.file.contains("waterwaves") { type = 2 }
             else if effect.file.contains("shake") { type = 3 }
             else if effect.file.contains("scroll") { type = 1 }
+            else if effect.file.contains("foliagesway") { type = 4 }
+            else if effect.file.contains("waterripple") { type = 5 } // 新增 WaterRipple
             
             if type == 0 { continue }
             
             if let pass = effect.passes?.first, let constants = pass.constantshadervalues {
                 var param = EffectParams(type: type, maskIndex: -1, speed: 1, scale: 1, strength: 0.1, exponent: 1, direction: .zero, bounds: .zero, friction: .zero)
                 
+                // 加载 Mask (通常是 textures[1])
                 if let masks = pass.textures, masks.count > 1, let maskPath = masks[1] {
                     let maskURL = resolveTex(path: maskPath)
                     if let maskTex = try? textureLoader.newTexture(URL: maskURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false]) {
                         maskTextures.append(maskTex)
                         param.maskIndex = Int32(maskTextures.count - 1)
+                    }
+                }
+                
+                // 加载 Normal Map (通常是 textures[2]) - 仅限 WaterRipple
+                if type == 5, let texs = pass.textures, texs.count > 2, let normPath = texs[2] {
+                    let normURL = resolveTex(path: normPath)
+                    if let normTex = try? textureLoader.newTexture(URL: normURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false]) {
+                        maskTextures.append(normTex)
+                        // 我们不需要单独存 normalIndex，约定：WaterRipple 的 Mask 后一位就是 Normal
                     }
                 }
                 
@@ -153,20 +165,35 @@ class RenderableObject {
                     return .zero
                 }
                 
-                if type == 2 {
+                if type == 2 { // WaterWave
                     param.speed = getVal("speed")
                     param.scale = getVal("scale")
                     param.strength = getVal("strength")
                     param.exponent = getVal("exponent")
                     let dirVal = getVal("direction")
                     param.direction = SIMD2<Float>(sin(dirVal), cos(dirVal))
-                } else if type == 1 {
+                } else if type == 1 { // Scroll
                     param.direction = getVec2("speed")
-                } else if type == 3 {
+                } else if type == 3 { // Shake
                     param.speed = getVal("speed")
                     param.strength = getVal("strength")
                     param.bounds = getVec2("bounds")
                     param.friction = getVec2("friction")
+                } else if type == 4 { // FoliageSway
+                    param.speed = getVal("speeduv")
+                    param.strength = getVal("strength")
+                    param.scale = getVal("scale")
+                    param.exponent = getVal("phase")
+                    param.bounds.x = getVal("power")
+                    let dirVal = getVal("scrolldirection")
+                    param.direction = SIMD2<Float>(sin(dirVal), cos(dirVal))
+                } else if type == 5 { // WaterRipple
+                    param.speed = getVal("animationspeed")
+                    param.strength = getVal("ripplestrength")
+                    param.scale = getVal("scale")
+                    let dirVal = getVal("scrolldirection")
+                    param.direction = SIMD2<Float>(sin(dirVal), cos(dirVal))
+                    param.friction.x = getVal("scrollspeed") // 复用 friction.x 存储 scrollspeed
                 }
                 effectParams.append(param)
             }
