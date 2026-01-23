@@ -40,18 +40,22 @@ struct SceneObject: Codable {
 enum ScriptableValue: Codable {
     case string(String)
     case script(value: String)
+    case float(Float)
     
     init(from decoder: Decoder) throws {
-        if let container = try? decoder.singleValueContainer(), let str = try? container.decode(String.self) {
-            self = .string(str)
-            return
+        if let container = try? decoder.singleValueContainer() {
+            if let str = try? container.decode(String.self) {
+                self = .string(str)
+                return
+            }
+            if let num = try? container.decode(Float.self) {
+                self = .float(num)
+                return
+            }
         }
-        if let container = try? decoder.container(keyedBy: CodingKeys.self), let val = try? container.decode(String.self, forKey: .value) {
+        if let container = try? decoder.container(keyedBy: CodingKeys.self),
+           let val = try? container.decode(String.self, forKey: .value) {
             self = .script(value: val)
-            return
-        }
-        if let container = try? decoder.singleValueContainer(), let num = try? container.decode(Float.self) {
-            self = .string("\(num)")
             return
         }
         self = .string("0 0 0")
@@ -61,6 +65,7 @@ enum ScriptableValue: Codable {
         switch self {
         case .string(let s): return s
         case .script(let v): return v
+        case .float(let f): return "\(f)"
         }
     }
     enum CodingKeys: String, CodingKey { case value }
@@ -132,7 +137,7 @@ struct MaterialPass: Codable {
     let shader: String
 }
 
-// MARK: - Puppet / MDL Data Models (Updated for Animation)
+// MARK: - Puppet / MDL Data Models (Extended for Universal Rendering)
 
 struct PuppetData: Codable {
     let info: PuppetInfo
@@ -157,6 +162,10 @@ struct PuppetBone: Codable {
     let name: String
     let parent: Int
     let matrix: [Float]
+    
+    // 渲染标签
+    // 值可以是 "clipped" (被遮挡层/瞳孔) 或 "mask" (遮罩层/眼白)
+    let render_tag: String?
 }
 
 struct PuppetAnimation: Codable {
@@ -170,12 +179,12 @@ struct PuppetAnimation: Codable {
 }
 
 struct PuppetTrack: Codable {
-    let track_id: Int // 对应 bone id
+    let track_id: Int
     let frames: [PuppetKeyframe]
 }
 
 struct PuppetKeyframe: Codable {
-    let p: [Float] // Position [x, y, z]
-    let r: [Float] // Rotation [x, y, z] (Euler Angles in Radians)
-    let s: [Float] // Scale [x, y, z]
+    let p: [Float]
+    let r: [Float]
+    let s: [Float]
 }

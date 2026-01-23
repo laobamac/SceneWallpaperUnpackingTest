@@ -22,11 +22,16 @@ struct MetalWallpaperView: NSViewRepresentable {
             mtkView.device = device
             mtkView.clearColor = MTLClearColor(red: 0.1, green: 0.1, blue: 0.1, alpha: 1.0)
             mtkView.colorPixelFormat = .bgra8Unorm
+            
+            // FIX: Enable Depth and Stencil buffer for the view
+            // This is required for the "Eye Clipping" logic in Renderer to work
+            mtkView.depthStencilPixelFormat = .depth32Float_stencil8
+            
             mtkView.preferredFramesPerSecond = 60
-            mtkView.enableSetNeedsDisplay = false // 开启自动循环渲染
+            mtkView.enableSetNeedsDisplay = false // Enable automatic render loop
             mtkView.isPaused = false
             
-            // 初始化 Renderer
+            // Initialize Renderer
             let renderer = Renderer(device: device)
             context.coordinator.renderer = renderer
             mtkView.delegate = renderer
@@ -45,7 +50,7 @@ struct MetalWallpaperView: NSViewRepresentable {
     class Coordinator: NSObject {
         var parent: MetalWallpaperView
         var renderer: Renderer?
-        var loadedURL: URL? // 记录当前加载的URL，防止重复加载
+        var loadedURL: URL? // Prevent duplicate loading
 
         init(_ parent: MetalWallpaperView) {
             self.parent = parent
