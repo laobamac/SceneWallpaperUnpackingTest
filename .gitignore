@@ -1,4 +1,4 @@
 .DS_Store
 *.m
 mdl_parser
-*_parser
+pkg_parser
