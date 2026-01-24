@@ -7,10 +7,10 @@
 varying vec4 v_TexCoord;
 varying vec2 v_Bounds;
 
-uniform sampler2D g_Texture0; // {"material":"framebuffer","label":"ui_editor_properties_framebuffer","hidden":true}
-uniform sampler2D g_Texture1; // {"material":"flow","label":"ui_editor_properties_shake_direction_map","mode":"flowmask","default":"util/noflow"}
-uniform sampler2D g_Texture2; // {"material":"phase","label":"ui_editor_properties_time_offset","mode":"opacitymask","default":"util/white"}
-uniform sampler2D g_Texture3; // {"material":"mask","label":"ui_editor_properties_opacity","mode":"opacitymask","combo":"MASK","default":"util/white"}
+uniform sampler2D g_Texture0; // {"hidden":true}
+uniform sampler2D g_Texture1; // {"label":"ui_editor_properties_shake_direction_map","mode":"flowmask","default":"util/noflow"}
+uniform sampler2D g_Texture2; // {"label":"ui_editor_properties_time_offset","mode":"opacitymask","default":"util/black","combo":"TIMEOFFSET"}
+uniform sampler2D g_Texture3; // {"label":"ui_editor_properties_opacity","mode":"opacitymask","combo":"MASK"}
 uniform float g_Time;
 
 uniform float g_Speed; // {"material":"speed","label":"ui_editor_properties_speed","default":1,"range":[0.0, 10]}
@@ -26,8 +26,12 @@ varying vec4 v_TexCoordMask;
 #endif
 
 void main() {
+	float flowPhase = 0.0;
 
-	float flowPhase = texSample2D(g_Texture2, v_TexCoord.zw).r * M_PI_2;
+#if TIMEOFFSET
+	flowPhase = texSample2D(g_Texture2, v_TexCoord.zw).r * M_PI_2;
+#endif
+
 	vec2 flowColors = texSample2D(g_Texture1, v_TexCoord.zw).rg;
 	vec2 flowMask = (flowColors.rg - vec2(0.498, 0.498)) * 2.0;
 	float offset = 0.0;
@@ -78,7 +82,7 @@ void main() {
 	vec2 texCoordOffset = offset * g_Amp * g_Amp * flowMask;
 	gl_FragColor = texSample2D(g_Texture0, texCoordOffset + v_TexCoord.xy);
 	
-#if MASK == 1
+#if MASK
 	// Only allow sampling from mask
 	float mask = texSample2D(g_Texture3, texCoordOffset * v_TexCoordMask.zw + v_TexCoordMask.xy).r;
 	gl_FragColor = mix(texSample2D(g_Texture0, v_TexCoord.xy), gl_FragColor, mask);

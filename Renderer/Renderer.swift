@@ -14,6 +14,7 @@ class Renderer: NSObject, MTKViewDelegate {
     var pipelineState: MTLRenderPipelineState!
     var puppetPipelineState: MTLRenderPipelineState!
     var samplerState: MTLSamplerState!
+    var repeatSamplerState: MTLSamplerState! // New: For scrolling textures
     
     var depthStencilState: MTLDepthStencilState!
     var maskWriteState: MTLDepthStencilState!
@@ -84,11 +85,20 @@ class Renderer: NSObject, MTKViewDelegate {
         
         try? puppetPipelineState = device.makeRenderPipelineState(descriptor: puppetDesc)
         
+        // 3. Samplers
+        // Standard Clamp Sampler (For Base Image & Masks)
         let samplerDesc = MTLSamplerDescriptor()
         samplerDesc.minFilter = .linear; samplerDesc.magFilter = .linear
         samplerDesc.sAddressMode = .clampToEdge; samplerDesc.tAddressMode = .clampToEdge
         samplerDesc.normalizedCoordinates = true
         samplerState = device.makeSamplerState(descriptor: samplerDesc)
+        
+        // Repeat Sampler (For Noise, Ripples, Scrolling Patterns)
+        let repeatDesc = MTLSamplerDescriptor()
+        repeatDesc.minFilter = .linear; repeatDesc.magFilter = .linear
+        repeatDesc.sAddressMode = .repeat; repeatDesc.tAddressMode = .repeat
+        repeatDesc.normalizedCoordinates = true
+        repeatSamplerState = device.makeSamplerState(descriptor: repeatDesc)
         
         setupDepthStencilStates()
     }
@@ -277,7 +287,10 @@ class Renderer: NSObject, MTKViewDelegate {
         
         encoder.setVertexBytes(&globals, length: MemoryLayout<GlobalUniforms>.size, index: 1)
         encoder.setFragmentBytes(&globals, length: MemoryLayout<GlobalUniforms>.size, index: 1)
-        encoder.setFragmentSamplerState(samplerState, index: 0)
+        
+        // Bind both samplers
+        encoder.setFragmentSamplerState(samplerState, index: 0) // Index 0: Clamp
+        encoder.setFragmentSamplerState(repeatSamplerState, index: 1) // Index 1: Repeat
         
         for obj in renderables {
             if let puppet = obj as? PuppetRenderable {

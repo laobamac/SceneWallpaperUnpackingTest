@@ -68,13 +68,14 @@ class RenderableObject {
         if count > 0 {
             encoder.setFragmentBytes(&currentEffects, length: MemoryLayout<EffectParams>.size * effects.count, index: 3)
         } else {
-             var dummy = EffectParams(type: 0, maskIndex: 0, speed: 0, scale: 0, strength: 0, exponent: 0, direction: .zero, bounds: .zero, friction: .zero)
+             var dummy = EffectParams(type: 0, maskIndex: 0, speed: 0, scale: 0, strength: 0, exponent: 0, direction: .zero, bounds: .zero, friction: .zero, color: .zero)
              encoder.setFragmentBytes(&dummy, length: MemoryLayout<EffectParams>.size, index: 3)
         }
         encoder.setFragmentBytes(&count, length: MemoryLayout<Int32>.size, index: 4)
         
         encoder.setFragmentTexture(texture, index: 0)
         for (i, mask) in masks.enumerated() {
+            // Safe unwrap: if mask is nil, setFragmentTexture(nil) effectively clears it
             if i < 8 { encoder.setFragmentTexture(mask, index: 1 + i) }
         }
         
@@ -127,19 +128,21 @@ class RenderableObject {
             else if fileLower.contains("shake") { type = 3 }
             else if fileLower.contains("scroll") { type = 1 }
             else if fileLower.contains("foliagesway") { type = 4 }
-            else if fileLower.contains("waterripple") { type = 5 } // WaterRipple
+            else if fileLower.contains("waterripple") { type = 5 }
+            else if fileLower.contains("pulse") { type = 6 }
+            else if fileLower.contains("tint") { type = 7 }
             
             if type == 0 { continue }
             
-            if let pass = effect.passes?.first, let constants = pass.constantshadervalues {
-                var param = EffectParams(type: type, maskIndex: -1, speed: 1, scale: 1, strength: 0.1, exponent: 1, direction: .zero, bounds: .zero, friction: .zero)
+            if let pass = effect.passes?.first {
+                var constants = pass.constantshadervalues ?? [:]
+                // Initialize with safe defaults
+                var param = EffectParams(type: type, maskIndex: -1, speed: 1, scale: 1, strength: 0.1, exponent: 1, direction: .zero, bounds: .zero, friction: .zero, color: SIMD4<Float>(0,0,0,1))
                 
-                // Helper to get value with prefix fallback
                 func getVal(_ key: String) -> Float {
                     if let v = constants[key] {
                         switch v { case .float(let f): return f; case .string(let s): return (Float(s) ?? 0) }
                     }
-                    // Fallback for ui_editor_properties_ prefix
                     if let v = constants["ui_editor_properties_" + key] {
                         switch v { case .float(let f): return f; case .string(let s): return (Float(s) ?? 0) }
                     }
@@ -150,7 +153,6 @@ class RenderableObject {
                     for key in keys {
                         let v = getVal(key)
                         if v != 0 { return v }
-                        // Check exact match in constants just in case getVal didn't catch it
                         if constants[key] != nil { return v }
                     }
                     return 0
@@ -160,72 +162,80 @@ class RenderableObject {
                     var valStr: String? = nil
                     if let v = constants[key], case .string(let s) = v { valStr = s }
                     else if let v = constants["ui_editor_properties_" + key], case .string(let s) = v { valStr = s }
-                    
                     if let s = valStr {
                         let p = s.components(separatedBy: " ").compactMap{Float($0)}
                         if p.count >= 2 { return SIMD2<Float>(p[0], p[1]) }
                     }
                     return .zero
                 }
+                
+                func getColor(_ key: String) -> SIMD4<Float> {
+                    var valStr: String? = nil
+                    if let v = constants[key], case .string(let s) = v { valStr = s }
+                    if let s = valStr {
+                        let p = s.components(separatedBy: " ").compactMap{Float($0)}
+                        if p.count >= 3 { return SIMD4<Float>(p[0], p[1], p[2], 1) }
+                    }
+                    return SIMD4<Float>(0,0,0,1)
+                }
 
-                // Texture Loading Logic
                 if type == 5 {
-                    // WaterRipple Specific Loading
-                    // Goal: maskTextures must end up as [..., Mask, Normal] so Shader (maskIndex, maskIndex+1) works.
+                    // WaterRipple: Expects [Mask, Normal]
                     var maskPath: String? = nil
                     var normPath: String? = nil
-                    
                     if let texs = pass.textures {
                         if texs.count > 1 { maskPath = texs[1] }
                         if texs.count > 2 { normPath = texs[2] }
                     }
-                    
-                    // Smart Detection for Inverted (Normal/Mask swap)
                     if let m = maskPath, let n = normPath {
                         let mLower = m.lowercased()
                         let nLower = n.lowercased()
-                        let idx1IsNormal = mLower.contains("norm") && !mLower.contains("mask")
-                        let idx2IsMask = nLower.contains("mask")
-                        
-                        if idx1IsNormal && idx2IsMask {
-                            let temp = maskPath
-                            maskPath = normPath
-                            normPath = temp
+                        if (mLower.contains("norm") && !mLower.contains("mask")) && nLower.contains("mask") {
+                            let temp = maskPath; maskPath = normPath; normPath = temp
                         }
                     } else if let m = maskPath, normPath == nil {
                         if m.lowercased().contains("norm") && !m.lowercased().contains("mask") {
-                            normPath = maskPath
-                            maskPath = nil
+                            normPath = maskPath; maskPath = nil
                         }
                     }
-                    
-                    var maskTex: MTLTexture? = nil
-                    var normTex: MTLTexture? = nil
-                    
-                    if let p = maskPath {
-                        let url = resolveTex(path: p)
-                        maskTex = try? textureLoader.newTexture(URL: url, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false])
-                    }
-                    if let p = normPath {
-                        let url = resolveTex(path: p)
-                        normTex = try? textureLoader.newTexture(URL: url, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false])
-                    }
+                    var maskTex: MTLTexture? = nil; var normTex: MTLTexture? = nil
+                    if let p = maskPath { let u = resolveTex(path: p); maskTex = try? textureLoader.newTexture(URL: u, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false]) }
+                    if let p = normPath { let u = resolveTex(path: p); normTex = try? textureLoader.newTexture(URL: u, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false]) }
                     
                     if let m = maskTex, let n = normTex {
-                        maskTextures.append(m)
-                        param.maskIndex = Int32(maskTextures.count - 1)
-                        maskTextures.append(n)
+                        maskTextures.append(m); param.maskIndex = Int32(maskTextures.count - 1); maskTextures.append(n)
                     } else if let m = maskTex {
-                        maskTextures.append(m)
-                        param.maskIndex = Int32(maskTextures.count - 1)
+                        maskTextures.append(m); param.maskIndex = Int32(maskTextures.count - 1)
                     } else if let n = normTex {
-                        maskTextures.append(n)
-                        param.maskIndex = Int32(maskTextures.count) - 2
+                        maskTextures.append(n); param.maskIndex = Int32(maskTextures.count) - 2
+                    }
+                } else if type == 6 {
+                    // Pulse: Expects [Noise, Mask]
+                    var noisePath: String? = nil
+                    var maskPath: String? = nil
+                    if let texs = pass.textures {
+                        if texs.count > 1 { noisePath = texs[1] }
+                        if texs.count > 2 { maskPath = texs[2] }
                     }
                     
+                    var noiseTex: MTLTexture? = nil
+                    var maskTex: MTLTexture? = nil
+                    
+                    if let p = noisePath { let u = resolveTex(path: p); noiseTex = try? textureLoader.newTexture(URL: u, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false]) }
+                    if let p = maskPath { let u = resolveTex(path: p); maskTex = try? textureLoader.newTexture(URL: u, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false]) }
+                    
+                    if let m = maskTex {
+                        if let n = noiseTex {
+                            maskTextures.append(n); param.maskIndex = Int32(maskTextures.count - 1); maskTextures.append(m)
+                        } else {
+                            // FIX: Do NOT reuse mask as noise. Append nil instead.
+                            // This stops "drifting artifacts". Noise will be 0 (black).
+                            maskTextures.append(nil); param.maskIndex = Int32(maskTextures.count - 1); maskTextures.append(m)
+                        }
+                    } else {
+                        param.maskIndex = -1
+                    }
                 } else {
-                    // Generic Loading (Scroll, Shake, Foliage)
-                    // Convention: textures[1] = Mask
                     if let masks = pass.textures, masks.count > 1, let maskPath = masks[1] {
                         let maskURL = resolveTex(path: maskPath)
                         if let maskTex = try? textureLoader.newTexture(URL: maskURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false]) {
@@ -235,12 +245,21 @@ class RenderableObject {
                     }
                 }
                 
-                // Parameter Parsing
                 if type == 2 { // WaterWave
                     param.speed = getFirstVal(["speed", "animationspeed"])
-                    param.scale = getVal("scale")
-                    param.strength = getVal("strength")
-                    param.exponent = getVal("exponent")
+                    
+                    let scaleVal = getVal("scale")
+                    if scaleVal == 0 {
+                        param.scale = 0
+                        param.strength = 0
+                    } else {
+                        param.scale = scaleVal
+                        param.strength = getVal("strength")
+                    }
+                    
+                    let expVal = getVal("exponent")
+                    param.exponent = (expVal == 0) ? 1.0 : expVal
+                    
                     let dirVal = getVal("direction")
                     param.direction = SIMD2<Float>(sin(dirVal), cos(dirVal))
                 } else if type == 1 { // Scroll
@@ -248,9 +267,6 @@ class RenderableObject {
                 } else if type == 3 { // Shake
                     param.speed = getVal("speed")
                     param.strength = getVal("strength")
-                    param.bounds = getVec2("bounds")
-                    param.friction = getVec2("friction")
-                    // Default direction to vertical (0, 1) for Pulse/Blink if not specified by Flow map (which we approximate here)
                     param.direction = SIMD2<Float>(0, 1)
                 } else if type == 4 { // FoliageSway
                     param.speed = getVal("speeduv")
@@ -267,7 +283,17 @@ class RenderableObject {
                     let dirVal = getFirstVal(["scrolldirection", "direction", "angle"])
                     param.direction = SIMD2<Float>(sin(dirVal), cos(dirVal))
                     param.friction.x = getFirstVal(["scrollspeed"])
+                } else if type == 6 { // Pulse
+                    param.speed = getVal("noisespeed")
+                    param.strength = getFirstVal(["noiseamount", "amount"])
+                    param.bounds.x = getVal("amount")
+                    param.color = getColor("tinthigh")
+                    param.exponent = getVal("phase")
+                } else if type == 7 { // Tint
+                    param.color = getColor("color")
+                    param.strength = getFirstVal(["alpha", "strength"])
                 }
+                
                 effectParams.append(param)
             }
         }

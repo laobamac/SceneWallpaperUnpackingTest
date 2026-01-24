@@ -47,6 +47,7 @@ struct EffectParams {
     float2 direction;
     float2 bounds;
     float2 friction;
+    float4 color;
 };
 
 enum EffectType {
@@ -55,7 +56,9 @@ enum EffectType {
     EffectTypeWaterWave = 2,
     EffectTypeShake = 3,
     EffectTypeFoliageSway = 4,
-    EffectTypeWaterRipple = 5
+    EffectTypeWaterRipple = 5,
+    EffectTypePulse = 6,
+    EffectTypeTint = 7
 };
 
 vertex VertexOut vertex_main(VertexIn in [[stage_in]],
@@ -76,7 +79,6 @@ vertex VertexOut vertex_puppet(PuppetVertexIn in [[stage_in]],
 {
     VertexOut out;
     
-    // Skinning
     float4x4 skinMatrix = float4x4(0.0);
     bool hasBones = false;
     for (int i = 0; i < 4; i++) {
@@ -97,10 +99,8 @@ vertex VertexOut vertex_puppet(PuppetVertexIn in [[stage_in]],
     float4 worldPos = object.modelMatrix * localPos;
     
     out.position = globals.projectionMatrix * globals.viewMatrix * worldPos;
-    
     out.texCoord = in.texCoord;
     out.localCoord = in.texCoord - 0.5;
-    
     return out;
 }
 
@@ -111,11 +111,14 @@ fragment float4 fragment_main(VertexOut in [[stage_in]],
                               constant int &effectCount [[buffer(4)]],
                               texture2d<float> baseTexture [[texture(0)]],
                               array<texture2d<float>, 8> maskTextures [[texture(1)]],
-                              sampler textureSampler [[sampler(0)]]) {
+                              sampler textureSampler [[sampler(0)]], // Index 0: Clamp
+                              sampler repeatSampler [[sampler(1)]])  // Index 1: Repeat (New)
+{
     
     float2 uv = in.texCoord;
     float2 originalUV = uv;
     
+    // Pass 1: UV Distortion Effects
     for (int i = 0; i < effectCount; i++) {
         EffectParams e = effects[i];
         if (e.type == EffectTypeScroll) {
@@ -130,40 +133,16 @@ fragment float4 fragment_main(VertexOut in [[stage_in]],
             float2 dir = e.direction;
             float distance = globals.time * e.speed + dot(uv, dir) * e.scale;
             float val = pow(abs(sin(distance)), e.exponent) * sign(sin(distance));
-            uv += val * float2(dir.y, -dir.x) * e.strength * mask * 0.5;
+            uv += val * float2(dir.y, -dir.x) * e.strength * mask * 0.05;
         } else if (e.type == EffectTypeShake) {
-            // Updated Shake Logic (Pulse / Blink support)
             float mask = 1.0;
             if (e.maskIndex >= 0 && e.maskIndex < 8) {
                 mask = maskTextures[e.maskIndex].sample(textureSampler, originalUV).r;
             }
-            
-            // Standard WE Shake uses a sine wave + bounds for blinking/breathing
             float t = globals.time * e.speed;
-            // Normalize sine to 0..1 range
-            float sineVal = (sin(t) + 1.0) * 0.5;
-            
-            // Apply Bounds (Thresholding)
-            // bounds.x = min, bounds.y = max. shader logic: (val - min) / (max - min)
-            float bMin = e.bounds.x;
-            float bMax = e.bounds.y;
-            float range = bMax - bMin;
-            if (range < 0.001) range = 1.0; // Prevent div by zero, default to full range
-            
-            float val = saturate((sineVal - bMin) / range);
-            
-            // Direction Logic
-            // If direction is zero (missing flow map), default to vertical (0, 1) for standard blink
-            float2 dir = e.direction;
-            if (length(dir) < 0.001) {
-                dir = float2(0.0, 1.0);
-            }
-            
-            // Apply offset
-            uv += dir * val * e.strength * mask * 0.1; // 0.1 scale factor to match visual expectations
-            
+            float2 offset = e.direction * sin(t) * e.strength * mask * 0.1;
+            uv += offset;
         } else if (e.type == EffectTypeFoliageSway) {
-            // FoliageSway
             float mask = 1.0;
             if (e.maskIndex >= 0 && e.maskIndex < 8) {
                 mask = maskTextures[e.maskIndex].sample(textureSampler, originalUV).r;
@@ -171,36 +150,57 @@ fragment float4 fragment_main(VertexOut in [[stage_in]],
             float t = globals.time * e.speed;
             float spatial = (originalUV.x + originalUV.y) / max(e.scale, 0.001);
             float val = sin(t + spatial + e.exponent);
-            
             uv += e.direction * val * e.strength * mask * 0.005;
         } else if (e.type == EffectTypeWaterRipple) {
-            // WaterRipple Logic
             float mask = 1.0;
             if (e.maskIndex >= 0 && e.maskIndex < 8) {
                 mask = maskTextures[e.maskIndex].sample(textureSampler, originalUV).r;
             }
-            
             float3 normal = float3(0.5, 0.5, 1.0);
             int normalIdx = e.maskIndex + 1;
-            
             if (normalIdx >= 0 && normalIdx < 8) {
                 float activeSpeed = e.speed + e.friction.x;
                 float2 scroll = e.direction * globals.time * activeSpeed;
                 float2 normalUV = originalUV * e.scale + scroll;
-                normal = maskTextures[normalIdx].sample(textureSampler, normalUV).rgb;
+                // FIX: Use repeatSampler so the ripple pattern tiles infinitely
+                normal = maskTextures[normalIdx].sample(repeatSampler, normalUV).rgb;
             }
-            
             float2 offset = (normal.xy * 2.0 - 1.0) * e.strength * mask * 0.1;
             uv += offset;
         }
     }
     
     float4 color = baseTexture.sample(textureSampler, uv);
+    
+    // Pass 2: Color Modification Effects
+    for (int i = 0; i < effectCount; i++) {
+        EffectParams e = effects[i];
+        if (e.type == EffectTypePulse) {
+            float mask = 0.0;
+            int maskIdx = e.maskIndex + 1;
+            if (maskIdx >= 0 && maskIdx < 8) {
+                mask = maskTextures[maskIdx].sample(textureSampler, originalUV).r;
+            }
+            
+            float noiseVal = 0.5;
+            if (e.maskIndex >= 0 && e.maskIndex < 8) {
+                float2 noiseUV = originalUV + globals.time * e.speed;
+                // FIX: Use repeatSampler so the noise pattern tiles infinitely
+                noiseVal = maskTextures[e.maskIndex].sample(repeatSampler, noiseUV).r;
+            }
+            
+            float pulse = e.bounds.x + noiseVal * e.strength;
+            float phase = sin(globals.time + e.exponent);
+            
+            color.rgb += e.color.rgb * pulse * mask * e.color.a;
+            
+        } else if (e.type == EffectTypeTint) {
+            color.rgb = mix(color.rgb, e.color.rgb, e.strength);
+        }
+    }
+    
     color *= object.color;
-    
     color.a *= object.alpha;
-    
-    if (color.a < 0.01) discard_fragment();
     
     return color;
 }
