@@ -261,9 +261,21 @@ class Renderer: NSObject, MTKViewDelegate {
     }
     
     func resolveTextureURL(base: URL, rawPath: String) -> URL {
-        let directURL = base.appendingPathComponent("materials/\(rawPath).png")
-        if FileManager.default.fileExists(atPath: directURL.path) { return directURL }
+        let extensions = ["png", "jpg", "jpeg", "tga", "bmp"]
         let fileName = URL(fileURLWithPath: rawPath).lastPathComponent
+            
+        for ext in extensions {
+            let directURL = base.appendingPathComponent("materials/\(rawPath).\(ext)")
+            if FileManager.default.fileExists(atPath: directURL.path) {
+                return directURL
+            }
+                
+            let flatURL = base.appendingPathComponent("materials/\(fileName).\(ext)")
+            if FileManager.default.fileExists(atPath: flatURL.path) {
+                return flatURL
+            }
+        }
+        
         return base.appendingPathComponent("materials/\(fileName).png")
     }
     
