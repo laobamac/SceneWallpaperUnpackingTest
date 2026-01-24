@@ -117,8 +117,7 @@ fragment float4 fragment_main(VertexOut in [[stage_in]],
     
     float2 uv = in.texCoord;
     float2 originalUV = uv;
-    
-    // Pass 1: UV Distortion Effects
+
     for (int i = 0; i < effectCount; i++) {
         EffectParams e = effects[i];
         if (e.type == EffectTypeScroll) {
@@ -133,7 +132,7 @@ fragment float4 fragment_main(VertexOut in [[stage_in]],
             float2 dir = e.direction;
             float distance = globals.time * e.speed + dot(uv, dir) * e.scale;
             float val = pow(abs(sin(distance)), e.exponent) * sign(sin(distance));
-            uv += val * float2(dir.y, -dir.x) * e.strength * mask * 0.05;
+            uv += val * float2(dir.y, -dir.x) * e.strength * mask * 0.03;
         } else if (e.type == EffectTypeShake) {
             float mask = 1.0;
             if (e.maskIndex >= 0 && e.maskIndex < 8) {
@@ -162,7 +161,6 @@ fragment float4 fragment_main(VertexOut in [[stage_in]],
                 float activeSpeed = e.speed + e.friction.x;
                 float2 scroll = e.direction * globals.time * activeSpeed;
                 float2 normalUV = originalUV * e.scale + scroll;
-                // FIX: Use repeatSampler so the ripple pattern tiles infinitely
                 normal = maskTextures[normalIdx].sample(repeatSampler, normalUV).rgb;
             }
             float2 offset = (normal.xy * 2.0 - 1.0) * e.strength * mask * 0.1;
@@ -172,7 +170,6 @@ fragment float4 fragment_main(VertexOut in [[stage_in]],
     
     float4 color = baseTexture.sample(textureSampler, uv);
     
-    // Pass 2: Color Modification Effects
     for (int i = 0; i < effectCount; i++) {
         EffectParams e = effects[i];
         if (e.type == EffectTypePulse) {
@@ -185,7 +182,6 @@ fragment float4 fragment_main(VertexOut in [[stage_in]],
             float noiseVal = 0.5;
             if (e.maskIndex >= 0 && e.maskIndex < 8) {
                 float2 noiseUV = originalUV + globals.time * e.speed;
-                // FIX: Use repeatSampler so the noise pattern tiles infinitely
                 noiseVal = maskTextures[e.maskIndex].sample(repeatSampler, noiseUV).r;
             }
             

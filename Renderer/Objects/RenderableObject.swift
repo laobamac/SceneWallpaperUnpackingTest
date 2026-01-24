@@ -75,7 +75,6 @@ class RenderableObject {
         
         encoder.setFragmentTexture(texture, index: 0)
         for (i, mask) in masks.enumerated() {
-            // Safe unwrap: if mask is nil, setFragmentTexture(nil) effectively clears it
             if i < 8 { encoder.setFragmentTexture(mask, index: 1 + i) }
         }
         
