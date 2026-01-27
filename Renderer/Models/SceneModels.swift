@@ -7,7 +7,6 @@
 
 import Foundation
 
-// MARK: - Scene JSON Structures
 struct SceneRoot: Codable {
     let general: GeneralSettings?
     let objects: [SceneObject]
@@ -111,8 +110,6 @@ struct MaterialPass: Codable {
     let textures: [String]
     let shader: String
 }
-
-// MARK: - Puppet / MDL Data Models
 
 struct PuppetData: Codable {
     let info: PuppetInfo

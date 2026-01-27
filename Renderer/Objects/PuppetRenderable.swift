@@ -12,7 +12,6 @@ class PuppetRenderable: RenderableObject {
     let device: MTLDevice
     let vertexBuffer: MTLBuffer
     
-    // 分层索引缓冲区
     var maskIndexBuffer: MTLBuffer?
     var clippedIndexBuffer: MTLBuffer?
     var overlayIndexBuffer: MTLBuffer?
@@ -34,14 +33,20 @@ class PuppetRenderable: RenderableObject {
     let maskWriteState: MTLDepthStencilState?
     let maskTestState: MTLDepthStencilState?
     
-    init(device: MTLDevice, vertices: [PuppetVertex], indices: [UInt32], triangleBones: [Int],
+    private var lastAnimCycle: Int = -1
+    
+    init?(device: MTLDevice, vertices: [PuppetVertex], indices: [UInt32], triangleBones: [Int],
          skeleton: [PuppetBone], animations: [PuppetAnimation],
          position: SIMD3<Float>, rotation: SIMD3<Float>, size: SIMD2<Float>, scale: SIMD3<Float>,
          texture: MTLTexture, pipeline: MTLRenderPipelineState,
          depthState: MTLDepthStencilState?, maskWriteState: MTLDepthStencilState?, maskTestState: MTLDepthStencilState?, usePixelCoords: Bool) {
         
         self.device = device
-        self.vertexBuffer = device.makeBuffer(bytes: vertices, length: vertices.count * MemoryLayout<PuppetVertex>.stride, options: .storageModeShared)!
+        guard let vb = device.makeBuffer(bytes: vertices, length: vertices.count * MemoryLayout<PuppetVertex>.stride, options: .storageModeShared) else {
+            Logger.error("Failed to create vertex buffer for Puppet")
+            return nil
+        }
+        self.vertexBuffer = vb
         
         self.usePixelCoords = usePixelCoords
         self.skeleton = skeleton
@@ -50,7 +55,11 @@ class PuppetRenderable: RenderableObject {
         self.maskTestState = maskTestState
         
         self.boneMatrices = Array(repeating: matrix_identity_float4x4, count: 100)
-        self.uniformBuffer = device.makeBuffer(length: MemoryLayout<matrix_float4x4>.stride * 100, options: .storageModeShared)!
+        guard let ub = device.makeBuffer(length: MemoryLayout<matrix_float4x4>.stride * 100, options: .storageModeShared) else {
+            Logger.error("Failed to create uniform buffer for Puppet")
+            return nil
+        }
+        self.uniformBuffer = ub
         
         super.init(position: position, rotation: rotation, size: size, scale: scale, texture: texture, pipeline: pipeline, depthState: depthState)
         
@@ -59,11 +68,11 @@ class PuppetRenderable: RenderableObject {
         
         let ptr = uniformBuffer.contents()
         ptr.copyMemory(from: &boneMatrices, byteCount: MemoryLayout<matrix_float4x4>.stride * 100)
+        Logger.debug("PuppetRenderable initialized with \(vertices.count) vertices and \(animations.count) animations")
     }
     
     private func setupIndexBuffers(indices: [UInt32], triangleBones: [Int]) {
         var maskBoneIDs = Set<Int>()
-        // 自动检测 Blink 动画
         for anim in animations {
             for track in anim.tracks {
                 let minScaleY = track.frames.map { $0.s[1] }.min() ?? 1.0
@@ -154,6 +163,15 @@ class PuppetRenderable: RenderableObject {
         let fps = anim.fps > 0 ? anim.fps : 30.0
         let duration = Float(anim.length) / fps
         let t = (duration > 0) ? fmod(time, duration) : 0
+        
+        let currentCycle = (duration > 0) ? Int(time / duration) : 0
+        if currentCycle > lastAnimCycle {
+            if lastAnimCycle != -1 {
+                Logger.log("Animation loop completed for object ID \(id). Cycle: \(currentCycle)")
+            }
+            lastAnimCycle = currentCycle
+        }
+        
         let frameIndex = t * fps
         var localMatrices = Array(repeating: matrix_identity_float4x4, count: skeleton.count)
         
@@ -225,8 +243,8 @@ class PuppetRenderable: RenderableObject {
         }
     }
     
-    // MARK: - Static Parser Helper
     static func parseOBJ(objContent: String, skinning: [PuppetSkinning]) -> ([PuppetVertex], [UInt32], [Int], Float) {
+        Logger.debug("Parsing OBJ content...")
         var rawPositions: [SIMD3<Float>] = []
         var rawUVs: [SIMD2<Float>] = []
         var finalVertices: [PuppetVertex] = []
@@ -243,6 +261,8 @@ class PuppetRenderable: RenderableObject {
             let cleanLine = line.trimmingCharacters(in: .whitespacesAndNewlines)
             if cleanLine.isEmpty || cleanLine.hasPrefix("#") { continue }
             let parts = cleanLine.components(separatedBy: .whitespaces).filter { !$0.isEmpty }
+            
+            if parts.isEmpty { continue }
             
             if parts[0] == "v" {
                 if parts.count >= 4, let x = Float(parts[1]), let y = Float(parts[2]), let z = Float(parts[3]) {
@@ -309,6 +329,7 @@ class PuppetRenderable: RenderableObject {
                 }
             }
         }
+        Logger.debug("OBJ Parsed: \(finalVertices.count) vertices, \(finalIndices.count) indices")
         return (finalVertices, finalIndices, triangleBoneIndices, maxPos.x - minPos.x)
     }
 }

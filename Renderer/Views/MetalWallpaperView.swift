@@ -27,9 +27,14 @@ struct MetalWallpaperView: NSViewRepresentable {
             mtkView.enableSetNeedsDisplay = false
             mtkView.isPaused = false
             
-            let renderer = Renderer(device: device)
-            context.coordinator.renderer = renderer
-            mtkView.delegate = renderer
+            if let renderer = Renderer(device: device) {
+                context.coordinator.renderer = renderer
+                mtkView.delegate = renderer
+            } else {
+                Logger.error("Failed to initialize Renderer")
+            }
+        } else {
+            Logger.error("System does not support Metal")
         }
         
         return mtkView

@@ -37,6 +37,8 @@ class RenderableObject {
         self.texture = texture
         self.pipeline = pipeline
         self.depthState = depthState
+        
+        Logger.debug("Created RenderableObject. Pos: \(position), Size: \(size)")
     }
     
     var worldMatrix: matrix_float4x4 {
@@ -55,15 +57,13 @@ class RenderableObject {
         
         var objUniforms = ObjectUniforms(modelMatrix: finalModelMatrix, alpha: 1.0, color: SIMD4<Float>(1,1,1,1))
         
-        encoder.setVertexBytes(vertices, length: vertices.count * 4, index: 0)
+        encoder.setVertexBytes(vertices, length: vertices.count * MemoryLayout<Float>.stride, index: 0)
         encoder.setVertexBytes(&objUniforms, length: MemoryLayout<ObjectUniforms>.size, index: 2)
         encoder.setFragmentBytes(&objUniforms, length: MemoryLayout<ObjectUniforms>.size, index: 2)
         
         encoder.setFragmentTexture(texture, index: 0)
         encoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
     }
-    
-    // MARK: - Static Parsing Helpers
     
     static func parseTransforms(_ obj: SceneObject) -> (SIMD3<Float>, SIMD3<Float>, SIMD2<Float>, SIMD3<Float>) {
         let originStrs = (obj.origin?.value ?? "0 0 0").components(separatedBy: " ").compactMap { Float($0) }

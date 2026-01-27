@@ -11,13 +11,13 @@ import simd
 class Renderer: NSObject, MTKViewDelegate {
     let device: MTLDevice
     let commandQueue: MTLCommandQueue
-    var pipelineState: MTLRenderPipelineState!
-    var puppetPipelineState: MTLRenderPipelineState!
-    var samplerState: MTLSamplerState!
+    var pipelineState: MTLRenderPipelineState?
+    var puppetPipelineState: MTLRenderPipelineState?
+    var samplerState: MTLSamplerState?
     
-    var depthStencilState: MTLDepthStencilState!
-    var maskWriteState: MTLDepthStencilState!
-    var maskTestState: MTLDepthStencilState!
+    var depthStencilState: MTLDepthStencilState?
+    var maskWriteState: MTLDepthStencilState?
+    var maskTestState: MTLDepthStencilState?
     
     var textureLoader: MTKTextureLoader
     var baseFolder: URL?
@@ -28,17 +28,28 @@ class Renderer: NSObject, MTKViewDelegate {
     
     init?(device: MTLDevice) {
         self.device = device
-        guard let queue = device.makeCommandQueue() else { return nil }
+        guard let queue = device.makeCommandQueue() else {
+            Logger.error("Failed to create command queue")
+            return nil
+        }
         self.commandQueue = queue
         self.textureLoader = MTKTextureLoader(device: device)
         super.init()
-        setupPipeline()
+        
+        do {
+            try setupPipeline()
+            Logger.log("Renderer initialized successfully")
+        } catch {
+            Logger.error("Pipeline setup failed: \(error)")
+            return nil
+        }
     }
     
-    func setupPipeline() {
-        guard let library = device.makeDefaultLibrary() else { return }
+    func setupPipeline() throws {
+        guard let library = device.makeDefaultLibrary() else {
+            throw NSError(domain: "Renderer", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to create default library"])
+        }
         
-        // 1. Standard Pipeline
         let descriptor = MTLRenderPipelineDescriptor()
         descriptor.label = "Standard Pipeline"
         descriptor.vertexFunction = library.makeFunction(name: "vertex_main")
@@ -53,14 +64,19 @@ class Renderer: NSObject, MTKViewDelegate {
         descriptor.stencilAttachmentPixelFormat = .depth32Float_stencil8
         
         let vertexDescriptor = MTLVertexDescriptor()
-        vertexDescriptor.attributes[0].format = .float3; vertexDescriptor.attributes[0].offset = 0; vertexDescriptor.attributes[0].bufferIndex = 0
-        vertexDescriptor.attributes[1].format = .float2; vertexDescriptor.attributes[1].offset = 12; vertexDescriptor.attributes[1].bufferIndex = 0
+        vertexDescriptor.attributes[0].format = .float3
+        vertexDescriptor.attributes[0].offset = 0
+        vertexDescriptor.attributes[0].bufferIndex = 0
+        
+        vertexDescriptor.attributes[1].format = .float2
+        vertexDescriptor.attributes[1].offset = 12
+        vertexDescriptor.attributes[1].bufferIndex = 0
+        
         vertexDescriptor.layouts[0].stride = 20
         descriptor.vertexDescriptor = vertexDescriptor
         
-        try? pipelineState = device.makeRenderPipelineState(descriptor: descriptor)
+        pipelineState = try device.makeRenderPipelineState(descriptor: descriptor)
         
-        // 2. Puppet Pipeline
         let puppetDesc = MTLRenderPipelineDescriptor()
         puppetDesc.label = "Puppet Pipeline"
         puppetDesc.vertexFunction = library.makeFunction(name: "vertex_puppet")
@@ -75,17 +91,25 @@ class Renderer: NSObject, MTKViewDelegate {
         puppetDesc.stencilAttachmentPixelFormat = .depth32Float_stencil8
         
         let pvDesc = MTLVertexDescriptor()
-        pvDesc.attributes[0].format = .float3; pvDesc.attributes[0].offset = 0; pvDesc.attributes[0].bufferIndex = 0
-        pvDesc.attributes[1].format = .float2; pvDesc.attributes[1].offset = 16; pvDesc.attributes[1].bufferIndex = 0
-        pvDesc.attributes[2].format = .ushort4; pvDesc.attributes[2].offset = 24; pvDesc.attributes[2].bufferIndex = 0
-        pvDesc.attributes[3].format = .float4; pvDesc.attributes[3].offset = 32; pvDesc.attributes[3].bufferIndex = 0
+        var offset = 0
+        
+        pvDesc.attributes[0].format = .float3; pvDesc.attributes[0].offset = offset; pvDesc.attributes[0].bufferIndex = 0
+        offset += 16
+        
+        pvDesc.attributes[1].format = .float2; pvDesc.attributes[1].offset = offset; pvDesc.attributes[1].bufferIndex = 0
+        offset += 8
+        
+        pvDesc.attributes[2].format = .ushort4; pvDesc.attributes[2].offset = offset; pvDesc.attributes[2].bufferIndex = 0
+        offset += 8
+        
+        pvDesc.attributes[3].format = .float4; pvDesc.attributes[3].offset = offset; pvDesc.attributes[3].bufferIndex = 0
+        offset += 16
+        
         pvDesc.layouts[0].stride = 48
         puppetDesc.vertexDescriptor = pvDesc
         
-        try? puppetPipelineState = device.makeRenderPipelineState(descriptor: puppetDesc)
+        puppetPipelineState = try device.makeRenderPipelineState(descriptor: puppetDesc)
         
-        // 3. Samplers
-        // Standard Clamp Sampler (For Base Image & Masks)
         let samplerDesc = MTLSamplerDescriptor()
         samplerDesc.minFilter = .linear; samplerDesc.magFilter = .linear
         samplerDesc.sAddressMode = .clampToEdge; samplerDesc.tAddressMode = .clampToEdge
@@ -127,7 +151,7 @@ class Renderer: NSObject, MTKViewDelegate {
     }
     
     func loadScene(folder: URL) {
-        print("=== Loading Scene: \(folder.lastPathComponent) ===")
+        Logger.log("=== Loading Scene: \(folder.lastPathComponent) ===")
         let secured = folder.startAccessingSecurityScopedResource()
         defer { if secured { folder.stopAccessingSecurityScopedResource() } }
         
@@ -136,12 +160,15 @@ class Renderer: NSObject, MTKViewDelegate {
         startTime = Date()
         
         let projectURL = folder.appendingPathComponent("project.json")
-        guard let projData = try? Data(contentsOf: projectURL),
-              let projJson = try? JSONSerialization.jsonObject(with: projData, options: []) as? [String: Any],
-              let sceneFile = projJson["file"] as? String else { return }
-        
-        let sceneURL = folder.appendingPathComponent(sceneFile)
         do {
+            let projData = try Data(contentsOf: projectURL)
+            guard let projJson = try JSONSerialization.jsonObject(with: projData, options: []) as? [String: Any],
+                  let sceneFile = projJson["file"] as? String else {
+                Logger.error("Invalid project.json format")
+                return
+            }
+            
+            let sceneURL = folder.appendingPathComponent(sceneFile)
             let sceneData = try Data(contentsOf: sceneURL)
             let sceneRoot = try JSONDecoder().decode(SceneRoot.self, from: sceneData)
             
@@ -171,10 +198,10 @@ class Renderer: NSObject, MTKViewDelegate {
             }
             
             self.renderables = orderedList
-            print("Scene loaded, objects: \(renderables.count)")
+            Logger.log("Scene loaded successfully. Objects count: \(renderables.count)")
             
         } catch {
-            print("Scene JSON Error: \(error)")
+            Logger.error("Failed to load scene: \(error)")
         }
     }
     
@@ -190,62 +217,74 @@ class Renderer: NSObject, MTKViewDelegate {
             return createPuppetRenderable(from: obj, dataURL: puppetDataURL, objURL: puppetObjURL)
         }
         
-        guard let modelData = try? Data(contentsOf: modelURL),
-              let modelDef = try? JSONDecoder().decode(ModelJSON.self, from: modelData),
-              let matPath = modelDef.material else { return nil }
-        
-        let matURL = base.appendingPathComponent(matPath)
-        guard let matData = try? Data(contentsOf: matURL),
-              let matDef = try? JSONDecoder().decode(MaterialJSON.self, from: matData),
-              let firstPass = matDef.passes.first,
-              let texName = firstPass.textures.first else { return nil }
-        
-        let texURL = resolveTextureURL(base: base, rawPath: texName)
-        guard let texture = try? textureLoader.newTexture(URL: texURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false]) else { return nil }
-        
-        let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
-        
-        return RenderableObject(position: pos, rotation: rotation, size: size, scale: scale, texture: texture, pipeline: pipelineState, depthState: depthStencilState)
+        do {
+            let modelData = try Data(contentsOf: modelURL)
+            let modelDef = try JSONDecoder().decode(ModelJSON.self, from: modelData)
+            guard let matPath = modelDef.material else { return nil }
+            
+            let matURL = base.appendingPathComponent(matPath)
+            let matData = try Data(contentsOf: matURL)
+            let matDef = try JSONDecoder().decode(MaterialJSON.self, from: matData)
+            guard let firstPass = matDef.passes.first, let texName = firstPass.textures.first else { return nil }
+            
+            let texURL = resolveTextureURL(base: base, rawPath: texName)
+            let texture = try textureLoader.newTexture(URL: texURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false])
+            
+            let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
+            
+            guard let pipeline = pipelineState else { return nil }
+            return RenderableObject(position: pos, rotation: rotation, size: size, scale: scale, texture: texture, pipeline: pipeline, depthState: depthStencilState)
+        } catch {
+            Logger.error("Error creating static renderable: \(error)")
+            return nil
+        }
     }
     
     func createPuppetRenderable(from obj: SceneObject, dataURL: URL, objURL: URL) -> RenderableObject? {
-        guard let jsonData = try? Data(contentsOf: dataURL),
-              let puppetData = try? JSONDecoder().decode(PuppetData.self, from: jsonData),
-              let objContent = try? String(contentsOf: objURL, encoding: .utf8) else { return nil }
-        
-        guard let matFile = puppetData.info.material_file, let base = baseFolder else { return nil }
-        let matURL = base.appendingPathComponent(matFile)
-        guard let matData = try? Data(contentsOf: matURL),
-              let matDef = try? JSONDecoder().decode(MaterialJSON.self, from: matData),
-              let firstPass = matDef.passes.first,
-              let texName = firstPass.textures.first else { return nil }
-        
-        let texURL = resolveTextureURL(base: base, rawPath: texName)
-        guard let texture = try? textureLoader.newTexture(URL: texURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false]) else { return nil }
+        do {
+            let jsonData = try Data(contentsOf: dataURL)
+            let puppetData = try JSONDecoder().decode(PuppetData.self, from: jsonData)
+            let objContent = try String(contentsOf: objURL, encoding: .utf8)
+            
+            guard let matFile = puppetData.info.material_file, let base = baseFolder else { return nil }
+            let matURL = base.appendingPathComponent(matFile)
+            let matData = try Data(contentsOf: matURL)
+            let matDef = try JSONDecoder().decode(MaterialJSON.self, from: matData)
+            
+            guard let firstPass = matDef.passes.first, let texName = firstPass.textures.first else { return nil }
+            
+            let texURL = resolveTextureURL(base: base, rawPath: texName)
+            let texture = try textureLoader.newTexture(URL: texURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false])
 
-        let (vertices, indices, triangleBoneIndices, bboxWidth) = PuppetRenderable.parseOBJ(objContent: objContent, skinning: puppetData.skinning)
-        let usePixelCoords = bboxWidth > 2.0
-        
-        let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
-        
-        return PuppetRenderable(
-            device: device,
-            vertices: vertices,
-            indices: indices,
-            triangleBones: triangleBoneIndices,
-            skeleton: puppetData.skeleton,
-            animations: puppetData.animations,
-            position: pos,
-            rotation: rotation,
-            size: size,
-            scale: scale,
-            texture: texture,
-            pipeline: puppetPipelineState,
-            depthState: depthStencilState,
-            maskWriteState: maskWriteState,
-            maskTestState: maskTestState,
-            usePixelCoords: usePixelCoords
-        )
+            let (vertices, indices, triangleBoneIndices, bboxWidth) = PuppetRenderable.parseOBJ(objContent: objContent, skinning: puppetData.skinning)
+            let usePixelCoords = bboxWidth > 2.0
+            
+            let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
+            
+            guard let pipeline = puppetPipelineState else { return nil }
+            
+            return PuppetRenderable(
+                device: device,
+                vertices: vertices,
+                indices: indices,
+                triangleBones: triangleBoneIndices,
+                skeleton: puppetData.skeleton,
+                animations: puppetData.animations,
+                position: pos,
+                rotation: rotation,
+                size: size,
+                scale: scale,
+                texture: texture,
+                pipeline: pipeline,
+                depthState: depthStencilState,
+                maskWriteState: maskWriteState,
+                maskTestState: maskTestState,
+                usePixelCoords: usePixelCoords
+            )
+        } catch {
+            Logger.error("Error creating puppet renderable: \(error)")
+            return nil
+        }
     }
     
     func resolveTextureURL(base: URL, rawPath: String) -> URL {
@@ -270,14 +309,14 @@ class Renderer: NSObject, MTKViewDelegate {
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
     
     func draw(in view: MTKView) {
-        guard let drawable = view.currentDrawable, let descriptor = view.currentRenderPassDescriptor else { return }
+        guard let drawable = view.currentDrawable,
+              let descriptor = view.currentRenderPassDescriptor,
+              let commandBuffer = commandQueue.makeCommandBuffer(),
+              let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor) else { return }
         
         descriptor.colorAttachments[0].clearColor = MTLClearColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
         descriptor.depthAttachment.clearDepth = 1.0
         descriptor.stencilAttachment.clearStencil = 0
-        
-        let commandBuffer = commandQueue.makeCommandBuffer()!
-        let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor)!
         
         encoder.setCullMode(.none)
         
@@ -288,7 +327,9 @@ class Renderer: NSObject, MTKViewDelegate {
         encoder.setVertexBytes(&globals, length: MemoryLayout<GlobalUniforms>.size, index: 1)
         encoder.setFragmentBytes(&globals, length: MemoryLayout<GlobalUniforms>.size, index: 1)
         
-        encoder.setFragmentSamplerState(samplerState, index: 0) // Index 0: Clamp
+        if let sampler = samplerState {
+            encoder.setFragmentSamplerState(sampler, index: 0)
+        }
         
         for obj in renderables {
             if let puppet = obj as? PuppetRenderable {
