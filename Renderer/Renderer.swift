@@ -14,7 +14,6 @@ class Renderer: NSObject, MTKViewDelegate {
     var pipelineState: MTLRenderPipelineState!
     var puppetPipelineState: MTLRenderPipelineState!
     var samplerState: MTLSamplerState!
-    var repeatSamplerState: MTLSamplerState! // New: For scrolling textures
     
     var depthStencilState: MTLDepthStencilState!
     var maskWriteState: MTLDepthStencilState!
@@ -92,13 +91,6 @@ class Renderer: NSObject, MTKViewDelegate {
         samplerDesc.sAddressMode = .clampToEdge; samplerDesc.tAddressMode = .clampToEdge
         samplerDesc.normalizedCoordinates = true
         samplerState = device.makeSamplerState(descriptor: samplerDesc)
-        
-        // Repeat Sampler (For Noise, Ripples, Scrolling Patterns)
-        let repeatDesc = MTLSamplerDescriptor()
-        repeatDesc.minFilter = .linear; repeatDesc.magFilter = .linear
-        repeatDesc.sAddressMode = .repeat; repeatDesc.tAddressMode = .repeat
-        repeatDesc.normalizedCoordinates = true
-        repeatSamplerState = device.makeSamplerState(descriptor: repeatDesc)
         
         setupDepthStencilStates()
     }
@@ -212,9 +204,8 @@ class Renderer: NSObject, MTKViewDelegate {
         guard let texture = try? textureLoader.newTexture(URL: texURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false]) else { return nil }
         
         let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
-        let (effects, masks) = RenderableObject.parseEffects(obj, base: base, textureLoader: textureLoader)
         
-        return RenderableObject(position: pos, rotation: rotation, size: size, scale: scale, texture: texture, effects: effects, masks: masks, pipeline: pipelineState, depthState: depthStencilState)
+        return RenderableObject(position: pos, rotation: rotation, size: size, scale: scale, texture: texture, pipeline: pipelineState, depthState: depthStencilState)
     }
     
     func createPuppetRenderable(from obj: SceneObject, dataURL: URL, objURL: URL) -> RenderableObject? {
@@ -236,7 +227,6 @@ class Renderer: NSObject, MTKViewDelegate {
         let usePixelCoords = bboxWidth > 2.0
         
         let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
-        let (effects, masks) = RenderableObject.parseEffects(obj, base: base, textureLoader: textureLoader)
         
         return PuppetRenderable(
             device: device,
@@ -250,8 +240,6 @@ class Renderer: NSObject, MTKViewDelegate {
             size: size,
             scale: scale,
             texture: texture,
-            effects: effects,
-            masks: masks,
             pipeline: puppetPipelineState,
             depthState: depthStencilState,
             maskWriteState: maskWriteState,
@@ -300,9 +288,7 @@ class Renderer: NSObject, MTKViewDelegate {
         encoder.setVertexBytes(&globals, length: MemoryLayout<GlobalUniforms>.size, index: 1)
         encoder.setFragmentBytes(&globals, length: MemoryLayout<GlobalUniforms>.size, index: 1)
         
-        // Bind both samplers
         encoder.setFragmentSamplerState(samplerState, index: 0) // Index 0: Clamp
-        encoder.setFragmentSamplerState(repeatSamplerState, index: 1) // Index 1: Repeat
         
         for obj in renderables {
             if let puppet = obj as? PuppetRenderable {

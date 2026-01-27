@@ -7,19 +7,6 @@
 
 import simd
 
-struct EffectParams {
-    var type: Int32
-    var maskIndex: Int32
-    var speed: Float
-    var scale: Float
-    var strength: Float
-    var exponent: Float
-    var direction: SIMD2<Float>
-    var bounds: SIMD2<Float>
-    var friction: SIMD2<Float>
-    var color: SIMD4<Float>
-}
-
 struct ObjectUniforms {
     var modelMatrix: matrix_float4x4
     var alpha: Float

@@ -31,7 +31,6 @@ struct SceneObject: Codable {
     let scale: ScriptableValue?
     let angles: ScriptableValue?
     let parent: Int?
-    let effects: [ObjectEffect]?
     let visible: BoolOrObject?
     
     var isVisible: Bool {
@@ -98,36 +97,6 @@ enum BoolOrObject: Codable {
 
 struct VisibilityObject: Codable {
     let value: Bool?
-}
-
-struct ObjectEffect: Codable {
-    let file: String
-    let id: Int?
-    let passes: [EffectPass]?
-}
-
-struct EffectPass: Codable {
-    let constantshadervalues: [String: ShaderValue]?
-    let textures: [String?]?
-}
-
-enum ShaderValue: Codable {
-    case float(Float)
-    case string(String)
-    
-    init(from decoder: Decoder) throws {
-        if let container = try? decoder.singleValueContainer() {
-            if let f = try? container.decode(Float.self) { self = .float(f); return }
-            if let s = try? container.decode(String.self) { self = .string(s); return }
-        }
-        if let container = try? decoder.container(keyedBy: CodingKeys.self) {
-            if let f = try? container.decode(Float.self, forKey: .value) { self = .float(f); return }
-            if let s = try? container.decode(String.self, forKey: .value) { self = .string(s); return }
-        }
-        self = .float(0)
-    }
-    enum CodingKeys: String, CodingKey { case value }
-    func encode(to encoder: Encoder) throws {}
 }
 
 struct ModelJSON: Codable {

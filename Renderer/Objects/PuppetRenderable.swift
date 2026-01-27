@@ -37,7 +37,7 @@ class PuppetRenderable: RenderableObject {
     init(device: MTLDevice, vertices: [PuppetVertex], indices: [UInt32], triangleBones: [Int],
          skeleton: [PuppetBone], animations: [PuppetAnimation],
          position: SIMD3<Float>, rotation: SIMD3<Float>, size: SIMD2<Float>, scale: SIMD3<Float>,
-         texture: MTLTexture, effects: [EffectParams], masks: [MTLTexture?], pipeline: MTLRenderPipelineState,
+         texture: MTLTexture, pipeline: MTLRenderPipelineState,
          depthState: MTLDepthStencilState?, maskWriteState: MTLDepthStencilState?, maskTestState: MTLDepthStencilState?, usePixelCoords: Bool) {
         
         self.device = device
@@ -52,7 +52,7 @@ class PuppetRenderable: RenderableObject {
         self.boneMatrices = Array(repeating: matrix_identity_float4x4, count: 100)
         self.uniformBuffer = device.makeBuffer(length: MemoryLayout<matrix_float4x4>.stride * 100, options: .storageModeShared)!
         
-        super.init(position: position, rotation: rotation, size: size, scale: scale, texture: texture, effects: effects, masks: masks, pipeline: pipeline, depthState: depthState)
+        super.init(position: position, rotation: rotation, size: size, scale: scale, texture: texture, pipeline: pipeline, depthState: depthState)
         
         computeInverseBindMatrices()
         setupIndexBuffers(indices: indices, triangleBones: triangleBones)
@@ -202,8 +202,6 @@ class PuppetRenderable: RenderableObject {
         encoder.setVertexBuffer(uniformBuffer, offset: 0, index: 3)
         encoder.setFragmentBytes(&objUniforms, length: MemoryLayout<ObjectUniforms>.size, index: 2)
         
-        var count: Int32 = 0
-        encoder.setFragmentBytes(&count, length: MemoryLayout<Int32>.size, index: 4)
         encoder.setFragmentTexture(texture, index: 0)
         
         if standardIndexCount > 0, let buf = standardIndexBuffer {
