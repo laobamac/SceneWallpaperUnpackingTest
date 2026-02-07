@@ -19,7 +19,6 @@ class Renderer: NSObject, MTKViewDelegate {
     var maskWriteState: MTLDepthStencilState?
     var maskTestState: MTLDepthStencilState?
     
-    var textureLoader: MTKTextureLoader
     var baseFolder: URL?
     var renderables: [RenderableObject] = []
     
@@ -29,18 +28,16 @@ class Renderer: NSObject, MTKViewDelegate {
     init?(device: MTLDevice) {
         self.device = device
         guard let queue = device.makeCommandQueue() else {
-            Logger.error("Failed to create command queue")
             return nil
         }
         self.commandQueue = queue
-        self.textureLoader = MTKTextureLoader(device: device)
         super.init()
+        
+        TextureManager.shared.setup(device: device)
         
         do {
             try setupPipeline()
-            Logger.log("Renderer initialized successfully")
         } catch {
-            Logger.error("Pipeline setup failed: \(error)")
             return nil
         }
     }
@@ -150,13 +147,13 @@ class Renderer: NSObject, MTKViewDelegate {
         maskTestState = device.makeDepthStencilState(descriptor: maskTestDesc)
     }
     
-    func loadScene(folder: URL) {
-        Logger.log("=== Loading Scene: \(folder.lastPathComponent) ===")
+    func loadScene(folder: URL) async {
         let secured = folder.startAccessingSecurityScopedResource()
         defer { if secured { folder.stopAccessingSecurityScopedResource() } }
         
         self.baseFolder = folder
         renderables.removeAll()
+        TextureManager.shared.clear()
         startTime = Date()
         
         let projectURL = folder.appendingPathComponent("project.json")
@@ -164,7 +161,6 @@ class Renderer: NSObject, MTKViewDelegate {
             let projData = try Data(contentsOf: projectURL)
             guard let projJson = try JSONSerialization.jsonObject(with: projData, options: []) as? [String: Any],
                   let sceneFile = projJson["file"] as? String else {
-                Logger.error("Invalid project.json format")
                 return
             }
             
@@ -179,17 +175,25 @@ class Renderer: NSObject, MTKViewDelegate {
             var tempRenderables: [Int: RenderableObject] = [:]
             var orderedList: [RenderableObject] = []
             
-            for obj in sceneRoot.objects {
-                if !obj.isVisible { continue }
-                if let renderable = createRenderable(from: obj) {
-                    if let id = obj.id {
-                        tempRenderables[id] = renderable
-                        renderable.id = id
+            await withTaskGroup(of: RenderableObject?.self) { group in
+                for obj in sceneRoot.objects {
+                    if !obj.isVisible { continue }
+                    group.addTask {
+                        return await self.createRenderable(from: obj)
                     }
-                    renderable.parentId = obj.parent
-                    orderedList.append(renderable)
+                }
+                
+                for await renderable in group {
+                    if let r = renderable {
+                        if r.id != -1 {
+                            tempRenderables[r.id] = r
+                        }
+                        orderedList.append(r)
+                    }
                 }
             }
+            
+            orderedList.sort { ($0.id) < ($1.id) }
             
             for renderable in orderedList {
                 if let pid = renderable.parentId, let parentObj = tempRenderables[pid] {
@@ -198,14 +202,13 @@ class Renderer: NSObject, MTKViewDelegate {
             }
             
             self.renderables = orderedList
-            Logger.log("Scene loaded successfully. Objects count: \(renderables.count)")
             
         } catch {
-            Logger.error("Failed to load scene: \(error)")
+            print("Failed to load scene: \(error)")
         }
     }
     
-    func createRenderable(from obj: SceneObject) -> RenderableObject? {
+    func createRenderable(from obj: SceneObject) async -> RenderableObject? {
         guard let imagePath = obj.image, let base = baseFolder else { return nil }
         let modelURL = base.appendingPathComponent(imagePath)
         let fileName = modelURL.deletingPathExtension().lastPathComponent
@@ -214,7 +217,7 @@ class Renderer: NSObject, MTKViewDelegate {
         let puppetObjURL = modelURL.deletingLastPathComponent().appendingPathComponent("\(fileName)_puppet.obj")
         
         if FileManager.default.fileExists(atPath: puppetDataURL.path) {
-            return createPuppetRenderable(from: obj, dataURL: puppetDataURL, objURL: puppetObjURL)
+            return await createPuppetRenderable(from: obj, dataURL: puppetDataURL, objURL: puppetObjURL)
         }
         
         do {
@@ -228,19 +231,21 @@ class Renderer: NSObject, MTKViewDelegate {
             guard let firstPass = matDef.passes.first, let texName = firstPass.textures.first else { return nil }
             
             let texURL = resolveTextureURL(base: base, rawPath: texName)
-            let texture = try textureLoader.newTexture(URL: texURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false])
+            let texture = try await TextureManager.shared.loadTexture(url: texURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false])
             
             let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
             
             guard let pipeline = pipelineState else { return nil }
-            return RenderableObject(position: pos, rotation: rotation, size: size, scale: scale, texture: texture, pipeline: pipeline, depthState: depthStencilState)
+            let renderable = RenderableObject(position: pos, rotation: rotation, size: size, scale: scale, texture: texture, pipeline: pipeline, depthState: depthStencilState)
+            if let id = obj.id { renderable.id = id }
+            renderable.parentId = obj.parent
+            return renderable
         } catch {
-            Logger.error("Error creating static renderable: \(error)")
             return nil
         }
     }
     
-    func createPuppetRenderable(from obj: SceneObject, dataURL: URL, objURL: URL) -> RenderableObject? {
+    func createPuppetRenderable(from obj: SceneObject, dataURL: URL, objURL: URL) async -> RenderableObject? {
         do {
             let jsonData = try Data(contentsOf: dataURL)
             let puppetData = try JSONDecoder().decode(PuppetData.self, from: jsonData)
@@ -254,7 +259,7 @@ class Renderer: NSObject, MTKViewDelegate {
             guard let firstPass = matDef.passes.first, let texName = firstPass.textures.first else { return nil }
             
             let texURL = resolveTextureURL(base: base, rawPath: texName)
-            let texture = try textureLoader.newTexture(URL: texURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false])
+            let texture = try await TextureManager.shared.loadTexture(url: texURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false])
 
             let (vertices, indices, triangleBoneIndices, bboxWidth) = PuppetRenderable.parseOBJ(objContent: objContent, skinning: puppetData.skinning)
             let usePixelCoords = bboxWidth > 2.0
@@ -263,7 +268,7 @@ class Renderer: NSObject, MTKViewDelegate {
             
             guard let pipeline = puppetPipelineState else { return nil }
             
-            return PuppetRenderable(
+            let renderable = PuppetRenderable(
                 device: device,
                 vertices: vertices,
                 indices: indices,
@@ -281,14 +286,16 @@ class Renderer: NSObject, MTKViewDelegate {
                 maskTestState: maskTestState,
                 usePixelCoords: usePixelCoords
             )
+            if let id = obj.id { renderable?.id = id }
+            renderable?.parentId = obj.parent
+            return renderable
         } catch {
-            Logger.error("Error creating puppet renderable: \(error)")
             return nil
         }
     }
     
     func resolveTextureURL(base: URL, rawPath: String) -> URL {
-        let extensions = ["png", "jpg", "jpeg", "tga", "bmp"]
+        let extensions = ["png", "webp", "tga", "mp4"]
         let fileName = URL(fileURLWithPath: rawPath).lastPathComponent
             
         for ext in extensions {
