@@ -1,36 +1,19 @@
-#include <metal_stdlib>
-using namespace metal;
+//
+//  Puppet.metal
+//  Renderer
+//
+//  Created by laobamac on 2026/2/7.
+//
 
-struct VertexIn {
-    float3 position [[attribute(0)]];
-    float2 texCoord [[attribute(1)]];
-};
+#include <metal_stdlib>
+#include "Common.h"
+using namespace metal;
 
 struct PuppetVertexIn {
     float3 position  [[attribute(0)]];
     float2 texCoord  [[attribute(1)]];
     ushort4 joints   [[attribute(2)]];
     float4 weights   [[attribute(3)]];
-};
-
-struct VertexOut {
-    float4 position [[position]];
-    float2 texCoord;
-    float2 localCoord;
-};
-
-struct GlobalUniforms {
-    float4x4 projectionMatrix;
-    float4x4 viewMatrix;
-    float time;
-    float3 padding;
-};
-
-struct ObjectUniforms {
-    float4x4 modelMatrix;
-    float alpha;
-    float4 color;
-    float4 padding;
 };
 
 struct PuppetUniforms {
@@ -78,16 +61,4 @@ vertex VertexOut vertex_puppet(PuppetVertexIn in [[stage_in]],
     out.texCoord = in.texCoord;
     out.localCoord = in.texCoord - 0.5;
     return out;
-}
-
-fragment float4 fragment_main(VertexOut in [[stage_in]],
-                              constant GlobalUniforms &globals [[buffer(1)]],
-                              constant ObjectUniforms &object [[buffer(2)]],
-                              texture2d<float> baseTexture [[texture(0)]],
-                              sampler textureSampler [[sampler(0)]])
-{
-    float4 color = baseTexture.sample(textureSampler, in.texCoord);
-    color *= object.color;
-    color.a *= object.alpha;
-    return color;
 }
