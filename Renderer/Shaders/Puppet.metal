@@ -6,7 +6,7 @@
 //
 
 #include <metal_stdlib>
-#include "Common.h"
+#include "Puppet.h"
 using namespace metal;
 
 struct PuppetVertexIn {

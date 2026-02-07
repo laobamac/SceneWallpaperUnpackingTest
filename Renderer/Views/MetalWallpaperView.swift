@@ -30,11 +30,7 @@ struct MetalWallpaperView: NSViewRepresentable {
             if let renderer = Renderer(device: device) {
                 context.coordinator.renderer = renderer
                 mtkView.delegate = renderer
-            } else {
-                Logger.error("Failed to initialize Renderer")
             }
-        } else {
-            Logger.error("System does not support Metal")
         }
         
         return mtkView
@@ -42,8 +38,10 @@ struct MetalWallpaperView: NSViewRepresentable {
 
     func updateNSView(_ nsView: MTKView, context: Context) {
         if let url = folderURL, url != context.coordinator.loadedURL {
-            context.coordinator.renderer?.loadScene(folder: url)
             context.coordinator.loadedURL = url
+            Task {
+                await context.coordinator.renderer?.loadScene(folder: url)
+            }
         }
     }
 

@@ -1,12 +1,12 @@
 //
-//  Common.h
+//  Puppet.h
 //  Renderer
 //
 //  Created by laobamac on 2026/1/29.
 //
 
-#ifndef Common_H
-#define Common_H
+#ifndef Puppet_H
+#define Puppet_H
 
 #include <metal_stdlib>
 using namespace metal;
@@ -48,4 +48,4 @@ fragment float4 fragment_main(VertexOut in [[stage_in]],
     return color;
 }
 
-#endif // !Common_H
+#endif // !Puppet_H

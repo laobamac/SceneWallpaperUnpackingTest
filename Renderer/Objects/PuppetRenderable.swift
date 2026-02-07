@@ -34,6 +34,7 @@ class PuppetRenderable: RenderableObject {
     let maskTestState: MTLDepthStencilState?
     
     private var lastAnimCycle: Int = -1
+    private var boneToTrackIndex: [Int: Int] = [:]
     
     init?(device: MTLDevice, vertices: [PuppetVertex], indices: [UInt32], triangleBones: [Int],
          skeleton: [PuppetBone], animations: [PuppetAnimation],
@@ -43,7 +44,7 @@ class PuppetRenderable: RenderableObject {
         
         self.device = device
         guard let vb = device.makeBuffer(bytes: vertices, length: vertices.count * MemoryLayout<PuppetVertex>.stride, options: .storageModeShared) else {
-            Logger.error("Failed to create vertex buffer for Puppet")
+            Logger.error("Failed to create Puppet Vertex Buffer")
             return nil
         }
         self.vertexBuffer = vb
@@ -56,7 +57,7 @@ class PuppetRenderable: RenderableObject {
         
         self.boneMatrices = Array(repeating: matrix_identity_float4x4, count: 100)
         guard let ub = device.makeBuffer(length: MemoryLayout<matrix_float4x4>.stride * 100, options: .storageModeShared) else {
-            Logger.error("Failed to create uniform buffer for Puppet")
+             Logger.error("Failed to create Puppet Uniform Buffer")
             return nil
         }
         self.uniformBuffer = ub
@@ -66,9 +67,16 @@ class PuppetRenderable: RenderableObject {
         computeInverseBindMatrices()
         setupIndexBuffers(indices: indices, triangleBones: triangleBones)
         
+        if let firstAnim = animations.first {
+            for (index, track) in firstAnim.tracks.enumerated() {
+                boneToTrackIndex[track.track_id] = index
+            }
+        }
+        
         let ptr = uniformBuffer.contents()
         ptr.copyMemory(from: &boneMatrices, byteCount: MemoryLayout<matrix_float4x4>.stride * 100)
-        Logger.debug("PuppetRenderable initialized with \(vertices.count) vertices and \(animations.count) animations")
+        
+        Logger.log("Created PuppetRenderable: \(skeleton.count) bones, \(animations.count) animations, \(vertices.count) vertices")
     }
     
     private func setupIndexBuffers(indices: [UInt32], triangleBones: [Int]) {
@@ -115,6 +123,8 @@ class PuppetRenderable: RenderableObject {
         if !clippedIndices.isEmpty { clippedIndexBuffer = device.makeBuffer(bytes: clippedIndices, length: clippedIndices.count * 4, options: .storageModeShared); clippedIndexCount = clippedIndices.count }
         if !overlayIndices.isEmpty { overlayIndexBuffer = device.makeBuffer(bytes: overlayIndices, length: overlayIndices.count * 4, options: .storageModeShared); overlayIndexCount = overlayIndices.count }
         if !standardIndices.isEmpty { standardIndexBuffer = device.makeBuffer(bytes: standardIndices, length: standardIndices.count * 4, options: .storageModeShared); standardIndexCount = standardIndices.count }
+        
+        Logger.debug("Puppet Indices: Standard=\(standardIndexCount), Mask=\(maskIndexCount), Clipped=\(clippedIndexCount), Overlay=\(overlayIndexCount)")
     }
     
     func getGlobalBindMatrix(boneIndex: Int, localMatrices: [matrix_float4x4]) -> matrix_float4x4 {
@@ -167,7 +177,7 @@ class PuppetRenderable: RenderableObject {
         let currentCycle = (duration > 0) ? Int(time / duration) : 0
         if currentCycle > lastAnimCycle {
             if lastAnimCycle != -1 {
-                Logger.log("Animation loop completed for object ID \(id). Cycle: \(currentCycle)")
+                Logger.log("Animation loop completed. Cycle: \(currentCycle)")
             }
             lastAnimCycle = currentCycle
         }
@@ -177,21 +187,29 @@ class PuppetRenderable: RenderableObject {
         
         for i in 0..<skeleton.count {
             let bone = skeleton[i]
-            if let track = anim.tracks.first(where: { $0.track_id == bone.id }), !track.frames.isEmpty {
-                let totalFrames = track.frames.count
-                let idx0 = Int(frameIndex) % totalFrames
-                let idx1 = (idx0 + 1) % totalFrames
-                let fraction = frameIndex - Float(Int(frameIndex))
-                let k1 = track.frames[idx0]
-                let k2 = track.frames[idx1]
-                let p = mix(SIMD3<Float>(k1.p[0], k1.p[1], k1.p[2]), SIMD3<Float>(k2.p[0], k2.p[1], k2.p[2]), t: fraction)
-                let r = mix(SIMD3<Float>(k1.r[0], k1.r[1], k1.r[2]), SIMD3<Float>(k2.r[0], k2.r[1], k2.r[2]), t: fraction)
-                let s = mix(SIMD3<Float>(k1.s[0], k1.s[1], k1.s[2]), SIMD3<Float>(k2.s[0], k2.s[1], k2.s[2]), t: fraction)
-                let matT = Matrix4x4.translation(x: p.x, y: p.y, z: p.z)
-                let matR = Matrix4x4.fromEuler(r)
-                let matS = Matrix4x4.scale(x: s.x, y: s.y, z: s.z)
-                localMatrices[i] = matT * matR * matS
-            } else {
+            var hasTrack = false
+            
+            if let trackIndex = boneToTrackIndex[bone.id] {
+                let track = anim.tracks[trackIndex]
+                if !track.frames.isEmpty {
+                    hasTrack = true
+                    let totalFrames = track.frames.count
+                    let idx0 = Int(frameIndex) % totalFrames
+                    let idx1 = (idx0 + 1) % totalFrames
+                    let fraction = frameIndex - Float(Int(frameIndex))
+                    let k1 = track.frames[idx0]
+                    let k2 = track.frames[idx1]
+                    let p = mix(SIMD3<Float>(k1.p[0], k1.p[1], k1.p[2]), SIMD3<Float>(k2.p[0], k2.p[1], k2.p[2]), t: fraction)
+                    let r = mix(SIMD3<Float>(k1.r[0], k1.r[1], k1.r[2]), SIMD3<Float>(k2.r[0], k2.r[1], k2.r[2]), t: fraction)
+                    let s = mix(SIMD3<Float>(k1.s[0], k1.s[1], k1.s[2]), SIMD3<Float>(k2.s[0], k2.s[1], k2.s[2]), t: fraction)
+                    let matT = Matrix4x4.translation(x: p.x, y: p.y, z: p.z)
+                    let matR = Matrix4x4.fromEuler(r)
+                    let matS = Matrix4x4.scale(x: s.x, y: s.y, z: s.z)
+                    localMatrices[i] = matT * matR * matS
+                }
+            }
+            
+            if !hasTrack {
                 let m = bone.matrix
                 localMatrices[i] = matrix_float4x4(columns: ( SIMD4<Float>(m[0], m[1], m[2], m[3]), SIMD4<Float>(m[4], m[5], m[6], m[7]), SIMD4<Float>(m[8], m[9], m[10], m[11]), SIMD4<Float>(m[12], m[13], m[14], m[15]) ))
             }
@@ -244,7 +262,7 @@ class PuppetRenderable: RenderableObject {
     }
     
     static func parseOBJ(objContent: String, skinning: [PuppetSkinning]) -> ([PuppetVertex], [UInt32], [Int], Float) {
-        Logger.debug("Parsing OBJ content...")
+        Logger.debug("Parsing OBJ content (size: \(objContent.count))")
         var rawPositions: [SIMD3<Float>] = []
         var rawUVs: [SIMD2<Float>] = []
         var finalVertices: [PuppetVertex] = []
@@ -329,7 +347,6 @@ class PuppetRenderable: RenderableObject {
                 }
             }
         }
-        Logger.debug("OBJ Parsed: \(finalVertices.count) vertices, \(finalIndices.count) indices")
         return (finalVertices, finalIndices, triangleBoneIndices, maxPos.x - minPos.x)
     }
 }
