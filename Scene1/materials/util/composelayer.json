@@ -1,10 +1,10 @@
 {
 	"passes": [{
-		"shader": "genericparticle",
+		"shader": "composelayer",
 		"depthtest": "disabled",
 		"depthwrite": "disabled",
-		"blending": "additive",
+		"blending": "translucent",
 		"cullmode": "nocull",
-		"textures": ["particle/halo"]
+		"textures": ["_rt_FullFrameBuffer"]
 	}]
 }
