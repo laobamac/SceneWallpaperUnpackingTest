@@ -299,7 +299,6 @@ class ParticleSystemRenderable: RenderableObject {
             let minV = MathHelper.parseVec3(op.min?.value ?? "0 0 0")
             let maxV = MathHelper.parseVec3(op.max?.value ?? "0 0 0")
             var vel = MathHelper.randomVec3(min: minV, max: maxV)
-            vel.y = -vel.y
             p.velocity += vel * overrideSpeed
             
         case "colorrandom":
@@ -336,8 +335,6 @@ class ParticleSystemRenderable: RenderableObject {
             var forward = MathHelper.parseVec3(op.forward?.value ?? "0 0 1")
             var right = MathHelper.parseVec3(op.right?.value ?? "1 0 0")
             
-            forward.y = -forward.y
-            right.y = -right.y
             forward = simd_normalize(forward)
             right = simd_normalize(right)
             

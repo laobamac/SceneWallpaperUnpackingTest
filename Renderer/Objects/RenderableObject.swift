@@ -83,9 +83,9 @@ class RenderableObject {
         
         var rotation = SIMD3<Float>(0,0,0)
         if angleStrs.count >= 3 {
-            rotation.x = angleStrs[0] * .pi / 180.0
-            rotation.y = angleStrs[1] * .pi / 180.0
-            rotation.z = angleStrs[2] * .pi / 180.0
+            rotation.x = angleStrs[0]
+            rotation.y = angleStrs[1]
+            rotation.z = angleStrs[2]
         }
         return (pos, rotation, size, scale)
     }
