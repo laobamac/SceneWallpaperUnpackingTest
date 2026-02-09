@@ -30,6 +30,8 @@ struct ParticleChild: Codable {
     let name: String
     let type: String?
     let maxcount: Int?
+    let probability: Float?
+    let count: Int?
 }
 
 struct ParticleControlPoint: Codable {
@@ -52,10 +54,8 @@ struct ParticleEmitter: Codable {
     let flags: Int?
     let controlpoint: Int?
     let sign: String?
-    let minPeriodicDelay: Float?
-    let maxPeriodicDelay: Float?
-    let minPeriodicDuration: Float?
-    let maxPeriodicDuration: Float?
+    let speedmin: Float?
+    let speedmax: Float?
 }
 
 struct ParticleInitializer: Codable {
@@ -70,10 +70,10 @@ struct ParticleInitializer: Codable {
     let speedmax: ScriptableValue?
     let forward: ScriptableValue?
     let right: ScriptableValue?
+    let up: ScriptableValue?
     let phasemin: ScriptableValue?
     let phasemax: ScriptableValue?
-    let count: ScriptableValue?
-    let controlpoint: ScriptableValue?
+    let timescale: ScriptableValue?
 }
 
 struct ParticleOperator: Codable {
@@ -112,8 +112,19 @@ struct ParticleOperator: Codable {
     let centerForce: ScriptableValue?
     let ringPullDistance: ScriptableValue?
     let ringPullForce: ScriptableValue?
-    let flags: Int?
     let offset: ScriptableValue?
+    
+    enum CodingKeys: String, CodingKey {
+        case id, name, gravity, drag, fadeintime, fadeouttime
+        case frequencymax, frequencymin, scalemax, scalemin, phasemin, phasemax
+        case mask, speedmax, speedmin, scale, timescale, threshold, controlpoint, force
+        case startvalue, endvalue, starttime, endtime, origin, axis, offset
+        case speedInner = "speedinner"
+        case speedOuter = "speedouter"
+        case distanceInner = "distanceinner"
+        case distanceOuter = "distanceouter"
+        case ringRadius, ringWidth, centerForce, ringPullDistance, ringPullForce
+    }
 }
 
 struct ParticleRenderer: Codable {

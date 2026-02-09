@@ -44,12 +44,15 @@ class ParticleSystemRenderable: RenderableObject {
         var frame: Float
         var age: Float
         var lifetime: Float
+        
         var initial: InitialState
         var oscillateAlpha: OscillatorState
         var oscillateSize: OscillatorState
         var oscillatePosition: VectorOscillatorState
+        
         var childEmitAccumulators: [Int: Float]
-        var alive: Bool
+        var isNew: Bool
+        var isDead: Bool
         var randomAnimOffset: Float
     }
     
@@ -76,7 +79,9 @@ class ParticleSystemRenderable: RenderableObject {
     
     var childrenSystems: [ParticleSystemRenderable] = []
     var isChildSystem: Bool = false
+    var childType: String = ""
     var selfRate: Float = 0
+    var spawnCount: Int = 1
     
     init?(device: MTLDevice, config: ParticleSystemConfig, texture: AnimatedTexture, position: SIMD3<Float>, rotation: SIMD3<Float>, size: SIMD2<Float>, scale: SIMD3<Float>, pipeline: MTLRenderPipelineState, depthState: MTLDepthStencilState?, overrides: InstanceOverride?) {
         self.device = device
@@ -155,9 +160,11 @@ class ParticleSystemRenderable: RenderableObject {
         return arrayTexture
     }
     
-    func addChild(_ child: ParticleSystemRenderable) {
+    func addChild(_ child: ParticleSystemRenderable, type: String, count: Int = 1) {
         child.isChildSystem = true
+        child.childType = type
         child.parent = self
+        child.spawnCount = count
         self.childrenSystems.append(child)
     }
     
@@ -186,12 +193,17 @@ class ParticleSystemRenderable: RenderableObject {
         }
     }
     
-    func spawnAt(position: SIMD3<Float>) {
+    func spawnAt(position: SIMD3<Float>, count: Int = 1) {
         let effectiveMax = Int(Float(maxCount) * overrideCount)
         if particles.count >= effectiveMax { return }
         
         guard let emitters = config.emitter, let firstEmitter = emitters.first else { return }
-        createParticle(emitter: firstEmitter, overrideOrigin: position)
+        
+        for _ in 0..<count {
+            if particles.count < effectiveMax {
+                createParticle(emitter: firstEmitter, overrideOrigin: position)
+            }
+        }
     }
     
     private func spawnParticles(dt: Float) {
@@ -242,7 +254,8 @@ class ParticleSystemRenderable: RenderableObject {
             oscillateSize: OscillatorState(),
             oscillatePosition: VectorOscillatorState(),
             childEmitAccumulators: [:],
-            alive: true,
+            isNew: true,
+            isDead: false,
             randomAnimOffset: Float.random(in: 0...Float(animatedTexture.duration))
         )
         
@@ -277,9 +290,9 @@ class ParticleSystemRenderable: RenderableObject {
             let minVec = MathHelper.parseVec3(emitter.distancemin?.value ?? "0 0 0")
             let maxVec = MathHelper.parseVec3(emitter.distancemax?.value ?? "0 0 0")
             
-            let x = MathHelper.safeRandomFloat(min: minVec.x, max: maxVec.x) * (Float.random(in: 0...1) > 0.5 ? 1 : -1)
-            let y = MathHelper.safeRandomFloat(min: minVec.y, max: maxVec.y) * (Float.random(in: 0...1) > 0.5 ? 1 : -1)
-            let z = MathHelper.safeRandomFloat(min: minVec.z, max: maxVec.z) * (Float.random(in: 0...1) > 0.5 ? 1 : -1)
+            let x = MathHelper.safeRandomFloat(min: minVec.x, max: maxVec.x)
+            let y = MathHelper.safeRandomFloat(min: minVec.y, max: maxVec.y)
+            let z = MathHelper.safeRandomFloat(min: minVec.z, max: maxVec.z)
             
             randomPos = SIMD3<Float>(x, y, z) * directions
         }
@@ -358,19 +371,20 @@ class ParticleSystemRenderable: RenderableObject {
             let scale = Float(op.scale?.value ?? "1") ?? 1
             let phaseMin = Float(op.phasemin?.value ?? "0") ?? 0
             let phaseMax = Float(op.phasemax?.value ?? "0") ?? 0
+            let timeScale = Float(op.timescale?.value ?? "1") ?? 1
+            
             var forward = MathHelper.parseVec3(op.forward?.value ?? "0 0 1")
-            var right = MathHelper.parseVec3(op.right?.value ?? "1 0 0")
+            let right = MathHelper.parseVec3(op.right?.value ?? "1 0 0")
             
             forward = simd_normalize(forward)
-            right = simd_normalize(right)
             
             let speed = MathHelper.safeRandomFloat(min: speedMin, max: speedMax)
             let phase = MathHelper.safeRandomFloat(min: phaseMin, max: phaseMax)
             
-            let noisePos = MathHelper.randomVec3(min: SIMD3<Float>(repeating: 0), max: SIMD3<Float>(repeating: 10))
-            let samplePos = noisePos + SIMD3<Float>(phase, phase * 0.7, phase * 1.3)
+            var noisePos = p.position * scale
+            noisePos.x += phase
             
-            var result = SimplexNoise.curlNoise(samplePos)
+            var result = SimplexNoise.curlNoise(noisePos)
             let len = simd_length(result)
             if len < 0.0001 {
                 result = forward
@@ -396,7 +410,7 @@ class ParticleSystemRenderable: RenderableObject {
             }
             
             if abs(offset) > 0.0001 {
-                let rot = Matrix4x4.rotationMatrix3x3(angle: -offset, axis: right)
+                let rot = Matrix4x4.rotationMatrix3x3(angle: -offset, axis: simd_normalize(right))
                 result = rot * result
             }
             
@@ -415,7 +429,9 @@ class ParticleSystemRenderable: RenderableObject {
         
         for var p in particles {
             p.age += dt
-            if p.age >= p.lifetime { continue }
+            if p.age >= p.lifetime {
+                p.isDead = true
+            }
             
             for op in operators {
                 switch op.name {
@@ -454,6 +470,29 @@ class ParticleSystemRenderable: RenderableObject {
                         p.alpha = p.initial.alpha
                     }
                     p.oscillateAlpha.base = p.alpha
+                    
+                case "alphachange":
+                    let startVal = Float(op.startvalue?.value ?? "1") ?? 1
+                    let endVal = Float(op.endvalue?.value ?? "0") ?? 0
+                    let startTime = Float(op.starttime?.value ?? "0") ?? 0
+                    let endTime = Float(op.endtime?.value ?? "1") ?? 1
+                    
+                    let life = p.age / p.lifetime
+                    p.alpha = p.initial.alpha * MathHelper.fadeValue(life: life, startTime: startTime, endTime: endTime, startValue: startVal, endValue: endVal)
+                    p.oscillateAlpha.base = p.alpha
+                    
+                case "colorchange":
+                    let startVal = MathHelper.parseVec3(op.startvalue?.value ?? "255 255 255") / 255.0
+                    let endVal = MathHelper.parseVec3(op.endvalue?.value ?? "255 255 255") / 255.0
+                    let startTime = Float(op.starttime?.value ?? "0") ?? 0
+                    let endTime = Float(op.endtime?.value ?? "1") ?? 1
+                    
+                    let life = p.age / p.lifetime
+                    let t = (life - startTime) / (endTime - startTime)
+                    let clampedT = simd_clamp(t, 0, 1)
+                    
+                    let mixedColor = MathHelper.lerpVec3(t: clampedT, a: startVal, b: endVal)
+                    p.color = SIMD4<Float>(mixedColor * overrideColor, p.color.w)
                     
                 case "oscillatealpha":
                     let fMin = Float(op.frequencymin?.value ?? "0") ?? 0
@@ -542,6 +581,36 @@ class ParticleSystemRenderable: RenderableObject {
                         p.velocity += force * overrideSpeed
                     }
                     
+                case "vortex":
+                    let cpIdx = op.controlpoint ?? 0
+                    if cpIdx < 0 || cpIdx >= resolvedControlPointPositions.count { break }
+                    
+                    let offset = MathHelper.parseVec3(op.offset?.value ?? "0 0 0")
+                    let center = resolvedControlPointPositions[cpIdx] + offset
+                    let axis = simd_normalize(MathHelper.parseVec3(op.axis?.value ?? "0 0 1"))
+                    
+                    let distInner = Float(op.distanceInner?.value ?? "500") ?? 500
+                    let distOuter = Float(op.distanceOuter?.value ?? "650") ?? 650
+                    let speedInner = Float(op.speedInner?.value ?? "2500") ?? 2500
+                    let speedOuter = Float(op.speedOuter?.value ?? "0") ?? 0
+                    
+                    let toPart = p.position - center
+                    let dist = simd_length(toPart)
+                    let direct = simd_cross(toPart, axis)
+                    let tangent = simd_normalize(direct)
+                    
+                    var force: Float = 0
+                    if dist < distInner {
+                        force = speedInner
+                    } else if dist > distOuter {
+                        force = speedOuter
+                    } else {
+                        let t = (dist - distInner) / (distOuter - distInner)
+                        force = MathHelper.lerp(t: t, a: speedInner, b: speedOuter)
+                    }
+                    
+                    p.velocity += tangent * force * dt * overrideSpeed
+                    
                 case "sizechange":
                     let start = Float(op.startvalue?.value ?? "1") ?? 1
                     let end = Float(op.endvalue?.value ?? "1") ?? 1
@@ -584,33 +653,32 @@ class ParticleSystemRenderable: RenderableObject {
                     break
                 }
             }
-            alive.append(p)
+            
+            if !p.isDead {
+                alive.append(p)
+            }
+            
+            for (idx, childSys) in childrenSystems.enumerated() {
+                if childSys.childType == "follow" {
+                    var acc = p.childEmitAccumulators[idx] ?? 0
+                    let rate = childSys.selfRate > 0 ? childSys.selfRate : 30.0
+                    acc += rate * dt
+                    while acc >= 1.0 {
+                        acc -= 1.0
+                        childSys.spawnAt(position: p.position)
+                    }
+                    p.childEmitAccumulators[idx] = acc
+                } else if childSys.childType == "spawn" && p.isNew {
+                    childSys.spawnAt(position: p.position, count: childSys.spawnCount)
+                } else if childSys.childType == "death" && p.isDead {
+                    childSys.spawnAt(position: p.position, count: childSys.spawnCount)
+                }
+            }
+            
+            p.isNew = false
         }
         
         particles = alive
-        
-        if let children = config.children {
-            for (idx, childConfig) in children.enumerated() {
-                if idx < childrenSystems.count {
-                    let childSys = childrenSystems[idx]
-                    var rate = childSys.selfRate > 0 ? childSys.selfRate : 30.0
-                    if rate > 40.0 { rate = 40.0 }
-                    
-                    for i in 0..<particles.count {
-                        var acc = particles[i].childEmitAccumulators[idx] ?? 0
-                        acc += rate * dt
-                        
-                        let spawnPos = particles[i].position
-                        
-                        while acc >= 1.0 {
-                            acc -= 1.0
-                            childSys.spawnAt(position: spawnPos)
-                        }
-                        particles[i].childEmitAccumulators[idx] = acc
-                    }
-                }
-            }
-        }
     }
     
     override func draw(encoder: MTLRenderCommandEncoder) {

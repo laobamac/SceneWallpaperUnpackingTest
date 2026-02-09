@@ -109,6 +109,10 @@ struct MathHelper {
         return a + t * (b - a)
     }
     
+    static func lerpVec3(t: Float, a: SIMD3<Float>, b: SIMD3<Float>) -> SIMD3<Float> {
+        return a + (b - a) * t
+    }
+    
     static func fadeValue(life: Float, startTime: Float, endTime: Float, startValue: Float, endValue: Float) -> Float {
         if life <= startTime { return startValue }
         if life >= endTime { return endValue }

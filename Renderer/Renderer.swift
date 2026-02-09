@@ -60,6 +60,7 @@ class Renderer: NSObject, MTKViewDelegate {
             throw NSError(domain: "Renderer", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to create default library"])
         }
         
+        // Standard Pipeline
         let descriptor = MTLRenderPipelineDescriptor()
         descriptor.label = "Standard Pipeline"
         descriptor.vertexFunction = library.makeFunction(name: "vertex_main")
@@ -81,6 +82,7 @@ class Renderer: NSObject, MTKViewDelegate {
         
         pipelineState = try device.makeRenderPipelineState(descriptor: descriptor)
         
+        // Puppet Pipeline
         let puppetDesc = MTLRenderPipelineDescriptor()
         puppetDesc.label = "Puppet Pipeline"
         puppetDesc.vertexFunction = library.makeFunction(name: "vertex_puppet")
@@ -104,6 +106,7 @@ class Renderer: NSObject, MTKViewDelegate {
         puppetDesc.vertexDescriptor = pvDesc
         puppetPipelineState = try device.makeRenderPipelineState(descriptor: puppetDesc)
         
+        // Particle Pipelines
         let particleBase = MTLRenderPipelineDescriptor()
         particleBase.label = "Particle Base"
         particleBase.vertexFunction = library.makeFunction(name: "vertex_particle")
@@ -113,6 +116,7 @@ class Renderer: NSObject, MTKViewDelegate {
         particleBase.stencilAttachmentPixelFormat = .depth32Float_stencil8
         particleBase.colorAttachments[0].isBlendingEnabled = true
         
+        // Alpha Blending (Normal)
         let alphaDesc = particleBase.copy() as! MTLRenderPipelineDescriptor
         alphaDesc.label = "Particle Alpha"
         alphaDesc.colorAttachments[0].rgbBlendOperation = .add
@@ -121,6 +125,7 @@ class Renderer: NSObject, MTKViewDelegate {
         alphaDesc.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
         particleAlphaPipeline = try device.makeRenderPipelineState(descriptor: alphaDesc)
         
+        // Additive Blending
         let addDesc = particleBase.copy() as! MTLRenderPipelineDescriptor
         addDesc.label = "Particle Additive"
         addDesc.colorAttachments[0].rgbBlendOperation = .add
@@ -129,6 +134,7 @@ class Renderer: NSObject, MTKViewDelegate {
         addDesc.colorAttachments[0].destinationRGBBlendFactor = .one
         particleAdditivePipeline = try device.makeRenderPipelineState(descriptor: addDesc)
         
+        // Sampler
         let samplerDesc = MTLSamplerDescriptor()
         samplerDesc.minFilter = .linear; samplerDesc.magFilter = .linear
         samplerDesc.sAddressMode = .clampToEdge; samplerDesc.tAddressMode = .clampToEdge
@@ -307,12 +313,16 @@ class Renderer: NSObject, MTKViewDelegate {
             if let children = config.children {
                 for childConfig in children {
                     if let childSystem = await createParticleRenderable(from: nil, particlePath: childConfig.name, parentConfig: config) {
-                        system.addChild(childSystem)
+                        // 修复：添加了 type 和 count 参数
+                        system.addChild(childSystem, type: childConfig.type ?? "follow", count: childConfig.count ?? 1)
                     }
                 }
             }
             return system
-        } catch { return nil }
+        } catch {
+            Logger.error("Failed to create particle renderable: \(error)")
+            return nil
+        }
     }
     
     func createPuppetRenderable(from obj: SceneObject, dataURL: URL, objURL: URL) async -> RenderableObject? {
@@ -350,7 +360,7 @@ class Renderer: NSObject, MTKViewDelegate {
     }
     
     func resolveTextureURL(base: URL, rawPath: String) -> URL {
-        let extensions = ["png", "webp", "tga", "mp4"]
+        let extensions = ["png", "webp", "tga", "mp4", "jpg", "jpeg"]
         let fileName = URL(fileURLWithPath: rawPath).lastPathComponent
         for ext in extensions {
             let directURL = base.appendingPathComponent("materials/\(rawPath).\(ext)")
