@@ -14,13 +14,14 @@ struct ParticleInstance {
     float4 color;
     float2 size;
     float rotation;
-    float padding;
+    float animationOffset;
 };
 
 struct ParticleVertexOut {
     float4 position [[position]];
     float2 texCoord;
     float4 color;
+    float animationOffset;
 };
 
 vertex ParticleVertexOut vertex_particle(uint vertexID [[vertex_id]],
@@ -65,14 +66,31 @@ vertex ParticleVertexOut vertex_particle(uint vertexID [[vertex_id]],
     out.texCoord = uvs[vertexID];
     out.color = instance.color * object.color;
     out.color.a *= object.alpha;
+    out.animationOffset = instance.animationOffset;
     
     return out;
 }
 
 fragment float4 fragment_particle(ParticleVertexOut in [[stage_in]],
-                                  texture2d<float> texture [[texture(0)]],
+                                  constant GlobalUniforms &globals [[buffer(1)]],
+                                  constant ObjectUniforms &object [[buffer(2)]],
+                                  texture2d_array<float> textureArray [[texture(0)]],
                                   sampler textureSampler [[sampler(0)]])
 {
-    float4 texColor = texture.sample(textureSampler, in.texCoord);
+    float numFrames = object.animInfo.x;
+    float duration = object.animInfo.y;
+    
+    uint frameIndex = 0;
+    
+    if (numFrames > 1.0 && duration > 0.0) {
+        float currentTime = globals.time + in.animationOffset;
+        float progress = fmod(currentTime, duration) / duration;
+        frameIndex = uint(progress * numFrames);
+        if (frameIndex >= uint(numFrames)) {
+            frameIndex = uint(numFrames) - 1;
+        }
+    }
+    
+    float4 texColor = textureArray.sample(textureSampler, in.texCoord, frameIndex);
     return texColor * in.color;
 }

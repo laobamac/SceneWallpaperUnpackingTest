@@ -33,7 +33,7 @@ struct ObjectUniforms {
     float4x4 modelMatrix;
     float alpha;
     float4 color;
-    float4 padding;
+    float4 animInfo;
 };
 
 #endif // !Puppet_H

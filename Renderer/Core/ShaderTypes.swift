@@ -11,7 +11,7 @@ struct ObjectUniforms {
     var modelMatrix: matrix_float4x4
     var alpha: Float
     var color: SIMD4<Float>
-    var padding: SIMD3<Float> = .zero
+    var animInfo: SIMD3<Float> = .zero
 }
 
 struct GlobalUniforms {
@@ -34,5 +34,5 @@ struct ParticleInstance {
     var color: SIMD4<Float>
     var size: SIMD2<Float>
     var rotation: Float
-    var padding: Float = 0
+    var animationOffset: Float = 0
 }

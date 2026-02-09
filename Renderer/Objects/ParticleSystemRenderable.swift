@@ -50,11 +50,13 @@ class ParticleSystemRenderable: RenderableObject {
         var oscillatePosition: VectorOscillatorState
         var childEmitAccumulators: [Int: Float]
         var alive: Bool
+        var randomAnimOffset: Float
     }
     
     private let device: MTLDevice
     private let config: ParticleSystemConfig
     private let animatedTexture: AnimatedTexture
+    private var textureArray: MTLTexture?
     private var particles: [Particle]
     private var instanceBuffer: MTLBuffer?
     private var emitAccumulator: Float = 0
@@ -92,6 +94,8 @@ class ParticleSystemRenderable: RenderableObject {
         self.systemScale = scale
         
         super.init(position: position, rotation: rotation, size: size, scale: scale, texture: texture.textures[0], pipeline: pipeline, depthState: depthState)
+        
+        self.textureArray = createTextureArray(from: texture.textures, device: device)
         
         if let o = overrides {
             if let r = o.rate { self.overrideRate = r }
@@ -132,8 +136,35 @@ class ParticleSystemRenderable: RenderableObject {
         }
     }
     
+    private func createTextureArray(from textures: [MTLTexture], device: MTLDevice) -> MTLTexture? {
+        guard let first = textures.first else { return nil }
+        
+        let desc = MTLTextureDescriptor()
+        desc.textureType = .type2DArray
+        desc.pixelFormat = first.pixelFormat
+        desc.width = first.width
+        desc.height = first.height
+        desc.arrayLength = textures.count
+        desc.usage = .shaderRead
+        
+        guard let arrayTexture = device.makeTexture(descriptor: desc) else { return nil }
+        
+        let bytesPerPixel = 4
+        let bytesPerRow = first.width * bytesPerPixel
+        let region = MTLRegionMake2D(0, 0, first.width, first.height)
+        var data = [UInt8](repeating: 0, count: first.height * bytesPerRow)
+        
+        for (i, tex) in textures.enumerated() {
+            tex.getBytes(&data, bytesPerRow: bytesPerRow, from: region, mipmapLevel: 0)
+            arrayTexture.replace(region: region, mipmapLevel: 0, slice: i, withBytes: data, bytesPerRow: bytesPerRow, bytesPerImage: 0)
+        }
+        
+        return arrayTexture
+    }
+    
     func addChild(_ child: ParticleSystemRenderable) {
         child.isChildSystem = true
+        child.parent = self
         self.childrenSystems.append(child)
     }
     
@@ -215,11 +246,11 @@ class ParticleSystemRenderable: RenderableObject {
             oscillateSize: OscillatorState(),
             oscillatePosition: VectorOscillatorState(),
             childEmitAccumulators: [:],
-            alive: true
+            alive: true,
+            randomAnimOffset: Float.random(in: 0...Float(animatedTexture.duration))
         )
         
         var spawnOrigin = MathHelper.parseVec3(emitter.origin ?? "0 0 0")
-        spawnOrigin.y = -spawnOrigin.y
         
         if let overridePos = overrideOrigin {
             spawnOrigin = overridePos
@@ -395,8 +426,7 @@ class ParticleSystemRenderable: RenderableObject {
                 switch op.name {
                 case "movement":
                     let drag = Float(op.drag?.value ?? "0") ?? 0
-                    var gravity = MathHelper.parseVec3(op.gravity?.value ?? "0 0 0")
-                    gravity.y = -gravity.y
+                    let gravity = MathHelper.parseVec3(op.gravity?.value ?? "0 0 0")
                     
                     p.position += p.velocity * dt
                     p.velocity += gravity * dt * overrideSpeed
@@ -624,7 +654,7 @@ class ParticleSystemRenderable: RenderableObject {
                 color: SIMD4<Float>(p.color.x, p.color.y, p.color.z, p.alpha),
                 size: p.size,
                 rotation: p.rotation.z,
-                padding: 0
+                animationOffset: p.randomAnimOffset
             )
         }
         
@@ -633,30 +663,25 @@ class ParticleSystemRenderable: RenderableObject {
         
         encoder.setRenderPipelineState(pipeline)
         
-        var texIndex = 0
-        if animatedTexture.textures.count > 1 {
-            let totalDuration = animatedTexture.duration
-            if totalDuration > 0 {
-                let t = fmod(Double(Date().timeIntervalSince1970), totalDuration)
-                var accum: Double = 0
-                for (i, delay) in animatedTexture.delays.enumerated() {
-                    accum += delay
-                    if t <= accum {
-                        texIndex = i
-                        break
-                    }
-                }
-            }
+        if let texArray = self.textureArray {
+            encoder.setFragmentTexture(texArray, index: 0)
+        } else if let first = animatedTexture.textures.first {
+            encoder.setFragmentTexture(first, index: 0)
         }
-        
-        encoder.setFragmentTexture(animatedTexture.textures[texIndex], index: 0)
         
         if let ds = depthState {
             encoder.setDepthStencilState(ds)
         }
         
-        var objUniforms = ObjectUniforms(modelMatrix: worldMatrix, alpha: 1.0, color: SIMD4<Float>(1,1,1,1), padding: .zero)
+        var objUniforms = ObjectUniforms(
+            modelMatrix: worldMatrix,
+            alpha: 1.0,
+            color: SIMD4<Float>(1,1,1,1),
+            animInfo: SIMD3<Float>(Float(animatedTexture.textures.count), Float(animatedTexture.duration), 0)
+        )
         encoder.setVertexBytes(&objUniforms, length: MemoryLayout<ObjectUniforms>.stride, index: 2)
+        encoder.setFragmentBytes(&objUniforms, length: MemoryLayout<ObjectUniforms>.stride, index: 2)
+        
         encoder.setVertexBuffer(instanceBuffer, offset: 0, index: 3)
         
         encoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4, instanceCount: count)
