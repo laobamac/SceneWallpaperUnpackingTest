@@ -74,10 +74,6 @@ class ParticleSystemRenderable: RenderableObject {
     private var controlPoints: [ParticleControlPoint] = []
     private var resolvedControlPointPositions: [SIMD3<Float>] = []
     
-    private var systemPosition: SIMD3<Float>
-    private var systemRotation: SIMD3<Float>
-    private var systemScale: SIMD3<Float>
-    
     var childrenSystems: [ParticleSystemRenderable] = []
     var isChildSystem: Bool = false
     var selfRate: Float = 0
@@ -88,10 +84,6 @@ class ParticleSystemRenderable: RenderableObject {
         self.animatedTexture = texture
         self.maxCount = config.maxcount ?? 1000
         self.particles = []
-        
-        self.systemPosition = position
-        self.systemRotation = rotation
-        self.systemScale = scale
         
         super.init(position: position, rotation: rotation, size: size, scale: scale, texture: texture.textures[0], pipeline: pipeline, depthState: depthState)
         
@@ -120,6 +112,7 @@ class ParticleSystemRenderable: RenderableObject {
             }
         }
         
+        // Calculate capacity based on maxCount and override
         let capacity = Int(Float(maxCount) * overrideCount) + 1
         if capacity > 0 {
             self.particles.reserveCapacity(capacity)
@@ -176,7 +169,7 @@ class ParticleSystemRenderable: RenderableObject {
                 let offset = MathHelper.parseVec3(cp.offset ?? "0 0 0")
                 var pos = offset
                 if (cp.flags ?? 0) & 2 != 0 {
-                    pos = offset - self.systemPosition
+                    pos = offset - self.localPosition
                 }
                 resolvedControlPointPositions[i] = pos
             }
@@ -194,6 +187,9 @@ class ParticleSystemRenderable: RenderableObject {
     }
     
     func spawnAt(position: SIMD3<Float>) {
+        let effectiveMax = Int(Float(maxCount) * overrideCount)
+        if particles.count >= effectiveMax { return }
+        
         guard let emitters = config.emitter, let firstEmitter = emitters.first else { return }
         createParticle(emitter: firstEmitter, overrideOrigin: position)
     }
@@ -258,7 +254,6 @@ class ParticleSystemRenderable: RenderableObject {
         
         var randomPos = SIMD3<Float>(0, 0, 0)
         let directions = MathHelper.parseVec3(emitter.directions ?? "1 1 1")
-        let flippedDirections = SIMD3<Float>(directions.x, -directions.y, directions.z)
         
         if emitter.name == "sphererandom" {
             let distMin = Float(emitter.distancemin?.value ?? "0") ?? 0
@@ -276,7 +271,7 @@ class ParticleSystemRenderable: RenderableObject {
             let y = sin(phi) * sin(theta)
             let z = cos(phi)
             
-            randomPos = SIMD3<Float>(x, y, z) * dist * flippedDirections
+            randomPos = SIMD3<Float>(x, y, z) * dist * directions
             
         } else if emitter.name == "boxrandom" {
             let minVec = MathHelper.parseVec3(emitter.distancemin?.value ?? "0 0 0")
@@ -286,7 +281,7 @@ class ParticleSystemRenderable: RenderableObject {
             let y = MathHelper.safeRandomFloat(min: minVec.y, max: maxVec.y) * (Float.random(in: 0...1) > 0.5 ? 1 : -1)
             let z = MathHelper.safeRandomFloat(min: minVec.z, max: maxVec.z) * (Float.random(in: 0...1) > 0.5 ? 1 : -1)
             
-            randomPos = SIMD3<Float>(x, y, z) * flippedDirections
+            randomPos = SIMD3<Float>(x, y, z) * directions
         }
         
         p.position = spawnOrigin + randomPos
@@ -596,7 +591,7 @@ class ParticleSystemRenderable: RenderableObject {
         
         if let children = config.children {
             for (idx, childConfig) in children.enumerated() {
-                if childConfig.type == "eventfollow" && idx < childrenSystems.count {
+                if idx < childrenSystems.count {
                     let childSys = childrenSystems[idx]
                     var rate = childSys.selfRate > 0 ? childSys.selfRate : 30.0
                     if rate > 40.0 { rate = 40.0 }
@@ -605,38 +600,11 @@ class ParticleSystemRenderable: RenderableObject {
                         var acc = particles[i].childEmitAccumulators[idx] ?? 0
                         acc += rate * dt
                         
-                        let myWorldPos = self.systemPosition
-                        let localPos = particles[i].position
-                        
-                        let radX = systemRotation.x
-                        let radY = systemRotation.y
-                        let radZ = systemRotation.z
-                        
-                        var p = localPos
-                        if radX != 0 {
-                            let cx = cos(radX), sx = sin(radX)
-                            let y = p.y * cx - p.z * sx
-                            let z = p.y * sx + p.z * cx
-                            p.y = y; p.z = z
-                        }
-                        if radY != 0 {
-                            let cy = cos(radY), sy = sin(radY)
-                            let x = p.x * cy + p.z * sy
-                            let z = -p.x * sy + p.z * cy
-                            p.x = x; p.z = z
-                        }
-                        if radZ != 0 {
-                            let cz = cos(radZ), sz = sin(radZ)
-                            let x = p.x * cz - p.y * sz
-                            let y = p.x * sz + p.y * cz
-                            p.x = x; p.y = y
-                        }
-                        
-                        let worldPos = myWorldPos + p * systemScale
+                        let spawnPos = particles[i].position
                         
                         while acc >= 1.0 {
                             acc -= 1.0
-                            childSys.spawnAt(position: worldPos)
+                            childSys.spawnAt(position: spawnPos)
                         }
                         particles[i].childEmitAccumulators[idx] = acc
                     }

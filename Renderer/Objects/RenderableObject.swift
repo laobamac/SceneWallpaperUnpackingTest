@@ -37,13 +37,12 @@ class RenderableObject {
         self.texture = texture
         self.pipeline = pipeline
         self.depthState = depthState
-        
-        Logger.debug("Created RenderableObject. Pos: \(position), Size: \(size)")
     }
     
     var worldMatrix: matrix_float4x4 {
         var local = Matrix4x4.translation(x: localPosition.x, y: localPosition.y, z: localPosition.z)
         local = local * Matrix4x4.rotation(angle: localRotation.z, axis: SIMD3<Float>(0, 0, 1))
+        local = local * Matrix4x4.scale(x: scale.x, y: scale.y, z: scale.z)
         if let p = parent { return p.worldMatrix * local }
         return local
     }
@@ -52,7 +51,7 @@ class RenderableObject {
         encoder.setRenderPipelineState(pipeline)
         if let ds = depthState { encoder.setDepthStencilState(ds) }
         
-        let geometryScale = Matrix4x4.scale(x: size.x * scale.x, y: size.y * scale.y, z: 1)
+        let geometryScale = Matrix4x4.scale(x: size.x, y: size.y, z: 1)
         let finalModelMatrix = worldMatrix * geometryScale
         
         var objUniforms = ObjectUniforms(modelMatrix: finalModelMatrix, alpha: 1.0, color: SIMD4<Float>(1,1,1,1))
