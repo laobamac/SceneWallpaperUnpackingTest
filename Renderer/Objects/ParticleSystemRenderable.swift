@@ -488,7 +488,11 @@ class ParticleSystemRenderable: RenderableObject {
                     
                 case "alphafade":
                     let fin = Float(op.fadeintime?.value ?? "0") ?? 0
-                    let fout = Float(op.fadeouttime?.value ?? "0") ?? 0
+                    var fout = fin
+                    if let foutStr = op.fadeouttime?.value, let f = Float(foutStr) {
+                        fout = f
+                    }
+                    
                     let life = p.age / p.lifetime
                     
                     if life <= fin {

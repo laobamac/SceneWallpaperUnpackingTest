@@ -81,10 +81,10 @@ vertex ParticleVertexOut vertex_particle(uint vertexID [[vertex_id]],
     out.position = globals.projectionMatrix * viewPos;
     
     float2 uvs[] = {
-        float2(0, 1),
-        float2(1, 1),
         float2(0, 0),
-        float2(1, 0)
+        float2(1, 0),
+        float2(0, 1),
+        float2(1, 1)
     };
     out.texCoord = uvs[vertexID];
     out.color = instance.color * object.color;
