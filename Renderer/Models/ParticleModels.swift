@@ -17,9 +17,10 @@ struct ParticleSystemConfig: Codable {
     let operatorList: [ParticleOperator]?
     let renderer: [ParticleRenderer]?
     let starttime: Float?
+    let flags: Int?
     
     enum CodingKeys: String, CodingKey {
-        case children, controlpoint, emitter, initializer, material, maxcount, renderer, starttime
+        case children, controlpoint, emitter, initializer, material, maxcount, renderer, starttime, flags
         case operatorList = "operator"
     }
 }
@@ -48,6 +49,13 @@ struct ParticleEmitter: Codable {
     let delay: Float?
     let duration: Float?
     let instantaneous: Int?
+    let flags: Int?
+    let controlpoint: Int?
+    let sign: String?
+    let minPeriodicDelay: Float?
+    let maxPeriodicDelay: Float?
+    let minPeriodicDuration: Float?
+    let maxPeriodicDuration: Float?
 }
 
 struct ParticleInitializer: Codable {
@@ -94,9 +102,22 @@ struct ParticleOperator: Codable {
     let starttime: ScriptableValue?
     let endtime: ScriptableValue?
     let origin: ScriptableValue?
+    let axis: ScriptableValue?
+    let speedInner: ScriptableValue?
+    let speedOuter: ScriptableValue?
+    let distanceInner: ScriptableValue?
+    let distanceOuter: ScriptableValue?
+    let ringRadius: ScriptableValue?
+    let ringWidth: ScriptableValue?
+    let centerForce: ScriptableValue?
+    let ringPullDistance: ScriptableValue?
+    let ringPullForce: ScriptableValue?
+    let flags: Int?
+    let offset: ScriptableValue?
 }
 
 struct ParticleRenderer: Codable {
     let id: Int
     let name: String
+    let subdivision: Int?
 }
