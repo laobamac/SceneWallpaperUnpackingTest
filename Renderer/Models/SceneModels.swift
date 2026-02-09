@@ -27,6 +27,7 @@ struct InstanceOverride: Codable {
     let rate: Float?
     let count: Float?
     let speed: Float?
+    let size: Float?
 }
 
 struct SceneObject: Codable {

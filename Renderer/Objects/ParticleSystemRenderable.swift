@@ -95,6 +95,7 @@ class ParticleSystemRenderable: RenderableObject {
             if let colStr = o.colorn { self.overrideColor = MathHelper.parseVec3(colStr) }
             if let a = o.alpha { self.overrideAlpha = a }
             if let s = o.speed { self.overrideSpeed = s }
+            if let sz = o.size { self.overrideSize = sz }
         }
         
         if let cps = config.controlpoint {
@@ -112,7 +113,6 @@ class ParticleSystemRenderable: RenderableObject {
             }
         }
         
-        // Calculate capacity based on maxCount and override
         let capacity = Int(Float(maxCount) * overrideCount) + 1
         if capacity > 0 {
             self.particles.reserveCapacity(capacity)
@@ -255,7 +255,7 @@ class ParticleSystemRenderable: RenderableObject {
         var randomPos = SIMD3<Float>(0, 0, 0)
         let directions = MathHelper.parseVec3(emitter.directions ?? "1 1 1")
         
-        if emitter.name == "sphererandom" {
+        if emitter.name == "sphererandom" || emitter.name == "sphere" {
             let distMin = Float(emitter.distancemin?.value ?? "0") ?? 0
             let distMax = Float(emitter.distancemax?.value ?? "0") ?? 0
             
@@ -273,7 +273,7 @@ class ParticleSystemRenderable: RenderableObject {
             
             randomPos = SIMD3<Float>(x, y, z) * dist * directions
             
-        } else if emitter.name == "boxrandom" {
+        } else if emitter.name == "boxrandom" || emitter.name == "box" {
             let minVec = MathHelper.parseVec3(emitter.distancemin?.value ?? "0 0 0")
             let maxVec = MathHelper.parseVec3(emitter.distancemax?.value ?? "0 0 0")
             
