@@ -277,14 +277,16 @@ class ParticleSystemRenderable: RenderableObject {
             let theta = 2 * Float.pi * u
             let phi = acos(2 * v - 1)
             
-            let r = pow(Float.random(in: 0...1), 1.0/3.0)
-            let dist = distMin + (distMax - distMin) * r
-            
             let x = sin(phi) * cos(theta)
             let y = sin(phi) * sin(theta)
             let z = cos(phi)
             
-            randomPos = SIMD3<Float>(x, y, z) * dist * directions
+            let unitPos = SIMD3<Float>(x, y, z)
+            
+            let r = pow(Float.random(in: 0...1), 1.0/3.0)
+            let dist = distMin + (distMax - distMin) * r
+            
+            randomPos = unitPos * dist * directions
             
         } else if emitter.name == "boxrandom" || emitter.name == "box" {
             let minVec = MathHelper.parseVec3(emitter.distancemin?.value ?? "0 0 0")
@@ -442,9 +444,10 @@ class ParticleSystemRenderable: RenderableObject {
                     p.position += p.velocity * dt
                     p.velocity += gravity * dt * overrideSpeed
                     
-                    var dragFactor = 1.0 - (drag * dt)
-                    if dragFactor < 0 { dragFactor = 0 }
-                    p.velocity *= dragFactor
+                    if drag > 0 {
+                        let dragFactor = exp(-drag * dt)
+                        p.velocity *= dragFactor
+                    }
                     
                 case "angularmovement":
                     let drag = Float(op.drag?.value ?? "0") ?? 0
@@ -453,9 +456,10 @@ class ParticleSystemRenderable: RenderableObject {
                     p.rotation += p.angularVelocity * dt * overrideSpeed
                     p.angularVelocity += force * dt * overrideSpeed
                     
-                    var dragFactor = 1.0 - (drag * dt)
-                    if dragFactor < 0 { dragFactor = 0 }
-                    p.angularVelocity *= dragFactor
+                    if drag > 0 {
+                        let dragFactor = exp(-drag * dt)
+                        p.angularVelocity *= dragFactor
+                    }
                     
                 case "alphafade":
                     let fin = Float(op.fadeintime?.value ?? "0") ?? 0
@@ -553,7 +557,7 @@ class ParticleSystemRenderable: RenderableObject {
                     let phase = (pMin + pMax) * 0.5
                     var noisePos = p.position
                     noisePos.x += phase + timeScale * time
-                    noisePos *= scale * 2.0
+                    noisePos *= scale * 0.01
                     
                     var curlDir = SimplexNoise.curlNoise(noisePos)
                     let len = simd_length(curlDir)
@@ -689,7 +693,7 @@ class ParticleSystemRenderable: RenderableObject {
                 position: p.position,
                 color: SIMD4<Float>(p.color.x, p.color.y, p.color.z, p.alpha),
                 size: p.size,
-                rotation: p.rotation.z,
+                rotation: p.rotation,
                 animationOffset: p.randomAnimOffset
             )
         }

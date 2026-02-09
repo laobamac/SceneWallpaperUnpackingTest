@@ -13,7 +13,7 @@ struct ParticleInstance {
     float3 position;
     float4 color;
     float2 size;
-    float rotation;
+    float3 rotation;
     float animationOffset;
 };
 
@@ -23,6 +23,35 @@ struct ParticleVertexOut {
     float4 color;
     float animationOffset;
 };
+
+float3x3 makeRotationMatrix(float3 r) {
+    float cx = cos(r.x);
+    float sx = sin(r.x);
+    float cy = cos(r.y);
+    float sy = sin(r.y);
+    float cz = cos(r.z);
+    float sz = sin(r.z);
+
+    float3x3 rotX = float3x3(
+        float3(1, 0, 0),
+        float3(0, cx, sx),
+        float3(0, -sx, cx)
+    );
+
+    float3x3 rotY = float3x3(
+        float3(cy, 0, -sy),
+        float3(0, 1, 0),
+        float3(sy, 0, cy)
+    );
+
+    float3x3 rotZ = float3x3(
+        float3(cz, sz, 0),
+        float3(-sz, cz, 0),
+        float3(0, 0, 1)
+    );
+
+    return rotZ * rotY * rotX;
+}
 
 vertex ParticleVertexOut vertex_particle(uint vertexID [[vertex_id]],
                                          uint instanceID [[instance_id]],
@@ -40,20 +69,14 @@ vertex ParticleVertexOut vertex_particle(uint vertexID [[vertex_id]],
         float2( 0.5,  0.5)
     };
     
-    float2 rawPos = quadVertices[vertexID];
+    float2 rawPos2D = quadVertices[vertexID];
+    float3 rawPos = float3(rawPos2D.x * instance.size.x, rawPos2D.y * instance.size.y, 0.0);
     
-    float c = cos(instance.rotation);
-    float s = sin(instance.rotation);
-    float2 rotatedPos = float2(
-        rawPos.x * c - rawPos.y * s,
-        rawPos.x * s + rawPos.y * c
-    );
+    float3x3 rotMat = makeRotationMatrix(instance.rotation);
+    float3 localPos = rotMat * rawPos;
     
-    float2 scaledPos = rotatedPos * instance.size;
-    
-    float4 worldPos = object.modelMatrix * float4(instance.position, 1.0);
+    float4 worldPos = object.modelMatrix * float4(instance.position + localPos, 1.0);
     float4 viewPos = globals.viewMatrix * worldPos;
-    viewPos.xy += scaledPos;
     
     out.position = globals.projectionMatrix * viewPos;
     

@@ -33,6 +33,6 @@ struct ParticleInstance {
     var position: SIMD3<Float>
     var color: SIMD4<Float>
     var size: SIMD2<Float>
-    var rotation: Float
+    var rotation: SIMD3<Float>
     var animationOffset: Float = 0
 }
