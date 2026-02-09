@@ -21,21 +21,10 @@ struct ProjectionSize: Codable {
     let height: Float
 }
 
-struct InstanceOverride: Codable {
-    let alpha: Float?
-    let colorn: String?
-    let rate: Float?
-    let count: Float?
-    let speed: Float?
-    let size: Float?
-}
-
 struct SceneObject: Codable {
     let id: Int?
     let name: String?
     let image: String?
-    let particle: String?
-    let instanceoverride: InstanceOverride?
     let origin: ScriptableValue?
     let size: ScriptableValue?
     let scale: ScriptableValue?
