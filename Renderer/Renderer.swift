@@ -60,7 +60,6 @@ class Renderer: NSObject, MTKViewDelegate {
             throw NSError(domain: "Renderer", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to create default library"])
         }
         
-        // Standard pipeline
         let descriptor = MTLRenderPipelineDescriptor()
         descriptor.label = "Standard Pipeline"
         descriptor.vertexFunction = library.makeFunction(name: "vertex_main")
@@ -82,7 +81,6 @@ class Renderer: NSObject, MTKViewDelegate {
         
         pipelineState = try device.makeRenderPipelineState(descriptor: descriptor)
         
-        // Puppet pipeline
         let puppetDesc = MTLRenderPipelineDescriptor()
         puppetDesc.label = "Puppet Pipeline"
         puppetDesc.vertexFunction = library.makeFunction(name: "vertex_puppet")
@@ -106,7 +104,6 @@ class Renderer: NSObject, MTKViewDelegate {
         puppetDesc.vertexDescriptor = pvDesc
         puppetPipelineState = try device.makeRenderPipelineState(descriptor: puppetDesc)
         
-        // Particle pipelines
         let particleBase = MTLRenderPipelineDescriptor()
         particleBase.label = "Particle Base"
         particleBase.vertexFunction = library.makeFunction(name: "vertex_particle")
@@ -132,7 +129,6 @@ class Renderer: NSObject, MTKViewDelegate {
         addDesc.colorAttachments[0].destinationRGBBlendFactor = .one
         particleAdditivePipeline = try device.makeRenderPipelineState(descriptor: addDesc)
         
-        // Sampler
         let samplerDesc = MTLSamplerDescriptor()
         samplerDesc.minFilter = .linear; samplerDesc.magFilter = .linear
         samplerDesc.sAddressMode = .clampToEdge; samplerDesc.tAddressMode = .clampToEdge
@@ -296,8 +292,6 @@ class Renderer: NSObject, MTKViewDelegate {
             }
             
             var isAdditive = false
-            let lowerTex = texName.lowercased()
-            let lowerPath = particlePath.lowercased()
             
             if let blend = firstPass.blending, blend.lowercased() == "additive" {
                 isAdditive = true
@@ -397,7 +391,7 @@ class Renderer: NSObject, MTKViewDelegate {
         
         for obj in renderables {
             if let puppet = obj as? PuppetRenderable { puppet.updateAnimation(time: time) }
-            if let particleSys = obj as? ParticleSystemRenderable { particleSys.update(dt: dt, time: time) }
+            if let particleSys = obj as? ParticleSystemRenderable { particleSys.update(dt: dt, totalTime: time) }
             obj.draw(encoder: encoder)
         }
         

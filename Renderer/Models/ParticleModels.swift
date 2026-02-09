@@ -34,6 +34,7 @@ struct ParticleChild: Codable {
 struct ParticleControlPoint: Codable {
     let id: Int
     let offset: String?
+    let flags: Int?
 }
 
 struct ParticleEmitter: Codable {
@@ -42,8 +43,11 @@ struct ParticleEmitter: Codable {
     let rate: Float?
     let origin: String?
     let directions: String?
-    let distancemin: Float?
-    let distancemax: Float?
+    let distancemin: ScriptableValue?
+    let distancemax: ScriptableValue?
+    let delay: Float?
+    let duration: Float?
+    let instantaneous: Int?
 }
 
 struct ParticleInitializer: Codable {
@@ -51,33 +55,45 @@ struct ParticleInitializer: Codable {
     let name: String
     let min: ScriptableValue?
     let max: ScriptableValue?
-    let exponent: Float?
-    let offset: Float?
-    let scale: Float?
-    let speedmin: Float?
-    let speedmax: Float?
+    let exponent: ScriptableValue?
+    let offset: ScriptableValue?
+    let scale: ScriptableValue?
+    let speedmin: ScriptableValue?
+    let speedmax: ScriptableValue?
+    let forward: ScriptableValue?
+    let right: ScriptableValue?
+    let phasemin: ScriptableValue?
+    let phasemax: ScriptableValue?
+    let count: ScriptableValue?
+    let controlpoint: ScriptableValue?
 }
 
 struct ParticleOperator: Codable {
     let id: Int
     let name: String
-    let gravity: String?
-    let drag: Float?
-    let fadeintime: Float?
-    let fadeouttime: Float?
-    let frequencymax: Float?
-    let frequencymin: Float?
-    let scalemax: Float?
-    let scalemin: Float?
-    let mask: String?
-    let speedmax: Float?
-    let speedmin: Float?
-    let scale: Float?
-    let threshold: Float?
+    let gravity: ScriptableValue?
+    let drag: ScriptableValue?
+    let fadeintime: ScriptableValue?
+    let fadeouttime: ScriptableValue?
+    let frequencymax: ScriptableValue?
+    let frequencymin: ScriptableValue?
+    let scalemax: ScriptableValue?
+    let scalemin: ScriptableValue?
+    let phasemin: ScriptableValue?
+    let phasemax: ScriptableValue?
+    let mask: ScriptableValue?
+    let speedmax: ScriptableValue?
+    let speedmin: ScriptableValue?
+    let scale: ScriptableValue?
+    let timescale: ScriptableValue?
+    let threshold: ScriptableValue?
     let controlpoint: Int?
-    let force: String?
-    let startvalue: Float?
-    let endvalue: Float?
+    let force: ScriptableValue?
+    let startvalue: ScriptableValue?
+    let endvalue: ScriptableValue?
+    let starttime: ScriptableValue?
+    let endtime: ScriptableValue?
+    let origin: ScriptableValue?
 }
 
 struct ParticleRenderer: Codable {

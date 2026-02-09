@@ -9,19 +9,47 @@ import MetalKit
 import simd
 
 class ParticleSystemRenderable: RenderableObject {
+    private struct OscillatorState {
+        var frequency: Float = 0
+        var scale: Float = 1
+        var phase: Float = 0
+        var base: Float = 1
+        var initialized: Bool = false
+    }
+    
+    private struct VectorOscillatorState {
+        var frequency: SIMD3<Float> = .zero
+        var scale: SIMD3<Float> = .one
+        var phase: SIMD3<Float> = .zero
+        var initialized: Bool = false
+    }
+    
+    private struct InitialState {
+        var color: SIMD4<Float> = .one
+        var alpha: Float = 1
+        var size: SIMD2<Float> = .one
+        var lifetime: Float = 1
+    }
+    
     private struct Particle {
         var position: SIMD3<Float>
         var velocity: SIMD3<Float>
+        var acceleration: SIMD3<Float>
+        var rotation: SIMD3<Float>
+        var angularVelocity: SIMD3<Float>
+        var angularAcceleration: SIMD3<Float>
         var color: SIMD4<Float>
+        var alpha: Float
         var size: SIMD2<Float>
-        var rotation: Float
-        var angularVelocity: Float
+        var frame: Float
         var age: Float
         var lifetime: Float
-        var initialSize: SIMD2<Float>
-        var initialColor: SIMD4<Float>
-        var seed: SIMD3<Float>
+        var initial: InitialState
+        var oscillateAlpha: OscillatorState
+        var oscillateSize: OscillatorState
+        var oscillatePosition: VectorOscillatorState
         var childEmitAccumulators: [Int: Float]
+        var alive: Bool
     }
     
     private let device: MTLDevice
@@ -31,13 +59,18 @@ class ParticleSystemRenderable: RenderableObject {
     private var instanceBuffer: MTLBuffer?
     private var emitAccumulator: Float = 0
     private let maxCount: Int
+    private var time: Float = 0
     
     private var overrideRate: Float = 1.0
     private var overrideCount: Float = 1.0
-    private var overrideColor: SIMD3<Float>?
+    private var overrideColor: SIMD3<Float> = SIMD3<Float>(1, 1, 1)
     private var overrideAlpha: Float = 1.0
+    private var overrideSpeed: Float = 1.0
+    private var overrideSize: Float = 1.0
+    private var overrideLifetime: Float = 1.0
     
-    private var controlPoints: [SIMD3<Float>] = []
+    private var controlPoints: [ParticleControlPoint] = []
+    private var resolvedControlPointPositions: [SIMD3<Float>] = []
     
     private var systemPosition: SIMD3<Float>
     private var systemRotation: SIMD3<Float>
@@ -51,9 +84,8 @@ class ParticleSystemRenderable: RenderableObject {
         self.device = device
         self.config = config
         self.animatedTexture = texture
-        self.maxCount = config.maxcount ?? 100
+        self.maxCount = config.maxcount ?? 1000
         self.particles = []
-        self.particles.reserveCapacity(self.maxCount)
         
         self.systemPosition = position
         self.systemRotation = rotation
@@ -64,20 +96,19 @@ class ParticleSystemRenderable: RenderableObject {
         if let o = overrides {
             if let r = o.rate { self.overrideRate = r }
             if let c = o.count { self.overrideCount = c }
-            if let colStr = o.colorn {
-                self.overrideColor = MathHelper.parseVec3(colStr)
-            }
+            if let colStr = o.colorn { self.overrideColor = MathHelper.parseVec3(colStr) }
             if let a = o.alpha { self.overrideAlpha = a }
+            if let s = o.speed { self.overrideSpeed = s }
         }
         
         if let cps = config.controlpoint {
-            for cp in cps {
-                let offset = MathHelper.parseVec3(cp.offset ?? "0 0 0")
-                self.controlPoints.append(offset)
-            }
+            self.controlPoints = cps
         } else {
-            for _ in 0..<8 { self.controlPoints.append(SIMD3<Float>(0,0,0)) }
+            for i in 0..<8 {
+                self.controlPoints.append(ParticleControlPoint(id: i, offset: "0 0 0", flags: 0))
+            }
         }
+        self.resolvedControlPointPositions = Array(repeating: .zero, count: 8)
         
         if let emitters = config.emitter {
             for e in emitters {
@@ -87,6 +118,7 @@ class ParticleSystemRenderable: RenderableObject {
         
         let capacity = Int(Float(maxCount) * overrideCount) + 1
         if capacity > 0 {
+            self.particles.reserveCapacity(capacity)
             self.instanceBuffer = device.makeBuffer(length: capacity * MemoryLayout<ParticleInstance>.stride, options: .storageModeShared)
         }
         
@@ -94,7 +126,7 @@ class ParticleSystemRenderable: RenderableObject {
             let step: Float = 0.016666
             var t: Float = 0
             while t < st {
-                update(dt: step, time: t)
+                update(dt: step, totalTime: t)
                 t += step
             }
         }
@@ -105,19 +137,32 @@ class ParticleSystemRenderable: RenderableObject {
         self.childrenSystems.append(child)
     }
     
-    func update(dt: Float, time: Float) {
+    func update(dt: Float, totalTime: Float) {
+        self.time = totalTime
+        
+        for (i, cp) in controlPoints.enumerated() {
+            if i < 8 {
+                let offset = MathHelper.parseVec3(cp.offset ?? "0 0 0")
+                var pos = offset
+                if (cp.flags ?? 0) & 2 != 0 {
+                    pos = offset - self.systemPosition
+                }
+                resolvedControlPointPositions[i] = pos
+            }
+        }
+        
         if !isChildSystem {
             spawnParticles(dt: dt)
         }
         
-        updateParticles(dt: dt, time: time)
+        updateParticles(dt: dt, time: totalTime)
         
         for child in childrenSystems {
-            child.update(dt: dt, time: time)
+            child.update(dt: dt, totalTime: totalTime)
         }
     }
     
-    func spawnAt(position: SIMD3<Float>, velocity: SIMD3<Float> = SIMD3<Float>(0,0,0)) {
+    func spawnAt(position: SIMD3<Float>) {
         guard let emitters = config.emitter, let firstEmitter = emitters.first else { return }
         createParticle(emitter: firstEmitter, overrideOrigin: position)
     }
@@ -130,6 +175,9 @@ class ParticleSystemRenderable: RenderableObject {
             let rate = (emitter.rate ?? 0) * overrideRate
             if rate <= 0 { continue }
             
+            if let delay = emitter.delay, time < delay { continue }
+            if let duration = emitter.duration, duration > 0, time > ((emitter.delay ?? 0) + duration) { continue }
+            
             emitAccumulator += rate * dt
             while emitAccumulator >= 1.0 {
                 emitAccumulator -= 1.0
@@ -137,53 +185,84 @@ class ParticleSystemRenderable: RenderableObject {
                     createParticle(emitter: emitter)
                 }
             }
+            
+            if let inst = emitter.instantaneous, inst > 0, time <= dt {
+                for _ in 0..<inst {
+                    if particles.count < effectiveMax {
+                        createParticle(emitter: emitter)
+                    }
+                }
+            }
         }
     }
     
     private func createParticle(emitter: ParticleEmitter, overrideOrigin: SIMD3<Float>? = nil) {
-        let limit = Int(Float(maxCount) * overrideCount)
-        if particles.count >= limit { return }
-        
         var p = Particle(
-            position: SIMD3<Float>(0,0,0),
-            velocity: SIMD3<Float>(0,0,0),
-            color: SIMD4<Float>(1,1,1,1),
-            size: SIMD2<Float>(0,0),
-            rotation: 0,
-            angularVelocity: 0,
+            position: .zero,
+            velocity: .zero,
+            acceleration: .zero,
+            rotation: .zero,
+            angularVelocity: .zero,
+            angularAcceleration: .zero,
+            color: .one,
+            alpha: 1.0,
+            size: SIMD2<Float>(20, 20),
+            frame: 0,
             age: 0,
             lifetime: 1,
-            initialSize: SIMD2<Float>(0,0),
-            initialColor: SIMD4<Float>(1,1,1,1),
-            seed: SIMD3<Float>(Float.random(in: 0...1), Float.random(in: 0...1), Float.random(in: 0...1)),
-            childEmitAccumulators: [:]
+            initial: InitialState(),
+            oscillateAlpha: OscillatorState(),
+            oscillateSize: OscillatorState(),
+            oscillatePosition: VectorOscillatorState(),
+            childEmitAccumulators: [:],
+            alive: true
         )
         
-        let originOffset = MathHelper.parseVec3(emitter.origin ?? "0 0 0")
-        var randomOffset = SIMD3<Float>(0,0,0)
+        var spawnOrigin = MathHelper.parseVec3(emitter.origin ?? "0 0 0")
+        spawnOrigin.y = -spawnOrigin.y
+        
+        if let overridePos = overrideOrigin {
+            spawnOrigin = overridePos
+        }
+        
+        var randomPos = SIMD3<Float>(0, 0, 0)
+        let directions = MathHelper.parseVec3(emitter.directions ?? "1 1 1")
+        let flippedDirections = SIMD3<Float>(directions.x, -directions.y, directions.z)
         
         if emitter.name == "sphererandom" {
-            let distMin = emitter.distancemin ?? 0
-            let distMax = emitter.distancemax ?? 0
-            let dist = MathHelper.safeRandomFloat(min: distMin, max: distMax)
+            let distMin = Float(emitter.distancemin?.value ?? "0") ?? 0
+            let distMax = Float(emitter.distancemax?.value ?? "0") ?? 0
             
-            let u = Float.random(in: -1...1)
-            let theta = Float.random(in: 0...(2 * .pi))
-            let x = sqrt(1 - u * u) * cos(theta)
-            let y = sqrt(1 - u * u) * sin(theta)
-            let z = u
-            let dir = SIMD3<Float>(x, y, z)
+            let u = Float.random(in: 0...1)
+            let v = Float.random(in: 0...1)
+            let theta = 2 * Float.pi * u
+            let phi = acos(2 * v - 1)
             
-            randomOffset = originOffset + dir * dist
-        } else {
-            randomOffset = originOffset
+            let r = pow(Float.random(in: 0...1), 1.0/3.0)
+            let dist = distMin + (distMax - distMin) * r
+            
+            let x = sin(phi) * cos(theta)
+            let y = sin(phi) * sin(theta)
+            let z = cos(phi)
+            
+            randomPos = SIMD3<Float>(x, y, z) * dist * flippedDirections
+            
+        } else if emitter.name == "boxrandom" {
+            let minVec = MathHelper.parseVec3(emitter.distancemin?.value ?? "0 0 0")
+            let maxVec = MathHelper.parseVec3(emitter.distancemax?.value ?? "0 0 0")
+            
+            let x = MathHelper.safeRandomFloat(min: minVec.x, max: maxVec.x) * (Float.random(in: 0...1) > 0.5 ? 1 : -1)
+            let y = MathHelper.safeRandomFloat(min: minVec.y, max: maxVec.y) * (Float.random(in: 0...1) > 0.5 ? 1 : -1)
+            let z = MathHelper.safeRandomFloat(min: minVec.z, max: maxVec.z) * (Float.random(in: 0...1) > 0.5 ? 1 : -1)
+            
+            randomPos = SIMD3<Float>(x, y, z) * flippedDirections
         }
         
-        if let pos = overrideOrigin {
-            p.position = pos + randomOffset * 0.05
-        } else {
-            p.position = randomOffset
-        }
+        p.position = spawnOrigin + randomPos
+        p.color = SIMD4<Float>(overrideColor, 1.0)
+        p.alpha = overrideAlpha
+        p.size *= overrideSize
+        p.lifetime *= overrideLifetime
         
         if let initializers = config.initializer {
             for initOp in initializers {
@@ -191,24 +270,10 @@ class ParticleSystemRenderable: RenderableObject {
             }
         }
         
-        if let oc = overrideColor {
-            p.color = SIMD4<Float>(p.color.x * oc.x, p.color.y * oc.y, p.color.z * oc.z, p.color.w)
-        }
-        
-        if isChildSystem {
-            p.color.w *= 0.3
-            p.size *= 0.15
-        } else {
-            p.size *= 0.7
-        }
-        
-        p.color.w *= overrideAlpha
-        
-        let scaleFactor = (systemScale.x + systemScale.y) * 0.5
-        p.size *= scaleFactor
-        
-        p.initialSize = p.size
-        p.initialColor = p.color
+        p.initial.color = p.color
+        p.initial.alpha = p.alpha
+        p.initial.size = p.size
+        p.initial.lifetime = p.lifetime
         
         particles.append(p)
     }
@@ -218,82 +283,105 @@ class ParticleSystemRenderable: RenderableObject {
         case "lifetimerandom":
             let minV = Float(op.min?.value ?? "0") ?? 0
             let maxV = Float(op.max?.value ?? "0") ?? 0
-            var val = MathHelper.safeRandomFloat(min: minV, max: maxV)
-            if let exp = op.exponent { val = pow(val, exp) }
-            p.lifetime = val
+            let exp = Float(op.exponent?.value ?? "1") ?? 1
+            let t = pow(Float.random(in: 0...1), exp)
+            p.lifetime = minV + t * (maxV - minV)
+            
         case "sizerandom":
             let minV = Float(op.min?.value ?? "0") ?? 0
             let maxV = Float(op.max?.value ?? "0") ?? 0
-            var val = MathHelper.safeRandomFloat(min: minV, max: maxV)
-            if let exp = op.exponent { val = pow(val, exp) }
-            p.size = SIMD2<Float>(val, val)
+            let exp = Float(op.exponent?.value ?? "1") ?? 1
+            let t = pow(Float.random(in: 0...1), exp)
+            let val = minV + t * (maxV - minV)
+            p.size = SIMD2<Float>(val, val) * 0.5
+            
         case "velocityrandom":
             let minV = MathHelper.parseVec3(op.min?.value ?? "0 0 0")
             let maxV = MathHelper.parseVec3(op.max?.value ?? "0 0 0")
-            p.velocity = MathHelper.randomVec3(min: minV, max: maxV)
+            var vel = MathHelper.randomVec3(min: minV, max: maxV)
+            vel.y = -vel.y
+            p.velocity += vel * overrideSpeed
+            
         case "colorrandom":
-            let minV = MathHelper.parseVec4(op.min?.value ?? "0 0 0 0")
-            let maxV = MathHelper.parseVec4(op.max?.value ?? "0 0 0 0")
-            let r = MathHelper.safeRandomFloat(min: minV.x, max: maxV.x) / 255.0
-            let g = MathHelper.safeRandomFloat(min: minV.y, max: maxV.y) / 255.0
-            let b = MathHelper.safeRandomFloat(min: minV.z, max: maxV.z) / 255.0
-            let a = MathHelper.safeRandomFloat(min: minV.w, max: maxV.w) / 255.0
-            p.color = SIMD4<Float>(r, g, b, a)
+            let minV = MathHelper.parseVec3(op.min?.value ?? "0 0 0") / 255.0
+            let maxV = MathHelper.parseVec3(op.max?.value ?? "0 0 0") / 255.0
+            let col = MathHelper.randomVec3(min: minV, max: maxV)
+            p.color = SIMD4<Float>(col * overrideColor, p.color.w)
+            
         case "rotationrandom":
-            let minV = MathHelper.parseVec3(op.min?.value ?? "0 0 0").z
-            let maxV = MathHelper.parseVec3(op.max?.value ?? "0 0 0").z
-            p.rotation = MathHelper.safeRandomFloat(min: minV, max: maxV) * .pi / 180.0
+            let minV = MathHelper.parseVec3(op.min?.value ?? "0 0 0")
+            let maxV = MathHelper.parseVec3(op.max?.value ?? "0 0 0")
+            p.rotation = MathHelper.randomVec3(min: minV, max: maxV)
+            
+        case "angularvelocityrandom":
+            let minV = MathHelper.parseVec3(op.min?.value ?? "0 0 0")
+            let maxV = MathHelper.parseVec3(op.max?.value ?? "0 0 0")
+            let exp = Float(op.exponent?.value ?? "1") ?? 1
+            let t = pow(Float.random(in: 0...1), exp)
+            let val = minV + (maxV - minV) * t
+            p.angularVelocity = val * overrideSpeed
+            
         case "alpharandom":
             let minV = Float(op.min?.value ?? "0") ?? 0
             let maxV = Float(op.max?.value ?? "0") ?? 0
-            p.color.w = MathHelper.safeRandomFloat(min: minV, max: maxV)
-        case "angularvelocityrandom":
-            let minV = MathHelper.parseVec3(op.min?.value ?? "0 0 0").z
-            let maxV = MathHelper.parseVec3(op.max?.value ?? "0 0 0").z
-            p.angularVelocity = MathHelper.safeRandomFloat(min: minV, max: maxV)
+            p.alpha = MathHelper.safeRandomFloat(min: minV, max: maxV) * overrideAlpha
+            
         case "turbulentvelocityrandom":
-             let scale = op.scale ?? 1.0
-             let speedMin = op.speedmin ?? 0
-             let speedMax = op.speedmax ?? 0
-             let offset = op.offset ?? 0
-             let speed = MathHelper.safeRandomFloat(min: speedMin, max: speedMax)
-             let time = Float(0)
-             let noise = simd_float3(
-                 sin(p.position.x * scale + time * speed + offset),
-                 cos(p.position.y * scale + time * speed + offset),
-                 sin(p.position.z * scale + time * speed + offset)
-             )
-             p.velocity += noise
+            let speedMin = Float(op.speedmin?.value ?? "0") ?? 0
+            let speedMax = Float(op.speedmax?.value ?? "0") ?? 0
+            let offset = Float(op.offset?.value ?? "0") ?? 0
+            let scale = Float(op.scale?.value ?? "1") ?? 1
+            let phaseMin = Float(op.phasemin?.value ?? "0") ?? 0
+            let phaseMax = Float(op.phasemax?.value ?? "0") ?? 0
+            var forward = MathHelper.parseVec3(op.forward?.value ?? "0 0 1")
+            var right = MathHelper.parseVec3(op.right?.value ?? "1 0 0")
+            
+            forward.y = -forward.y
+            right.y = -right.y
+            forward = simd_normalize(forward)
+            right = simd_normalize(right)
+            
+            let speed = MathHelper.safeRandomFloat(min: speedMin, max: speedMax)
+            let phase = MathHelper.safeRandomFloat(min: phaseMin, max: phaseMax)
+            
+            let noisePos = MathHelper.randomVec3(min: SIMD3<Float>(repeating: 0), max: SIMD3<Float>(repeating: 10))
+            let samplePos = noisePos + SIMD3<Float>(phase, phase * 0.7, phase * 1.3)
+            
+            var result = SimplexNoise.curlNoise(samplePos)
+            let len = simd_length(result)
+            if len < 0.0001 {
+                result = forward
+            } else {
+                result = result / len
+            }
+            
+            if scale < 2.0 {
+                let cosAngle = simd_dot(result, forward)
+                let angle = acos(simd_clamp(cosAngle, -1.0, 1.0)) / Float.pi
+                let maxAngle = scale / 2.0
+                
+                if angle > maxAngle && maxAngle > 0.0001 {
+                    var axis = simd_cross(result, forward)
+                    let axisLen = simd_length(axis)
+                    if axisLen > 0.0001 {
+                        axis = axis / axisLen
+                        let rotAngle = (angle - maxAngle) * Float.pi
+                        let rot = Matrix4x4.rotationMatrix3x3(angle: rotAngle, axis: axis)
+                        result = rot * result
+                    }
+                }
+            }
+            
+            if abs(offset) > 0.0001 {
+                let rot = Matrix4x4.rotationMatrix3x3(angle: -offset, axis: right)
+                result = rot * result
+            }
+            
+            p.velocity += result * speed * overrideSpeed
+            
         default:
             break
         }
-    }
-    
-    private func rotatePoint(_ point: SIMD3<Float>, angles: SIMD3<Float>) -> SIMD3<Float> {
-        var p = point
-        let radX = angles.x * .pi / 180.0
-        let radY = angles.y * .pi / 180.0
-        let radZ = angles.z * .pi / 180.0
-        
-        if angles.x != 0 {
-            let cx = cos(radX), sx = sin(radX)
-            let y = p.y * cx - p.z * sx
-            let z = p.y * sx + p.z * cx
-            p.y = y; p.z = z
-        }
-        if angles.y != 0 {
-            let cy = cos(radY), sy = sin(radY)
-            let x = p.x * cy + p.z * sy
-            let z = -p.x * sy + p.z * cy
-            p.x = x; p.z = z
-        }
-        if angles.z != 0 {
-            let cz = cos(radZ), sz = sin(radZ)
-            let x = p.x * cz - p.y * sz
-            let y = p.x * sz + p.y * cz
-            p.x = x; p.y = y
-        }
-        return p
     }
     
     private func updateParticles(dt: Float, time: Float) {
@@ -302,143 +390,173 @@ class ParticleSystemRenderable: RenderableObject {
         
         let operators = config.operatorList ?? []
         
-        var followChildren: [(index: Int, rate: Float, system: ParticleSystemRenderable)] = []
-        if let childrenConfigs = config.children {
-            for (idx, childConfig) in childrenConfigs.enumerated() {
-                if childConfig.type == "eventfollow" && idx < childrenSystems.count {
-                    let childSys = childrenSystems[idx]
-                    var rate = childSys.selfRate > 0 ? childSys.selfRate : 30.0
-                    if rate > 40.0 { rate = 40.0 }
-                    followChildren.append((idx, rate, childSys))
-                }
-            }
-        }
-        
-        let myWorldPos = self.systemPosition
-        let myRotation = self.systemRotation
-        let myScale = self.systemScale
-        
         for var p in particles {
             p.age += dt
             if p.age >= p.lifetime { continue }
             
-            for childInfo in followChildren {
-                var acc = p.childEmitAccumulators[childInfo.index] ?? 0
-                acc += childInfo.rate * dt
-                
-                let localPos = p.position
-                let rotatedPos = rotatePoint(localPos, angles: myRotation)
-                let scaledPos = rotatedPos * myScale
-                let worldPos = myWorldPos + scaledPos
-                
-                while acc >= 1.0 {
-                    acc -= 1.0
-                    childInfo.system.spawnAt(position: worldPos)
-                }
-                p.childEmitAccumulators[childInfo.index] = acc
-            }
-            
             for op in operators {
                 switch op.name {
                 case "movement":
-                    let g = MathHelper.parseVec3(op.gravity ?? "0 0 0")
-                    let drag = op.drag ?? 0
-                    p.velocity += g * dt
-                    if drag > 0 {
-                        p.velocity *= (1.0 - drag * dt)
-                    }
+                    let drag = Float(op.drag?.value ?? "0") ?? 0
+                    var gravity = MathHelper.parseVec3(op.gravity?.value ?? "0 0 0")
+                    gravity.y = -gravity.y
+                    
                     p.position += p.velocity * dt
+                    p.velocity += gravity * dt * overrideSpeed
+                    
+                    var dragFactor = 1.0 - (drag * dt)
+                    if dragFactor < 0 { dragFactor = 0 }
+                    p.velocity *= dragFactor
+                    
+                case "angularmovement":
+                    let drag = Float(op.drag?.value ?? "0") ?? 0
+                    let force = MathHelper.parseVec3(op.force?.value ?? "0 0 0")
+                    
+                    p.rotation += p.angularVelocity * dt * overrideSpeed
+                    p.angularVelocity += force * dt * overrideSpeed
+                    
+                    var dragFactor = 1.0 - (drag * dt)
+                    if dragFactor < 0 { dragFactor = 0 }
+                    p.angularVelocity *= dragFactor
                     
                 case "alphafade":
-                    let fin = op.fadeintime ?? 0
-                    let fout = op.fadeouttime ?? 0
-                    var alpha = p.initialColor.w
+                    let fin = Float(op.fadeintime?.value ?? "0") ?? 0
+                    let fout = Float(op.fadeouttime?.value ?? "0") ?? 0
+                    let life = p.age / p.lifetime
                     
-                    let effectiveFin = fin < 0.001 ? 0.2 : fin
-                    if p.age < effectiveFin {
-                        alpha *= (p.age / effectiveFin)
+                    if life <= fin {
+                        p.alpha = p.initial.alpha * MathHelper.fadeValue(life: life, startTime: 0, endTime: fin, startValue: 0, endValue: 1)
+                    } else if life > fout {
+                        p.alpha = p.initial.alpha * (1.0 - MathHelper.fadeValue(life: life, startTime: fout, endTime: 1, startValue: 0, endValue: 1))
+                    } else {
+                        p.alpha = p.initial.alpha
                     }
-                    
-                    let timeRemaining = p.lifetime - p.age
-                    let effectiveFout = fout < 0.001 ? 0.2 : fout
-                    if timeRemaining < effectiveFout {
-                        alpha *= (timeRemaining / effectiveFout)
-                    }
-                    p.color.w = alpha
+                    p.oscillateAlpha.base = p.alpha
                     
                 case "oscillatealpha":
-                    let fMin = op.frequencymin ?? 1
-                    let fMax = op.frequencymax ?? 1
-                    let sMin = op.scalemin ?? 0
-                    let freq = fMin + (fMax - fMin) * p.seed.x
-                    let val = sin(p.age * freq) * 0.5 + 0.5
-                    let scale = sMin + (1.0 - sMin) * val
-                    p.color.w *= scale
+                    let fMin = Float(op.frequencymin?.value ?? "0") ?? 0
+                    let fMax = Float(op.frequencymax?.value ?? "0") ?? 0
+                    let sMin = Float(op.scalemin?.value ?? "0") ?? 0
+                    let sMax = Float(op.scalemax?.value ?? "1") ?? 1
+                    let pMin = Float(op.phasemin?.value ?? "0") ?? 0
+                    let pMax = Float(op.phasemax?.value ?? "0") ?? 0
                     
-                case "oscillateposition":
-                    let fMin = op.frequencymin ?? 1
-                    let fMax = op.frequencymax ?? 1
-                    let sMin = op.scalemin ?? 0
-                    let sMax = op.scalemax ?? 0
-                    let freq = fMin + (fMax - fMin) * p.seed.y
-                    let amp = sMin + (sMax - sMin) * p.seed.z
-                    let velChange = cos(p.age * freq) * amp * 2.0
-                    p.velocity.x += velChange * dt
-                    p.velocity.y += velChange * dt * 0.5
+                    if !p.oscillateAlpha.initialized {
+                        p.oscillateAlpha.frequency = MathHelper.safeRandomFloat(min: fMin, max: fMax)
+                        p.oscillateAlpha.scale = MathHelper.safeRandomFloat(min: sMin, max: sMax)
+                        p.oscillateAlpha.phase = MathHelper.safeRandomFloat(min: pMin, max: pMax)
+                        p.oscillateAlpha.base = p.alpha
+                        p.oscillateAlpha.initialized = true
+                    }
+                    
+                    let w = p.oscillateAlpha.frequency
+                    let t = p.age
+                    let cosVal = (cos(w * t + p.oscillateAlpha.phase) + 1.0) * 0.5
+                    let multiplier = MathHelper.lerp(t: cosVal, a: sMin, b: sMax)
+                    p.alpha = p.oscillateAlpha.base * multiplier
                     
                 case "oscillatesize":
-                    let fMin = op.frequencymin ?? 1
-                    let fMax = op.frequencymax ?? 1
-                    let sMin = op.scalemin ?? 1
-                    let sMax = op.scalemax ?? 1
-                    let freq = fMin + (fMax - fMin) * p.seed.x
-                    let amp = sMin + (sMax - sMin) * p.seed.y
-                    let val = sin(p.age * freq) * 0.5 + 0.5
-                    let scale = sMin + (sMax - sMin) * val
-                    p.size = p.initialSize * scale
+                    let fMin = Float(op.frequencymin?.value ?? "0") ?? 0
+                    let fMax = Float(op.frequencymax?.value ?? "0") ?? 0
+                    let sMin = Float(op.scalemin?.value ?? "0") ?? 0
+                    let sMax = Float(op.scalemax?.value ?? "1") ?? 1
+                    let pMin = Float(op.phasemin?.value ?? "0") ?? 0
+                    let pMax = Float(op.phasemax?.value ?? "0") ?? 0
+                    
+                    if !p.oscillateSize.initialized {
+                        p.oscillateSize.frequency = MathHelper.safeRandomFloat(min: fMin, max: fMax)
+                        p.oscillateSize.scale = MathHelper.safeRandomFloat(min: sMin, max: sMax)
+                        p.oscillateSize.phase = MathHelper.safeRandomFloat(min: pMin, max: pMax)
+                        p.oscillateSize.base = p.size.x
+                        p.oscillateSize.initialized = true
+                    }
+                    
+                    let w = p.oscillateSize.frequency
+                    let t = p.age
+                    let cosVal = (cos(w * t + p.oscillateSize.phase) + 1.0) * 0.5
+                    let multiplier = MathHelper.lerp(t: cosVal, a: sMin, b: sMax)
+                    p.size = p.initial.size * multiplier
                     
                 case "turbulence":
-                    let mask = MathHelper.parseVec3(op.mask ?? "1 1 1")
-                    let scale = op.scale ?? 1
-                    let sMin = op.speedmin ?? 0
-                    let sMax = op.speedmax ?? 0
-                    let speed = MathHelper.safeRandomFloat(min: sMin, max: sMax)
-                    let t = time * speed * 0.01
-                    let nx = sin(p.position.x * scale + t) * cos(p.position.y * scale * 0.8)
-                    let ny = cos(p.position.x * scale * 1.2 + t) * sin(p.position.z * scale)
-                    let nz = sin(p.position.x * scale * 0.5 + t)
-                    let noise = SIMD3<Float>(nx, ny, nz)
-                    p.position += noise * mask * dt * 10.0
+                    let scale = Float(op.scale?.value ?? "1") ?? 1
+                    let speedMin = Float(op.speedmin?.value ?? "0") ?? 0
+                    let speedMax = Float(op.speedmax?.value ?? "0") ?? 0
+                    let timeScale = Float(op.timescale?.value ?? "1") ?? 1
+                    let mask = MathHelper.parseVec3(op.mask?.value ?? "1 1 1")
+                    let pMin = Float(op.phasemin?.value ?? "0") ?? 0
+                    let pMax = Float(op.phasemax?.value ?? "0") ?? 0
+                    
+                    let turbSpeed = (speedMin + speedMax) * 0.5
+                    if turbSpeed <= 0.0001 { break }
+                    
+                    let phase = (pMin + pMax) * 0.5
+                    var noisePos = p.position
+                    noisePos.x += phase + timeScale * time
+                    noisePos *= scale * 2.0
+                    
+                    var curlDir = SimplexNoise.curlNoise(noisePos)
+                    let len = simd_length(curlDir)
+                    if len > 0.0001 {
+                        curlDir = (curlDir / len) * turbSpeed
+                    }
+                    curlDir *= mask
+                    p.velocity += curlDir * dt * overrideSpeed
                     
                 case "controlpointattract":
                     let cpIdx = op.controlpoint ?? 0
-                    if cpIdx >= 0 && cpIdx < controlPoints.count {
-                        let target = controlPoints[cpIdx]
-                        let delta = target - p.position
-                        let distSq = dot(delta, delta)
-                        let dist = sqrt(distSq)
-                        let threshold = op.threshold ?? 100
-                        
-                        if dist < threshold && dist > 0.001 {
-                            let dir = delta / dist
-                            let scale = op.scale ?? 0
-                            let factor = pow(1.0 - (dist / threshold), 2.0)
-                            let force = scale * factor
-                            p.velocity += dir * force * dt
-                        }
+                    let origin = MathHelper.parseVec3(op.origin?.value ?? "0 0 0")
+                    let scale = Float(op.scale?.value ?? "0") ?? 0
+                    let threshold = (Float(op.threshold?.value ?? "0") ?? 0) / 2.0
+                    
+                    if cpIdx < 0 || cpIdx >= resolvedControlPointPositions.count { break }
+                    let center = resolvedControlPointPositions[cpIdx] + origin
+                    
+                    let toCenter = center - p.position
+                    let dist = simd_length(toCenter)
+                    
+                    if dist > 0.001 && dist < threshold {
+                        let direction = toCenter / dist
+                        let force = direction * scale * dt
+                        p.velocity += force * overrideSpeed
                     }
                     
-                case "angularmovement":
-                    let force = MathHelper.parseVec3(op.force ?? "0 0 0")
-                    p.angularVelocity += force.z * dt
-                    p.rotation += p.angularVelocity * dt
-                    
                 case "sizechange":
-                    let start = op.startvalue ?? 1
-                    let end = op.endvalue ?? 1
-                    let nAge = p.age / p.lifetime
-                    let s = start + (end - start) * nAge
-                    p.size = p.initialSize * s
+                    let start = Float(op.startvalue?.value ?? "1") ?? 1
+                    let end = Float(op.endvalue?.value ?? "1") ?? 1
+                    let startTime = Float(op.starttime?.value ?? "0") ?? 0
+                    let endTime = Float(op.endtime?.value ?? "1") ?? 1
+                    
+                    let life = p.age / p.lifetime
+                    let multiplier = MathHelper.fadeValue(life: life, startTime: startTime, endTime: endTime, startValue: start, endValue: end)
+                    p.size = p.initial.size * multiplier
+                    p.oscillateSize.base = p.size.x
+                    
+                case "oscillateposition":
+                    let fMin = Float(op.frequencymin?.value ?? "0") ?? 0
+                    let fMax = Float(op.frequencymax?.value ?? "0") ?? 0
+                    let sMin = Float(op.scalemin?.value ?? "0") ?? 0
+                    let sMax = Float(op.scalemax?.value ?? "0") ?? 0
+                    let pMin = Float(op.phasemin?.value ?? "0") ?? 0
+                    let pMax = Float(op.phasemax?.value ?? "0") ?? 0
+                    let mask = MathHelper.parseVec3(op.mask?.value ?? "1 1 1")
+                    
+                    if !p.oscillatePosition.initialized {
+                        for i in 0..<3 {
+                            p.oscillatePosition.frequency[i] = MathHelper.safeRandomFloat(min: fMin, max: fMax)
+                            p.oscillatePosition.scale[i] = MathHelper.safeRandomFloat(min: sMin, max: sMax)
+                            p.oscillatePosition.phase[i] = MathHelper.safeRandomFloat(min: pMin, max: pMax)
+                        }
+                        p.oscillatePosition.initialized = true
+                    }
+                    
+                    let t = p.age
+                    var delta = SIMD3<Float>(0, 0, 0)
+                    for i in 0..<3 {
+                        let w = p.oscillatePosition.frequency[i]
+                        let move = -p.oscillatePosition.scale[i] * w * sin(w * t + p.oscillatePosition.phase[i]) * dt
+                        delta[i] = move * mask[i] * overrideSpeed
+                    }
+                    p.position += delta
                     
                 default:
                     break
@@ -446,7 +564,58 @@ class ParticleSystemRenderable: RenderableObject {
             }
             alive.append(p)
         }
+        
         particles = alive
+        
+        if let children = config.children {
+            for (idx, childConfig) in children.enumerated() {
+                if childConfig.type == "eventfollow" && idx < childrenSystems.count {
+                    let childSys = childrenSystems[idx]
+                    var rate = childSys.selfRate > 0 ? childSys.selfRate : 30.0
+                    if rate > 40.0 { rate = 40.0 }
+                    
+                    for i in 0..<particles.count {
+                        var acc = particles[i].childEmitAccumulators[idx] ?? 0
+                        acc += rate * dt
+                        
+                        let myWorldPos = self.systemPosition
+                        let localPos = particles[i].position
+                        
+                        let radX = systemRotation.x
+                        let radY = systemRotation.y
+                        let radZ = systemRotation.z
+                        
+                        var p = localPos
+                        if radX != 0 {
+                            let cx = cos(radX), sx = sin(radX)
+                            let y = p.y * cx - p.z * sx
+                            let z = p.y * sx + p.z * cx
+                            p.y = y; p.z = z
+                        }
+                        if radY != 0 {
+                            let cy = cos(radY), sy = sin(radY)
+                            let x = p.x * cy + p.z * sy
+                            let z = -p.x * sy + p.z * cy
+                            p.x = x; p.z = z
+                        }
+                        if radZ != 0 {
+                            let cz = cos(radZ), sz = sin(radZ)
+                            let x = p.x * cz - p.y * sz
+                            let y = p.x * sz + p.y * cz
+                            p.x = x; p.y = y
+                        }
+                        
+                        let worldPos = myWorldPos + p * systemScale
+                        
+                        while acc >= 1.0 {
+                            acc -= 1.0
+                            childSys.spawnAt(position: worldPos)
+                        }
+                        particles[i].childEmitAccumulators[idx] = acc
+                    }
+                }
+            }
+        }
     }
     
     override func draw(encoder: MTLRenderCommandEncoder) {
@@ -455,9 +624,9 @@ class ParticleSystemRenderable: RenderableObject {
         var instances = particles.map { p -> ParticleInstance in
             return ParticleInstance(
                 position: p.position,
-                color: p.color,
+                color: SIMD4<Float>(p.color.x, p.color.y, p.color.z, p.alpha),
                 size: p.size,
-                rotation: p.rotation,
+                rotation: p.rotation.z,
                 padding: 0
             )
         }
@@ -471,7 +640,7 @@ class ParticleSystemRenderable: RenderableObject {
         if animatedTexture.textures.count > 1 {
             let totalDuration = animatedTexture.duration
             if totalDuration > 0 {
-                let t = fmod(Date().timeIntervalSince1970, totalDuration)
+                let t = fmod(Double(Date().timeIntervalSince1970), totalDuration)
                 var accum: Double = 0
                 for (i, delay) in animatedTexture.delays.enumerated() {
                     accum += delay
