@@ -83,6 +83,8 @@ class ParticleSystemRenderable: RenderableObject {
     var selfRate: Float = 0
     var spawnCount: Int = 1
     
+    private var isWorldSpace: Bool = false
+    
     init?(device: MTLDevice, config: ParticleSystemConfig, texture: AnimatedTexture, position: SIMD3<Float>, rotation: SIMD3<Float>, size: SIMD2<Float>, scale: SIMD3<Float>, pipeline: MTLRenderPipelineState, depthState: MTLDepthStencilState?, overrides: InstanceOverride?) {
         self.device = device
         self.config = config
@@ -116,6 +118,10 @@ class ParticleSystemRenderable: RenderableObject {
             for e in emitters {
                 self.selfRate += (e.rate ?? 0)
             }
+        }
+        
+        if let f = config.flags, (f & 4) != 0 {
+            self.isWorldSpace = true
         }
         
         let capacity = Int(Float(maxCount) * overrideCount) + 1
@@ -299,7 +305,20 @@ class ParticleSystemRenderable: RenderableObject {
             randomPos = SIMD3<Float>(x, y, z) * directions
         }
         
-        p.position = spawnOrigin + randomPos
+        if isWorldSpace {
+            let rotMat = Matrix4x4.rotation(angle: localRotation.z, axis: SIMD3<Float>(0, 0, 1))
+            let rotatedPos4 = rotMat * SIMD4<Float>(randomPos.x, randomPos.y, randomPos.z, 1.0)
+            let rotatedPos = SIMD3<Float>(rotatedPos4.x, rotatedPos4.y, rotatedPos4.z)
+            
+            let rotatedOrigin4 = rotMat * SIMD4<Float>(spawnOrigin.x, spawnOrigin.y, spawnOrigin.z, 1.0)
+            let rotatedOrigin = SIMD3<Float>(rotatedOrigin4.x, rotatedOrigin4.y, rotatedOrigin4.z)
+            
+            p.position = self.localPosition + rotatedOrigin + rotatedPos
+            p.size = p.size * SIMD2<Float>(scale.x, scale.y)
+        } else {
+            p.position = spawnOrigin + randomPos
+        }
+        
         p.color = SIMD4<Float>(overrideColor, 1.0)
         p.alpha = overrideAlpha
         p.size *= overrideSize
@@ -309,6 +328,12 @@ class ParticleSystemRenderable: RenderableObject {
             for initOp in initializers {
                 applyInitializer(op: initOp, p: &p)
             }
+        }
+        
+        if isWorldSpace {
+            let rotMat = Matrix4x4.rotation(angle: localRotation.z, axis: SIMD3<Float>(0, 0, 1))
+            let vel4 = rotMat * SIMD4<Float>(p.velocity.x, p.velocity.y, p.velocity.z, 0.0)
+            p.velocity = SIMD3<Float>(vel4.x, vel4.y, vel4.z)
         }
         
         p.initial.color = p.color
@@ -713,8 +738,15 @@ class ParticleSystemRenderable: RenderableObject {
             encoder.setDepthStencilState(ds)
         }
         
+        let renderMatrix: matrix_float4x4
+        if isWorldSpace {
+            renderMatrix = matrix_identity_float4x4
+        } else {
+            renderMatrix = worldMatrix
+        }
+        
         var objUniforms = ObjectUniforms(
-            modelMatrix: worldMatrix,
+            modelMatrix: renderMatrix,
             alpha: 1.0,
             color: SIMD4<Float>(1,1,1,1),
             animInfo: SIMD3<Float>(Float(animatedTexture.textures.count), Float(animatedTexture.duration), 0)
