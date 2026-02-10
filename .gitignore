@@ -1,4 +1,5 @@
 .DS_Store
 *.m
 **/*mdl_parser
+Scene*
 **/*pkg_parser

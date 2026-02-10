@@ -15,7 +15,7 @@ class Renderer: NSObject, MTKViewDelegate {
     var pipelineState: MTLRenderPipelineState?
     var puppetPipelineState: MTLRenderPipelineState?
     var particlePipelineState: MTLRenderPipelineState?
-    var additiveParticlePipelineState: MTLRenderPipelineState? // Added
+    var additiveParticlePipelineState: MTLRenderPipelineState?
     
     var samplerState: MTLSamplerState?
     
@@ -222,7 +222,7 @@ class Renderer: NSObject, MTKViewDelegate {
                        let sys = ParticleBuilder.buildSystem(from: pJson, baseFolder: folder, overrideData: obj.instanceoverride) {
                         
                         let blending = sys.subSystems.first?.material.blending ?? "normal"
-                        let pp = (blending == "additive" ? additiveParticlePipelineState : particlePipelineState)
+                        let pp = (blending.lowercased() == "additive" ? additiveParticlePipelineState : particlePipelineState)
                         
                         if let pipeline = pp {
                             let pr = ParticleSystemRenderable(device: device, system: sys, pipeline: pipeline, depthState: depthWriteDisabledState)
@@ -384,6 +384,32 @@ class Renderer: NSObject, MTKViewDelegate {
     
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
     
+    private func makePerspective(fovyRadians: Float, aspect: Float, near: Float, far: Float) -> matrix_float4x4 {
+        let ys = 1 / tanf(fovyRadians * 0.5)
+        let xs = ys / aspect
+        let zs = far / (near - far)
+        return matrix_float4x4.init(columns: (
+            vector_float4(xs, 0, 0, 0),
+            vector_float4(0, ys, 0, 0),
+            vector_float4(0, 0, zs, -1),
+            vector_float4(0, 0, zs * near, 0)
+        ))
+    }
+    
+    private func makeLookAt(eye: SIMD3<Float>, center: SIMD3<Float>, up: SIMD3<Float>) -> matrix_float4x4 {
+        let z = normalize(eye - center)
+        let x = normalize(cross(up, z))
+        let y = cross(z, x)
+        let t = SIMD3<Float>(-dot(x, eye), -dot(y, eye), -dot(z, eye))
+        
+        return matrix_float4x4.init(columns: (
+            vector_float4(x.x, y.x, z.x, 0),
+            vector_float4(x.y, y.y, z.y, 0),
+            vector_float4(x.z, y.z, z.z, 0),
+            vector_float4(t.x, t.y, t.z, 1)
+        ))
+    }
+    
     func draw(in view: MTKView) {
         guard let drawable = view.currentDrawable,
               let descriptor = view.currentRenderPassDescriptor,
@@ -397,14 +423,22 @@ class Renderer: NSObject, MTKViewDelegate {
         
         let width = Float(projectionSize.width)
         let height = Float(projectionSize.height)
-        let proj = Matrix4x4.orthographic(left: 0, right: width, bottom: 0, top: height, near: -5000, far: 5000)
+        
+        let fov = Float(50.0) * (Float.pi / 180.0)
+        let aspect = width / height
+        let camDist = (height / 2.0) / tan(fov / 2.0)
+        
+        let proj = makePerspective(fovyRadians: fov, aspect: aspect, near: 10.0, far: 10000.0)
+        let viewMat = makeLookAt(eye: SIMD3<Float>(width/2, height/2, camDist),
+                                 center: SIMD3<Float>(width/2, height/2, 0),
+                                 up: SIMD3<Float>(0, 1, 0))
         
         let currentTime = Date().timeIntervalSince(startTime)
         let dt = currentTime - lastTime
         lastTime = currentTime
         let time = Float(currentTime)
         
-        var globals = GlobalUniforms(projectionMatrix: proj, viewMatrix: matrix_identity_float4x4, time: time, padding: SIMD3<Float>(0,0,0))
+        var globals = GlobalUniforms(projectionMatrix: proj, viewMatrix: viewMat, time: time, padding: SIMD3<Float>(0,0,0))
         
         if let sampler = samplerState { encoder.setFragmentSamplerState(sampler, index: 0) }
         
@@ -416,6 +450,7 @@ class Renderer: NSObject, MTKViewDelegate {
             if let particle = obj as? ParticleSystemRenderable {
                 particle.update(dt: dt)
                 particle.projectionMatrix = proj
+                particle.viewMatrix = viewMat
             }
             obj.draw(encoder: encoder)
         }

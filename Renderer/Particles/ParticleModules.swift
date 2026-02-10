@@ -220,7 +220,7 @@ class ParticleModules {
                 let f = storage[i].freq / (2.0 * Float.pi)
                 let w = 2.0 * Float.pi * f
                 let scale = ParticleMath.lerp(scaleMin, scaleMax, (cos(w * time + storage[i].phase) + 1.0) * 0.5)
-                buffer[i].alpha = buffer[i].initValue.alpha * scale
+                buffer[i].alpha *= scale
             }
         }
     }
@@ -245,7 +245,7 @@ class ParticleModules {
                 let f = storage[i].freq / (2.0 * Float.pi)
                 let w = 2.0 * Float.pi * f
                 let scale = ParticleMath.lerp(scaleMin, scaleMax, (cos(w * time + storage[i].phase) + 1.0) * 0.5)
-                buffer[i].size = buffer[i].initValue.size * scale
+                buffer[i].size *= scale
             }
         }
     }

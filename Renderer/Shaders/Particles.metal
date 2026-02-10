@@ -23,27 +23,12 @@ vertex VertexOut vertex_particle(uint vertexID [[vertex_id]],
     VertexOut out;
     ParticleVertex v = vertices[vertexID];
     
-    float3 center = v.positionAndSeed.xyz;
-    float seed = v.positionAndSeed.w;
-    float2 corner = v.texData.xy;
-    float rotation = v.texData.z;
-    float size = v.texData.w;
+    float4 worldPos = uniforms.modelMatrix * float4(v.positionAndSeed.xyz, 1.0);
+    out.position = uniforms.projectionMatrix * uniforms.viewMatrix * worldPos;
     
-    float c = cos(rotation);
-    float s = sin(rotation);
-    float2x2 rotMat = float2x2(c, -s, s, c);
-    
-    float2 offset = (corner - 0.5) * size;
-    offset = rotMat * offset;
-    
-    float4 worldPos = uniforms.modelMatrix * float4(center, 1.0);
-    float4 viewPos = uniforms.viewMatrix * worldPos;
-    viewPos.xy += offset;
-    
-    out.position = uniforms.projectionMatrix * viewPos;
-    out.texCoord = float2(corner.x, 1.0 - corner.y);
+    out.texCoord = v.texData.xy;
     out.color = v.color;
-    out.seed = seed;
+    out.seed = v.positionAndSeed.w;
     
     return out;
 }
@@ -53,8 +38,8 @@ fragment float4 fragment_particle(VertexOut in [[stage_in]],
                                   sampler textureSampler [[sampler(0)]],
                                   constant float &animFrame [[buffer(2)]]) {
     uint totalFrames = texture.get_array_size();
-
-    float randomOffset = in.seed * float(totalFrames);
+    
+    float randomOffset = fract(in.seed * 123.456) * float(totalFrames);
     float currentFrame = animFrame + randomOffset;
     
     uint slice = uint(currentFrame) % totalFrames;

@@ -25,6 +25,7 @@ class ParticleSystemRenderable: RenderableObject {
     var isAnimated: Bool = false
     
     var projectionMatrix: matrix_float4x4 = matrix_identity_float4x4
+    var viewMatrix: matrix_float4x4 = matrix_identity_float4x4
     
     init(device: MTLDevice, system: ParticleSystem, pipeline: MTLRenderPipelineState, depthState: MTLDepthStencilState?) {
         self.device = device
@@ -106,7 +107,7 @@ class ParticleSystemRenderable: RenderableObject {
             
             var uniforms = ParticleUniforms(
                 projectionMatrix: self.projectionMatrix,
-                viewMatrix: matrix_identity_float4x4,
+                viewMatrix: self.viewMatrix,
                 modelMatrix: finalModelMatrix,
                 viewportSize: .zero,
                 time: Float(system.subSystems.first?.time ?? 0)
@@ -129,19 +130,48 @@ class ParticleSystemRenderable: RenderableObject {
             if p.lifetime <= 0 { continue }
             if pCount >= maxParticles { break }
             
-            let pos = inst.boundedData.pos + p.position
-            let size = p.size
-            let rot = p.rotation.z
-            let col = SIMD4<Float>(p.color.x, p.color.y, p.color.z, p.alpha)
+            let rot = p.rotation
+            let cx = cos(rot.x), sx = sin(rot.x)
+            let cy = cos(rot.y), sy = sin(rot.y)
+            let cz = cos(rot.z), sz = sin(rot.z)
             
+            let m00 = cy * cz
+            let m01 = -cx * sz + sx * sy * cz
+            let m02 = sx * sz + cx * sy * cz
+            let m10 = cy * sz
+            let m11 = cx * cz + sx * sy * sz
+            let m12 = -sx * cz + cx * sy * sz
+            let m20 = -sy
+            let m21 = sx * cy
+            let m22 = cx * cy
+            
+            let size = p.size
+            let halfS = size * 0.5
+            
+            func rotate(_ x: Float, _ y: Float) -> SIMD3<Float> {
+                return SIMD3<Float>(
+                    x * m00 + y * m01,
+                    x * m10 + y * m11,
+                    x * m20 + y * m21
+                )
+            }
+            
+            let pPos = inst.boundedData.pos + p.position
+            
+            let o0 = rotate(-halfS, -halfS) + pPos
+            let o1 = rotate(halfS, -halfS) + pPos
+            let o2 = rotate(-halfS, halfS) + pPos
+            let o3 = rotate(halfS, halfS) + pPos
+            
+            let col = SIMD4<Float>(p.color.x, p.color.y, p.color.z, p.alpha)
             let baseIndex = UInt16(vOffset)
             
-            let posSeed = SIMD4<Float>(pos.x, pos.y, pos.z, p.seed)
+            let seed = p.seed
             
-            vPtr[vOffset+0] = ParticleVertex(positionAndSeed: posSeed, texData: SIMD4<Float>(0, 0, rot, size), color: col)
-            vPtr[vOffset+1] = ParticleVertex(positionAndSeed: posSeed, texData: SIMD4<Float>(1, 0, rot, size), color: col)
-            vPtr[vOffset+2] = ParticleVertex(positionAndSeed: posSeed, texData: SIMD4<Float>(0, 1, rot, size), color: col)
-            vPtr[vOffset+3] = ParticleVertex(positionAndSeed: posSeed, texData: SIMD4<Float>(1, 1, rot, size), color: col)
+            vPtr[vOffset+0] = ParticleVertex(positionAndSeed: SIMD4<Float>(o0, seed), texData: SIMD4<Float>(0, 1, 0, 0), color: col)
+            vPtr[vOffset+1] = ParticleVertex(positionAndSeed: SIMD4<Float>(o1, seed), texData: SIMD4<Float>(1, 1, 0, 0), color: col)
+            vPtr[vOffset+2] = ParticleVertex(positionAndSeed: SIMD4<Float>(o2, seed), texData: SIMD4<Float>(0, 0, 0, 0), color: col)
+            vPtr[vOffset+3] = ParticleVertex(positionAndSeed: SIMD4<Float>(o3, seed), texData: SIMD4<Float>(1, 0, 0, 0), color: col)
             
             iPtr[iOffset+0] = baseIndex + 0
             iPtr[iOffset+1] = baseIndex + 1
@@ -194,16 +224,12 @@ class ParticleSystemRenderable: RenderableObject {
             let trailPos = Float(i - 1)
             
             let baseIndex = UInt16(vOffset)
+            let seed = p.seed
             
-            let posSeedStart = SIMD4<Float>(startPos.x, startPos.y, startPos.z, prevP.seed)
-            let posSeedEnd = SIMD4<Float>(endPos.x, endPos.y, endPos.z, p.seed)
-            let posSeedSCP = SIMD4<Float>(scp.x, scp.y, scp.z, prevP.seed)
-            let posSeedECP = SIMD4<Float>(ecp.x, ecp.y, ecp.z, p.seed)
-            
-            vPtr[vOffset+0] = ParticleVertex(positionAndSeed: posSeedStart, texData: SIMD4<Float>(0, 0, 0, size), color: col)
-            vPtr[vOffset+1] = ParticleVertex(positionAndSeed: posSeedEnd, texData: SIMD4<Float>(0, 1, trailLen, trailPos), color: col)
-            vPtr[vOffset+2] = ParticleVertex(positionAndSeed: posSeedSCP, texData: SIMD4<Float>(1, 0, trailLen, trailPos), color: col)
-            vPtr[vOffset+3] = ParticleVertex(positionAndSeed: posSeedECP, texData: SIMD4<Float>(1, 1, 0, size), color: col)
+            vPtr[vOffset+0] = ParticleVertex(positionAndSeed: SIMD4<Float>(startPos, seed), texData: SIMD4<Float>(0, 0, 0, size), color: col)
+            vPtr[vOffset+1] = ParticleVertex(positionAndSeed: SIMD4<Float>(endPos, seed), texData: SIMD4<Float>(0, 1, trailLen, trailPos), color: col)
+            vPtr[vOffset+2] = ParticleVertex(positionAndSeed: SIMD4<Float>(scp, seed), texData: SIMD4<Float>(1, 0, trailLen, trailPos), color: col)
+            vPtr[vOffset+3] = ParticleVertex(positionAndSeed: SIMD4<Float>(ecp, seed), texData: SIMD4<Float>(1, 1, 0, size), color: col)
             
             iPtr[iOffset+0] = baseIndex + 0
             iPtr[iOffset+1] = baseIndex + 1
