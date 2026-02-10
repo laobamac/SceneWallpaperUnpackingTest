@@ -46,17 +46,11 @@ class ParticleSystemRenderable: RenderableObject {
         for _ in 0..<bufferCount {
             if let vb = device.makeBuffer(length: vertexSize, options: .storageModeShared) {
                 vertexBuffers.append(vb)
-            } else {
-                Logger.error("Failed to create particle vertex buffer")
             }
             if let ib = device.makeBuffer(length: indexSize, options: .storageModeShared) {
                 indexBuffers.append(ib)
-            } else {
-                Logger.error("Failed to create particle index buffer")
             }
         }
-        
-        Logger.log("ParticleSystemRenderable initialized with \(system.subSystems.count) subsystems")
     }
     
     func update(dt: Double) {
@@ -112,7 +106,7 @@ class ParticleSystemRenderable: RenderableObject {
                 viewportSize: .zero,
                 time: Float(system.subSystems.first?.time ?? 0)
             )
-            encoder.setVertexBytes(&uniforms, length: MemoryLayout<ParticleUniforms>.size, index: 1)
+            encoder.setVertexBytes(&uniforms, length: MemoryLayout<ParticleUniforms>.stride, index: 1)
             
             if let tex = particleTexture {
                 encoder.setFragmentTexture(tex, index: 0)

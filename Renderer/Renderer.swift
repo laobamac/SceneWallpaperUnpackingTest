@@ -7,6 +7,7 @@
 
 import MetalKit
 import simd
+import Foundation
 
 class Renderer: NSObject, MTKViewDelegate {
     let device: MTLDevice
@@ -33,7 +34,6 @@ class Renderer: NSObject, MTKViewDelegate {
     init?(device: MTLDevice) {
         self.device = device
         guard let queue = device.makeCommandQueue() else {
-            Logger.error("Failed to create command queue")
             return nil
         }
         self.commandQueue = queue
@@ -41,9 +41,7 @@ class Renderer: NSObject, MTKViewDelegate {
         
         do {
             try setupPipeline()
-            Logger.log("Renderer initialized successfully")
         } catch {
-            Logger.error("Pipeline setup failed: \(error)")
             return nil
         }
         
@@ -171,7 +169,6 @@ class Renderer: NSObject, MTKViewDelegate {
             let projData = try Data(contentsOf: projectURL)
             guard let projJson = try JSONSerialization.jsonObject(with: projData, options: []) as? [String: Any],
                   let sceneFile = projJson["file"] as? String else {
-                Logger.error("Failed to parse project.json or find scene file")
                 return
             }
             
@@ -189,11 +186,21 @@ class Renderer: NSObject, MTKViewDelegate {
             for obj in sceneRoot.objects {
                 if !obj.isVisible { continue }
                 
-                if let type = obj.type, type == "particle", let particleFile = obj.particle {
+                if let particleFile = obj.particle {
                     Logger.log("Found particle: \(particleFile)")
-                    let particleURL = folder.appendingPathComponent("particles/\(particleFile)")
-                    let finalURL = FileManager.default.fileExists(atPath: particleURL.path) ? particleURL :
-                                   (FileManager.default.fileExists(atPath: folder.appendingPathComponent("assets/\(particleFile)").path) ? folder.appendingPathComponent("assets/\(particleFile)") : folder.appendingPathComponent(particleFile))
+                    
+                    let directURL = folder.appendingPathComponent(particleFile)
+                    let particlesFolderURL = folder.appendingPathComponent("particles/\(particleFile)")
+                    let assetsFolderURL = folder.appendingPathComponent("assets/\(particleFile)")
+                    
+                    var finalURL = directURL
+                    if FileManager.default.fileExists(atPath: directURL.path) {
+                        finalURL = directURL
+                    } else if FileManager.default.fileExists(atPath: particlesFolderURL.path) {
+                        finalURL = particlesFolderURL
+                    } else if FileManager.default.fileExists(atPath: assetsFolderURL.path) {
+                        finalURL = assetsFolderURL
+                    }
                     
                     if let pData = try? Data(contentsOf: finalURL),
                        let pJson = try? JSONSerialization.jsonObject(with: pData) as? [String: Any],
@@ -206,14 +213,39 @@ class Renderer: NSObject, MTKViewDelegate {
                         pr.localRotation = rotation
                         
                         if let sub = sys.subSystems.first {
-                            let matFile = sub.material.fileName
-                            if !matFile.isEmpty {
-                                let texURL = resolveTextureURL(base: folder, rawPath: matFile)
+                            let matPath = sub.material.fileName
+                            var textureName: String?
+                            
+                            if !matPath.isEmpty {
+                                let potentialPaths = [
+                                    "materials/\(matPath)",
+                                    "assets/\(matPath)",
+                                    matPath
+                                ]
+                                
+                                for path in potentialPaths {
+                                    let url = folder.appendingPathComponent(path)
+                                    if FileManager.default.fileExists(atPath: url.path),
+                                       let data = try? Data(contentsOf: url),
+                                       let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                                       let passes = json["passes"] as? [[String: Any]],
+                                       let firstPass = passes.first,
+                                       let textures = firstPass["textures"] as? [String],
+                                       let firstTex = textures.first {
+                                        textureName = firstTex
+                                        break
+                                    }
+                                }
+                            }
+                            
+                            let finalTexPath = textureName ?? matPath
+                            if !finalTexPath.isEmpty {
+                                let texURL = resolveTextureURL(base: folder, rawPath: finalTexPath)
                                 do {
                                     let tex = try await TextureManager.shared.loadTexture(url: texURL)
                                     pr.setTexture(tex, isArray: tex.textureType == .type2DArray)
                                 } catch {
-                                    Logger.error("Failed to load particle texture \(matFile): \(error)")
+                                    Logger.error("Failed to load particle texture \(finalTexPath): \(error)")
                                 }
                             }
                         }
@@ -240,7 +272,6 @@ class Renderer: NSObject, MTKViewDelegate {
             self.renderables.append(contentsOf: orderedList)
             
         } catch {
-            Logger.error("Failed to load scene: \(error)")
         }
     }
     
@@ -276,7 +307,6 @@ class Renderer: NSObject, MTKViewDelegate {
             guard let pipeline = pipelineState else { return nil }
             return RenderableObject(position: pos, rotation: rotation, size: size, scale: scale, texture: texture, pipeline: pipeline, depthState: depthState)
         } catch {
-            Logger.error("Failed to create renderable: \(error)")
             return nil
         }
     }
@@ -313,7 +343,6 @@ class Renderer: NSObject, MTKViewDelegate {
                 maskWriteState: maskWriteState, maskTestState: maskTestState, usePixelCoords: usePixelCoords
             )
         } catch {
-            Logger.error("Failed to create puppet: \(error)")
             return nil
         }
     }
@@ -354,7 +383,7 @@ class Renderer: NSObject, MTKViewDelegate {
         lastTime = currentTime
         let time = Float(currentTime)
         
-        var globals = GlobalUniforms(projectionMatrix: proj, viewMatrix: matrix_identity_float4x4, time: time)
+        var globals = GlobalUniforms(projectionMatrix: proj, viewMatrix: matrix_identity_float4x4, time: time, padding: SIMD3<Float>(0,0,0))
         
         encoder.setVertexBytes(&globals, length: MemoryLayout<GlobalUniforms>.size, index: 1)
         encoder.setFragmentBytes(&globals, length: MemoryLayout<GlobalUniforms>.size, index: 1)
@@ -372,7 +401,7 @@ class Renderer: NSObject, MTKViewDelegate {
                     viewportSize: SIMD2<Float>(width, height),
                     time: time
                 )
-                encoder.setVertexBytes(&pUniforms, length: MemoryLayout<ParticleUniforms>.size, index: 1)
+                encoder.setVertexBytes(&pUniforms, length: MemoryLayout<ParticleUniforms>.stride, index: 1)
             }
             obj.draw(encoder: encoder)
         }

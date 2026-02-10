@@ -14,6 +14,8 @@ struct ParticleMath {
     }
     
     static func randomFloat(min: Float, max: Float) -> Float {
+        if min == max { return min }
+        if min > max { return Float.random(in: max...min) }
         return Float.random(in: min...max)
     }
     

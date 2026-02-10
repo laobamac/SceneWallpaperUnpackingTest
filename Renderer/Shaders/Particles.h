@@ -19,9 +19,9 @@ struct ParticleVertex {
 struct ParticleUniforms {
     matrix_float4x4 projectionMatrix;
     matrix_float4x4 viewMatrix;
-    vector_float2 viewportSize;
     matrix_float4x4 modelMatrix;
+    vector_float2 viewportSize;
     float time;
 };
 
-#endif // !Particles_h
+#endif
