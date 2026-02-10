@@ -28,3 +28,17 @@ struct PuppetVertex {
     var j1: UInt16, j2: UInt16, j3: UInt16, j4: UInt16
     var w1: Float, w2: Float, w3: Float, w4: Float
 }
+
+struct ParticleVertex {
+    var position: SIMD3<Float>
+    var texData: SIMD4<Float>
+    var color: SIMD4<Float>
+}
+
+struct ParticleUniforms {
+    var projectionMatrix: matrix_float4x4
+    var viewMatrix: matrix_float4x4
+    var modelMatrix: matrix_float4x4
+    var viewportSize: SIMD2<Float>
+    var time: Float
+}

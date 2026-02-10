@@ -66,10 +66,10 @@ vertex VertexOut vertex_puppet(PuppetVertexIn in [[stage_in]],
 fragment float4 fragment_main(VertexOut in [[stage_in]],
                               constant GlobalUniforms &globals [[buffer(1)]],
                               constant ObjectUniforms &object [[buffer(2)]],
-                              texture2d<float> baseTexture [[texture(0)]],
+                              texture2d_array<float> baseTexture [[texture(0)]],
                               sampler textureSampler [[sampler(0)]])
 {
-    float4 color = baseTexture.sample(textureSampler, in.texCoord);
+    float4 color = baseTexture.sample(textureSampler, in.texCoord, 0);
     color *= object.color;
     color.a *= object.alpha;
     return color;

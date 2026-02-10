@@ -13,6 +13,7 @@ class Renderer: NSObject, MTKViewDelegate {
     let commandQueue: MTLCommandQueue
     var pipelineState: MTLRenderPipelineState?
     var puppetPipelineState: MTLRenderPipelineState?
+    var particlePipelineState: MTLRenderPipelineState?
     
     var samplerState: MTLSamplerState?
     
@@ -100,6 +101,20 @@ class Renderer: NSObject, MTKViewDelegate {
         puppetDesc.vertexDescriptor = pvDesc
         puppetPipelineState = try device.makeRenderPipelineState(descriptor: puppetDesc)
         
+        let particleDesc = MTLRenderPipelineDescriptor()
+        particleDesc.label = "Particle Pipeline"
+        particleDesc.vertexFunction = library.makeFunction(name: "vertex_particle")
+        particleDesc.fragmentFunction = library.makeFunction(name: "fragment_particle")
+        particleDesc.colorAttachments[0].pixelFormat = .bgra8Unorm
+        particleDesc.colorAttachments[0].isBlendingEnabled = true
+        particleDesc.colorAttachments[0].rgbBlendOperation = .add
+        particleDesc.colorAttachments[0].alphaBlendOperation = .add
+        particleDesc.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
+        particleDesc.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
+        particleDesc.depthAttachmentPixelFormat = .depth32Float_stencil8
+        particleDesc.stencilAttachmentPixelFormat = .depth32Float_stencil8
+        particlePipelineState = try device.makeRenderPipelineState(descriptor: particleDesc)
+        
         let samplerDesc = MTLSamplerDescriptor()
         samplerDesc.minFilter = .linear; samplerDesc.magFilter = .linear
         samplerDesc.sAddressMode = .clampToEdge; samplerDesc.tAddressMode = .clampToEdge
@@ -155,7 +170,10 @@ class Renderer: NSObject, MTKViewDelegate {
         do {
             let projData = try Data(contentsOf: projectURL)
             guard let projJson = try JSONSerialization.jsonObject(with: projData, options: []) as? [String: Any],
-                  let sceneFile = projJson["file"] as? String else { return }
+                  let sceneFile = projJson["file"] as? String else {
+                Logger.error("Failed to parse project.json or find scene file")
+                return
+            }
             
             let sceneURL = folder.appendingPathComponent(sceneFile)
             let sceneData = try Data(contentsOf: sceneURL)
@@ -170,6 +188,43 @@ class Renderer: NSObject, MTKViewDelegate {
             
             for obj in sceneRoot.objects {
                 if !obj.isVisible { continue }
+                
+                if let type = obj.type, type == "particle", let particleFile = obj.particle {
+                    Logger.log("Found particle: \(particleFile)")
+                    let particleURL = folder.appendingPathComponent("particles/\(particleFile)")
+                    let finalURL = FileManager.default.fileExists(atPath: particleURL.path) ? particleURL :
+                                   (FileManager.default.fileExists(atPath: folder.appendingPathComponent("assets/\(particleFile)").path) ? folder.appendingPathComponent("assets/\(particleFile)") : folder.appendingPathComponent(particleFile))
+                    
+                    if let pData = try? Data(contentsOf: finalURL),
+                       let pJson = try? JSONSerialization.jsonObject(with: pData) as? [String: Any],
+                       let sys = ParticleBuilder.buildSystem(from: pJson, baseFolder: folder),
+                       let pp = particlePipelineState {
+                        
+                        let pr = ParticleSystemRenderable(device: device, system: sys, pipeline: pp)
+                        let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
+                        pr.localPosition = pos
+                        pr.localRotation = rotation
+                        
+                        if let sub = sys.subSystems.first {
+                            let matFile = sub.material.fileName
+                            if !matFile.isEmpty {
+                                let texURL = resolveTextureURL(base: folder, rawPath: matFile)
+                                do {
+                                    let tex = try await TextureManager.shared.loadTexture(url: texURL)
+                                    pr.setTexture(tex, isArray: tex.textureType == .type2DArray)
+                                } catch {
+                                    Logger.error("Failed to load particle texture \(matFile): \(error)")
+                                }
+                            }
+                        }
+                        
+                        if let id = obj.id { tempRenderables[id] = pr; pr.id = id }
+                        pr.parentId = obj.parent
+                        orderedList.append(pr)
+                        continue
+                    }
+                }
+                
                 if let renderable = await createRenderable(from: obj) {
                     if let id = obj.id { tempRenderables[id] = renderable; renderable.id = id }
                     renderable.parentId = obj.parent
@@ -182,8 +237,7 @@ class Renderer: NSObject, MTKViewDelegate {
                     renderable.parent = parentObj
                 }
             }
-            
-            self.renderables = orderedList
+            self.renderables.append(contentsOf: orderedList)
             
         } catch {
             Logger.error("Failed to load scene: \(error)")
@@ -221,7 +275,10 @@ class Renderer: NSObject, MTKViewDelegate {
             
             guard let pipeline = pipelineState else { return nil }
             return RenderableObject(position: pos, rotation: rotation, size: size, scale: scale, texture: texture, pipeline: pipeline, depthState: depthState)
-        } catch { return nil }
+        } catch {
+            Logger.error("Failed to create renderable: \(error)")
+            return nil
+        }
     }
     
     func createPuppetRenderable(from obj: SceneObject, dataURL: URL, objURL: URL) async -> RenderableObject? {
@@ -255,7 +312,10 @@ class Renderer: NSObject, MTKViewDelegate {
                 size: size, scale: scale, texture: texture, pipeline: pipeline, depthState: depthState,
                 maskWriteState: maskWriteState, maskTestState: maskTestState, usePixelCoords: usePixelCoords
             )
-        } catch { return nil }
+        } catch {
+            Logger.error("Failed to create puppet: \(error)")
+            return nil
+        }
     }
     
     func resolveTextureURL(base: URL, rawPath: String) -> URL {
@@ -290,6 +350,7 @@ class Renderer: NSObject, MTKViewDelegate {
         let proj = Matrix4x4.orthographic(left: 0, right: width, bottom: 0, top: height, near: -5000, far: 5000)
         
         let currentTime = Date().timeIntervalSince(startTime)
+        let dt = currentTime - lastTime
         lastTime = currentTime
         let time = Float(currentTime)
         
@@ -302,6 +363,17 @@ class Renderer: NSObject, MTKViewDelegate {
         
         for obj in renderables {
             if let puppet = obj as? PuppetRenderable { puppet.updateAnimation(time: time) }
+            if let particle = obj as? ParticleSystemRenderable {
+                particle.update(dt: dt)
+                var pUniforms = ParticleUniforms(
+                    projectionMatrix: proj,
+                    viewMatrix: matrix_identity_float4x4,
+                    modelMatrix: obj.worldMatrix,
+                    viewportSize: SIMD2<Float>(width, height),
+                    time: time
+                )
+                encoder.setVertexBytes(&pUniforms, length: MemoryLayout<ParticleUniforms>.size, index: 1)
+            }
             obj.draw(encoder: encoder)
         }
         
