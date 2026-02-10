@@ -33,6 +33,7 @@ struct ParticleVertex {
     var positionAndSeed: SIMD4<Float>
     var texData: SIMD4<Float>
     var color: SIMD4<Float>
+    var normalAndAge: SIMD4<Float>
 }
 
 struct ParticleUniforms {

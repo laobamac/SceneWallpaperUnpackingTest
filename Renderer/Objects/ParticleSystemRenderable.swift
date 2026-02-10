@@ -27,6 +27,14 @@ class ParticleSystemRenderable: RenderableObject {
     var projectionMatrix: matrix_float4x4 = matrix_identity_float4x4
     var viewMatrix: matrix_float4x4 = matrix_identity_float4x4
     
+    struct ParticleSortItem {
+        var particle: Particle
+        var position: SIMD3<Float>
+        var distance: Float
+        var isTrail: Bool
+        var inst: ParticleInstance?
+    }
+    
     init(device: MTLDevice, system: ParticleSystem, pipeline: MTLRenderPipelineState, depthState: MTLDepthStencilState?) {
         self.device = device
         self.system = system
@@ -77,9 +85,15 @@ class ParticleSystemRenderable: RenderableObject {
         let vPtr = currentVB.contents().bindMemory(to: ParticleVertex.self, capacity: maxParticles * 4)
         let iPtr = currentIB.contents().bindMemory(to: UInt16.self, capacity: maxParticles * 6)
         
-        var particleCount = 0
         var vOffset = 0
         var iOffset = 0
+        var pCount = 0
+        
+        var sortList: [ParticleSortItem] = []
+        sortList.reserveCapacity(maxParticles)
+        
+        let camInv = viewMatrix.inverse
+        let camPos = SIMD3<Float>(camInv.columns.3.x, camInv.columns.3.y, camInv.columns.3.z)
         
         for sub in system.subSystems {
             let isTrail = sub.material.renderer == "spritetrail" || sub.material.renderer == "ropetrail"
@@ -88,11 +102,23 @@ class ParticleSystemRenderable: RenderableObject {
                 if inst.noLiveParticle { continue }
                 
                 if isTrail {
-                    genRopeData(inst: inst, vPtr: vPtr, iPtr: iPtr, vOffset: &vOffset, iOffset: &iOffset, pCount: &particleCount)
+                    genRopeData(inst: inst, vPtr: vPtr, iPtr: iPtr, vOffset: &vOffset, iOffset: &iOffset, pCount: &pCount)
                 } else {
-                    genQuadData(inst: inst, vPtr: vPtr, iPtr: iPtr, vOffset: &vOffset, iOffset: &iOffset, pCount: &particleCount)
+                    for p in inst.particles {
+                        if p.lifetime <= 0 { continue }
+                        let finalPos = inst.boundedData.pos + p.position
+                        let dist = distance_squared(finalPos, camPos)
+                        sortList.append(ParticleSortItem(particle: p, position: finalPos, distance: dist, isTrail: false, inst: nil))
+                    }
                 }
             }
+        }
+        
+        sortList.sort { $0.distance > $1.distance }
+        
+        for item in sortList {
+            if pCount >= maxParticles { break }
+            genQuadData(p: item.particle, finalPos: item.position, vPtr: vPtr, iPtr: iPtr, vOffset: &vOffset, iOffset: &iOffset, pCount: &pCount)
         }
         
         if iOffset > 0 {
@@ -125,65 +151,61 @@ class ParticleSystemRenderable: RenderableObject {
         }
     }
     
-    private func genQuadData(inst: ParticleInstance, vPtr: UnsafeMutablePointer<ParticleVertex>, iPtr: UnsafeMutablePointer<UInt16>, vOffset: inout Int, iOffset: inout Int, pCount: inout Int) {
-        for p in inst.particles {
-            if p.lifetime <= 0 { continue }
-            if pCount >= maxParticles { break }
-            
-            let rot = p.rotation
-            let cx = cos(rot.x), sx = sin(rot.x)
-            let cy = cos(rot.y), sy = sin(rot.y)
-            let cz = cos(rot.z), sz = sin(rot.z)
-            
-            let m00 = cy * cz
-            let m01 = -cx * sz + sx * sy * cz
-            let m02 = sx * sz + cx * sy * cz
-            let m10 = cy * sz
-            let m11 = cx * cz + sx * sy * sz
-            let m12 = -sx * cz + cx * sy * sz
-            let m20 = -sy
-            let m21 = sx * cy
-            let m22 = cx * cy
-            
-            let size = p.size
-            let halfS = size * 0.5
-            
-            func rotate(_ x: Float, _ y: Float) -> SIMD3<Float> {
-                return SIMD3<Float>(
-                    x * m00 + y * m01,
-                    x * m10 + y * m11,
-                    x * m20 + y * m21
-                )
-            }
-            
-            let pPos = inst.boundedData.pos + p.position
-            
-            let o0 = rotate(-halfS, -halfS) + pPos
-            let o1 = rotate(halfS, -halfS) + pPos
-            let o2 = rotate(-halfS, halfS) + pPos
-            let o3 = rotate(halfS, halfS) + pPos
-            
-            let col = SIMD4<Float>(p.color.x, p.color.y, p.color.z, p.alpha)
-            let baseIndex = UInt16(vOffset)
-            
-            let seed = p.seed
-            
-            vPtr[vOffset+0] = ParticleVertex(positionAndSeed: SIMD4<Float>(o0, seed), texData: SIMD4<Float>(0, 1, 0, 0), color: col)
-            vPtr[vOffset+1] = ParticleVertex(positionAndSeed: SIMD4<Float>(o1, seed), texData: SIMD4<Float>(1, 1, 0, 0), color: col)
-            vPtr[vOffset+2] = ParticleVertex(positionAndSeed: SIMD4<Float>(o2, seed), texData: SIMD4<Float>(0, 0, 0, 0), color: col)
-            vPtr[vOffset+3] = ParticleVertex(positionAndSeed: SIMD4<Float>(o3, seed), texData: SIMD4<Float>(1, 0, 0, 0), color: col)
-            
-            iPtr[iOffset+0] = baseIndex + 0
-            iPtr[iOffset+1] = baseIndex + 1
-            iPtr[iOffset+2] = baseIndex + 2
-            iPtr[iOffset+3] = baseIndex + 1
-            iPtr[iOffset+4] = baseIndex + 3
-            iPtr[iOffset+5] = baseIndex + 2
-            
-            vOffset += 4
-            iOffset += 6
-            pCount += 1
+    private func genQuadData(p: Particle, finalPos: SIMD3<Float>, vPtr: UnsafeMutablePointer<ParticleVertex>, iPtr: UnsafeMutablePointer<UInt16>, vOffset: inout Int, iOffset: inout Int, pCount: inout Int) {
+        let rot = p.rotation
+        let cx = cos(rot.x), sx = sin(rot.x)
+        let cy = cos(rot.y), sy = sin(rot.y)
+        let cz = cos(rot.z), sz = sin(rot.z)
+        
+        let m00 = cy * cz
+        let m01 = -cx * sz + sx * sy * cz
+        let m02 = sx * sz + cx * sy * cz
+        let m10 = cy * sz
+        let m11 = cx * cz + sx * sy * sz
+        let m12 = -sx * cz + cx * sy * sz
+        let m20 = -sy
+        let m21 = sx * cy
+        let m22 = cx * cy
+        
+        let size = p.size
+        let halfS = size * 0.5
+        
+        func rotate(_ x: Float, _ y: Float) -> SIMD3<Float> {
+            return SIMD3<Float>(
+                x * m00 + y * m01,
+                x * m10 + y * m11,
+                x * m20 + y * m21
+            )
         }
+        
+        let o0 = rotate(-halfS, -halfS) + finalPos
+        let o1 = rotate(halfS, -halfS) + finalPos
+        let o2 = rotate(-halfS, halfS) + finalPos
+        let o3 = rotate(halfS, halfS) + finalPos
+        
+        let normal = SIMD3<Float>(m02, m12, m22)
+        let elapsedTime = p.initValue.lifetime - p.lifetime
+        
+        let col = SIMD4<Float>(p.color.x, p.color.y, p.color.z, p.alpha)
+        let baseIndex = UInt16(vOffset)
+        let seed = p.seed
+        let normAge = SIMD4<Float>(normal.x, normal.y, normal.z, elapsedTime)
+        
+        vPtr[vOffset+0] = ParticleVertex(positionAndSeed: SIMD4<Float>(o0, seed), texData: SIMD4<Float>(0, 1, 0, 0), color: col, normalAndAge: normAge)
+        vPtr[vOffset+1] = ParticleVertex(positionAndSeed: SIMD4<Float>(o1, seed), texData: SIMD4<Float>(1, 1, 0, 0), color: col, normalAndAge: normAge)
+        vPtr[vOffset+2] = ParticleVertex(positionAndSeed: SIMD4<Float>(o2, seed), texData: SIMD4<Float>(0, 0, 0, 0), color: col, normalAndAge: normAge)
+        vPtr[vOffset+3] = ParticleVertex(positionAndSeed: SIMD4<Float>(o3, seed), texData: SIMD4<Float>(1, 0, 0, 0), color: col, normalAndAge: normAge)
+        
+        iPtr[iOffset+0] = baseIndex + 0
+        iPtr[iOffset+1] = baseIndex + 1
+        iPtr[iOffset+2] = baseIndex + 2
+        iPtr[iOffset+3] = baseIndex + 1
+        iPtr[iOffset+4] = baseIndex + 3
+        iPtr[iOffset+5] = baseIndex + 2
+        
+        vOffset += 4
+        iOffset += 6
+        pCount += 1
     }
     
     private func genRopeData(inst: ParticleInstance, vPtr: UnsafeMutablePointer<ParticleVertex>, iPtr: UnsafeMutablePointer<UInt16>, vOffset: inout Int, iOffset: inout Int, pCount: inout Int) {
@@ -225,11 +247,12 @@ class ParticleSystemRenderable: RenderableObject {
             
             let baseIndex = UInt16(vOffset)
             let seed = p.seed
+            let dummyNormal = SIMD4<Float>(0, 0, 1, 0)
             
-            vPtr[vOffset+0] = ParticleVertex(positionAndSeed: SIMD4<Float>(startPos, seed), texData: SIMD4<Float>(0, 0, 0, size), color: col)
-            vPtr[vOffset+1] = ParticleVertex(positionAndSeed: SIMD4<Float>(endPos, seed), texData: SIMD4<Float>(0, 1, trailLen, trailPos), color: col)
-            vPtr[vOffset+2] = ParticleVertex(positionAndSeed: SIMD4<Float>(scp, seed), texData: SIMD4<Float>(1, 0, trailLen, trailPos), color: col)
-            vPtr[vOffset+3] = ParticleVertex(positionAndSeed: SIMD4<Float>(ecp, seed), texData: SIMD4<Float>(1, 1, 0, size), color: col)
+            vPtr[vOffset+0] = ParticleVertex(positionAndSeed: SIMD4<Float>(startPos, seed), texData: SIMD4<Float>(0, 0, 0, size), color: col, normalAndAge: dummyNormal)
+            vPtr[vOffset+1] = ParticleVertex(positionAndSeed: SIMD4<Float>(endPos, seed), texData: SIMD4<Float>(0, 1, trailLen, trailPos), color: col, normalAndAge: dummyNormal)
+            vPtr[vOffset+2] = ParticleVertex(positionAndSeed: SIMD4<Float>(scp, seed), texData: SIMD4<Float>(1, 0, trailLen, trailPos), color: col, normalAndAge: dummyNormal)
+            vPtr[vOffset+3] = ParticleVertex(positionAndSeed: SIMD4<Float>(ecp, seed), texData: SIMD4<Float>(1, 1, 0, size), color: col, normalAndAge: dummyNormal)
             
             iPtr[iOffset+0] = baseIndex + 0
             iPtr[iOffset+1] = baseIndex + 1
