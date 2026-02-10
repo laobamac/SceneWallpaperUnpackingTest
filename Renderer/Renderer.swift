@@ -385,12 +385,12 @@ class Renderer: NSObject, MTKViewDelegate {
         
         var globals = GlobalUniforms(projectionMatrix: proj, viewMatrix: matrix_identity_float4x4, time: time, padding: SIMD3<Float>(0,0,0))
         
-        encoder.setVertexBytes(&globals, length: MemoryLayout<GlobalUniforms>.size, index: 1)
-        encoder.setFragmentBytes(&globals, length: MemoryLayout<GlobalUniforms>.size, index: 1)
-        
         if let sampler = samplerState { encoder.setFragmentSamplerState(sampler, index: 0) }
         
         for obj in renderables {
+            encoder.setVertexBytes(&globals, length: MemoryLayout<GlobalUniforms>.size, index: 1)
+            encoder.setFragmentBytes(&globals, length: MemoryLayout<GlobalUniforms>.size, index: 1)
+            
             if let puppet = obj as? PuppetRenderable { puppet.updateAnimation(time: time) }
             if let particle = obj as? ParticleSystemRenderable {
                 particle.update(dt: dt)

@@ -243,21 +243,23 @@ class PuppetRenderable: RenderableObject {
         if standardIndexCount > 0, let buf = standardIndexBuffer {
              if let ds = depthState { encoder.setDepthStencilState(ds) }
              encoder.drawIndexedPrimitives(type: .triangle, indexCount: standardIndexCount, indexType: .uint32, indexBuffer: buf, indexBufferOffset: 0)
-        } else {
-             if maskIndexCount > 0, let buf = maskIndexBuffer, let ws = maskWriteState {
-                 encoder.setDepthStencilState(ws)
-                 encoder.setStencilReferenceValue(1)
-                 encoder.drawIndexedPrimitives(type: .triangle, indexCount: maskIndexCount, indexType: .uint32, indexBuffer: buf, indexBufferOffset: 0)
-             }
-             if clippedIndexCount > 0, let buf = clippedIndexBuffer, let ts = maskTestState {
-                 encoder.setDepthStencilState(ts)
-                 encoder.setStencilReferenceValue(1)
-                 encoder.drawIndexedPrimitives(type: .triangle, indexCount: clippedIndexCount, indexType: .uint32, indexBuffer: buf, indexBufferOffset: 0)
-             }
-             if overlayIndexCount > 0, let buf = overlayIndexBuffer, let ds = depthState {
-                 encoder.setDepthStencilState(ds)
-                 encoder.drawIndexedPrimitives(type: .triangle, indexCount: overlayIndexCount, indexType: .uint32, indexBuffer: buf, indexBufferOffset: 0)
-             }
+        }
+        
+        if maskIndexCount > 0, let buf = maskIndexBuffer, let ws = maskWriteState {
+            encoder.setDepthStencilState(ws)
+            encoder.setStencilReferenceValue(1)
+            encoder.drawIndexedPrimitives(type: .triangle, indexCount: maskIndexCount, indexType: .uint32, indexBuffer: buf, indexBufferOffset: 0)
+        }
+        
+        if clippedIndexCount > 0, let buf = clippedIndexBuffer, let ts = maskTestState {
+            encoder.setDepthStencilState(ts)
+            encoder.setStencilReferenceValue(1)
+            encoder.drawIndexedPrimitives(type: .triangle, indexCount: clippedIndexCount, indexType: .uint32, indexBuffer: buf, indexBufferOffset: 0)
+        }
+        
+        if overlayIndexCount > 0, let buf = overlayIndexBuffer, let ds = depthState {
+            encoder.setDepthStencilState(ds)
+            encoder.drawIndexedPrimitives(type: .triangle, indexCount: overlayIndexCount, indexType: .uint32, indexBuffer: buf, indexBufferOffset: 0)
         }
     }
     
