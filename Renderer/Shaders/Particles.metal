@@ -14,6 +14,7 @@ struct VertexOut {
     float4 position [[position]];
     float2 texCoord;
     float4 color;
+    float seed;
 };
 
 vertex VertexOut vertex_particle(uint vertexID [[vertex_id]],
@@ -22,7 +23,8 @@ vertex VertexOut vertex_particle(uint vertexID [[vertex_id]],
     VertexOut out;
     ParticleVertex v = vertices[vertexID];
     
-    float3 center = v.position;
+    float3 center = v.positionAndSeed.xyz;
+    float seed = v.positionAndSeed.w;
     float2 corner = v.texData.xy;
     float rotation = v.texData.z;
     float size = v.texData.w;
@@ -41,6 +43,7 @@ vertex VertexOut vertex_particle(uint vertexID [[vertex_id]],
     out.position = uniforms.projectionMatrix * viewPos;
     out.texCoord = float2(corner.x, 1.0 - corner.y);
     out.color = v.color;
+    out.seed = seed;
     
     return out;
 }
@@ -49,10 +52,13 @@ fragment float4 fragment_particle(VertexOut in [[stage_in]],
                                   texture2d_array<float> texture [[texture(0)]],
                                   sampler textureSampler [[sampler(0)]],
                                   constant float &animFrame [[buffer(2)]]) {
-    uint slice = uint(animFrame);
-    if (slice >= texture.get_array_size()) {
-        slice = 0;
-    }
+    uint totalFrames = texture.get_array_size();
+
+    float randomOffset = in.seed * float(totalFrames);
+    float currentFrame = animFrame + randomOffset;
+    
+    uint slice = uint(currentFrame) % totalFrames;
+    
     float4 color = texture.sample(textureSampler, in.texCoord, slice);
     return color * in.color;
 }

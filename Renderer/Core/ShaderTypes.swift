@@ -30,7 +30,7 @@ struct PuppetVertex {
 }
 
 struct ParticleVertex {
-    var position: SIMD3<Float>
+    var positionAndSeed: SIMD4<Float>
     var texData: SIMD4<Float>
     var color: SIMD4<Float>
 }

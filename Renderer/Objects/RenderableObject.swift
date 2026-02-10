@@ -15,8 +15,8 @@ class RenderableObject {
     
     var localPosition: SIMD3<Float>
     var localRotation: SIMD3<Float>
-    let size: SIMD2<Float>
-    let scale: SIMD3<Float>
+    var size: SIMD2<Float>
+    var scale: SIMD3<Float>
     
     let texture: MTLTexture
     let pipeline: MTLRenderPipelineState

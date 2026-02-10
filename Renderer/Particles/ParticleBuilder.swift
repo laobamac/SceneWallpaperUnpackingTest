@@ -9,9 +9,45 @@ import Foundation
 import simd
 
 class ParticleBuilder {
-    static func buildSystem(from particleJSON: [String: Any], baseFolder: URL) -> ParticleSystem? {
+    static func buildSystem(from particleJSON: [String: Any], baseFolder: URL, overrideData: InstanceOverrideJSON?) -> ParticleSystem? {
         let sys = ParticleSystem()
         if let sub = parseParticleObject(json: particleJSON, parentJSON: nil, baseFolder: baseFolder) {
+            
+            if let over = overrideData {
+                if let c = over.count {
+                    sub.maxCount = Int(Float(sub.maxCount) * c)
+                }
+                if let r = over.rate {
+                    sub.rate *= r
+                }
+                
+                var po = ParticleInstanceOverride()
+                po.enabled = true
+                if let v = over.alpha { po.alpha = v }
+                if let v = over.size { po.size = v }
+                if let v = over.lifetime { po.lifetime = v }
+                if let v = over.rate { po.rate = v }
+                if let v = over.speed { po.speed = v }
+                if let v = over.count { po.count = v }
+                
+                if let cStr = over.color?.value {
+                    let parts = cStr.components(separatedBy: " ").compactMap { Float($0) }
+                    if parts.count >= 3 {
+                        po.color = SIMD3<Float>(parts[0], parts[1], parts[2])
+                        po.overColor = true
+                    }
+                }
+                if let cnStr = over.colorn?.value {
+                    let parts = cnStr.components(separatedBy: " ").compactMap { Float($0) }
+                    if parts.count >= 3 {
+                        po.colorN = SIMD3<Float>(parts[0], parts[1], parts[2])
+                        po.overColorN = true
+                    }
+                }
+                
+                sub.addInitializer(ParticleModules.overrideInit(over: po))
+            }
+            
             sys.subSystems.append(sub)
             return sys
         }
@@ -38,8 +74,13 @@ class ParticleBuilder {
                 if FileManager.default.fileExists(atPath: finalMatURL.path) {
                     let data = try Data(contentsOf: finalMatURL)
                     if let matJSON = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                        if let passes = matJSON["passes"] as? [[String: Any]], let first = passes.first, let renderer = first["shader"] as? String {
-                             sub.material.renderer = renderer
+                        if let passes = matJSON["passes"] as? [[String: Any]], let first = passes.first {
+                            if let renderer = first["shader"] as? String {
+                                sub.material.renderer = renderer
+                            }
+                            if let blend = first["blending"] as? String {
+                                sub.material.blending = blend
+                            }
                         }
                     }
                 }
@@ -184,6 +225,14 @@ class ParticleBuilder {
             let fwd = parseVec3(json["forward"], defaultVal: SIMD3<Float>(0,1,0))
             let right = parseVec3(json["right"], defaultVal: SIMD3<Float>(0,0,1))
             return ParticleModules.turbulentVelocityRandom(scale: scale, timeScale: timeScale, offset: offset, speedMin: speedMin, speedMax: speedMax, phaseMin: phaseMin, phaseMax: phaseMax, forward: fwd, right: right)
+        } else if name == "rotationrandom" {
+            let min = parseVec3(json["min"])
+            let max = parseVec3(json["max"])
+            return ParticleModules.rotationRandom(min: min, max: max)
+        } else if name == "angularvelocityrandom" {
+            let min = parseVec3(json["min"])
+            let max = parseVec3(json["max"])
+            return ParticleModules.angularVelocityRandom(min: min, max: max)
         }
         return nil
     }
@@ -195,6 +244,10 @@ class ParticleBuilder {
             let drag = (json["drag"] as? Float) ?? 0
             let grav = parseVec3(json["gravity"])
             return ParticleModules.movement(drag: drag, gravity: grav)
+        } else if name == "angularmovement" {
+            let drag = (json["drag"] as? Float) ?? 0
+            let force = parseVec3(json["force"])
+            return ParticleModules.angularMovement(drag: drag, force: force)
         } else if name == "alphafade" {
             let fi = (json["fadeintime"] as? Float) ?? 0.5
             let fo = (json["fadeouttime"] as? Float) ?? 0.5

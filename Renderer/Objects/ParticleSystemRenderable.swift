@@ -24,6 +24,8 @@ class ParticleSystemRenderable: RenderableObject {
     var animationSpeed: Float = 1.0
     var isAnimated: Bool = false
     
+    var projectionMatrix: matrix_float4x4 = matrix_identity_float4x4
+    
     init(device: MTLDevice, system: ParticleSystem, pipeline: MTLRenderPipelineState, depthState: MTLDepthStencilState?) {
         self.device = device
         self.system = system
@@ -103,7 +105,7 @@ class ParticleSystemRenderable: RenderableObject {
             let finalModelMatrix = worldMatrix
             
             var uniforms = ParticleUniforms(
-                projectionMatrix: matrix_identity_float4x4,
+                projectionMatrix: self.projectionMatrix,
                 viewMatrix: matrix_identity_float4x4,
                 modelMatrix: finalModelMatrix,
                 viewportSize: .zero,
@@ -134,10 +136,12 @@ class ParticleSystemRenderable: RenderableObject {
             
             let baseIndex = UInt16(vOffset)
             
-            vPtr[vOffset+0] = ParticleVertex(position: pos, texData: SIMD4<Float>(0, 0, rot, size), color: col)
-            vPtr[vOffset+1] = ParticleVertex(position: pos, texData: SIMD4<Float>(1, 0, rot, size), color: col)
-            vPtr[vOffset+2] = ParticleVertex(position: pos, texData: SIMD4<Float>(0, 1, rot, size), color: col)
-            vPtr[vOffset+3] = ParticleVertex(position: pos, texData: SIMD4<Float>(1, 1, rot, size), color: col)
+            let posSeed = SIMD4<Float>(pos.x, pos.y, pos.z, p.seed)
+            
+            vPtr[vOffset+0] = ParticleVertex(positionAndSeed: posSeed, texData: SIMD4<Float>(0, 0, rot, size), color: col)
+            vPtr[vOffset+1] = ParticleVertex(positionAndSeed: posSeed, texData: SIMD4<Float>(1, 0, rot, size), color: col)
+            vPtr[vOffset+2] = ParticleVertex(positionAndSeed: posSeed, texData: SIMD4<Float>(0, 1, rot, size), color: col)
+            vPtr[vOffset+3] = ParticleVertex(positionAndSeed: posSeed, texData: SIMD4<Float>(1, 1, rot, size), color: col)
             
             iPtr[iOffset+0] = baseIndex + 0
             iPtr[iOffset+1] = baseIndex + 1
@@ -191,10 +195,15 @@ class ParticleSystemRenderable: RenderableObject {
             
             let baseIndex = UInt16(vOffset)
             
-            vPtr[vOffset+0] = ParticleVertex(position: startPos, texData: SIMD4<Float>(0, 0, 0, size), color: col)
-            vPtr[vOffset+1] = ParticleVertex(position: endPos, texData: SIMD4<Float>(0, 1, trailLen, trailPos), color: col)
-            vPtr[vOffset+2] = ParticleVertex(position: scp, texData: SIMD4<Float>(1, 0, trailLen, trailPos), color: col)
-            vPtr[vOffset+3] = ParticleVertex(position: ecp, texData: SIMD4<Float>(1, 1, 0, size), color: col)
+            let posSeedStart = SIMD4<Float>(startPos.x, startPos.y, startPos.z, prevP.seed)
+            let posSeedEnd = SIMD4<Float>(endPos.x, endPos.y, endPos.z, p.seed)
+            let posSeedSCP = SIMD4<Float>(scp.x, scp.y, scp.z, prevP.seed)
+            let posSeedECP = SIMD4<Float>(ecp.x, ecp.y, ecp.z, p.seed)
+            
+            vPtr[vOffset+0] = ParticleVertex(positionAndSeed: posSeedStart, texData: SIMD4<Float>(0, 0, 0, size), color: col)
+            vPtr[vOffset+1] = ParticleVertex(positionAndSeed: posSeedEnd, texData: SIMD4<Float>(0, 1, trailLen, trailPos), color: col)
+            vPtr[vOffset+2] = ParticleVertex(positionAndSeed: posSeedSCP, texData: SIMD4<Float>(1, 0, trailLen, trailPos), color: col)
+            vPtr[vOffset+3] = ParticleVertex(positionAndSeed: posSeedECP, texData: SIMD4<Float>(1, 1, 0, size), color: col)
             
             iPtr[iOffset+0] = baseIndex + 0
             iPtr[iOffset+1] = baseIndex + 1

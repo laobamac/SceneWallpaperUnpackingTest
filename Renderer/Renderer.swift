@@ -15,6 +15,7 @@ class Renderer: NSObject, MTKViewDelegate {
     var pipelineState: MTLRenderPipelineState?
     var puppetPipelineState: MTLRenderPipelineState?
     var particlePipelineState: MTLRenderPipelineState?
+    var additiveParticlePipelineState: MTLRenderPipelineState? // Added
     
     var samplerState: MTLSamplerState?
     
@@ -113,6 +114,20 @@ class Renderer: NSObject, MTKViewDelegate {
         particleDesc.stencilAttachmentPixelFormat = .depth32Float_stencil8
         particlePipelineState = try device.makeRenderPipelineState(descriptor: particleDesc)
         
+        let additiveDesc = MTLRenderPipelineDescriptor()
+        additiveDesc.label = "Additive Particle Pipeline"
+        additiveDesc.vertexFunction = library.makeFunction(name: "vertex_particle")
+        additiveDesc.fragmentFunction = library.makeFunction(name: "fragment_particle")
+        additiveDesc.colorAttachments[0].pixelFormat = .bgra8Unorm
+        additiveDesc.colorAttachments[0].isBlendingEnabled = true
+        additiveDesc.colorAttachments[0].rgbBlendOperation = .add
+        additiveDesc.colorAttachments[0].alphaBlendOperation = .add
+        additiveDesc.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
+        additiveDesc.colorAttachments[0].destinationRGBBlendFactor = .one
+        additiveDesc.depthAttachmentPixelFormat = .depth32Float_stencil8
+        additiveDesc.stencilAttachmentPixelFormat = .depth32Float_stencil8
+        additiveParticlePipelineState = try device.makeRenderPipelineState(descriptor: additiveDesc)
+        
         let samplerDesc = MTLSamplerDescriptor()
         samplerDesc.minFilter = .linear; samplerDesc.magFilter = .linear
         samplerDesc.sAddressMode = .clampToEdge; samplerDesc.tAddressMode = .clampToEdge
@@ -204,55 +219,61 @@ class Renderer: NSObject, MTKViewDelegate {
                     
                     if let pData = try? Data(contentsOf: finalURL),
                        let pJson = try? JSONSerialization.jsonObject(with: pData) as? [String: Any],
-                       let sys = ParticleBuilder.buildSystem(from: pJson, baseFolder: folder),
-                       let pp = particlePipelineState {
+                       let sys = ParticleBuilder.buildSystem(from: pJson, baseFolder: folder, overrideData: obj.instanceoverride) {
                         
-                        let pr = ParticleSystemRenderable(device: device, system: sys, pipeline: pp, depthState: depthWriteDisabledState)
-                        let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
-                        pr.localPosition = pos
-                        pr.localRotation = rotation
+                        let blending = sys.subSystems.first?.material.blending ?? "normal"
+                        let pp = (blending == "additive" ? additiveParticlePipelineState : particlePipelineState)
                         
-                        if let sub = sys.subSystems.first {
-                            let matPath = sub.material.fileName
-                            var textureName: String?
+                        if let pipeline = pp {
+                            let pr = ParticleSystemRenderable(device: device, system: sys, pipeline: pipeline, depthState: depthWriteDisabledState)
+                            let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
+                            pr.localPosition = pos
+                            pr.localRotation = rotation
+                            pr.size = size
+                            pr.scale = scale
                             
-                            if !matPath.isEmpty {
-                                let potentialPaths = [
-                                    "materials/\(matPath)",
-                                    "assets/\(matPath)",
-                                    matPath
-                                ]
+                            if let sub = sys.subSystems.first {
+                                let matPath = sub.material.fileName
+                                var textureName: String?
                                 
-                                for path in potentialPaths {
-                                    let url = folder.appendingPathComponent(path)
-                                    if FileManager.default.fileExists(atPath: url.path),
-                                       let data = try? Data(contentsOf: url),
-                                       let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                                       let passes = json["passes"] as? [[String: Any]],
-                                       let firstPass = passes.first,
-                                       let textures = firstPass["textures"] as? [String],
-                                       let firstTex = textures.first {
-                                        textureName = firstTex
-                                        break
+                                if !matPath.isEmpty {
+                                    let potentialPaths = [
+                                        "materials/\(matPath)",
+                                        "assets/\(matPath)",
+                                        matPath
+                                    ]
+                                    
+                                    for path in potentialPaths {
+                                        let url = folder.appendingPathComponent(path)
+                                        if FileManager.default.fileExists(atPath: url.path),
+                                           let data = try? Data(contentsOf: url),
+                                           let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                                           let passes = json["passes"] as? [[String: Any]],
+                                           let firstPass = passes.first,
+                                           let textures = firstPass["textures"] as? [String],
+                                           let firstTex = textures.first {
+                                            textureName = firstTex
+                                            break
+                                        }
+                                    }
+                                }
+                                
+                                let finalTexPath = textureName ?? matPath
+                                if !finalTexPath.isEmpty {
+                                    let texURL = resolveTextureURL(base: folder, rawPath: finalTexPath)
+                                    do {
+                                        let tex = try await TextureManager.shared.loadTexture(url: texURL)
+                                        pr.setTexture(tex, isArray: tex.textureType == .type2DArray)
+                                    } catch {
+                                        Logger.error("Failed to load particle texture \(finalTexPath): \(error)")
                                     }
                                 }
                             }
                             
-                            let finalTexPath = textureName ?? matPath
-                            if !finalTexPath.isEmpty {
-                                let texURL = resolveTextureURL(base: folder, rawPath: finalTexPath)
-                                do {
-                                    let tex = try await TextureManager.shared.loadTexture(url: texURL)
-                                    pr.setTexture(tex, isArray: tex.textureType == .type2DArray)
-                                } catch {
-                                    Logger.error("Failed to load particle texture \(finalTexPath): \(error)")
-                                }
-                            }
+                            if let id = obj.id { tempRenderables[id] = pr; pr.id = id }
+                            pr.parentId = obj.parent
+                            orderedList.append(pr)
                         }
-                        
-                        if let id = obj.id { tempRenderables[id] = pr; pr.id = id }
-                        pr.parentId = obj.parent
-                        orderedList.append(pr)
                         continue
                     }
                 }
@@ -394,14 +415,7 @@ class Renderer: NSObject, MTKViewDelegate {
             if let puppet = obj as? PuppetRenderable { puppet.updateAnimation(time: time) }
             if let particle = obj as? ParticleSystemRenderable {
                 particle.update(dt: dt)
-                var pUniforms = ParticleUniforms(
-                    projectionMatrix: proj,
-                    viewMatrix: matrix_identity_float4x4,
-                    modelMatrix: matrix_identity_float4x4,
-                    viewportSize: SIMD2<Float>(width, height),
-                    time: time
-                )
-                encoder.setVertexBytes(&pUniforms, length: MemoryLayout<ParticleUniforms>.stride, index: 1)
+                particle.projectionMatrix = proj
             }
             obj.draw(encoder: encoder)
         }

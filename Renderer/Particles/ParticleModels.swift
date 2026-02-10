@@ -11,6 +11,7 @@ import Foundation
 struct WPMaterial {
     var fileName: String = ""
     var renderer: String = "sprite"
+    var blending: String = "normal"
 }
 
 struct Particle {
@@ -33,6 +34,7 @@ struct Particle {
     var angularVelocity: SIMD3<Float> = .zero
     var angularAcceleration: SIMD3<Float> = .zero
     
+    var seed: Float = Float.random(in: 0...100)
     var markNew: Bool = true
     var initValue: InitValue = InitValue()
 }

@@ -11,7 +11,7 @@
 #include <simd/simd.h>
 
 struct ParticleVertex {
-    vector_float3 position;
+    vector_float4 positionAndSeed;
     vector_float4 texData;
     vector_float4 color;
 };

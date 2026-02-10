@@ -33,6 +33,7 @@ struct SceneObject: Codable {
     let angles: ScriptableValue?
     let parent: Int?
     let visible: BoolOrObject?
+    let instanceoverride: InstanceOverrideJSON?
     
     var isVisible: Bool {
         if let v = visible {
@@ -41,6 +42,18 @@ struct SceneObject: Codable {
         }
         return true
     }
+}
+
+struct InstanceOverrideJSON: Codable {
+    let alpha: Float?
+    let color: ScriptableValue?
+    let colorn: ScriptableValue?
+    let count: Float?
+    let id: Int?
+    let rate: Float?
+    let size: Float?
+    let speed: Float?
+    let lifetime: Float?
 }
 
 enum ScriptableValue: Codable {
