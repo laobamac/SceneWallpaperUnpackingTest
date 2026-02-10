@@ -13,10 +13,10 @@ actor TextureManager {
     private var cache: [URL: MTLTexture] = [:]
     private var loader: MTKTextureLoader?
     
-    func setup(device: MTLDevice) {
+    func setup(device: MTLDevice) async {
         if loader == nil {
             loader = MTKTextureLoader(device: device)
-            Logger.log("TextureManager initialized")
+            await Logger.log("TextureManager initialized")
         }
     }
     
@@ -24,7 +24,7 @@ actor TextureManager {
         if let cached = cache[url] { return cached }
         guard let loader = loader else {
             let err = NSError(domain: "TextureManager", code: 0)
-            Logger.error("TextureManager not ready")
+            await Logger.error("TextureManager not ready")
             throw err
         }
         
@@ -33,7 +33,7 @@ actor TextureManager {
             return try await loadWebPTextureArray(url: url, device: loader.device)
         }
         
-        Logger.log("Loading static texture as Array(1): \(url.lastPathComponent)")
+        await Logger.log("Loading static texture: \(url.lastPathComponent) from \(url.path)")
         do {
             let tempTexture = try await loader.newTexture(URL: url, options: options)
             let desc = MTLTextureDescriptor()
@@ -55,20 +55,21 @@ actor TextureManager {
                           sliceCount: 1, levelCount: 1)
                 blit.endEncoding()
                 cmd.commit()
-                cmd.waitUntilCompleted()
+                await cmd.completed()
             }
             
+            await Logger.log("Successfully loaded static texture: \(url.lastPathComponent)")
             cache[url] = arrayTexture
             return arrayTexture
         } catch {
-            Logger.error("Failed to load texture \(url.lastPathComponent): \(error)")
+            await Logger.error("Failed to load texture \(url.lastPathComponent): \(error)")
             throw error
         }
     }
     
     func loadWebPTextureArray(url: URL, device: MTLDevice) async throws -> MTLTexture {
         if let cached = cache[url] { return cached }
-        Logger.log("Loading WebP Array: \(url.lastPathComponent)")
+        await Logger.log("Loading WebP Array: \(url.lastPathComponent) from \(url.path)")
         
         guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else {
             throw NSError(domain: "TextureManager", code: 1)
@@ -110,12 +111,13 @@ actor TextureManager {
             }
         }
         
+        await Logger.log("Successfully loaded WebP Array: \(url.lastPathComponent) (\(count) frames)")
         cache[url] = texture
         return texture
     }
     
     func clear() async {
-        Logger.log("Clearing texture cache")
+        await Logger.log("Clearing texture cache")
         cache.removeAll()
     }
 }

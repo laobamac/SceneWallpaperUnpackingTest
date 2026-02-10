@@ -207,7 +207,7 @@ class Renderer: NSObject, MTKViewDelegate {
                        let sys = ParticleBuilder.buildSystem(from: pJson, baseFolder: folder),
                        let pp = particlePipelineState {
                         
-                        let pr = ParticleSystemRenderable(device: device, system: sys, pipeline: pp)
+                        let pr = ParticleSystemRenderable(device: device, system: sys, pipeline: pp, depthState: depthWriteDisabledState)
                         let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
                         pr.localPosition = pos
                         pr.localRotation = rotation
@@ -397,7 +397,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 var pUniforms = ParticleUniforms(
                     projectionMatrix: proj,
                     viewMatrix: matrix_identity_float4x4,
-                    modelMatrix: obj.worldMatrix,
+                    modelMatrix: matrix_identity_float4x4,
                     viewportSize: SIMD2<Float>(width, height),
                     time: time
                 )

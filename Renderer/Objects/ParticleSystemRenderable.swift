@@ -24,7 +24,7 @@ class ParticleSystemRenderable: RenderableObject {
     var animationSpeed: Float = 1.0
     var isAnimated: Bool = false
     
-    init(device: MTLDevice, system: ParticleSystem, pipeline: MTLRenderPipelineState) {
+    init(device: MTLDevice, system: ParticleSystem, pipeline: MTLRenderPipelineState, depthState: MTLDepthStencilState?) {
         self.device = device
         self.system = system
         self.pipelineState = pipeline
@@ -38,7 +38,7 @@ class ParticleSystemRenderable: RenderableObject {
         desc.usage = .shaderRead
         let dummyTex = device.makeTexture(descriptor: desc)!
         
-        super.init(position: .zero, rotation: .zero, size: .zero, scale: .one, texture: dummyTex, pipeline: pipeline)
+        super.init(position: .zero, rotation: .zero, size: .zero, scale: .one, texture: dummyTex, pipeline: pipeline, depthState: depthState)
         
         let vertexSize = MemoryLayout<ParticleVertex>.stride * maxParticles * 4
         let indexSize = MemoryLayout<UInt16>.stride * maxParticles * 6
@@ -94,10 +94,13 @@ class ParticleSystemRenderable: RenderableObject {
         
         if iOffset > 0 {
             encoder.setRenderPipelineState(pipelineState)
+            if let ds = self.depthState {
+                encoder.setDepthStencilState(ds)
+            }
+            
             encoder.setVertexBuffer(currentVB, offset: 0, index: 0)
             
-            let geometryScale = Matrix4x4.scale(x: size.x, y: size.y, z: 1)
-            let finalModelMatrix = worldMatrix * geometryScale
+            let finalModelMatrix = worldMatrix
             
             var uniforms = ParticleUniforms(
                 projectionMatrix: matrix_identity_float4x4,

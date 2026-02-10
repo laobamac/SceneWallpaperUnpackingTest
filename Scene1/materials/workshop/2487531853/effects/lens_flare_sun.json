@@ -1,0 +1,12 @@
+{
+	"passes" : 
+	[
+		{
+			"blending" : "normal",
+			"cullmode" : "nocull",
+			"depthtest" : "disabled",
+			"depthwrite" : "disabled",
+			"shader" : "workshop/2487531853/effects/lens_flare_sun"
+		}
+	]
+}

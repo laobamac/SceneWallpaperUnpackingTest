@@ -33,7 +33,6 @@ class ParticleBuilder {
             sub.material.fileName = matPath
             do {
                 let matURL = baseFolder.appendingPathComponent("materials/\(matPath)")
-                // Fallback to assets if not in materials
                 let finalMatURL = FileManager.default.fileExists(atPath: matURL.path) ? matURL : baseFolder.appendingPathComponent("assets/\(matPath)")
                 
                 if FileManager.default.fileExists(atPath: finalMatURL.path) {
@@ -106,7 +105,14 @@ class ParticleBuilder {
         guard let name = json["name"] as? String else { return nil }
         guard let typeStr = json["type"] as? String, let type = ParticleSpawnType(rawValue: typeStr) else { return nil }
         
-        let childURL = baseFolder.appendingPathComponent("assets/\(name)")
+        var childURL = baseFolder.appendingPathComponent(name)
+        if !FileManager.default.fileExists(atPath: childURL.path) {
+            childURL = baseFolder.appendingPathComponent("assets/\(name)")
+        }
+        if !FileManager.default.fileExists(atPath: childURL.path) {
+            childURL = baseFolder.appendingPathComponent("particles/\(name)")
+        }
+        
         do {
             let data = try Data(contentsOf: childURL)
             guard let childParticleJSON = try JSONSerialization.jsonObject(with: data) as? [String: Any] else { return nil }
@@ -118,7 +124,7 @@ class ParticleBuilder {
                 return childSub
             }
         } catch {
-            Logger.error("Failed to load child particle \(name): \(error)")
+            Logger.error("Failed to load child particle \(name) at \(childURL.path): \(error)")
         }
         return nil
     }
