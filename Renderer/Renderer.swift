@@ -13,17 +13,18 @@ class Renderer: NSObject, MTKViewDelegate {
     let commandQueue: MTLCommandQueue
     var pipelineState: MTLRenderPipelineState?
     var puppetPipelineState: MTLRenderPipelineState?
+    var particleAdditivePipeline: MTLRenderPipelineState?
+    var particleTranslucentPipeline: MTLRenderPipelineState?
     
     var samplerState: MTLSamplerState?
-    
     var depthStencilState: MTLDepthStencilState?
     var depthWriteDisabledState: MTLDepthStencilState?
-    
     var maskWriteState: MTLDepthStencilState?
     var maskTestState: MTLDepthStencilState?
     
     var baseFolder: URL?
     var renderables: [RenderableObject] = []
+    var particleSystems: [ParticleSystemRenderable] = []
     
     var startTime: Date = Date()
     var lastTime: TimeInterval = 0
@@ -31,39 +32,25 @@ class Renderer: NSObject, MTKViewDelegate {
     
     init?(device: MTLDevice) {
         self.device = device
-        guard let queue = device.makeCommandQueue() else {
-            Logger.error("Failed to create command queue")
-            return nil
-        }
+        guard let queue = device.makeCommandQueue() else { return nil }
         self.commandQueue = queue
         super.init()
         
         do {
             try setupPipeline()
-            Logger.log("Renderer initialized successfully")
-        } catch {
-            Logger.error("Pipeline setup failed: \(error)")
-            return nil
-        }
+        } catch { return nil }
         
-        Task {
-            await TextureManager.shared.setup(device: device)
-        }
+        Task { await TextureManager.shared.setup(device: device) }
     }
     
     func setupPipeline() throws {
-        guard let library = device.makeDefaultLibrary() else {
-            throw NSError(domain: "Renderer", code: 1, userInfo: [NSLocalizedDescriptionKey: "Failed to create default library"])
-        }
+        guard let library = device.makeDefaultLibrary() else { throw NSError(domain: "Renderer", code: 1) }
         
         let descriptor = MTLRenderPipelineDescriptor()
-        descriptor.label = "Standard Pipeline"
         descriptor.vertexFunction = library.makeFunction(name: "vertex_main")
         descriptor.fragmentFunction = library.makeFunction(name: "fragment_main")
         descriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
         descriptor.colorAttachments[0].isBlendingEnabled = true
-        descriptor.colorAttachments[0].rgbBlendOperation = .add
-        descriptor.colorAttachments[0].alphaBlendOperation = .add
         descriptor.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
         descriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
         descriptor.depthAttachmentPixelFormat = .depth32Float_stencil8
@@ -78,13 +65,10 @@ class Renderer: NSObject, MTKViewDelegate {
         pipelineState = try device.makeRenderPipelineState(descriptor: descriptor)
         
         let puppetDesc = MTLRenderPipelineDescriptor()
-        puppetDesc.label = "Puppet Pipeline"
         puppetDesc.vertexFunction = library.makeFunction(name: "vertex_puppet")
         puppetDesc.fragmentFunction = library.makeFunction(name: "fragment_main")
         puppetDesc.colorAttachments[0].pixelFormat = .bgra8Unorm
         puppetDesc.colorAttachments[0].isBlendingEnabled = true
-        puppetDesc.colorAttachments[0].rgbBlendOperation = .add
-        puppetDesc.colorAttachments[0].alphaBlendOperation = .add
         puppetDesc.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
         puppetDesc.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
         puppetDesc.depthAttachmentPixelFormat = .depth32Float_stencil8
@@ -99,6 +83,33 @@ class Renderer: NSObject, MTKViewDelegate {
         pvDesc.layouts[0].stride = 48
         puppetDesc.vertexDescriptor = pvDesc
         puppetPipelineState = try device.makeRenderPipelineState(descriptor: puppetDesc)
+        
+        let particleDesc = MTLRenderPipelineDescriptor()
+        particleDesc.vertexFunction = library.makeFunction(name: "particle_vertex")
+        particleDesc.fragmentFunction = library.makeFunction(name: "particle_fragment")
+        particleDesc.colorAttachments[0].pixelFormat = .bgra8Unorm
+        particleDesc.colorAttachments[0].isBlendingEnabled = true
+        particleDesc.depthAttachmentPixelFormat = .depth32Float_stencil8
+        particleDesc.stencilAttachmentPixelFormat = .depth32Float_stencil8
+        
+        let partVDesc = MTLVertexDescriptor()
+        partVDesc.attributes[0].format = .float3; partVDesc.attributes[0].offset = 0; partVDesc.attributes[0].bufferIndex = 0
+        partVDesc.attributes[1].format = .float2; partVDesc.attributes[1].offset = 12; partVDesc.attributes[1].bufferIndex = 0
+        partVDesc.attributes[2].format = .float3; partVDesc.attributes[2].offset = 20; partVDesc.attributes[2].bufferIndex = 0
+        partVDesc.attributes[3].format = .float;  partVDesc.attributes[3].offset = 32; partVDesc.attributes[3].bufferIndex = 0
+        partVDesc.attributes[4].format = .float4; partVDesc.attributes[4].offset = 36; partVDesc.attributes[4].bufferIndex = 0
+        partVDesc.attributes[5].format = .float;  partVDesc.attributes[5].offset = 52; partVDesc.attributes[5].bufferIndex = 0
+        partVDesc.attributes[6].format = .float3; partVDesc.attributes[6].offset = 56; partVDesc.attributes[6].bufferIndex = 0
+        partVDesc.layouts[0].stride = 68
+        particleDesc.vertexDescriptor = partVDesc
+        
+        particleDesc.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
+        particleDesc.colorAttachments[0].destinationRGBBlendFactor = .one
+        particleAdditivePipeline = try device.makeRenderPipelineState(descriptor: particleDesc)
+        
+        particleDesc.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
+        particleDesc.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
+        particleTranslucentPipeline = try device.makeRenderPipelineState(descriptor: particleDesc)
         
         let samplerDesc = MTLSamplerDescriptor()
         samplerDesc.minFilter = .linear; samplerDesc.magFilter = .linear
@@ -138,14 +149,13 @@ class Renderer: NSObject, MTKViewDelegate {
     }
     
     func loadScene(folder: URL) async {
-        Logger.log("=== Loading Scene: \(folder.lastPathComponent) ===")
         let secured = folder.startAccessingSecurityScopedResource()
         defer { if secured { folder.stopAccessingSecurityScopedResource() } }
         
         self.baseFolder = folder
         renderables.removeAll()
+        particleSystems.removeAll()
         
-        await TextureManager.shared.setup(device: device)
         await TextureManager.shared.clear()
         
         startTime = Date()
@@ -165,36 +175,58 @@ class Renderer: NSObject, MTKViewDelegate {
                 self.projectionSize = CGSize(width: Double(proj.width), height: Double(proj.height))
             }
             
-            var tempRenderables: [Int: RenderableObject] = [:]
-            var orderedList: [RenderableObject] = []
-            
             for obj in sceneRoot.objects {
                 if !obj.isVisible { continue }
-                if let renderable = await createRenderable(from: obj) {
-                    if let id = obj.id { tempRenderables[id] = renderable; renderable.id = id }
-                    renderable.parentId = obj.parent
-                    orderedList.append(renderable)
+                if let p = await createParticleSystem(from: obj) {
+                    particleSystems.append(p)
+                } else if let r = await createRenderable(from: obj) {
+                    renderables.append(r)
                 }
             }
             
-            for renderable in orderedList {
-                if let pid = renderable.parentId, let parentObj = tempRenderables[pid] {
-                    renderable.parent = parentObj
-                }
-            }
+        } catch {}
+    }
+    
+    func createParticleSystem(from obj: SceneObject) async -> ParticleSystemRenderable? {
+        guard let particlePath = obj.image, let base = baseFolder else { return nil }
+        let partURL = base.appendingPathComponent(particlePath)
+        
+        do {
+            let data = try Data(contentsOf: partURL)
+            let systemData = try JSONDecoder().decode(ParticleSystemData.self, from: data)
+            guard let root = systemData.root else { return nil }
             
-            self.renderables = orderedList
+            var texture: MTLTexture
+            var pipeline = particleAdditivePipeline
             
-        } catch {
-            Logger.error("Failed to load scene: \(error)")
-        }
+            if let matPath = root.material {
+                 let matURL = base.appendingPathComponent(matPath)
+                 let matData = try Data(contentsOf: matURL)
+                 let matDef = try JSONDecoder().decode(MaterialJSON.self, from: matData)
+                 if let pass = matDef.passes.first, let texName = pass.textures.first {
+                     let texURL = resolveTextureURL(base: base, rawPath: texName)
+                     texture = try await TextureManager.shared.loadTexture(url: texURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft])
+                     
+                     if let blending = pass.blending {
+                         if blending == "translucent" || blending == "alpha" {
+                             pipeline = particleTranslucentPipeline
+                         }
+                     }
+                 } else { return nil }
+            } else { return nil }
+            
+            let (pos, _, _, _) = RenderableObject.parseTransforms(obj)
+            return ParticleSystemRenderable(device: device, config: root, texture: texture, position: pos, pipeline: pipeline!, depthState: depthWriteDisabledState, screenSize: self.projectionSize)
+        } catch { return nil }
     }
     
     func createRenderable(from obj: SceneObject) async -> RenderableObject? {
         guard let base = baseFolder else { return nil }
-        
         guard let imagePath = obj.image else { return nil }
         let modelURL = base.appendingPathComponent(imagePath)
+        
+        if imagePath.hasSuffix(".json") { return nil }
+        
         let fileName = modelURL.deletingPathExtension().lastPathComponent
         let puppetDataURL = modelURL.deletingLastPathComponent().appendingPathComponent("\(fileName)_puppet_data.json")
         let puppetObjURL = modelURL.deletingLastPathComponent().appendingPathComponent("\(fileName)_puppet.obj")
@@ -213,7 +245,7 @@ class Renderer: NSObject, MTKViewDelegate {
             guard let firstPass = matDef.passes.first, let texName = firstPass.textures.first else { return nil }
             
             let texURL = resolveTextureURL(base: base, rawPath: texName)
-            let texture = try await TextureManager.shared.loadTexture(url: texURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false])
+            let texture = try await TextureManager.shared.loadTexture(url: texURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft])
             let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
             
             var depthState = depthStencilState
@@ -237,7 +269,7 @@ class Renderer: NSObject, MTKViewDelegate {
             
             guard let firstPass = matDef.passes.first, let texName = firstPass.textures.first else { return nil }
             let texURL = resolveTextureURL(base: base, rawPath: texName)
-            let texture = try await TextureManager.shared.loadTexture(url: texURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: false])
+            let texture = try await TextureManager.shared.loadTexture(url: texURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft])
 
             let (vertices, indices, triangleBoneIndices, bboxWidth) = PuppetRenderable.parseOBJ(objContent: objContent, skinning: puppetData.skinning)
             let usePixelCoords = bboxWidth > 2.0
@@ -266,8 +298,6 @@ class Renderer: NSObject, MTKViewDelegate {
             if FileManager.default.fileExists(atPath: directURL.path) { return directURL }
             let flatURL = base.appendingPathComponent("materials/\(fileName).\(ext)")
             if FileManager.default.fileExists(atPath: flatURL.path) { return flatURL }
-            let folderURL = base.appendingPathComponent(rawPath).appendingPathExtension(ext)
-             if FileManager.default.fileExists(atPath: folderURL.path) { return folderURL }
         }
         return base.appendingPathComponent("materials/\(fileName).png")
     }
@@ -290,10 +320,11 @@ class Renderer: NSObject, MTKViewDelegate {
         let proj = Matrix4x4.orthographic(left: 0, right: width, bottom: 0, top: height, near: -5000, far: 5000)
         
         let currentTime = Date().timeIntervalSince(startTime)
+        let dt = Float(currentTime - lastTime)
         lastTime = currentTime
         let time = Float(currentTime)
         
-        var globals = GlobalUniforms(projectionMatrix: proj, viewMatrix: matrix_identity_float4x4, time: time)
+        var globals = GlobalUniforms(projectionMatrix: proj, viewMatrix: matrix_identity_float4x4, time: time, padding: .zero)
         
         encoder.setVertexBytes(&globals, length: MemoryLayout<GlobalUniforms>.size, index: 1)
         encoder.setFragmentBytes(&globals, length: MemoryLayout<GlobalUniforms>.size, index: 1)
@@ -303,6 +334,11 @@ class Renderer: NSObject, MTKViewDelegate {
         for obj in renderables {
             if let puppet = obj as? PuppetRenderable { puppet.updateAnimation(time: time) }
             obj.draw(encoder: encoder)
+        }
+        
+        for p in particleSystems {
+            p.update(dt: dt)
+            p.draw(encoder: encoder)
         }
         
         encoder.endEncoding()
