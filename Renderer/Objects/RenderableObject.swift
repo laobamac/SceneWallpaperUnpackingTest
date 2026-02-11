@@ -18,6 +18,11 @@ class RenderableObject {
     var size: SIMD2<Float>
     var scale: SIMD3<Float>
 
+    var speed: Float = 1.0
+    var speedSecondary: Float = 1.0
+    var effectScale: Float = 1.0
+    var sunScale: Float = 1.0
+
     let texture: MTLTexture
     let pipeline: MTLRenderPipelineState
     let depthState: MTLDepthStencilState?
@@ -74,7 +79,12 @@ class RenderableObject {
         var objUniforms = ObjectUniforms(
             modelMatrix: finalModelMatrix,
             alpha: 1.0,
-            color: SIMD4<Float>(1, 1, 1, 1)
+            color: SIMD4<Float>(1, 1, 1, 1),
+            animInfo: .zero,
+            speed: speed,
+            speedSecondary: speedSecondary,
+            effectScale: effectScale,
+            sunScale: sunScale
         )
 
         encoder.setVertexBytes(

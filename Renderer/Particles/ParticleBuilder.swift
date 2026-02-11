@@ -15,30 +15,34 @@ class ParticleBuilder {
         overrideData: InstanceOverrideJSON?
     ) -> ParticleSystem? {
         let sys = ParticleSystem()
+
+        if let over = overrideData {
+            if let c = over.count { sys.countMultiplier *= c }
+            if let r = over.rate { sys.countMultiplier *= r }
+            if let s = over.speed { sys.speedMultiplier *= s }
+            if let s = over.size { sys.sizeMultiplier *= s }
+        }
+
         if let sub = parseParticleObject(
             json: particleJSON,
             parentJSON: nil,
-            baseFolder: baseFolder
+            baseFolder: baseFolder,
+            system: sys
         ) {
             if let over = overrideData {
-                if let c = over.count {
-                    sub.maxCount = Int(Float(sub.maxCount) * c)
-                    Logger.log(
-                        "[Particle] Applied count override: \(c) -> New MaxCount: \(sub.maxCount)"
-                    )
-                }
-                if let r = over.rate {
-                    sub.rate *= r
-                    Logger.log("[Particle] Applied rate override: \(r)")
-                }
                 var po = ParticleInstanceOverride()
                 po.enabled = true
-                if let v = over.alpha { po.alpha = v }
-                if let v = over.size { po.size = v }
-                if let v = over.lifetime { po.lifetime = v }
-                if let v = over.rate { po.rate = v }
-                if let v = over.speed { po.speed = v }
-                if let v = over.count { po.count = v }
+                var hasOverride = false
+
+                if let v = over.alpha {
+                    po.alpha = v
+                    hasOverride = true
+                }
+                if let v = over.lifetime {
+                    po.lifetime = v
+                    hasOverride = true
+                }
+
                 if let cStr = over.color?.value {
                     let parts = cStr.components(separatedBy: " ").compactMap {
                         Float($0)
@@ -46,6 +50,7 @@ class ParticleBuilder {
                     if parts.count >= 3 {
                         po.color = SIMD3<Float>(parts[0], parts[1], parts[2])
                         po.overColor = true
+                        hasOverride = true
                     }
                 }
                 if let cnStr = over.colorn?.value {
@@ -55,9 +60,13 @@ class ParticleBuilder {
                     if parts.count >= 3 {
                         po.colorN = SIMD3<Float>(parts[0], parts[1], parts[2])
                         po.overColorN = true
+                        hasOverride = true
                     }
                 }
-                sub.addInitializer(ParticleModules.overrideInit(over: po))
+
+                if hasOverride {
+                    sub.addInitializer(ParticleModules.overrideInit(over: po))
+                }
             }
             sys.subSystems.append(sub)
             return sys
@@ -68,7 +77,8 @@ class ParticleBuilder {
     private static func parseParticleObject(
         json: [String: Any],
         parentJSON: [String: Any]?,
-        baseFolder: URL
+        baseFolder: URL,
+        system: ParticleSystem
     ) -> ParticleSubSystem? {
         guard let emittersJSON = json["emitter"] as? [[String: Any]] else {
             return nil
@@ -76,7 +86,7 @@ class ParticleBuilder {
         var maxCount = 100
         if let mc = json["maxcount"] as? Int { maxCount = mc }
         let sub = ParticleSubSystem(
-            system: ParticleSystem(),
+            system: system,
             maxCount: maxCount,
             rate: 1.0,
             maxCountInstance: 1,
@@ -145,7 +155,8 @@ class ParticleBuilder {
             for childJSON in children {
                 if let childSub = parseChild(
                     json: childJSON,
-                    baseFolder: baseFolder
+                    baseFolder: baseFolder,
+                    system: system
                 ) {
                     sub.addChild(childSub)
                 }
@@ -168,7 +179,11 @@ class ParticleBuilder {
         return sub
     }
 
-    private static func parseChild(json: [String: Any], baseFolder: URL)
+    private static func parseChild(
+        json: [String: Any],
+        baseFolder: URL,
+        system: ParticleSystem
+    )
         -> ParticleSubSystem?
     {
         guard let name = json["name"] as? String else { return nil }
@@ -191,7 +206,8 @@ class ParticleBuilder {
             if let childSub = parseParticleObject(
                 json: childParticleJSON,
                 parentJSON: nil,
-                baseFolder: baseFolder
+                baseFolder: baseFolder,
+                system: system
             ) {
                 childSub.spawnType = type
                 if let mc = json["maxcount"] as? Int {
@@ -222,6 +238,7 @@ class ParticleBuilder {
         let speedMin = (json["speedmin"] as? Float) ?? 0
         let speedMax = (json["speedmax"] as? Float) ?? 0
         let instant = (json["instantaneous"] as? Int) ?? 0
+
         if name == "boxrandom" {
             let box = ParticleBoxEmitter(
                 directions: dirs,

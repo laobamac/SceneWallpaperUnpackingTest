@@ -175,9 +175,11 @@ class ParticleSystemRenderable: RenderableObject {
         }
         let drawCount = iOffset - startIndexOffset
         if drawCount > 0 {
-            let currentPipeline = sub.material.blending.lowercased() == "additive" ? additivePipelineState : pipelineState
+            let currentPipeline =
+                sub.material.blending.lowercased() == "additive"
+                ? additivePipelineState : pipelineState
             encoder.setRenderPipelineState(currentPipeline)
-            
+
             encoder.setVertexBuffer(currentVB, offset: 0, index: 0)
             var uniforms = ParticleUniforms(
                 projectionMatrix: self.projectionMatrix,
@@ -253,7 +255,8 @@ class ParticleSystemRenderable: RenderableObject {
         let m02 = sx * sz + cx * sy * cz
         let m12 = -sx * cz + cx * sy * sz
         let m22 = cx * cy
-        let halfS = p.size * 0.5
+        let systemSizeMult = system.sizeMultiplier
+        let halfS = (p.size * systemSizeMult) * 0.5
         func rotate(_ x: Float, _ y: Float) -> SIMD3<Float> {
             return SIMD3<Float>(
                 x * m00 + y * m01,
@@ -326,8 +329,9 @@ class ParticleSystemRenderable: RenderableObject {
                 length(p.velocity) > 0.001
                 ? normalize(p.velocity) : SIMD3<Float>(0, 1, 0)
             let side = normalize(cross(vel, SIMD3<Float>(0, 0, 1)))
-            let halfW = p.size * 0.5
-            let halfH = p.size * 1.5
+            let systemSizeMult = system.sizeMultiplier
+            let halfW = (p.size * systemSizeMult) * 0.5
+            let halfH = (p.size * systemSizeMult) * 1.5
             let p0 = p.position - side * halfW
             let p1 = p.position + side * halfW
             let p2 = p0 - vel * halfH
@@ -388,7 +392,8 @@ class ParticleSystemRenderable: RenderableObject {
             let p = particles[i]
             let prevP = particles[i - 1]
             if p.lifetime <= 0 { break }
-            let size = p.size / 2.0
+            let systemSizeMult = system.sizeMultiplier
+            let size = (p.size * systemSizeMult) / 2.0
             let col = SIMD4<Float>(p.color.x, p.color.y, p.color.z, p.alpha)
             let dir = p.position - prevP.position
             let rot = p.rotation.z + .pi / 2.0

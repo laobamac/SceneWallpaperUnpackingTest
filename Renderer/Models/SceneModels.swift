@@ -39,6 +39,7 @@ struct SceneObject: Codable {
     let parent: Int?
     let visible: BoolOrObject?
     let instanceoverride: InstanceOverrideJSON?
+    let effects: [EffectJSON]?
     
     var isVisible: Bool {
         if let v = visible {
@@ -47,6 +48,15 @@ struct SceneObject: Codable {
         }
         return true
     }
+}
+
+struct EffectJSON: Codable {
+    let file: String?
+    let passes: [EffectPassJSON]?
+}
+
+struct EffectPassJSON: Codable {
+    let constantshadervalues: [String: ScriptableValue]?
 }
 
 struct InstanceOverrideJSON: Codable {

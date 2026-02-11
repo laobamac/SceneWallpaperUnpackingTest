@@ -11,14 +11,18 @@ struct ObjectUniforms {
     var modelMatrix: matrix_float4x4
     var alpha: Float
     var color: SIMD4<Float>
-    var animInfo: SIMD3<Float> = .zero
+    var animInfo: SIMD3<Float>
+    var speed: Float
+    var speedSecondary: Float
+    var effectScale: Float
+    var sunScale: Float
 }
 
 struct GlobalUniforms {
     var projectionMatrix: matrix_float4x4
     var viewMatrix: matrix_float4x4
     var time: Float
-    var padding: SIMD3<Float> = .zero
+    var padding: SIMD3<Float>
 }
 
 struct BloomConstants {

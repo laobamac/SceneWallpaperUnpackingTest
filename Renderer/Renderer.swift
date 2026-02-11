@@ -259,18 +259,23 @@ class Renderer: NSObject, MTKViewDelegate {
                 SceneRoot.self,
                 from: sceneData
             )
-            
+
             var isBloomEnabled = true
-            if let sceneDict = try? JSONSerialization.jsonObject(with: sceneData) as? [String: Any],
-               let genDict = sceneDict["general"] as? [String: Any],
-               let bloom = genDict["bloom"] as? Bool {
+            if let sceneDict = try? JSONSerialization.jsonObject(
+                with: sceneData
+            ) as? [String: Any],
+                let genDict = sceneDict["general"] as? [String: Any],
+                let bloom = genDict["bloom"] as? Bool
+            {
                 isBloomEnabled = bloom
             }
-            
+
             if let gen = sceneRoot.general {
                 self.bloomThreshold = gen.bloomhdrthreshold ?? 1.0
-                self.bloomStrength = isBloomEnabled ? (gen.bloomhdrstrength ?? 2.0) : 0.0
-                self.bloomIterations = isBloomEnabled ? (gen.bloomhdriterations ?? 8) : 0
+                self.bloomStrength =
+                    isBloomEnabled ? (gen.bloomhdrstrength ?? 2.0) : 0.0
+                self.bloomIterations =
+                    isBloomEnabled ? (gen.bloomhdriterations ?? 8) : 0
             }
             if let proj = sceneRoot.general?.orthogonalprojection {
                 self.projectionSize = CGSize(
@@ -367,7 +372,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 }
             }
             self.renderables.append(contentsOf: orderedList)
-        } catch {  }
+        } catch {}
     }
 
     func loadParticleTextures(sub: ParticleSubSystem, folder: URL) async {
@@ -412,7 +417,7 @@ class Renderer: NSObject, MTKViewDelegate {
                         ]
                     )
                     sub.texture = tex
-                } catch {  }
+                } catch {}
             }
         }
         for child in sub.children {
@@ -468,7 +473,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 depthState = depthWriteDisabledState
             }
             guard let pipeline = pipelineState else { return nil }
-            return RenderableObject(
+            let renderable = RenderableObject(
                 position: pos,
                 rotation: rotation,
                 size: size,
@@ -477,6 +482,8 @@ class Renderer: NSObject, MTKViewDelegate {
                 pipeline: pipeline,
                 depthState: depthState
             )
+            applyEffectConstants(to: renderable, from: obj)
+            return renderable
         } catch { return nil }
     }
 
@@ -524,7 +531,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 depthState = depthWriteDisabledState
             }
             guard let pipeline = puppetPipelineState else { return nil }
-            return PuppetRenderable(
+            let renderable = PuppetRenderable(
                 device: device,
                 vertices: vertices,
                 indices: indices,
@@ -542,7 +549,34 @@ class Renderer: NSObject, MTKViewDelegate {
                 maskTestState: maskTestState,
                 usePixelCoords: bboxWidth > 2.0
             )
+            if let r = renderable {
+                applyEffectConstants(to: r, from: obj)
+            }
+            return renderable
         } catch { return nil }
+    }
+
+    private func applyEffectConstants(
+        to renderable: RenderableObject,
+        from obj: SceneObject
+    ) {
+        if let effects = obj.effects, let firstEffect = effects.first,
+            let firstPass = firstEffect.passes?.first,
+            let values = firstPass.constantshadervalues
+        {
+            if let v = values["speed"]?.value, let f = Float(v) {
+                renderable.speed = f
+            }
+            if let v = values["speed secondary"]?.value, let f = Float(v) {
+                renderable.speedSecondary = f
+            }
+            if let v = values["Scale"]?.value, let f = Float(v) {
+                renderable.effectScale = f
+            }
+            if let v = values["Sun Scale"]?.value, let f = Float(v) {
+                renderable.sunScale = f
+            }
+        }
     }
 
     func resolveTextureURL(base: URL, rawPath: String) -> URL {
@@ -722,7 +756,8 @@ class Renderer: NSObject, MTKViewDelegate {
         var globals = GlobalUniforms(
             projectionMatrix: proj,
             viewMatrix: viewMat,
-            time: time
+            time: time,
+            padding: .zero
         )
         if let sampler = samplerState {
             encoder.setFragmentSamplerState(sampler, index: 0)

@@ -398,7 +398,12 @@ class PuppetRenderable: RenderableObject {
         var objUniforms = ObjectUniforms(
             modelMatrix: finalModelMatrix,
             alpha: 1.0,
-            color: SIMD4<Float>(1, 1, 1, 1)
+            color: SIMD4<Float>(1, 1, 1, 1),
+            animInfo: .zero,
+            speed: speed,
+            speedSecondary: speedSecondary,
+            effectScale: effectScale,
+            sunScale: sunScale
         )
 
         encoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
