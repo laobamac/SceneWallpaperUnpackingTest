@@ -21,6 +21,11 @@ struct GlobalUniforms {
     var padding: SIMD3<Float> = .zero
 }
 
+struct BloomConstants {
+    var threshold: Float
+    var strength: Float
+}
+
 struct PuppetVertex {
     var px: Float, py: Float, pz: Float
     var pad1: Float = 0

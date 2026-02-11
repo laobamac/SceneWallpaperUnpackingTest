@@ -16,6 +16,9 @@ struct GeneralSettings: Codable {
     let orthogonalprojection: ProjectionSize?
     let fov: Float?
     let perspectiveoverridefov: Float?
+    let bloomhdrthreshold: Float?
+    let bloomhdrstrength: Float?
+    let bloomhdriterations: Int?
 }
 
 struct ProjectionSize: Codable {
@@ -66,18 +69,15 @@ enum ScriptableValue: Codable {
     init(from decoder: Decoder) throws {
         if let container = try? decoder.singleValueContainer() {
             if let str = try? container.decode(String.self) {
-                self = .string(str)
-                return
+                self = .string(str); return
             }
             if let num = try? container.decode(Float.self) {
-                self = .float(num)
-                return
+                self = .float(num); return
             }
         }
         if let container = try? decoder.container(keyedBy: CodingKeys.self),
            let val = try? container.decode(String.self, forKey: .value) {
-            self = .script(value: val)
-            return
+            self = .script(value: val); return
         }
         self = .string("0 0 0")
     }
@@ -99,12 +99,10 @@ enum BoolOrObject: Codable {
     
     init(from decoder: Decoder) throws {
         if let container = try? decoder.singleValueContainer(), let b = try? container.decode(Bool.self) {
-            self = .bool(b)
-            return
+            self = .bool(b); return
         }
         if let o = try? VisibilityObject(from: decoder) {
-            self = .object(o)
-            return
+            self = .object(o); return
         }
         self = .bool(true)
     }

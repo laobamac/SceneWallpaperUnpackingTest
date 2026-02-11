@@ -42,7 +42,7 @@ actor TextureManager {
             desc.height = tempTexture.height
             desc.textureType = .type2DArray
             desc.arrayLength = 1
-            desc.usage = .shaderRead
+            desc.usage = [.shaderRead]
             
             guard let arrayTexture = loader.device.makeTexture(descriptor: desc) else {
                 throw NSError(domain: "TextureManager", code: 5)
@@ -86,7 +86,7 @@ actor TextureManager {
         let height = firstImage.height
         
         let descriptor = MTLTextureDescriptor()
-        descriptor.pixelFormat = .bgra8Unorm
+        descriptor.pixelFormat = .bgra8Unorm_srgb
         descriptor.width = width
         descriptor.height = height
         descriptor.textureType = .type2DArray
