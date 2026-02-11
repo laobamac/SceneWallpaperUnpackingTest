@@ -18,6 +18,7 @@ class Renderer: NSObject, MTKViewDelegate {
     var additiveParticlePipelineState: MTLRenderPipelineState?
     var extractPipeline: MTLRenderPipelineState?
     var blurPipeline: MTLRenderPipelineState?
+    var upsamplePipeline: MTLRenderPipelineState?
     var finalPipeline: MTLRenderPipelineState?
     var samplerState: MTLSamplerState?
     var depthStencilState: MTLDepthStencilState?
@@ -32,6 +33,7 @@ class Renderer: NSObject, MTKViewDelegate {
     var currentFOV: Float = 50.0
     var hdrTexture: MTLTexture?
     var bloomTextures: [MTLTexture] = []
+    var bloomTempTextures: [MTLTexture] = []
     var bloomThreshold: Float = 1.0
     var bloomStrength: Float = 2.0
     var bloomIterations: Int = 8
@@ -172,6 +174,12 @@ class Renderer: NSObject, MTKViewDelegate {
         )
         postDesc.fragmentFunction = library.makeFunction(name: "fragment_blur")
         blurPipeline = try device.makeRenderPipelineState(descriptor: postDesc)
+        postDesc.fragmentFunction = library.makeFunction(
+            name: "fragment_upsample"
+        )
+        upsamplePipeline = try device.makeRenderPipelineState(
+            descriptor: postDesc
+        )
         postDesc.fragmentFunction = library.makeFunction(name: "fragment_final")
         postDesc.colorAttachments[0].pixelFormat = .bgra8Unorm
         postDesc.depthAttachmentPixelFormat = depthFormat
@@ -564,10 +572,10 @@ class Renderer: NSObject, MTKViewDelegate {
         desc.usage = [.renderTarget, .shaderRead]
         hdrTexture = device.makeTexture(descriptor: desc)
         bloomTextures.removeAll()
-        var w = Int(size.width) / 2
-        var h = Int(size.height) / 2
-        for _ in 0..<bloomIterations {
-            if w < 1 || h < 1 { break }
+        bloomTempTextures.removeAll()
+        var w = Int(size.width)
+        var h = Int(size.height)
+        for _ in 0...bloomIterations {
             let bDesc = MTLTextureDescriptor.texture2DDescriptor(
                 pixelFormat: .rgba16Float,
                 width: w,
@@ -578,8 +586,11 @@ class Renderer: NSObject, MTKViewDelegate {
             if let tex = device.makeTexture(descriptor: bDesc) {
                 bloomTextures.append(tex)
             }
-            w /= 2
-            h /= 2
+            if let tTex = device.makeTexture(descriptor: bDesc) {
+                bloomTempTextures.append(tTex)
+            }
+            w = max(1, w / 2)
+            h = max(1, h / 2)
         }
     }
 
@@ -730,7 +741,7 @@ class Renderer: NSObject, MTKViewDelegate {
             obj.draw(encoder: encoder)
         }
         encoder.endEncoding()
-        if !bloomTextures.isEmpty {
+        if bloomTextures.count > 1 {
             let extractDesc = MTLRenderPassDescriptor()
             extractDesc.colorAttachments[0].texture = bloomTextures[0]
             extractDesc.colorAttachments[0].loadAction = .clear
@@ -749,22 +760,74 @@ class Renderer: NSObject, MTKViewDelegate {
                 exEnc.endEncoding()
             }
             for i in 0..<bloomTextures.count - 1 {
-                let blurDesc = MTLRenderPassDescriptor()
-                blurDesc.colorAttachments[0].texture = bloomTextures[i + 1]
-                if let blEnc = commandBuffer.makeRenderCommandEncoder(
-                    descriptor: blurDesc
+                let blurHDesc = MTLRenderPassDescriptor()
+                blurHDesc.colorAttachments[0].texture = bloomTempTextures[i + 1]
+                if let encH = commandBuffer.makeRenderCommandEncoder(
+                    descriptor: blurHDesc
                 ) {
                     var horiz = true
-                    blEnc.setRenderPipelineState(blurPipeline!)
-                    blEnc.setFragmentTexture(bloomTextures[i], index: 0)
-                    blEnc.setFragmentSamplerState(samplerState, index: 0)
-                    blEnc.setFragmentBytes(&horiz, length: 1, index: 0)
-                    blEnc.drawPrimitives(
+                    encH.setRenderPipelineState(blurPipeline!)
+                    encH.setFragmentTexture(bloomTextures[i], index: 0)
+                    encH.setFragmentSamplerState(samplerState, index: 0)
+                    encH.setFragmentBytes(&horiz, length: 1, index: 0)
+                    encH.drawPrimitives(
                         type: .triangleStrip,
                         vertexStart: 0,
                         vertexCount: 4
                     )
-                    blEnc.endEncoding()
+                    encH.endEncoding()
+                }
+                let blurVDesc = MTLRenderPassDescriptor()
+                blurVDesc.colorAttachments[0].texture = bloomTextures[i + 1]
+                if let encV = commandBuffer.makeRenderCommandEncoder(
+                    descriptor: blurVDesc
+                ) {
+                    var horiz = false
+                    encV.setRenderPipelineState(blurPipeline!)
+                    encV.setFragmentTexture(bloomTempTextures[i + 1], index: 0)
+                    encV.setFragmentSamplerState(samplerState, index: 0)
+                    encV.setFragmentBytes(&horiz, length: 1, index: 0)
+                    encV.drawPrimitives(
+                        type: .triangleStrip,
+                        vertexStart: 0,
+                        vertexCount: 4
+                    )
+                    encV.endEncoding()
+                }
+            }
+            for i in stride(from: bloomTextures.count - 1, to: 0, by: -1) {
+                let upDesc = MTLRenderPassDescriptor()
+                upDesc.colorAttachments[0].texture = bloomTempTextures[i - 1]
+                if let upEnc = commandBuffer.makeRenderCommandEncoder(
+                    descriptor: upDesc
+                ) {
+                    upEnc.setRenderPipelineState(upsamplePipeline!)
+                    upEnc.setFragmentTexture(bloomTextures[i - 1], index: 0)
+                    upEnc.setFragmentTexture(bloomTextures[i], index: 1)
+                    upEnc.setFragmentSamplerState(samplerState, index: 0)
+                    upEnc.drawPrimitives(
+                        type: .triangleStrip,
+                        vertexStart: 0,
+                        vertexCount: 4
+                    )
+                    upEnc.endEncoding()
+                }
+                let blurFDesc = MTLRenderPassDescriptor()
+                blurFDesc.colorAttachments[0].texture = bloomTextures[i - 1]
+                if let fEnc = commandBuffer.makeRenderCommandEncoder(
+                    descriptor: blurFDesc
+                ) {
+                    var horiz = true
+                    fEnc.setRenderPipelineState(blurPipeline!)
+                    fEnc.setFragmentTexture(bloomTempTextures[i - 1], index: 0)
+                    fEnc.setFragmentSamplerState(samplerState, index: 0)
+                    fEnc.setFragmentBytes(&horiz, length: 1, index: 0)
+                    fEnc.drawPrimitives(
+                        type: .triangleStrip,
+                        vertexStart: 0,
+                        vertexCount: 4
+                    )
+                    fEnc.endEncoding()
                 }
             }
         }
@@ -773,7 +836,7 @@ class Renderer: NSObject, MTKViewDelegate {
         ) {
             finalEncoder.setRenderPipelineState(finalPipeline!)
             finalEncoder.setFragmentTexture(hdrTex, index: 0)
-            finalEncoder.setFragmentTexture(bloomTextures.last, index: 1)
+            finalEncoder.setFragmentTexture(bloomTextures[0], index: 1)
             finalEncoder.setFragmentSamplerState(samplerState, index: 0)
             finalEncoder.setFragmentBytes(&bloomStrength, length: 4, index: 0)
             finalEncoder.drawPrimitives(
