@@ -259,10 +259,18 @@ class Renderer: NSObject, MTKViewDelegate {
                 SceneRoot.self,
                 from: sceneData
             )
+            
+            var isBloomEnabled = true
+            if let sceneDict = try? JSONSerialization.jsonObject(with: sceneData) as? [String: Any],
+               let genDict = sceneDict["general"] as? [String: Any],
+               let bloom = genDict["bloom"] as? Bool {
+                isBloomEnabled = bloom
+            }
+            
             if let gen = sceneRoot.general {
                 self.bloomThreshold = gen.bloomhdrthreshold ?? 1.0
-                self.bloomStrength = gen.bloomhdrstrength ?? 2.0
-                self.bloomIterations = gen.bloomhdriterations ?? 8
+                self.bloomStrength = isBloomEnabled ? (gen.bloomhdrstrength ?? 2.0) : 0.0
+                self.bloomIterations = isBloomEnabled ? (gen.bloomhdriterations ?? 8) : 0
             }
             if let proj = sceneRoot.general?.orthogonalprojection {
                 self.projectionSize = CGSize(
@@ -359,7 +367,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 }
             }
             self.renderables.append(contentsOf: orderedList)
-        } catch { Logger.error("Load failed: \(error)") }
+        } catch {  }
     }
 
     func loadParticleTextures(sub: ParticleSubSystem, folder: URL) async {
@@ -404,7 +412,7 @@ class Renderer: NSObject, MTKViewDelegate {
                         ]
                     )
                     sub.texture = tex
-                } catch { Logger.error("Failed Texture: \(finalTexPath)") }
+                } catch {  }
             }
         }
         for child in sub.children {
