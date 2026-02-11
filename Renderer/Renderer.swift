@@ -277,17 +277,13 @@ class Renderer: NSObject, MTKViewDelegate {
                             overrideData: obj.instanceoverride
                         )
                     {
-                        let blending =
-                            sys.subSystems.first?.material.blending ?? "normal"
-                        let pp =
-                            (blending.lowercased() == "additive"
-                                ? additiveParticlePipelineState
-                                : particlePipelineState)
-                        if let pipeline = pp {
+                        if let pipeline = particlePipelineState {
+                            let addPipeline = additiveParticlePipelineState ?? pipeline
                             let pr = ParticleSystemRenderable(
                                 device: device,
                                 system: sys,
                                 pipeline: pipeline,
+                                additivePipeline: addPipeline,
                                 depthState: depthWriteDisabledState
                             )
                             let (pos, rotation, size, scale) =
@@ -343,14 +339,16 @@ class Renderer: NSObject, MTKViewDelegate {
                 let url = folder.appendingPathComponent(path)
                 if FileManager.default.fileExists(atPath: url.path),
                     let data = try? Data(contentsOf: url),
-                    let json = try? JSONSerialization.jsonObject(with: data)
-                        as? [String: Any],
+                    let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                     let passes = json["passes"] as? [[String: Any]],
-                    let firstPass = passes.first,
-                    let textures = firstPass["textures"] as? [String],
-                    let firstTex = textures.first
+                    let firstPass = passes.first
                 {
-                    textureName = firstTex
+                    if let blend = firstPass["blending"] as? String {
+                        sub.material.blending = blend
+                    }
+                    if let textures = firstPass["textures"] as? [String], let firstTex = textures.first {
+                        textureName = firstTex
+                    }
                     break
                 }
             }

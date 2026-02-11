@@ -12,6 +12,7 @@ class ParticleSystemRenderable: RenderableObject {
     let device: MTLDevice
     let system: ParticleSystem
     let pipelineState: MTLRenderPipelineState
+    let additivePipelineState: MTLRenderPipelineState
     var vertexBuffers: [MTLBuffer] = []
     var indexBuffers: [MTLBuffer] = []
     let bufferCount = 3
@@ -32,11 +33,13 @@ class ParticleSystemRenderable: RenderableObject {
         device: MTLDevice,
         system: ParticleSystem,
         pipeline: MTLRenderPipelineState,
+        additivePipeline: MTLRenderPipelineState,
         depthState: MTLDepthStencilState?
     ) {
         self.device = device
         self.system = system
         self.pipelineState = pipeline
+        self.additivePipelineState = additivePipeline
         let desc = MTLTextureDescriptor()
         desc.pixelFormat = .bgra8Unorm
         desc.width = 1
@@ -89,7 +92,6 @@ class ParticleSystemRenderable: RenderableObject {
         )
         var vOffset = 0
         var iOffset = 0
-        encoder.setRenderPipelineState(pipelineState)
         if let ds = self.depthState { encoder.setDepthStencilState(ds) }
         let camInv = viewMatrix.inverse
         let camPos = SIMD3<Float>(
@@ -173,6 +175,9 @@ class ParticleSystemRenderable: RenderableObject {
         }
         let drawCount = iOffset - startIndexOffset
         if drawCount > 0 {
+            let currentPipeline = sub.material.blending.lowercased() == "additive" ? additivePipelineState : pipelineState
+            encoder.setRenderPipelineState(currentPipeline)
+            
             encoder.setVertexBuffer(currentVB, offset: 0, index: 0)
             var uniforms = ParticleUniforms(
                 projectionMatrix: self.projectionMatrix,
