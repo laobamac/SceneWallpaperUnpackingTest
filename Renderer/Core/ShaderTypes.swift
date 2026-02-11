@@ -42,4 +42,5 @@ struct ParticleUniforms {
     var modelMatrix: matrix_float4x4
     var viewportSize: SIMD2<Float>
     var time: Float
+    var sequenceMultiplier: Float
 }

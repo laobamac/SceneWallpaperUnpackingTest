@@ -7,6 +7,7 @@
 
 import simd
 import Foundation
+import Metal
 
 class ParticleInstance {
     class BoundedData {
@@ -47,6 +48,8 @@ class ParticleSubSystem {
     var spawnType: ParticleSpawnType
     
     var material: WPMaterial = WPMaterial()
+    var texture: MTLTexture?
+    var sequenceMultiplier: Float = 1.0
     
     var time: Double = 0
     
@@ -82,7 +85,7 @@ class ParticleSubSystem {
     }
     
     func emitt(frameTime: Double) {
-        let particleTime = frameTime * Double(rate)
+        let particleTime = frameTime
         time += particleTime
         
         if spawnType == .static {
@@ -120,7 +123,7 @@ class ParticleSubSystem {
             
             if !inst.isDeath {
                 for em in emitters {
-                    em(&inst.particles, initializers, maxCount, particleTime)
+                    em(&inst.particles, initializers, maxCount, particleTime * Double(rate))
                 }
             }
             

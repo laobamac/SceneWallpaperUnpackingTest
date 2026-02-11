@@ -14,6 +14,8 @@ struct SceneRoot: Codable {
 
 struct GeneralSettings: Codable {
     let orthogonalprojection: ProjectionSize?
+    let fov: Float?
+    let perspectiveoverridefov: Float?
 }
 
 struct ProjectionSize: Codable {
