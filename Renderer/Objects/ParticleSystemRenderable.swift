@@ -145,9 +145,9 @@ class ParticleSystemRenderable: RenderableObject {
                 var subSortList: [ParticleSortItem] = []
                 for p in inst.particles {
                     if p.lifetime <= 0 { continue }
-                    let finalPos = p.position
+                    let finalPos = p.position + inst.boundedData.pos
                     let dist = distance_squared(
-                        finalPos + inst.boundedData.pos,
+                        finalPos,
                         camPos
                     )
                     subSortList.append(
@@ -322,6 +322,7 @@ class ParticleSystemRenderable: RenderableObject {
         iOffset: inout Int,
         pCount: inout Int
     ) {
+        let offset = inst.boundedData.pos
         for p in inst.particles {
             if p.lifetime <= 0 { continue }
             if (vOffset / 4) >= maxParticles { break }
@@ -332,8 +333,9 @@ class ParticleSystemRenderable: RenderableObject {
             let systemSizeMult = system.sizeMultiplier
             let halfW = (p.size * systemSizeMult) * 0.5
             let halfH = (p.size * systemSizeMult) * 1.5
-            let p0 = p.position - side * halfW
-            let p1 = p.position + side * halfW
+            let pos = p.position + offset
+            let p0 = pos - side * halfW
+            let p1 = pos + side * halfW
             let p2 = p0 - vel * halfH
             let p3 = p1 - vel * halfH
             let totalLife = p.initValue.lifetime
@@ -387,6 +389,7 @@ class ParticleSystemRenderable: RenderableObject {
     ) {
         let particles = inst.particles
         guard particles.count > 1 else { return }
+        let offset = inst.boundedData.pos
         for i in 1..<particles.count {
             if (vOffset / 4) >= maxParticles { break }
             let p = particles[i]
@@ -404,8 +407,8 @@ class ParticleSystemRenderable: RenderableObject {
             ])
             cpVec = rotMat * cpVec
             if dot(normalize(dir), normalize(cpVec)) < 0 { cpVec = -cpVec }
-            let startPos = prevP.position
-            let endPos = p.position
+            let startPos = prevP.position + offset
+            let endPos = p.position + offset
             let scp = startPos + cpVec
             let ecp = endPos - cpVec
             let baseIndex = UInt16(vOffset)

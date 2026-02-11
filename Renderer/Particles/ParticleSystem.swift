@@ -131,6 +131,10 @@ class ParticleSubSystem {
                         inst.isDeath = !curLifeOk && bounded.preLifetimeOk
                         bounded.preLifetimeOk = curLifeOk
                     }
+                    
+                    if p.lifetime <= 0 {
+                        bounded.particleIdx = -1
+                    }
                 }
 
                 if !inst.isDeath && typeHasDeath {

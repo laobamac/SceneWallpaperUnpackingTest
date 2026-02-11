@@ -56,6 +56,10 @@ fragment float4 fragment_particle(VertexOut in [[stage_in]],
     uint totalFrames = texture.get_array_size();
     float normalizedFrame = fract(in.progress * uniforms.sequenceMultiplier);
     uint slice = uint(normalizedFrame * float(totalFrames)) % totalFrames;
+    
     float4 color = texture.sample(textureSampler, in.texCoord, slice);
-    return color * in.color;
+    float4 finalColor = color * in.color;
+    finalColor.rgb *= finalColor.a;
+    
+    return finalColor;
 }
