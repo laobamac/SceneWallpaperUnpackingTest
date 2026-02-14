@@ -70,11 +70,14 @@ fragment float4 fragment_final(VertexOut in [[stage_in]],
                                texture2d<float> sceneTexture [[texture(0)]],
                                texture2d<float> bloomTexture [[texture(1)]],
                                sampler s [[sampler(0)]],
-                               constant float &bloomStrength [[buffer(0)]]) {
+                               constant float &bloomStrength [[buffer(0)]],
+                               constant bool &isHDREnabled [[buffer(1)]]) {
     float3 sceneColor = sceneTexture.sample(s, in.texCoord).rgb;
     float3 bloomColor = bloomTexture.sample(s, in.texCoord).rgb;
     float3 color = sceneColor + bloomColor * bloomStrength;
-    color = aces_tonemap(color);
+    if (isHDREnabled) {
+        color = aces_tonemap(color);
+    }
     color = pow(color, 1.0 / 2.2);
     return float4(color, 1.0);
 }

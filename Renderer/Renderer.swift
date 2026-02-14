@@ -35,6 +35,7 @@ class Renderer: NSObject, MTKViewDelegate {
     var bloomThreshold: Float = 1.0
     var bloomStrength: Float = 2.0
     var bloomIterations: Int = 8
+    var isHDREnabled: Bool = false
 
     init?(device: MTLDevice) {
         self.device = device
@@ -219,14 +220,18 @@ class Renderer: NSObject, MTKViewDelegate {
                 from: sceneData
             )
 
-            var isBloomEnabled = true
+            var isBloomEnabled = false
             if let sceneDict = try? JSONSerialization.jsonObject(
                 with: sceneData
             ) as? [String: Any],
-                let genDict = sceneDict["general"] as? [String: Any],
-                let bloom = genDict["bloom"] as? Bool
+                let genDict = sceneDict["general"] as? [String: Any]
             {
-                isBloomEnabled = bloom
+                if let bloom = genDict["bloom"] as? Bool {
+                    isBloomEnabled = bloom
+                }
+                if let hdr = genDict["hdr"] as? Bool {
+                    self.isHDREnabled = hdr
+                }
             }
 
             if let gen = sceneRoot.general {
@@ -724,6 +729,7 @@ class Renderer: NSObject, MTKViewDelegate {
             finalEncoder.setFragmentTexture(bloomTextures[0], index: 1)
             finalEncoder.setFragmentSamplerState(samplerState, index: 0)
             finalEncoder.setFragmentBytes(&bloomStrength, length: 4, index: 0)
+            finalEncoder.setFragmentBytes(&isHDREnabled, length: 1, index: 1)
             finalEncoder.drawPrimitives(
                 type: .triangleStrip,
                 vertexStart: 0,
