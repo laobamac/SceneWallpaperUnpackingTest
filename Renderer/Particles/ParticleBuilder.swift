@@ -96,19 +96,19 @@ class ParticleBuilder {
     static func genEmitterOp(json: ParticleModuleJSON, inst: ParticleInstance) -> ParticleEmittOp? {
         guard let name = json.name else { return nil }
         
-        if name == "sphere" {
+        if name == "sphere" || name == "sphererandom" {
             var args = ParticleSphereEmitterArgs(
                 directions: SIMD3<Float>(1,1,1),
                 minDistance: json.distanceinner ?? 0,
-                maxDistance: json.distanceouter ?? 0,
+                maxDistance: json.distanceouter ?? (json.distancemax?.floatValue ?? 0),
                 emitSpeed: inst.emitRate,
                 origin: SIMD3<Float>(0,0,0),
                 sign: SIMD3<Int32>(1,1,1),
                 one_per_frame: false,
                 sort: false,
                 instantaneous: 0,
-                minSpeed: json.speedinner ?? 0,
-                maxSpeed: json.speedouter ?? 0
+                minSpeed: json.speedinner ?? (json.speedmin ?? 0),
+                maxSpeed: json.speedouter ?? (json.speedmax ?? 0)
             )
             if let origin = json.origin {
                 let parts = origin.components(separatedBy: " ").compactMap { Float($0) }
@@ -120,7 +120,7 @@ class ParticleBuilder {
             }
             return ParticleSphereEmitterArgs.makeEmittOp(args: args)
             
-        } else if name == "box" {
+        } else if name == "box" || name == "boxrandom" {
             var args = ParticleBoxEmitterArgs(
                 directions: SIMD3<Float>(1,1,1),
                 minDistance: SIMD3<Float>(0,0,0),
@@ -130,8 +130,8 @@ class ParticleBuilder {
                 one_per_frame: false,
                 sort: false,
                 instantaneous: 0,
-                minSpeed: json.speedinner ?? 0,
-                maxSpeed: json.speedouter ?? 0
+                minSpeed: json.speedmin ?? 0,
+                maxSpeed: json.speedmax ?? 0
             )
             if let x = json.x, case .float(let f) = x { args.maxDistance.x = f; args.minDistance.x = -f }
             if let y = json.y, case .float(let f) = y { args.maxDistance.y = f; args.minDistance.y = -f }
@@ -342,5 +342,15 @@ extension ParticleModuleJSON {
     var time: Float? {
         if let t = fadeintime { return t }
         return nil
+    }
+}
+
+extension ScriptableValue {
+    var floatValue: Float? {
+        switch self {
+        case .float(let f): return f
+        case .string(let s): return Float(s)
+        default: return nil
+        }
     }
 }

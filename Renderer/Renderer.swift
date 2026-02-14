@@ -15,6 +15,7 @@ class Renderer: NSObject, MTKViewDelegate {
     var pipelineState: MTLRenderPipelineState?
     var puppetPipelineState: MTLRenderPipelineState?
     var particlePipelineState: MTLRenderPipelineState?
+    var particleArrayPipelineState: MTLRenderPipelineState?
     var particleRopePipelineState: MTLRenderPipelineState?
     var extractPipeline: MTLRenderPipelineState?
     var blurPipeline: MTLRenderPipelineState?
@@ -147,6 +148,21 @@ class Renderer: NSObject, MTKViewDelegate {
         particleDesc.vertexDescriptor = partVDesc
         particlePipelineState = try device.makeRenderPipelineState(descriptor: particleDesc)
         
+        let particleArrayDesc = MTLRenderPipelineDescriptor()
+        particleArrayDesc.label = "ParticleArray"
+        particleArrayDesc.vertexFunction = library.makeFunction(name: "vertex_particle")
+        particleArrayDesc.fragmentFunction = library.makeFunction(name: "fragment_particle_array")
+        particleArrayDesc.colorAttachments[0].pixelFormat = hdrFormat
+        particleArrayDesc.colorAttachments[0].isBlendingEnabled = true
+        particleArrayDesc.colorAttachments[0].rgbBlendOperation = .add
+        particleArrayDesc.colorAttachments[0].alphaBlendOperation = .add
+        particleArrayDesc.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
+        particleArrayDesc.colorAttachments[0].destinationRGBBlendFactor = .one
+        particleArrayDesc.depthAttachmentPixelFormat = depthFormat
+        particleArrayDesc.stencilAttachmentPixelFormat = depthFormat
+        particleArrayDesc.vertexDescriptor = partVDesc
+        particleArrayPipelineState = try device.makeRenderPipelineState(descriptor: particleArrayDesc)
+        
         let ropeDesc = MTLRenderPipelineDescriptor()
         ropeDesc.label = "ParticleRope"
         ropeDesc.vertexFunction = library.makeFunction(name: "vertex_rope")
@@ -261,7 +277,6 @@ class Renderer: NSObject, MTKViewDelegate {
         startTime = Date()
         lastTime = 0
         let projectURL = folder.appendingPathComponent("project.json")
-        Logger.log("Loading scene from folder: \(folder.path)")
         do {
             let projData = try Data(contentsOf: projectURL)
             guard
@@ -295,7 +310,6 @@ class Renderer: NSObject, MTKViewDelegate {
             var tempRenderables: [Int: RenderableObject] = [:]
             var orderedList: [RenderableObject] = []
             
-            Logger.log("Found \(sceneRoot.objects.count) objects in scene.")
             for obj in sceneRoot.objects {
                 if !obj.isVisible { continue }
                 if let renderable = await createRenderable(from: obj) {
@@ -305,9 +319,6 @@ class Renderer: NSObject, MTKViewDelegate {
                     }
                     renderable.parentId = obj.parent
                     orderedList.append(renderable)
-                    Logger.log("Added object: \(obj.name ?? "unnamed") type: \(obj.type ?? "model")")
-                } else {
-                    Logger.log("Failed to create renderable for object: \(obj.name ?? "unnamed")")
                 }
             }
             for renderable in orderedList {
@@ -316,18 +327,15 @@ class Renderer: NSObject, MTKViewDelegate {
                 }
             }
             self.renderables.append(contentsOf: orderedList)
-        } catch {
-            Logger.error("Load scene failed: \(error)")
-        }
+        } catch { }
     }
 
     func createRenderable(from obj: SceneObject) async -> RenderableObject? {
         guard let base = baseFolder else { return nil }
         
-        if let type = obj.type, type == "particle", let imagePath = obj.image {
-            Logger.log("Creating particle system from type 'particle': \(imagePath)")
-            let jsonURL = base.appendingPathComponent(imagePath)
-            if let particle = await ParticleSystemRenderable(device: device, file: jsonURL, base: base, pipeline: particlePipelineState!, ropePipeline: particleRopePipelineState!) {
+        if let particlePath = obj.particle {
+            let jsonURL = base.appendingPathComponent(particlePath)
+            if let particle = await ParticleSystemRenderable(device: device, file: jsonURL, base: base, pipeline: particlePipelineState!, arrayPipeline: particleArrayPipelineState!, ropePipeline: particleRopePipelineState!) {
                 let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
                 particle.localPosition = pos
                 particle.localRotation = rotation
@@ -335,18 +343,6 @@ class Renderer: NSObject, MTKViewDelegate {
                 particle.scale = scale
                 return particle
             }
-        }
-        if let imagePath = obj.image, imagePath.hasSuffix(".json") {
-             Logger.log("Creating particle system from .json suffix: \(imagePath)")
-             let jsonURL = base.appendingPathComponent(imagePath)
-             if let particle = await ParticleSystemRenderable(device: device, file: jsonURL, base: base, pipeline: particlePipelineState!, ropePipeline: particleRopePipelineState!) {
-                 let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
-                 particle.localPosition = pos
-                 particle.localRotation = rotation
-                 particle.size = size
-                 particle.scale = scale
-                 return particle
-             }
         }
 
         guard let imagePath = obj.image else { return nil }
@@ -386,7 +382,26 @@ class Renderer: NSObject, MTKViewDelegate {
             )
             applyEffectConstants(to: renderable, from: obj)
             return renderable
-        } catch { return nil }
+        } catch {
+            do {
+                let texture = try await TextureManager.shared.loadTexture(url: modelURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: true])
+                let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
+                guard let pipeline = pipelineState else { return nil }
+                let renderable = RenderableObject(
+                    position: pos,
+                    rotation: rotation,
+                    size: size,
+                    scale: scale,
+                    texture: texture,
+                    pipeline: pipeline,
+                    depthState: depthWriteDisabledState
+                )
+                applyEffectConstants(to: renderable, from: obj)
+                return renderable
+            } catch {
+                return nil
+            }
+        }
     }
 
     func createPuppetRenderable(from obj: SceneObject, dataURL: URL, objURL: URL) async -> RenderableObject? {

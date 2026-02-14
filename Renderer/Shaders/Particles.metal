@@ -33,6 +33,7 @@ struct VertexOut {
     float4 position [[position]];
     float2 uv;
     float4 color;
+    float layer;
 };
 
 vertex VertexOut vertex_particle(
@@ -48,6 +49,7 @@ vertex VertexOut vertex_particle(
     out.position = globals.projectionMatrix * globals.viewMatrix * worldPos;
     out.uv = in.data.xy;
     out.color = in.color;
+    out.layer = in.data.z;
     
     return out;
 }
@@ -58,6 +60,15 @@ fragment float4 fragment_particle(
     sampler samplr [[sampler(0)]]
 ) {
     float4 texColor = texture.sample(samplr, in.uv);
+    return texColor * in.color;
+}
+
+fragment float4 fragment_particle_array(
+    VertexOut in [[stage_in]],
+    texture2d_array<float> texture [[texture(0)]],
+    sampler samplr [[sampler(0)]]
+) {
+    float4 texColor = texture.sample(samplr, in.uv, uint(in.layer + 0.5));
     return texColor * in.color;
 }
 
@@ -74,6 +85,7 @@ vertex VertexOut vertex_rope(
     out.position = globals.projectionMatrix * globals.viewMatrix * worldPos;
     out.uv = float2(0.5, 0.5);
     out.color = in.color;
+    out.layer = 0;
     
     return out;
 }

@@ -75,12 +75,16 @@ class ParticleSystem {
         Logger.log("ParticleSystem init file: \(file.path)")
         do {
             let data = try Data(contentsOf: file)
-            let json = try JSONDecoder().decode(ParticleSystemJSON.self, from: data)
-            if let rootJson = json.root {
-                self.root = ParticleBuilder.build(root: rootJson, base: base)
-                Logger.log("ParticleSystem built root success. Children count: \(rootJson.children?.count ?? 0)")
+            
+            if let systemJson = try? JSONDecoder().decode(ParticleSystemJSON.self, from: data), let rootNode = systemJson.root {
+                self.root = ParticleBuilder.build(root: rootNode, base: base)
+                Logger.log("ParticleSystem built from 'root' property.")
+            }
+            else if let directNode = try? JSONDecoder().decode(ParticleChildJSON.self, from: data) {
+                self.root = ParticleBuilder.build(root: directNode, base: base)
+                Logger.log("ParticleSystem built from direct JSON structure.")
             } else {
-                Logger.log("ParticleSystem JSON has no 'root' element.")
+                Logger.log("ParticleSystem JSON format not recognized or empty.")
             }
         } catch {
             Logger.error("Failed to load particle system JSON: \(error)")

@@ -12,10 +12,12 @@ class ParticleSystemRenderable: RenderableObject {
     var system: ParticleSystem?
     var instancesRenderData: [(ParticleInstance, MTLTexture?, MTLBuffer?, Int, Bool)] = []
     var ropePipeline: MTLRenderPipelineState
+    var arrayPipeline: MTLRenderPipelineState
     var baseFolder: URL
     
-    init?(device: MTLDevice, file: URL, base: URL, pipeline: MTLRenderPipelineState, ropePipeline: MTLRenderPipelineState) async {
+    init?(device: MTLDevice, file: URL, base: URL, pipeline: MTLRenderPipelineState, arrayPipeline: MTLRenderPipelineState, ropePipeline: MTLRenderPipelineState) async {
         self.ropePipeline = ropePipeline
+        self.arrayPipeline = arrayPipeline
         self.baseFolder = base
         super.init(position: .zero, rotation: .zero, size: .one, scale: .one, texture: nil, pipeline: pipeline, depthState: nil)
         
@@ -23,21 +25,40 @@ class ParticleSystemRenderable: RenderableObject {
         self.system = ParticleSystem(file: file, base: base)
         
         guard let sys = self.system else {
-            Logger.error("Failed to initialize ParticleSystem structure.")
             return nil
         }
         
-        if sys.allInstances.isEmpty {
-            Logger.log("ParticleSystem loaded but has 0 instances.")
-        }
-        
         for inst in sys.allInstances {
-            let texURL = TextureManager.shared.resolveTextureURL(base: base, rawPath: inst.materialPath)
-            Logger.log("Instance '\(inst.name)' loading texture: \(texURL.lastPathComponent)")
+            if inst.materialPath.isEmpty {
+                let maxVerts = inst.maxCount * (inst.isTrail ? 20 : 6)
+                let stride = inst.isTrail ? MemoryLayout<ParticleRopeVertex>.stride : MemoryLayout<ParticleVertex>.stride
+                let bufferSize = maxVerts * stride
+                if let buffer = device.makeBuffer(length: bufferSize, options: .storageModeShared) {
+                    instancesRenderData.append((inst, nil, buffer, 0, inst.isTrail))
+                }
+                continue
+            }
+
+            var texPath = inst.materialPath
+            var texURL = TextureManager.shared.resolveTextureURL(base: base, rawPath: texPath)
             
-            let tex = try? await TextureManager.shared.loadTexture(url: texURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: true])
+            if texPath.hasSuffix(".json") {
+                do {
+                    let data = try Data(contentsOf: texURL)
+                    let matDef = try JSONDecoder().decode(MaterialJSON.self, from: data)
+                    if let firstPass = matDef.passes.first, let firstTex = firstPass.textures.first {
+                        texPath = firstTex
+                        texURL = TextureManager.shared.resolveTextureURL(base: base, rawPath: texPath)
+                    }
+                } catch {
+                    Logger.log("Failed to parse material JSON: \(texPath)")
+                }
+            }
             
-            if tex == nil {
+            var tex: MTLTexture? = nil
+            do {
+                tex = try await TextureManager.shared.loadTexture(url: texURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: true])
+            } catch {
                 Logger.log("Failed to load texture for instance: \(inst.name)")
             }
             
@@ -47,11 +68,8 @@ class ParticleSystemRenderable: RenderableObject {
             
             if let buffer = device.makeBuffer(length: bufferSize, options: .storageModeShared) {
                 instancesRenderData.append((inst, tex, buffer, 0, inst.isTrail))
-            } else {
-                Logger.error("Failed to create MTLBuffer for instance: \(inst.name)")
             }
         }
-        Logger.log("ParticleSystemRenderable ready with \(instancesRenderData.count) render instances.")
     }
     
     override func update(deltaTime: Float) {
@@ -61,25 +79,27 @@ class ParticleSystemRenderable: RenderableObject {
     
     func updateBuffers() {
         for i in 0..<instancesRenderData.count {
-            let (inst, _, buffer, _, isTrail) = instancesRenderData[i]
+            let (inst, tex, buffer, _, isTrail) = instancesRenderData[i]
             guard let buf = buffer else { continue }
             
             if isTrail {
                 let count = genRopeData(instance: inst, buffer: buf)
                 instancesRenderData[i].3 = count
             } else {
-                let count = genParticleData(instance: inst, buffer: buf)
+                let count = genParticleData(instance: inst, buffer: buf, texture: tex)
                 instancesRenderData[i].3 = count
             }
         }
     }
     
-    func genParticleData(instance: ParticleInstance, buffer: MTLBuffer) -> Int {
+    func genParticleData(instance: ParticleInstance, buffer: MTLBuffer, texture: MTLTexture?) -> Int {
         let ptr = buffer.contents().bindMemory(to: ParticleVertex.self, capacity: instance.maxCount * 6)
         var idx = 0
         
         let baseRight = SIMD3<Float>(1, 0, 0)
         let baseUp = SIMD3<Float>(0, 1, 0)
+        
+        let arrayLen = texture?.arrayLength ?? 1
         
         for p in instance.particles {
             if idx + 6 > instance.maxCount * 6 { break }
@@ -105,10 +125,16 @@ class ParticleSystemRenderable: RenderableObject {
             let v3 = pos + vecRight + vecUp
             let v4 = pos - vecRight + vecUp
             
-            let bl = ParticleVertex(position: SIMD4<Float>(v1.x, v1.y, v1.z, 1), data: SIMD4<Float>(0, 1, 0, 0), color: color)
-            let br = ParticleVertex(position: SIMD4<Float>(v2.x, v2.y, v2.z, 1), data: SIMD4<Float>(1, 1, 0, 0), color: color)
-            let tr = ParticleVertex(position: SIMD4<Float>(v3.x, v3.y, v3.z, 1), data: SIMD4<Float>(1, 0, 0, 0), color: color)
-            let tl = ParticleVertex(position: SIMD4<Float>(v4.x, v4.y, v4.z, 1), data: SIMD4<Float>(0, 0, 0, 0), color: color)
+            var frame: Float = 0
+            if arrayLen > 1 {
+                let lifeRatio = 1.0 - (p.lifetime / instance.particleLifetime)
+                frame = min(Float(arrayLen - 1), max(0, floor(lifeRatio * Float(arrayLen))))
+            }
+            
+            let bl = ParticleVertex(position: SIMD4<Float>(v1.x, v1.y, v1.z, 1), data: SIMD4<Float>(0, 1, frame, 0), color: color)
+            let br = ParticleVertex(position: SIMD4<Float>(v2.x, v2.y, v2.z, 1), data: SIMD4<Float>(1, 1, frame, 0), color: color)
+            let tr = ParticleVertex(position: SIMD4<Float>(v3.x, v3.y, v3.z, 1), data: SIMD4<Float>(1, 0, frame, 0), color: color)
+            let tl = ParticleVertex(position: SIMD4<Float>(v4.x, v4.y, v4.z, 1), data: SIMD4<Float>(0, 0, frame, 0), color: color)
             
             ptr[idx] = bl; idx+=1
             ptr[idx] = br; idx+=1
@@ -203,17 +229,17 @@ class ParticleSystemRenderable: RenderableObject {
     
     override func draw(encoder: MTLRenderCommandEncoder) {
         for (_, tex, buffer, count, isTrail) in instancesRenderData {
-            guard count > 0, let buf = buffer else { continue }
+            guard count > 0, let buf = buffer, let t = tex else { continue }
             
             if isTrail {
                 encoder.setRenderPipelineState(ropePipeline)
+            } else if t.textureType == .type2DArray {
+                encoder.setRenderPipelineState(arrayPipeline)
             } else {
                 encoder.setRenderPipelineState(pipeline)
             }
             
-            if let t = tex {
-                encoder.setFragmentTexture(t, index: 0)
-            }
+            encoder.setFragmentTexture(t, index: 0)
             
             var modelMat = worldMatrix
             encoder.setVertexBytes(&modelMat, length: MemoryLayout<matrix_float4x4>.size, index: 2)
