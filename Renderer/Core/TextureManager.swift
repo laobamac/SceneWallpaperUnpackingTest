@@ -120,4 +120,33 @@ actor TextureManager {
         await Logger.log("Clearing texture cache")
         cache.removeAll()
     }
+    
+    nonisolated func resolveTextureURL(base: URL, rawPath: String) -> URL {
+        let extensions = ["png", "webp", "tga", "mp4"]
+        let fileName = URL(fileURLWithPath: rawPath).lastPathComponent
+        
+        if FileManager.default.fileExists(atPath: rawPath) {
+            return URL(fileURLWithPath: rawPath)
+        }
+        
+        let directURL = base.appendingPathComponent(rawPath)
+        if FileManager.default.fileExists(atPath: directURL.path) {
+            return directURL
+        }
+        
+        for ext in extensions {
+            let matURL = base.appendingPathComponent("materials/\(rawPath).\(ext)")
+            if FileManager.default.fileExists(atPath: matURL.path) { return matURL }
+            
+            let matFile = base.appendingPathComponent("materials/\(fileName).\(ext)")
+            if FileManager.default.fileExists(atPath: matFile.path) { return matFile }
+            
+            let partURL = base.appendingPathComponent("particles/\(fileName).\(ext)")
+            if FileManager.default.fileExists(atPath: partURL.path) { return partURL }
+            
+            let rootURL = base.appendingPathComponent(rawPath).appendingPathExtension(ext)
+            if FileManager.default.fileExists(atPath: rootURL.path) { return rootURL }
+        }
+        return base.appendingPathComponent("materials/\(fileName).png")
+    }
 }
