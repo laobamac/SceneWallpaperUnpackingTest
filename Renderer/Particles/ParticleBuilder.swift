@@ -161,17 +161,19 @@ class ParticleBuilder {
                 let val = Float.random(in: r.min...r.max)
                 ParticleModify.initLifetime(p: &p, l: val)
             }
-        case "rotationspeedrandom":
+        case "rotationspeedrandom", "angularvelocityrandom":
              let r = SingleRandom.from(json: json)
              return { (p, t) in
                  let val = Float.random(in: r.min...r.max)
-                 ParticleModify.angularAccelerate(p: &p, acc: SIMD3<Float>(0,0,val), t: 1.0)
+                 ParticleModify.initAngularVelocity(p: &p, v: SIMD3<Float>(0, 0, val))
              }
         case "rotationrandom":
-            let r = SingleRandom.from(json: json)
+            let r = VecRandom.from(json: json)
              return { (p, t) in
-                 let val = Float.random(in: r.min...r.max)
-                 ParticleModify.changeRotation(p: &p, x: 0, y: 0, z: val)
+                 let x = Float.random(in: r.min.x...r.max.x)
+                 let y = Float.random(in: r.min.y...r.max.y)
+                 let z = Float.random(in: r.min.z...r.max.z)
+                 ParticleModify.changeRotation(p: &p, x: x, y: y, z: z)
              }
         case "sizerandom":
              let r = SingleRandom.from(json: json)
@@ -179,6 +181,12 @@ class ParticleBuilder {
                  let val = Float.random(in: r.min...r.max)
                  ParticleModify.initSize(p: &p, s: val)
              }
+        case "alpharandom":
+            let r = SingleRandom.from(json: json)
+            return { (p, t) in
+                let val = Float.random(in: r.min...r.max)
+                ParticleModify.initAlpha(p: &p, a: val)
+            }
         case "alphafade":
             let v = ValueChange.from(json: json)
             return { (p, t) in
@@ -203,6 +211,19 @@ class ParticleBuilder {
                     Float.random(in: r.min.z...r.max.z)
                 )
                 ParticleModify.changeVelocity(p: &p, v: rv)
+            }
+        case "turbulentvelocityrandom":
+            let scale = json.scale ?? 1.0
+            let minS = json.speedmin ?? 0.0
+            let maxS = json.speedmax ?? 100.0
+            return { (p, t) in
+                let randomDir = normalize(SIMD3<Float>(
+                    Float.random(in: -1...1),
+                    Float.random(in: -1...1),
+                    Float.random(in: -1...1)
+                ))
+                let speed = Float.random(in: minS...maxS)
+                ParticleModify.changeVelocity(p: &p, v: randomDir * speed * scale)
             }
         case "velocity":
              let r = VecRandom.from(json: json)
@@ -266,7 +287,6 @@ class ParticleBuilder {
         case "rotator":
              var speed: Float = 0
              if let s = json.speed, case .float(let f) = s { speed = f }
-             let force = json.force ?? ""
              let axisStr = json.axis ?? ""
              var axis = SIMD3<Float>(0,0,1)
              if !axisStr.isEmpty {
@@ -277,9 +297,12 @@ class ParticleBuilder {
                  ParticleModify.rotate(p: &p, r: axis * speed * t)
                  ParticleModify.rotateByTime(p: &p, t: t)
              }
+        case "angularmovement":
+            return { (p, t) in
+                ParticleModify.rotateByTime(p: &p, t: t)
+            }
         case "turbulence":
             let turb = TurbulentRandom.from(json: json)
-            let noise = NoiseUtils()
             return { (p, t) in
                 let life = ParticleModify.lifetimePassed(p: p)
                 let pos = p.position * turb.scale - SIMD3<Float>(0, 0, life * turb.timescale)
@@ -320,6 +343,11 @@ class ParticleBuilder {
                      force = tan * speed
                  }
                  ParticleModify.accelerate(p: &p, acc: force, t: t)
+            }
+        case "controlpointattract":
+            let cp = ControlPointForce.from(json: json)
+            return { (p, t) in
+                ParticleModify.applyControlPointForce(p: &p, center: cp.origin, amount: cp.scale, threshold: cp.threshold, t: t)
             }
         case "color":
              let vc = VecChange.from(json: json)

@@ -10,16 +10,24 @@ import simd
 
 class ParticleSystemRenderable: RenderableObject {
     var system: ParticleSystem?
-    var instancesRenderData: [(ParticleInstance, MTLTexture?, MTLBuffer?, Int, Bool)] = []
+    var instancesRenderData: [(ParticleInstance, MTLTexture?, MTLBuffer?, Int, Bool, MTLRenderPipelineState, MTLDepthStencilState?)] = []
     var ropePipeline: MTLRenderPipelineState
-    var arrayPipeline: MTLRenderPipelineState
     var baseFolder: URL
     
-    init?(device: MTLDevice, file: URL, base: URL, pipeline: MTLRenderPipelineState, arrayPipeline: MTLRenderPipelineState, ropePipeline: MTLRenderPipelineState) async {
+    init?(device: MTLDevice, file: URL, base: URL,
+          additivePipeline: MTLRenderPipelineState,
+          translucentPipeline: MTLRenderPipelineState,
+          additiveArrayPipeline: MTLRenderPipelineState,
+          translucentArrayPipeline: MTLRenderPipelineState,
+          ropePipeline: MTLRenderPipelineState,
+          depthWriteDisabledState: MTLDepthStencilState,
+          depthNoneState: MTLDepthStencilState,
+          defaultDepthState: MTLDepthStencilState,
+          overrides: [String: ScriptableValue]?) async {
+        
         self.ropePipeline = ropePipeline
-        self.arrayPipeline = arrayPipeline
         self.baseFolder = base
-        super.init(position: .zero, rotation: .zero, size: .one, scale: .one, texture: nil, pipeline: pipeline, depthState: nil)
+        super.init(position: .zero, rotation: .zero, size: .one, scale: .one, texture: nil, pipeline: additivePipeline, depthState: nil)
         
         Logger.log("Loading ParticleSystem from: \(file.lastPathComponent)")
         self.system = ParticleSystem(file: file, base: base)
@@ -28,27 +36,50 @@ class ParticleSystemRenderable: RenderableObject {
             return nil
         }
         
+        if let root = sys.root?.instance, let ov = overrides {
+            applyOverrides(inst: root, overrides: ov)
+        }
+        
         for inst in sys.allInstances {
+            var selectedPipeline = additivePipeline
+            var selectedDepthState = defaultDepthState
+            var isArrayTexture = false
+            
             if inst.materialPath.isEmpty {
                 let maxVerts = inst.maxCount * (inst.isTrail ? 20 : 6)
                 let stride = inst.isTrail ? MemoryLayout<ParticleRopeVertex>.stride : MemoryLayout<ParticleVertex>.stride
                 let bufferSize = maxVerts * stride
                 if let buffer = device.makeBuffer(length: bufferSize, options: .storageModeShared) {
-                    instancesRenderData.append((inst, nil, buffer, 0, inst.isTrail))
+                    instancesRenderData.append((inst, nil, buffer, 0, inst.isTrail, selectedPipeline, selectedDepthState))
                 }
                 continue
             }
 
             var texPath = inst.materialPath
             var texURL = TextureManager.shared.resolveTextureURL(base: base, rawPath: texPath)
+            var useTranslucent = false
             
             if texPath.hasSuffix(".json") {
                 do {
                     let data = try Data(contentsOf: texURL)
                     let matDef = try JSONDecoder().decode(MaterialJSON.self, from: data)
-                    if let firstPass = matDef.passes.first, let firstTex = firstPass.textures.first {
-                        texPath = firstTex
-                        texURL = TextureManager.shared.resolveTextureURL(base: base, rawPath: texPath)
+                    if let firstPass = matDef.passes.first {
+                        if let firstTex = firstPass.textures.first {
+                            texPath = firstTex
+                            texURL = TextureManager.shared.resolveTextureURL(base: base, rawPath: texPath)
+                        }
+                        if let blend = firstPass.blending, blend == "translucent" {
+                            useTranslucent = true
+                        }
+                        
+                        let depthTest = firstPass.depthtest ?? "enabled"
+                        let depthWrite = firstPass.depthwrite ?? "enabled"
+                        
+                        if depthTest == "disabled" {
+                            selectedDepthState = depthNoneState
+                        } else if depthWrite == "disabled" {
+                            selectedDepthState = depthWriteDisabledState
+                        }
                     }
                 } catch {
                     Logger.log("Failed to parse material JSON: \(texPath)")
@@ -58,8 +89,17 @@ class ParticleSystemRenderable: RenderableObject {
             var tex: MTLTexture? = nil
             do {
                 tex = try await TextureManager.shared.loadTexture(url: texURL, options: [.origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: true])
+                if let t = tex, t.textureType == .type2DArray {
+                    isArrayTexture = true
+                }
             } catch {
                 Logger.log("Failed to load texture for instance: \(inst.name)")
+            }
+            
+            if isArrayTexture {
+                selectedPipeline = useTranslucent ? translucentArrayPipeline : additiveArrayPipeline
+            } else {
+                selectedPipeline = useTranslucent ? translucentPipeline : additivePipeline
             }
             
             let maxVerts = inst.maxCount * (inst.isTrail ? 20 : 6)
@@ -67,7 +107,39 @@ class ParticleSystemRenderable: RenderableObject {
             let bufferSize = maxVerts * stride
             
             if let buffer = device.makeBuffer(length: bufferSize, options: .storageModeShared) {
-                instancesRenderData.append((inst, tex, buffer, 0, inst.isTrail))
+                instancesRenderData.append((inst, tex, buffer, 0, inst.isTrail, selectedPipeline, selectedDepthState))
+            }
+        }
+    }
+    
+    private func applyOverrides(inst: ParticleInstance, overrides: [String: ScriptableValue]) {
+        for (key, val) in overrides {
+            switch key {
+            case "rate":
+                if case .float(let f) = val { inst.emitRate = f }
+                else if case .string(let s) = val, let f = Float(s) { inst.emitRate = f }
+            case "count":
+                if case .float(let f) = val { inst.emitRate = f }
+                else if case .string(let s) = val, let f = Float(s) { inst.emitRate = f }
+            case "alpha":
+                var alpha: Float = 1.0
+                if case .float(let f) = val { alpha = f }
+                else if case .string(let s) = val, let f = Float(s) { alpha = f }
+                inst.initializers.append { (p, t) in
+                    ParticleModify.multiplyInitAlpha(p: &p, m: alpha)
+                }
+            case "color", "colorn":
+                var r: Float = 1, g: Float = 1, b: Float = 1
+                if case .string(let s) = val {
+                    let parts = s.components(separatedBy: " ").compactMap { Float($0) }
+                    if parts.count >= 3 {
+                        r = parts[0]; g = parts[1]; b = parts[2]
+                    }
+                }
+                inst.initializers.append { (p, t) in
+                    ParticleModify.multiplyInitColor(p: &p, r: r, g: g, b: b)
+                }
+            default: break
             }
         }
     }
@@ -79,7 +151,7 @@ class ParticleSystemRenderable: RenderableObject {
     
     func updateBuffers() {
         for i in 0..<instancesRenderData.count {
-            let (inst, tex, buffer, _, isTrail) = instancesRenderData[i]
+            let (inst, tex, buffer, _, isTrail, _, _) = instancesRenderData[i]
             guard let buf = buffer else { continue }
             
             if isTrail {
@@ -228,15 +300,16 @@ class ParticleSystemRenderable: RenderableObject {
     }
     
     override func draw(encoder: MTLRenderCommandEncoder) {
-        for (_, tex, buffer, count, isTrail) in instancesRenderData {
+        for (_, tex, buffer, count, isTrail, pipeline, depthState) in instancesRenderData {
             guard count > 0, let buf = buffer, let t = tex else { continue }
+            
+            encoder.setRenderPipelineState(pipeline)
+            if let ds = depthState {
+                encoder.setDepthStencilState(ds)
+            }
             
             if isTrail {
                 encoder.setRenderPipelineState(ropePipeline)
-            } else if t.textureType == .type2DArray {
-                encoder.setRenderPipelineState(arrayPipeline)
-            } else {
-                encoder.setRenderPipelineState(pipeline)
             }
             
             encoder.setFragmentTexture(t, index: 0)

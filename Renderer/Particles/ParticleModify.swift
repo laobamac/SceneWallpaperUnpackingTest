@@ -150,6 +150,10 @@ struct ParticleModify {
         p.velocity = SIMD3<Float>(x, y, z)
     }
     
+    @inline(__always) static func initAngularVelocity(p: inout Particle, v: SIMD3<Float>) {
+        p.angularVelocity = v
+    }
+    
     @inline(__always) static func multiplyInitLifetime(p: inout Particle, m: Float) {
         p.lifetime *= m
         p.initValue.lifetime = p.lifetime
@@ -184,5 +188,18 @@ struct ParticleModify {
     
     @inline(__always) static func isNew(p: Particle) -> Bool {
         return p.markNew
+    }
+    
+    @inline(__always) static func applyControlPointForce(p: inout Particle, center: SIMD3<Float>, amount: Float, threshold: Float, t: Float) {
+        let diff = center - p.position
+        let dist = length(diff)
+        if dist > 0.001 {
+            let dir = normalize(diff)
+            var strength: Float = 0
+            if dist < threshold {
+                strength = 1.0 - (dist / threshold)
+            }
+            p.velocity += dir * amount * strength * t
+        }
     }
 }

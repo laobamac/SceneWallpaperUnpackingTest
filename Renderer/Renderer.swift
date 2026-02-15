@@ -14,16 +14,23 @@ class Renderer: NSObject, MTKViewDelegate {
     let commandQueue: MTLCommandQueue
     var pipelineState: MTLRenderPipelineState?
     var puppetPipelineState: MTLRenderPipelineState?
-    var particlePipelineState: MTLRenderPipelineState?
-    var particleArrayPipelineState: MTLRenderPipelineState?
+    
+    var particleAdditivePipelineState: MTLRenderPipelineState?
+    var particleTranslucentPipelineState: MTLRenderPipelineState?
+    var particleAdditiveArrayPipelineState: MTLRenderPipelineState?
+    var particleTranslucentArrayPipelineState: MTLRenderPipelineState?
     var particleRopePipelineState: MTLRenderPipelineState?
+    
     var extractPipeline: MTLRenderPipelineState?
     var blurPipeline: MTLRenderPipelineState?
     var upsamplePipeline: MTLRenderPipelineState?
     var finalPipeline: MTLRenderPipelineState?
     var samplerState: MTLSamplerState?
+    
     var depthStencilState: MTLDepthStencilState?
     var depthWriteDisabledState: MTLDepthStencilState?
+    var depthNoneState: MTLDepthStencilState?
+    
     var maskWriteState: MTLDepthStencilState?
     var maskTestState: MTLDepthStencilState?
     var baseFolder: URL?
@@ -119,19 +126,6 @@ class Renderer: NSObject, MTKViewDelegate {
         puppetDesc.vertexDescriptor = pvDesc
         puppetPipelineState = try device.makeRenderPipelineState(descriptor: puppetDesc)
         
-        let particleDesc = MTLRenderPipelineDescriptor()
-        particleDesc.label = "Particle"
-        particleDesc.vertexFunction = library.makeFunction(name: "vertex_particle")
-        particleDesc.fragmentFunction = library.makeFunction(name: "fragment_particle")
-        particleDesc.colorAttachments[0].pixelFormat = hdrFormat
-        particleDesc.colorAttachments[0].isBlendingEnabled = true
-        particleDesc.colorAttachments[0].rgbBlendOperation = .add
-        particleDesc.colorAttachments[0].alphaBlendOperation = .add
-        particleDesc.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
-        particleDesc.colorAttachments[0].destinationRGBBlendFactor = .one
-        particleDesc.depthAttachmentPixelFormat = depthFormat
-        particleDesc.stencilAttachmentPixelFormat = depthFormat
-        
         let partVDesc = MTLVertexDescriptor()
         partVDesc.attributes[0].format = .float4
         partVDesc.attributes[0].offset = 0
@@ -145,23 +139,66 @@ class Renderer: NSObject, MTKViewDelegate {
         partVDesc.layouts[0].stride = 48
         partVDesc.layouts[0].stepRate = 1
         partVDesc.layouts[0].stepFunction = .perVertex
-        particleDesc.vertexDescriptor = partVDesc
-        particlePipelineState = try device.makeRenderPipelineState(descriptor: particleDesc)
         
-        let particleArrayDesc = MTLRenderPipelineDescriptor()
-        particleArrayDesc.label = "ParticleArray"
-        particleArrayDesc.vertexFunction = library.makeFunction(name: "vertex_particle")
-        particleArrayDesc.fragmentFunction = library.makeFunction(name: "fragment_particle_array")
-        particleArrayDesc.colorAttachments[0].pixelFormat = hdrFormat
-        particleArrayDesc.colorAttachments[0].isBlendingEnabled = true
-        particleArrayDesc.colorAttachments[0].rgbBlendOperation = .add
-        particleArrayDesc.colorAttachments[0].alphaBlendOperation = .add
-        particleArrayDesc.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
-        particleArrayDesc.colorAttachments[0].destinationRGBBlendFactor = .one
-        particleArrayDesc.depthAttachmentPixelFormat = depthFormat
-        particleArrayDesc.stencilAttachmentPixelFormat = depthFormat
-        particleArrayDesc.vertexDescriptor = partVDesc
-        particleArrayPipelineState = try device.makeRenderPipelineState(descriptor: particleArrayDesc)
+        let particleAdditiveDesc = MTLRenderPipelineDescriptor()
+        particleAdditiveDesc.label = "Particle Additive"
+        particleAdditiveDesc.vertexFunction = library.makeFunction(name: "vertex_particle")
+        particleAdditiveDesc.fragmentFunction = library.makeFunction(name: "fragment_particle")
+        particleAdditiveDesc.colorAttachments[0].pixelFormat = hdrFormat
+        particleAdditiveDesc.colorAttachments[0].isBlendingEnabled = true
+        particleAdditiveDesc.colorAttachments[0].rgbBlendOperation = .add
+        particleAdditiveDesc.colorAttachments[0].alphaBlendOperation = .add
+        particleAdditiveDesc.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
+        particleAdditiveDesc.colorAttachments[0].destinationRGBBlendFactor = .one
+        particleAdditiveDesc.depthAttachmentPixelFormat = depthFormat
+        particleAdditiveDesc.stencilAttachmentPixelFormat = depthFormat
+        particleAdditiveDesc.vertexDescriptor = partVDesc
+        particleAdditivePipelineState = try device.makeRenderPipelineState(descriptor: particleAdditiveDesc)
+        
+        let particleTranslucentDesc = MTLRenderPipelineDescriptor()
+        particleTranslucentDesc.label = "Particle Translucent"
+        particleTranslucentDesc.vertexFunction = library.makeFunction(name: "vertex_particle")
+        particleTranslucentDesc.fragmentFunction = library.makeFunction(name: "fragment_particle")
+        particleTranslucentDesc.colorAttachments[0].pixelFormat = hdrFormat
+        particleTranslucentDesc.colorAttachments[0].isBlendingEnabled = true
+        particleTranslucentDesc.colorAttachments[0].rgbBlendOperation = .add
+        particleTranslucentDesc.colorAttachments[0].alphaBlendOperation = .add
+        particleTranslucentDesc.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
+        particleTranslucentDesc.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
+        particleTranslucentDesc.depthAttachmentPixelFormat = depthFormat
+        particleTranslucentDesc.stencilAttachmentPixelFormat = depthFormat
+        particleTranslucentDesc.vertexDescriptor = partVDesc
+        particleTranslucentPipelineState = try device.makeRenderPipelineState(descriptor: particleTranslucentDesc)
+        
+        let particleAdditiveArrayDesc = MTLRenderPipelineDescriptor()
+        particleAdditiveArrayDesc.label = "Particle Array Additive"
+        particleAdditiveArrayDesc.vertexFunction = library.makeFunction(name: "vertex_particle")
+        particleAdditiveArrayDesc.fragmentFunction = library.makeFunction(name: "fragment_particle_array")
+        particleAdditiveArrayDesc.colorAttachments[0].pixelFormat = hdrFormat
+        particleAdditiveArrayDesc.colorAttachments[0].isBlendingEnabled = true
+        particleAdditiveArrayDesc.colorAttachments[0].rgbBlendOperation = .add
+        particleAdditiveArrayDesc.colorAttachments[0].alphaBlendOperation = .add
+        particleAdditiveArrayDesc.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
+        particleAdditiveArrayDesc.colorAttachments[0].destinationRGBBlendFactor = .one
+        particleAdditiveArrayDesc.depthAttachmentPixelFormat = depthFormat
+        particleAdditiveArrayDesc.stencilAttachmentPixelFormat = depthFormat
+        particleAdditiveArrayDesc.vertexDescriptor = partVDesc
+        particleAdditiveArrayPipelineState = try device.makeRenderPipelineState(descriptor: particleAdditiveArrayDesc)
+        
+        let particleTranslucentArrayDesc = MTLRenderPipelineDescriptor()
+        particleTranslucentArrayDesc.label = "Particle Array Translucent"
+        particleTranslucentArrayDesc.vertexFunction = library.makeFunction(name: "vertex_particle")
+        particleTranslucentArrayDesc.fragmentFunction = library.makeFunction(name: "fragment_particle_array")
+        particleTranslucentArrayDesc.colorAttachments[0].pixelFormat = hdrFormat
+        particleTranslucentArrayDesc.colorAttachments[0].isBlendingEnabled = true
+        particleTranslucentArrayDesc.colorAttachments[0].rgbBlendOperation = .add
+        particleTranslucentArrayDesc.colorAttachments[0].alphaBlendOperation = .add
+        particleTranslucentArrayDesc.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
+        particleTranslucentArrayDesc.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
+        particleTranslucentArrayDesc.depthAttachmentPixelFormat = depthFormat
+        particleTranslucentArrayDesc.stencilAttachmentPixelFormat = depthFormat
+        particleTranslucentArrayDesc.vertexDescriptor = partVDesc
+        particleTranslucentArrayPipelineState = try device.makeRenderPipelineState(descriptor: particleTranslucentArrayDesc)
         
         let ropeDesc = MTLRenderPipelineDescriptor()
         ropeDesc.label = "ParticleRope"
@@ -237,6 +274,11 @@ class Renderer: NSObject, MTKViewDelegate {
         depthDisabledDesc.isDepthWriteEnabled = false
         depthDisabledDesc.depthCompareFunction = .lessEqual
         depthWriteDisabledState = device.makeDepthStencilState(descriptor: depthDisabledDesc)
+        
+        let depthNoneDesc = MTLDepthStencilDescriptor()
+        depthNoneDesc.isDepthWriteEnabled = false
+        depthNoneDesc.depthCompareFunction = .always
+        depthNoneState = device.makeDepthStencilState(descriptor: depthNoneDesc)
         
         let maskWriteDesc = MTLDepthStencilDescriptor()
         maskWriteDesc.isDepthWriteEnabled = false
@@ -335,7 +377,20 @@ class Renderer: NSObject, MTKViewDelegate {
         
         if let particlePath = obj.particle {
             let jsonURL = base.appendingPathComponent(particlePath)
-            if let particle = await ParticleSystemRenderable(device: device, file: jsonURL, base: base, pipeline: particlePipelineState!, arrayPipeline: particleArrayPipelineState!, ropePipeline: particleRopePipelineState!) {
+            if let particle = await ParticleSystemRenderable(
+                device: device,
+                file: jsonURL,
+                base: base,
+                additivePipeline: particleAdditivePipelineState!,
+                translucentPipeline: particleTranslucentPipelineState!,
+                additiveArrayPipeline: particleAdditiveArrayPipelineState!,
+                translucentArrayPipeline: particleTranslucentArrayPipelineState!,
+                ropePipeline: particleRopePipelineState!,
+                depthWriteDisabledState: depthWriteDisabledState!,
+                depthNoneState: depthNoneState!,
+                defaultDepthState: depthStencilState!,
+                overrides: obj.instanceoverride
+            ) {
                 let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
                 particle.localPosition = pos
                 particle.localRotation = rotation
