@@ -109,6 +109,22 @@ struct VecChange {
     }
 }
 
+struct SizeChange {
+    var startvalue: Float = 1.0
+    var endvalue: Float = 1.0
+    var starttime: Float = 0.0
+    var endtime: Float = 1.0
+    
+    static func from(json: ParticleModuleJSON) -> SizeChange {
+        var v = SizeChange()
+        if let val = json.startvalue, let f = Float(val.value) { v.startvalue = f }
+        if let val = json.endvalue, let f = Float(val.value) { v.endvalue = f }
+        if let val = json.starttime { v.starttime = val }
+        if let val = json.endtime { v.endtime = val }
+        return v
+    }
+}
+
 class FrequencyValue {
     struct StorageRandom {
         var reset: Bool = true

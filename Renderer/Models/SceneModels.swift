@@ -190,6 +190,7 @@ struct ParticleSystemJSON: Codable {
 
 struct ParticleChildJSON: Codable {
     let name: String?
+    let type: String?
     let material: String?
     let maxcount: Int?
     let rate: Float?

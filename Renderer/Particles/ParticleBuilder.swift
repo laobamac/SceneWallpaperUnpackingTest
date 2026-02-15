@@ -12,7 +12,12 @@ class ParticleBuilder {
     
     static func build(root: ParticleChildJSON, base: URL) -> ParticleSubSystem? {
         let sys = ParticleSubSystem()
+        sys.type = root.type ?? ""
         sys.instance = buildInstance(json: root, base: base)
+        
+        if sys.type == "eventfollow" {
+            sys.instance?.emitter = nil
+        }
         
         if let children = root.children {
             for child in children {
@@ -70,8 +75,9 @@ class ParticleBuilder {
         
         if let emitters = json.emitters {
             for mod in emitters {
-                if let em = genEmitterOp(json: mod, inst: inst) {
+                if let (em, gen) = genEmitterOp(json: mod, inst: inst) {
                     inst.emitter = em
+                    inst.generator = gen
                 }
             }
         } else {
@@ -88,12 +94,13 @@ class ParticleBuilder {
                  maxSpeed: 0
              )
              inst.emitter = ParticleBoxEmitterArgs.makeEmittOp(args: args)
+             inst.generator = ParticleBoxEmitterArgs.makeGenerator(args: args)
         }
         
         return inst
     }
     
-    static func genEmitterOp(json: ParticleModuleJSON, inst: ParticleInstance) -> ParticleEmittOp? {
+    static func genEmitterOp(json: ParticleModuleJSON, inst: ParticleInstance) -> (ParticleEmittOp, ParticleGenerator)? {
         guard let name = json.name else { return nil }
         
         if name == "sphere" || name == "sphererandom" {
@@ -118,7 +125,7 @@ class ParticleBuilder {
                 let parts = dir.components(separatedBy: " ").compactMap { Float($0) }
                 if parts.count >= 3 { args.directions = SIMD3<Float>(parts[0], parts[1], parts[2]) }
             }
-            return ParticleSphereEmitterArgs.makeEmittOp(args: args)
+            return (ParticleSphereEmitterArgs.makeEmittOp(args: args), ParticleSphereEmitterArgs.makeGenerator(args: args))
             
         } else if name == "box" || name == "boxrandom" {
             var args = ParticleBoxEmitterArgs(
@@ -145,7 +152,7 @@ class ParticleBuilder {
                 let parts = dir.components(separatedBy: " ").compactMap { Float($0) }
                 if parts.count >= 3 { args.directions = SIMD3<Float>(parts[0], parts[1], parts[2]) }
             }
-            return ParticleBoxEmitterArgs.makeEmittOp(args: args)
+            return (ParticleBoxEmitterArgs.makeEmittOp(args: args), ParticleBoxEmitterArgs.makeGenerator(args: args))
         }
         
         return nil
@@ -264,6 +271,17 @@ class ParticleBuilder {
                     ParticleModify.initAlpha(p: &p, a: alpha)
                 }
             }
+        case "sizechange":
+            let v = SizeChange.from(json: json)
+            return { (p, t) in
+                let pos = ParticleModify.lifetimePos(p: p)
+                if pos >= v.starttime && pos <= v.endtime {
+                    let range = v.endtime - v.starttime
+                    let localT = (pos - v.starttime) / (range > 0 ? range : 1.0)
+                    let scale = v.startvalue * (1.0 - localT) + v.endvalue * localT
+                    p.size = p.initValue.size * scale
+                }
+            }
         case "oscillatealpha", "oscillatesize", "oscillateposition":
             let f = FrequencyValue.from(json: json, name: name)
             return { (p, t) in
@@ -298,7 +316,13 @@ class ParticleBuilder {
                  ParticleModify.rotateByTime(p: &p, t: t)
              }
         case "angularmovement":
+            var force = SIMD3<Float>(0,0,0)
+            if let fStr = json.force {
+                let parts = fStr.components(separatedBy: " ").compactMap { Float($0) }
+                if parts.count >= 3 { force = SIMD3<Float>(parts[0], parts[1], parts[2]) }
+            }
             return { (p, t) in
+                ParticleModify.angularAccelerate(p: &p, acc: force, t: t)
                 ParticleModify.rotateByTime(p: &p, t: t)
             }
         case "turbulence":
