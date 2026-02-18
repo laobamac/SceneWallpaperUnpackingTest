@@ -23,7 +23,7 @@ class RenderableObject {
     var effectScale: Float = 1.0
     var sunScale: Float = 1.0
 
-    var texture: MTLTexture?
+    let texture: MTLTexture
     let pipeline: MTLRenderPipelineState
     let depthState: MTLDepthStencilState?
 
@@ -39,7 +39,7 @@ class RenderableObject {
         rotation: SIMD3<Float>,
         size: SIMD2<Float>,
         scale: SIMD3<Float>,
-        texture: MTLTexture?,
+        texture: MTLTexture,
         pipeline: MTLRenderPipelineState,
         depthState: MTLDepthStencilState? = nil
     ) {
@@ -51,8 +51,6 @@ class RenderableObject {
         self.pipeline = pipeline
         self.depthState = depthState
     }
-    
-    func update(deltaTime: Float) {}
 
     var worldMatrix: matrix_float4x4 {
         var local = Matrix4x4.translation(
@@ -105,10 +103,7 @@ class RenderableObject {
             index: 2
         )
 
-        if let tex = texture {
-            encoder.setFragmentTexture(tex, index: 0)
-        }
-        
+        encoder.setFragmentTexture(texture, index: 0)
         encoder.drawPrimitives(
             type: .triangleStrip,
             vertexStart: 0,

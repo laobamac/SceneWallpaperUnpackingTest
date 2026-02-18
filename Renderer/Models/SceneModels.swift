@@ -38,8 +38,6 @@ struct SceneObject: Codable {
     let parent: Int?
     let visible: BoolOrObject?
     let effects: [EffectJSON]?
-    let particle: String?
-    let instanceoverride: [String: ScriptableValue]?
 
     var isVisible: Bool {
         if let v = visible {
@@ -181,78 +179,4 @@ struct PuppetKeyframe: Codable {
     let p: [Float]
     let r: [Float]
     let s: [Float]
-}
-
-struct ParticleSystemJSON: Codable {
-    let children: [ParticleChildJSON]?
-    let root: ParticleChildJSON?
-}
-
-struct ParticleChildJSON: Codable {
-    let name: String?
-    let type: String?
-    let material: String?
-    let maxcount: Int?
-    let rate: Float?
-    let count: Int?
-    let lifetime: Float?
-    let position: String?
-    let origin: String?
-    let rotation: String?
-    let size: String?
-    let color: String?
-    let alpha: String?
-    let texture: String?
-    let children: [ParticleChildJSON]?
-    let emitters: [ParticleModuleJSON]?
-    let initializers: [ParticleModuleJSON]?
-    let operators: [ParticleModuleJSON]?
-    let renderers: [ParticleModuleJSON]?
-}
-
-struct ParticleModuleJSON: Codable {
-    let name: String?
-    let min: ScriptableValue?
-    let max: ScriptableValue?
-    let x: ScriptableValue?
-    let y: ScriptableValue?
-    let z: ScriptableValue?
-    let r: ScriptableValue?
-    let g: ScriptableValue?
-    let b: ScriptableValue?
-    let a: ScriptableValue?
-    let strength: Float?
-    let frequency: Float?
-    let scale: Float?
-    let offset: ScriptableValue?
-    let speed: ScriptableValue?
-    let drag: Float?
-    let gravity: String?
-    let force: String?
-    let direction: String?
-    let random: Bool?
-    let fadeintime: Float?
-    let fadeouttime: Float?
-    let starttime: Float?
-    let endtime: Float?
-    let startvalue: ScriptableValue?
-    let endvalue: ScriptableValue?
-    let distancemin: ScriptableValue?
-    let distancemax: ScriptableValue?
-    let rate: Float?
-    let origin: String?
-    let directions: String?
-    let speedmin: Float?
-    let speedmax: Float?
-    let phasemin: Float?
-    let phasemax: Float?
-    let timescale: Float?
-    let distanceinner: Float?
-    let distanceouter: Float?
-    let speedinner: Float?
-    let speedouter: Float?
-    let axis: String?
-    let controlpoint: Int?
-    let threshold: Float?
-    let mask: String?
 }

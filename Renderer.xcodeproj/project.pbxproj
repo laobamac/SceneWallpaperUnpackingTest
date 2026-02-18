@@ -95,7 +95,7 @@
 			mainGroup = BB5DEC562F1D139400DA9DA9;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = BB5DEC562F1D139400DA9DA9;
+			productRefGroup = BB5DEC602F1D139400DA9DA9 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
