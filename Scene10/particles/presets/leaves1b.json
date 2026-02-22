@@ -1,12 +1,6 @@
 {
 	"animationmode" : null,
-	"children" : 
-	[
-		{
-			"id" : 13,
-			"name" : "particles/presets/leaves1b.json"
-		}
-	],
+	"children" : null,
 	"controlpoint" : 
 	[
 		{
@@ -108,7 +102,7 @@
 			"name" : "angularvelocityrandom"
 		}
 	],
-	"material" : "materials/presets/leaves1.json",
+	"material" : "materials/presets/leaves1b.json",
 	"maxcount" : 50,
 	"operator" : 
 	[

@@ -1,12 +1,6 @@
 {
 	"animationmode" : null,
-	"children" : 
-	[
-		{
-			"id" : 13,
-			"name" : "particles/presets/leaves1b.json"
-		}
-	],
+	"children" : null,
 	"controlpoint" : 
 	[
 		{
@@ -53,79 +47,72 @@
 	"emitter" : 
 	[
 		{
-			"directions" : "1 0.1 1",
-			"distancemax" : 750,
+			"directions" : "1 1 0",
+			"distancemax" : 0,
 			"distancemin" : 0,
-			"id" : 9,
+			"id" : 8,
 			"name" : "sphererandom",
-			"origin" : "350 750 0",
-			"rate" : 5
+			"origin" : "-70 0 0",
+			"rate" : 0.20000000000000001
 		}
 	],
-	"flags" : 4,
+	"flags" : null,
 	"initializer" : 
 	[
 		{
 			"id" : 2,
-			"max" : 10,
+			"max" : 20,
 			"min" : 8,
 			"name" : "lifetimerandom"
 		},
 		{
 			"id" : 3,
-			"max" : 75,
-			"min" : 70,
+			"max" : 1000,
+			"min" : 850,
 			"name" : "sizerandom"
 		},
 		{
 			"id" : 4,
-			"max" : "-50 -15 0",
-			"min" : "-100 -100 0",
+			"max" : "20 10 0",
+			"min" : "20 10 0",
 			"name" : "velocityrandom"
 		},
 		{
 			"id" : 5,
-			"max" : "255 255 255",
-			"min" : "255 255 255",
+			"max" : "170 110 40",
+			"min" : "110 92 20",
 			"name" : "colorrandom"
 		},
 		{
 			"id" : 6,
+			"max" : "0 0 0",
+			"min" : "0 0 0",
 			"name" : "rotationrandom"
 		},
 		{
 			"id" : 7,
-			"name" : "turbulentvelocityrandom",
-			"offset" : 3,
-			"scale" : 0.5,
-			"speedmax" : 100,
-			"speedmin" : 35
-		},
-		{
-			"id" : 8,
-			"max" : "0 0 1",
-			"min" : "0 0 -1",
+			"max" : "0 0 -0.05",
+			"min" : "0 0 -0.05",
 			"name" : "angularvelocityrandom"
 		}
 	],
-	"material" : "materials/presets/leaves1.json",
-	"maxcount" : 50,
+	"material" : "materials/presets/light_shafts_0.json",
+	"maxcount" : 16,
 	"operator" : 
 	[
 		{
 			"gravity" : "0 0 0",
-			"id" : 10,
+			"id" : 9,
 			"name" : "movement"
 		},
 		{
 			"fadeintime" : 0.10000000000000001,
-			"fadeouttime" : 0.90000000000000002,
-			"id" : 11,
+			"id" : 10,
 			"name" : "alphafade"
 		},
 		{
 			"force" : "0 0 0",
-			"id" : 12,
+			"id" : 11,
 			"name" : "angularmovement"
 		}
 	],
@@ -136,6 +123,6 @@
 			"name" : "sprite"
 		}
 	],
-	"sequencemultiplier" : 3,
-	"starttime" : 3
+	"sequencemultiplier" : null,
+	"starttime" : 10
 }
