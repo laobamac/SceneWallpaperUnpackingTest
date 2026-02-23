@@ -514,7 +514,7 @@ class PuppetRenderable: RenderableObject {
                 if parts.count >= 3, let u = Float(parts[1]),
                     let v = Float(parts[2])
                 {
-                    rawUVs.append(SIMD2<Float>(u, 1.0 - v))
+                    rawUVs.append(SIMD2<Float>(u, v))
                 }
             } else if parts[0] == "f" {
                 var faceIndices: [UInt32] = []

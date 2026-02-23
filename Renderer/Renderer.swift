@@ -401,7 +401,7 @@ class Renderer: NSObject, MTKViewDelegate {
             let texture = try await TextureManager.shared.loadTexture(
                 url: texURL,
                 options: [
-                    .origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: true,
+                    .origin: MTKTextureLoader.Origin.topLeft, .SRGB: true,
                 ]
             )
             let (pos, rotation, size, scale) = RenderableObject.parseTransforms(
@@ -526,7 +526,7 @@ class Renderer: NSObject, MTKViewDelegate {
             let texture = try await TextureManager.shared.loadTexture(
                 url: texURL,
                 options: [
-                    .origin: MTKTextureLoader.Origin.bottomLeft, .SRGB: true,
+                    .origin: MTKTextureLoader.Origin.topLeft, .SRGB: true,
                 ]
             )
             let (vertices, indices, triangleBoneIndices, bboxWidth) =
@@ -758,14 +758,14 @@ class Renderer: NSObject, MTKViewDelegate {
             eye: SIMD3<Float>(
                 Float(projectionSize.width) / 2,
                 Float(projectionSize.height) / 2,
-                camDist
+                -camDist
             ),
             center: SIMD3<Float>(
                 Float(projectionSize.width) / 2,
                 Float(projectionSize.height) / 2,
                 0
             ),
-            up: SIMD3<Float>(0, 1, 0)
+            up: SIMD3<Float>(0, -1, 0)
         )
 
         var globals = GlobalUniforms(

@@ -20,7 +20,7 @@ class ParticleSystem {
     
     var time: Float = 0.0
     var spritesheetFrames: Int = 0
-    var spritesheetDuration: Float = 1.0
+    var spritesheetDuration: Float = 0.0
     
     init(def: ParticleSystemDef) {
         self.def = def

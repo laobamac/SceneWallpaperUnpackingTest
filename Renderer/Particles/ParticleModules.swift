@@ -484,8 +484,9 @@ class RotationRandomInitializer: ParticleInitializer {
     let minVal: SIMD3<Float>
     let maxVal: SIMD3<Float>
     init(def: ParticleInitializerDef) {
-        self.minVal = def.min?.getVec3() ?? .zero
-        self.maxVal = def.max?.getVec3() ?? SIMD3<Float>(0, 0, .pi * 2)
+        let degToRad = Float.pi / 180.0
+        self.minVal = (def.min?.getVec3() ?? .zero) * degToRad
+        self.maxVal = (def.max?.getVec3() ?? SIMD3<Float>(0, 0, 360.0)) * degToRad
     }
     func initialize(
         particle: inout ParticleInstance,
@@ -502,8 +503,9 @@ class AngularVelocityRandomInitializer: ParticleInitializer {
     let maxVal: SIMD3<Float>
     let exponent: Float
     init(def: ParticleInitializerDef) {
-        self.minVal = def.min?.getVec3() ?? SIMD3<Float>(0, 0, -5)
-        self.maxVal = def.max?.getVec3() ?? SIMD3<Float>(0, 0, 5)
+        let degToRad = Float.pi / 180.0
+        self.minVal = (def.min?.getVec3() ?? SIMD3<Float>(0, 0, -5)) * degToRad
+        self.maxVal = (def.max?.getVec3() ?? SIMD3<Float>(0, 0, 5)) * degToRad
         self.exponent = def.exponent?.getFloat() ?? 1.0
     }
     func initialize(
@@ -536,7 +538,7 @@ class TurbulentVelocityRandomInitializer: ParticleInitializer {
         self.speedMin = def.speedmin?.getFloat() ?? 100.0
         self.speedMax = def.speedmax?.getFloat() ?? 250.0
         self.scale = def.scale?.getFloat() ?? 1.0
-        self.offset = def.offset?.getFloat() ?? 0.0
+        self.offset = (def.offset?.getFloat() ?? 0.0) * (Float.pi / 180.0)
         self.forward = def.forward?.getVec3() ?? SIMD3<Float>(0, 1, 0)
         self.timeScale = def.timescale?.getFloat() ?? 1.0
         self.phaseMin = def.phasemin?.getFloat() ?? 0.0
@@ -685,8 +687,9 @@ class AngularMovementOperator: ParticleOperator {
     let force: SIMD3<Float>
 
     init(def: ParticleOperatorDef) {
+        let degToRad = Float.pi / 180.0
         self.drag = def.drag?.getFloat() ?? 0.0
-        self.force = def.force?.getVec3() ?? .zero
+        self.force = (def.force?.getVec3() ?? .zero) * degToRad
     }
 
     func apply(

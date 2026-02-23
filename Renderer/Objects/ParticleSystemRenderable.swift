@@ -178,12 +178,8 @@ class ParticleSystemRenderable: RenderableObject {
             for i in 0..<controlPoints.count {
                 if controlPoints[i].linkMouse {
                     var pos = SIMD3<Float>.zero
-                    pos.x =
-                        Float(mp.x * screenSize.width)
-                        - Float(screenSize.width / 2.0)
-                    pos.y =
-                        Float(screenSize.height / 2.0)
-                        - Float(mp.y * screenSize.height)
+                    pos.x = Float(mp.x * screenSize.width)
+                    pos.y = Float(mp.y * screenSize.height)
                     pos.z = 0.0
                     pos += controlPoints[i].offset
                     controlPoints[i].position = pos
