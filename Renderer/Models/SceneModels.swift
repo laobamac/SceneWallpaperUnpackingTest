@@ -135,6 +135,19 @@ struct ModelJSON: Codable {
     let material: String?
 }
 
+struct MaterialJSON: Codable {
+    let passes: [MaterialPass]
+}
+
+struct MaterialPass: Codable {
+    let textures: [String]
+    let shader: String?
+    let blending: String?
+    let cullmode: String?
+    let depthtest: String?
+    let depthwrite: String?
+}
+
 struct PuppetData: Codable {
     let info: PuppetInfo
     let skinning: [PuppetSkinning]
