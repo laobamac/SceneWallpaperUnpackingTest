@@ -67,11 +67,13 @@ class BoxRandomEmitter: ParticleEmitter {
         instanceOverride: ParticleInstanceOverride?,
         isOrthographic: Bool
     ) {
-        if count >= particles.count { return }
+        let countOverride = instanceOverride?.count ?? 1.0
+        let effectiveMaxCount = Int(Float(particles.count) * countOverride)
+        if effectiveMaxCount <= 0 { return }
+        if count >= effectiveMaxCount { return }
 
         let baseRate = def.rate ?? 10.0
-        let overrideRate = instanceOverride?.rate ?? 1.0
-        let rate = baseRate * overrideRate
+        let rate = baseRate * countOverride
 
         let transformedOrigin = def.origin?.getVec3() ?? .zero
 
@@ -136,7 +138,7 @@ class BoxRandomEmitter: ParticleEmitter {
         var toEmit: Int = 0
         let instantaneous = def.instantaneous ?? 0
         if instantaneous > 0 && !instantaneousEmitted {
-            toEmit = instantaneous
+            toEmit = Int(Float(instantaneous) * countOverride)
             instantaneousEmitted = true
         }
 
@@ -154,7 +156,7 @@ class BoxRandomEmitter: ParticleEmitter {
         let maxD = def.distancemax?.getVec3() ?? .zero
 
         for _ in 0..<toEmit {
-            if count >= particles.count { break }
+            if count >= effectiveMaxCount { break }
 
             var spawnOrigin = transformedOrigin
             if cpIndex >= 0 && cpIndex < controlPoints.count {
@@ -234,11 +236,13 @@ class SphereRandomEmitter: ParticleEmitter {
         instanceOverride: ParticleInstanceOverride?,
         isOrthographic: Bool
     ) {
-        if count >= particles.count { return }
+        let countOverride = instanceOverride?.count ?? 1.0
+        let effectiveMaxCount = Int(Float(particles.count) * countOverride)
+        if effectiveMaxCount <= 0 { return }
+        if count >= effectiveMaxCount { return }
 
         let baseRate = def.rate ?? 10.0
-        let overrideRate = instanceOverride?.rate ?? 1.0
-        let rate = baseRate * overrideRate
+        let rate = baseRate * countOverride
         let lifetimeOverride = instanceOverride?.lifetime ?? 1.0
 
         let transformedOrigin = def.origin?.getVec3() ?? .zero
@@ -262,7 +266,7 @@ class SphereRandomEmitter: ParticleEmitter {
         }
 
         if remaining > 0 {
-            toEmit += remaining
+            toEmit += Int(Float(remaining) * countOverride)
             remaining = 0
         }
 
@@ -275,7 +279,7 @@ class SphereRandomEmitter: ParticleEmitter {
         let speedMax = def.speedmax ?? 0.0
 
         for _ in 0..<toEmit {
-            if count >= particles.count { break }
+            if count >= effectiveMaxCount { break }
 
             var spawnOrigin = transformedOrigin
             if cpIndex >= 0 && cpIndex < controlPoints.count {
@@ -486,7 +490,8 @@ class RotationRandomInitializer: ParticleInitializer {
     init(def: ParticleInitializerDef) {
         let degToRad = Float.pi / 180.0
         self.minVal = (def.min?.getVec3() ?? .zero) * degToRad
-        self.maxVal = (def.max?.getVec3() ?? SIMD3<Float>(0, 0, 360.0)) * degToRad
+        self.maxVal =
+            (def.max?.getVec3() ?? SIMD3<Float>(0, 0, 360.0)) * degToRad
     }
     func initialize(
         particle: inout ParticleInstance,
@@ -667,14 +672,17 @@ class MovementOperator: ParticleOperator {
         controlPoints: [ControlPointData],
         currentTime: Float,
         dt: Float,
-        instanceOverride: ParticleInstanceOverride?
+        instanceOverride: ParticleInstanceOverride?,
+        globalGravity: SIMD3<Float>,
+        globalWind: SIMD3<Float>
     ) {
         let speed = instanceOverride?.speed ?? 1.0
-        let grav = gravity
+        let grav = gravity + globalGravity
         for i in 0..<count {
             if !particles[i].alive { continue }
             particles[i].position += particles[i].velocity * dt
             particles[i].velocity += grav * dt * speed
+            particles[i].velocity += globalWind * dt * speed
             var dragFactor = 1.0 - (drag * dt)
             if dragFactor < 0.0 { dragFactor = 0.0 }
             particles[i].velocity *= dragFactor
@@ -698,7 +706,9 @@ class AngularMovementOperator: ParticleOperator {
         controlPoints: [ControlPointData],
         currentTime: Float,
         dt: Float,
-        instanceOverride: ParticleInstanceOverride?
+        instanceOverride: ParticleInstanceOverride?,
+        globalGravity: SIMD3<Float>,
+        globalWind: SIMD3<Float>
     ) {
         let speed = instanceOverride?.speed ?? 1.0
         let pi = Float.pi
@@ -735,7 +745,9 @@ class AlphaFadeOperator: ParticleOperator {
         controlPoints: [ControlPointData],
         currentTime: Float,
         dt: Float,
-        instanceOverride: ParticleInstanceOverride?
+        instanceOverride: ParticleInstanceOverride?,
+        globalGravity: SIMD3<Float>,
+        globalWind: SIMD3<Float>
     ) {
         for i in 0..<count {
             if !particles[i].alive { continue }
@@ -785,7 +797,9 @@ class SizeChangeOperator: ParticleOperator {
         controlPoints: [ControlPointData],
         currentTime: Float,
         dt: Float,
-        instanceOverride: ParticleInstanceOverride?
+        instanceOverride: ParticleInstanceOverride?,
+        globalGravity: SIMD3<Float>,
+        globalWind: SIMD3<Float>
     ) {
         for i in 0..<count {
             if !particles[i].alive { continue }
@@ -820,7 +834,9 @@ class AlphaChangeOperator: ParticleOperator {
         controlPoints: [ControlPointData],
         currentTime: Float,
         dt: Float,
-        instanceOverride: ParticleInstanceOverride?
+        instanceOverride: ParticleInstanceOverride?,
+        globalGravity: SIMD3<Float>,
+        globalWind: SIMD3<Float>
     ) {
         for i in 0..<count {
             if !particles[i].alive { continue }
@@ -855,7 +871,9 @@ class ColorChangeOperator: ParticleOperator {
         controlPoints: [ControlPointData],
         currentTime: Float,
         dt: Float,
-        instanceOverride: ParticleInstanceOverride?
+        instanceOverride: ParticleInstanceOverride?,
+        globalGravity: SIMD3<Float>,
+        globalWind: SIMD3<Float>
     ) {
         for i in 0..<count {
             if !particles[i].alive { continue }
@@ -912,7 +930,9 @@ class TurbulenceOperator: ParticleOperator {
         controlPoints: [ControlPointData],
         currentTime: Float,
         dt: Float,
-        instanceOverride: ParticleInstanceOverride?
+        instanceOverride: ParticleInstanceOverride?,
+        globalGravity: SIMD3<Float>,
+        globalWind: SIMD3<Float>
     ) {
         let phase = ParticleMath.randomFloat(min: phaseMin, max: phaseMax)
         let turbSpeed = ParticleMath.randomFloat(min: speedMin, max: speedMax)
@@ -975,7 +995,9 @@ class VortexOperator: ParticleOperator {
         controlPoints: [ControlPointData],
         currentTime: Float,
         dt: Float,
-        instanceOverride: ParticleInstanceOverride?
+        instanceOverride: ParticleInstanceOverride?,
+        globalGravity: SIMD3<Float>,
+        globalWind: SIMD3<Float>
     ) {
         let infiniteAxis = (flags & 1) != 0
         let maintainDistance = (flags & 2) != 0
@@ -1074,7 +1096,9 @@ class ControlPointAttractOperator: ParticleOperator {
         controlPoints: [ControlPointData],
         currentTime: Float,
         dt: Float,
-        instanceOverride: ParticleInstanceOverride?
+        instanceOverride: ParticleInstanceOverride?,
+        globalGravity: SIMD3<Float>,
+        globalWind: SIMD3<Float>
     ) {
         if controlPoint < 0 || controlPoint >= controlPoints.count { return }
         let center = controlPoints[controlPoint].position + origin
@@ -1115,7 +1139,9 @@ class OscillateAlphaOperator: ParticleOperator {
         controlPoints: [ControlPointData],
         currentTime: Float,
         dt: Float,
-        instanceOverride: ParticleInstanceOverride?
+        instanceOverride: ParticleInstanceOverride?,
+        globalGravity: SIMD3<Float>,
+        globalWind: SIMD3<Float>
     ) {
         for i in 0..<count {
             if !particles[i].oscillateAlpha.initialized {
@@ -1165,7 +1191,9 @@ class OscillateSizeOperator: ParticleOperator {
         controlPoints: [ControlPointData],
         currentTime: Float,
         dt: Float,
-        instanceOverride: ParticleInstanceOverride?
+        instanceOverride: ParticleInstanceOverride?,
+        globalGravity: SIMD3<Float>,
+        globalWind: SIMD3<Float>
     ) {
         for i in 0..<count {
             if !particles[i].oscillateSize.initialized {
@@ -1219,7 +1247,9 @@ class OscillatePositionOperator: ParticleOperator {
         controlPoints: [ControlPointData],
         currentTime: Float,
         dt: Float,
-        instanceOverride: ParticleInstanceOverride?
+        instanceOverride: ParticleInstanceOverride?,
+        globalGravity: SIMD3<Float>,
+        globalWind: SIMD3<Float>
     ) {
         let speedOver = instanceOverride?.speed ?? 1.0
         for i in 0..<count {

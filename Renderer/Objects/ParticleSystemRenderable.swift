@@ -40,6 +40,9 @@ class ParticleSystemRenderable: RenderableObject {
     let particleFlags: Int
     let instanceOverride: ParticleInstanceOverride?
 
+    var globalGravity: SIMD3<Float> = .zero
+    var globalWind: SIMD3<Float> = .zero
+
     struct SpriteVertex {
         var position: SIMD4<Float>
         var texCoordAndSize: SIMD4<Float>
@@ -191,7 +194,9 @@ class ParticleSystemRenderable: RenderableObject {
             dt: dt,
             controlPoints: controlPoints,
             instanceOverride: instanceOverride,
-            isOrthographic: isOrtho
+            isOrthographic: isOrtho,
+            globalGravity: globalGravity,
+            globalWind: globalWind
         )
 
         if system.count > 0 {

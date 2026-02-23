@@ -94,6 +94,8 @@ protocol ParticleOperator {
         controlPoints: [ControlPointData],
         currentTime: Float,
         dt: Float,
-        instanceOverride: ParticleInstanceOverride?
+        instanceOverride: ParticleInstanceOverride?,
+        globalGravity: SIMD3<Float>,
+        globalWind: SIMD3<Float>
     )
 }
