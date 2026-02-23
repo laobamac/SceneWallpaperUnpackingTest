@@ -668,8 +668,8 @@ class Renderer: NSObject, MTKViewDelegate {
         up: SIMD3<Float>
     ) -> matrix_float4x4 {
         let z = normalize(eye - center)
-        let x = normalize(cross(up, z))
-        let y = cross(z, x)
+        let x = normalize(cross(z, up))
+        let y = cross(x, z)
         let t = SIMD3<Float>(-dot(x, eye), -dot(y, eye), -dot(z, eye))
         return matrix_float4x4.init(
             columns: (
@@ -765,7 +765,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 Float(projectionSize.height) / 2,
                 0
             ),
-            up: SIMD3<Float>(0, -1, 0)
+            up: SIMD3<Float>(0, 1, 0)
         )
 
         var globals = GlobalUniforms(

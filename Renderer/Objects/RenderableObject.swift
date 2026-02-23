@@ -28,10 +28,10 @@ class RenderableObject {
     let depthState: MTLDepthStencilState?
 
     let vertices: [Float] = [
-        -0.5, -0.5, 0, 0, 0,
-        0.5, -0.5, 0, 1, 0,
-        -0.5, 0.5, 0, 0, 1,
-        0.5, 0.5, 0, 1, 1,
+        -0.5,  0.5, 0, 0, 0, // Top Left
+        -0.5, -0.5, 0, 0, 1, // Bottom Left
+         0.5,  0.5, 0, 1, 0, // Top Right
+         0.5, -0.5, 0, 1, 1  // Bottom Right
     ]
 
     init(
