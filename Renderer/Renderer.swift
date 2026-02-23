@@ -688,7 +688,7 @@ class Renderer: NSObject, MTKViewDelegate {
         else { return }
 
         let currentTime = Date().timeIntervalSince(startTime)
-        let dt = lastTime == 0 ? 0 : Float(currentTime - lastTime)
+        let dt = lastTime == 0 ? 0 : min(Float(currentTime - lastTime), 0.1)
         lastTime = currentTime
         let time = Float(currentTime)
 

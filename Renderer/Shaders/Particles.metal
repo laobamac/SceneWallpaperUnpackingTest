@@ -58,28 +58,13 @@ vertex ParticleVertexOut particle_sprite_vertex(uint vertexID [[vertex_id]],
                                                 constant float4 &renderVar0 [[buffer(3)]],
                                                 constant float4 &renderVar1 [[buffer(4)]]) {
     ParticleVertexOut out;
-    SpriteVertexIn v = vertices[vertexID / 6];
+    SpriteVertexIn v = vertices[vertexID];
     
-    uint corner = vertexID % 6;
-    float2 localPos = float2(0.0);
-    float2 baseUV = float2(0.0);
-    
-    if (corner == 0 || corner == 5) {
-        localPos = float2(-0.5, 0.5);
-        baseUV = float2(0.0, 1.0);
-    } else if (corner == 1) {
-        localPos = float2(0.5, 0.5);
-        baseUV = float2(1.0, 1.0);
-    } else if (corner == 2 || corner == 3) {
-        localPos = float2(0.5, -0.5);
-        baseUV = float2(1.0, 0.0);
-    } else if (corner == 4) {
-        localPos = float2(-0.5, -0.5);
-        baseUV = float2(0.0, 0.0);
-    }
+    float2 baseUV = v.texCoordAndSize.xy;
+    float2 localPos = float2(baseUV.x - 0.5, 0.5 - baseUV.y);
 
-    float s = sin(v.texCoordAndSize.z);
-    float c = cos(v.texCoordAndSize.z);
+    float s = sin(-v.texCoordAndSize.z);
+    float c = cos(-v.texCoordAndSize.z);
     float2 rotatedPos = float2(localPos.x * c - localPos.y * s, localPos.x * s + localPos.y * c);
 
     float3 worldPos = v.position.xyz;
@@ -102,20 +87,9 @@ vertex ParticleVertexOut particle_rope_vertex(uint vertexID [[vertex_id]],
                                               constant float4 &renderVar0 [[buffer(3)]],
                                               constant float4 &renderVar1 [[buffer(4)]]) {
     ParticleVertexOut out;
-    RopeVertexIn v = vertices[vertexID / 6];
+    RopeVertexIn v = vertices[vertexID];
 
-    uint corner = vertexID % 6;
-    float2 vertexUV = float2(0.0);
-    
-    if (corner == 0 || corner == 5) {
-        vertexUV = float2(0.0, 0.0);
-    } else if (corner == 1) {
-        vertexUV = float2(1.0, 0.0);
-    } else if (corner == 2 || corner == 3) {
-        vertexUV = float2(1.0, 1.0);
-    } else if (corner == 4) {
-        vertexUV = float2(0.0, 1.0);
-    }
+    float2 vertexUV = v.uv.xy;
 
     float3 dir = v.endPosAndLength.xyz - v.positionAndSize.xyz;
     if (length(dir) > 0.0001) {
@@ -146,7 +120,7 @@ vertex ParticleVertexOut particle_rope_vertex(uint vertexID [[vertex_id]],
         currentTrailPos += 1.0;
     }
     
-    out.uv = float2(currentTrailPos / trailLength, vertexUV.y);
+    out.uv = float2(currentTrailPos / max(trailLength, 1.0), vertexUV.y);
     out.color = (vertexUV.x > 0.5) ? v.colorEnd : v.colorStart;
     out.color *= uniforms.color;
     out.color.a *= uniforms.alpha;
@@ -173,6 +147,7 @@ fragment float4 particle_fragment(ParticleVertexOut in [[stage_in]],
             float frameHeight = renderVar1.y;
             int cols = int(1.0 / frameWidth + 0.5);
             int currentFrame = clamp(int(in.lifetime * frames), 0, int(frames) - 1);
+            if (cols <= 0) cols = 1;
             int col = currentFrame % cols;
             int row = currentFrame / cols;
             float2 uv = in.uv;
