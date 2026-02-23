@@ -9,21 +9,32 @@ import Foundation
 
 struct EffectConfig: Codable {
     let name: String?
+    let description: String?
+    let group: String?
+    let preview: String?
     let passes: [EffectPassConfig]?
-    let uniforms: [String: UniformConfig]?
+    let dependencies: [String]?
+    let fbos: [FBOConfig]?
 }
 
 struct EffectPassConfig: Codable {
-    let shader: String
-    let cull_mode: String?
-    let blendmode: String?
-    let rendertarget: String?
-    let resolution_scale: Float?
+    let material: String?
+    let command: String?
+    let source: String?
+    let target: String?
+    let binds: [BindConfig]?
 }
 
-struct UniformConfig: Codable {
-    let type: String?
-    let value: AnyCodable?
+struct BindConfig: Codable {
+    let index: Int
+    let name: String
+}
+
+struct FBOConfig: Codable {
+    let name: String
+    let format: String?
+    let scale: Float?
+    let unique: Bool?
 }
 
 struct AnyCodable: Codable {

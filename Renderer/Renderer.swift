@@ -43,13 +43,48 @@ class Renderer: NSObject, MTKViewDelegate {
     var isHDREnabled: Bool = false
     var mousePosition: CGPoint?
 
+    var uniformContext = UniformContext.shared
+    var effectInstances: [EffectInstance] = []
+    var fullScreenVertexBuffer: MTLBuffer?
+    var fullScreenTexCoordBuffer: MTLBuffer?
+
     init?(device: MTLDevice) {
         self.device = device
         guard let queue = device.makeCommandQueue() else { return nil }
         self.commandQueue = queue
         super.init()
         do { try setupPipeline() } catch { return nil }
+        setupFullScreenBuffers()
         Task { await TextureManager.shared.setup(device: device) }
+    }
+
+    func setupFullScreenBuffers() {
+        let vertices: [Float] = [
+            -1.0, -1.0, 0.0,
+            1.0, -1.0, 0.0,
+            -1.0, 1.0, 0.0,
+            1.0, 1.0, 0.0,
+            -1.0, 1.0, 0.0,
+            1.0, -1.0, 0.0,
+        ]
+        let texCoords: [Float] = [
+            0.0, 1.0,
+            1.0, 1.0,
+            0.0, 0.0,
+            1.0, 0.0,
+            0.0, 0.0,
+            1.0, 1.0,
+        ]
+        fullScreenVertexBuffer = device.makeBuffer(
+            bytes: vertices,
+            length: vertices.count * MemoryLayout<Float>.stride,
+            options: .storageModeShared
+        )
+        fullScreenTexCoordBuffer = device.makeBuffer(
+            bytes: texCoords,
+            length: texCoords.count * MemoryLayout<Float>.stride,
+            options: .storageModeShared
+        )
     }
 
     func setupPipeline() throws {
@@ -57,7 +92,7 @@ class Renderer: NSObject, MTKViewDelegate {
             throw NSError(
                 domain: "Renderer",
                 code: 1,
-                userInfo: [NSLocalizedDescriptionKey: "Library error"]
+                userInfo: [NSLocalizedDescriptionKey: ""]
             )
         }
         let hdrFormat: MTLPixelFormat = .rgba16Float
@@ -276,6 +311,7 @@ class Renderer: NSObject, MTKViewDelegate {
         defer { if secured { folder.stopAccessingSecurityScopedResource() } }
         self.baseFolder = folder
         renderables.removeAll()
+        effectInstances.removeAll()
         await TextureManager.shared.setup(device: device)
         await TextureManager.shared.clear()
         startTime = Date()
@@ -334,6 +370,41 @@ class Renderer: NSObject, MTKViewDelegate {
             var orderedList: [RenderableObject] = []
             for obj in sceneRoot.objects {
                 if !obj.isVisible { continue }
+
+                if let effects = obj.effects {
+                    for effect in effects {
+                        if let filePath = effect.file {
+                            let configURL = folder.appendingPathComponent(
+                                filePath
+                            )
+                            if let configData = try? Data(
+                                contentsOf: configURL
+                            ),
+                                let config = try? JSONDecoder().decode(
+                                    EffectConfig.self,
+                                    from: configData
+                                )
+                            {
+                                let instance = EffectInstance(
+                                    name: filePath,
+                                    config: config
+                                )
+                                if let width = hdrTexture?.width,
+                                    let height = hdrTexture?.height
+                                {
+                                    instance.allocateUniqueFBOs(
+                                        device: device,
+                                        baseWidth: width,
+                                        baseHeight: height,
+                                        defaultFormat: .rgba16Float
+                                    )
+                                }
+                                effectInstances.append(instance)
+                            }
+                        }
+                    }
+                }
+
                 if let renderable = await createRenderable(from: obj) {
                     if let id = obj.id {
                         tempRenderables[id] = renderable
@@ -622,6 +693,18 @@ class Renderer: NSObject, MTKViewDelegate {
         )
         desc.usage = [.renderTarget, .shaderRead]
         hdrTexture = device.makeTexture(descriptor: desc)
+
+        FBOManager.shared.clear()
+        for instance in effectInstances {
+            instance.releaseUniqueFBOs()
+            instance.allocateUniqueFBOs(
+                device: device,
+                baseWidth: Int(size.width),
+                baseHeight: Int(size.height),
+                defaultFormat: .rgba16Float
+            )
+        }
+
         bloomTextures.removeAll()
         bloomTempTextures.removeAll()
         var w = Int(size.width)
@@ -691,6 +774,17 @@ class Renderer: NSObject, MTKViewDelegate {
         let dt = lastTime == 0 ? 0 : min(Float(currentTime - lastTime), 0.1)
         lastTime = currentTime
         let time = Float(currentTime)
+
+        uniformContext.update(
+            deltaTime: dt,
+            width: Float(view.drawableSize.width),
+            height: Float(view.drawableSize.height),
+            mouseX: Float(mousePosition?.x ?? 0),
+            mouseY: Float(mousePosition?.y ?? 0)
+        )
+        for instance in effectInstances {
+            instance.updateTime(deltaTime: dt)
+        }
 
         let hdrPassDesc = MTLRenderPassDescriptor()
         hdrPassDesc.colorAttachments[0].texture = hdrTex
@@ -803,6 +897,24 @@ class Renderer: NSObject, MTKViewDelegate {
             obj.draw(encoder: encoder)
         }
         encoder.endEncoding()
+
+        if let vBuffer = fullScreenVertexBuffer,
+            let tBuffer = fullScreenTexCoordBuffer
+        {
+            for instance in effectInstances {
+                RenderGraph.shared.execute(
+                    commandBuffer: commandBuffer,
+                    device: device,
+                    effectInstance: instance,
+                    baseInput: hdrTex,
+                    baseOutput: hdrTex,
+                    uniformContext: uniformContext,
+                    vertexBuffer: vBuffer,
+                    texCoordBuffer: tBuffer,
+                    vertexCount: 6
+                )
+            }
+        }
 
         if bloomTextures.count > 1 {
             let extractDesc = MTLRenderPassDescriptor()

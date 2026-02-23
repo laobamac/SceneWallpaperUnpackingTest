@@ -17,10 +17,11 @@ enum ShaderTranslationError: Error {
 class ShaderTranslator {
     static func translateAndCompile(device: MTLDevice,
                                     vertexGLSL: String,
-                                    fragmentGLSL: String) throws -> (MTLLibrary, ShaderReflectionMap) {
+                                    fragmentGLSL: String,
+                                    macros: [String: String] = [:]) throws -> (MTLLibrary, ShaderReflectionMap) {
 
-        let preprocessedVertex = GLSLPreprocessor.preprocess(source: vertexGLSL, isVertex: true)
-        let preprocessedFragment = GLSLPreprocessor.preprocess(source: fragmentGLSL, isVertex: false)
+        let preprocessedVertex = GLSLPreprocessor.preprocess(source: vertexGLSL, isVertex: true, macros: macros)
+        let preprocessedFragment = GLSLPreprocessor.preprocess(source: fragmentGLSL, isVertex: false, macros: macros)
 
         var vertError: NSError?
         guard let vertSpirv = ShadercWrapper.compileGLSLToSPIRV(preprocessedVertex, isVertex: true, error: &vertError) else {
