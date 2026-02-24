@@ -41,6 +41,10 @@ struct SceneObject: Codable {
     let visible: BoolOrObject?
     let effects: [EffectJSON]?
     let instanceoverride: ParticleInstanceOverride?
+    let text: TextProperty?
+    let font: String?
+    let pointsize: Float?
+    let color: String?
 
     var isVisible: Bool {
         if let v = visible {
@@ -49,6 +53,42 @@ struct SceneObject: Codable {
         }
         return true
     }
+}
+
+enum TextProperty: Codable {
+    case string(String)
+    case object(TextObject)
+
+    init(from decoder: Decoder) throws {
+        if let container = try? decoder.singleValueContainer(),
+           let s = try? container.decode(String.self) {
+            self = .string(s)
+            return
+        }
+        if let o = try? TextObject(from: decoder) {
+            self = .object(o)
+            return
+        }
+        self = .string("")
+    }
+    
+    func encode(to encoder: Encoder) throws {}
+    
+    var script: String {
+        if case .object(let o) = self { return o.script ?? "" }
+        return ""
+    }
+    
+    var value: String {
+        if case .string(let s) = self { return s }
+        if case .object(let o) = self { return o.value ?? "" }
+        return ""
+    }
+}
+
+struct TextObject: Codable {
+    let script: String?
+    let value: String?
 }
 
 struct EffectJSON: Codable {
@@ -170,6 +210,11 @@ enum ScriptableValue: Codable {
             let parts = s.split(separator: " ").compactMap { Float($0) }
             if parts.count >= 3 { return SIMD3<Float>(parts[0], parts[1], parts[2]) }
             if parts.count == 1 { return SIMD3<Float>(parts[0], parts[0], parts[0]) }
+            return SIMD3<Float>(0, 0, 0)
+        case .object(let dict):
+            if let val = dict["value"] {
+                return val.float3Value
+            }
             return SIMD3<Float>(0, 0, 0)
         default: return SIMD3<Float>(0, 0, 0)
         }

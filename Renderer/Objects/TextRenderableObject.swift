@@ -17,6 +17,7 @@ class TextRenderableObject: RenderableObject {
     var lastText: String = ""
     var textFont: NSFont
     var textColor: NSColor
+    var rawScript: String = ""
 
     init?(device: MTLDevice, position: SIMD3<Float>, rotation: SIMD3<Float>, size: SIMD2<Float>, scale: SIMD3<Float>, pipeline: MTLRenderPipelineState, depthState: MTLDepthStencilState?, script: String, fontPath: String, pointSize: Float, colorStr: String, baseFolder: URL) {
         var c = NSColor.white
@@ -58,10 +59,45 @@ class TextRenderableObject: RenderableObject {
 
         super.init(position: position, rotation: rotation, size: size, scale: scale, texture: tex, pipeline: pipeline, depthState: depthState)
 
+        self.rawScript = script
         self.jsContext = JSContext()
-        let safeScript = script.replacingOccurrences(of: "export function ", with: "function ")
-                               .replacingOccurrences(of: "export let ", with: "let ")
-                               .replacingOccurrences(of: "export var ", with: "var ")
+        
+        self.jsContext?.evaluateScript("""
+        var WEMath = {
+            mix: function(a, b, t) { return a * (1 - t) + b * t; }
+        };
+        function Vec3(x, y, z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.multiply = function(s) { return new Vec3(this.x * s, this.y * s, this.z * s); };
+        }
+        var createScriptProperties = function() {
+            return {
+                addCheckbox: function() { return this; },
+                addText: function() { return this; },
+                addSlider: function() { return this; },
+                finish: function() { return { use24hFormat: true, delimiter: ':', hoScale: 1.2, speed: 10 }; }
+            };
+        };
+        var shared = {};
+        var localStorage = {
+            get: function(k) { return null; },
+            set: function(k, v) {},
+            remove: function(k) {}
+        };
+        var thisLayer = { origin: new Vec3(0,0,0), originalOrigin: new Vec3(0,0,0) };
+        """)
+
+        var safeScript = script
+        safeScript = safeScript.replacingOccurrences(of: "export function ", with: "function ")
+        safeScript = safeScript.replacingOccurrences(of: "export let ", with: "let ")
+        safeScript = safeScript.replacingOccurrences(of: "export var ", with: "var ")
+        if let regex = try? NSRegularExpression(pattern: "import .*?;", options: []) {
+            let range = NSRange(location: 0, length: safeScript.utf16.count)
+            safeScript = regex.stringByReplacingMatches(in: safeScript, options: [], range: range, withTemplate: "")
+        }
+        
         self.jsContext?.evaluateScript(safeScript)
         self.updateFunc = self.jsContext?.objectForKeyedSubscript("update")
     }
@@ -93,14 +129,18 @@ class TextRenderableObject: RenderableObject {
     }
 
     override func draw(encoder: MTLRenderCommandEncoder) {
+        var currentText = ""
         if let f = updateFunc, !f.isUndefined {
             if let val = f.call(withArguments: [0]) {
-                let newText = val.toString() ?? ""
-                if newText != lastText {
-                    lastText = newText
-                    updateTextTexture(newText)
-                }
+                currentText = val.toString() ?? ""
             }
+        } else {
+            currentText = rawScript
+        }
+        
+        if currentText != lastText {
+            lastText = currentText
+            updateTextTexture(currentText)
         }
         super.draw(encoder: encoder)
     }

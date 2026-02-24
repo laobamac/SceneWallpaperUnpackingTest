@@ -283,9 +283,14 @@ class AudioBarsEffect: EffectType {
     var pipelineState: MTLRenderPipelineState?
     var uniformBuffer: MTLBuffer?
     var uniforms = AudioBarsUniforms(color: SIMD4<Float>(1, 0.57, 0.57, 1), g_Time: 0, barSpacing: 0.75, barCount: 128, opacity: 1, lowerBound: 0, upperBound: 1, blurX: 0.5, blurY: 0.5)
+    var dummyAudioTexture: MTLTexture?
     
     func load(device: MTLDevice, library: MTLLibrary, passJSON: EffectPassJSON, baseFolder: URL) async throws {
         if let vals = passJSON.constantshadervalues {
+            if let v = vals["Bar Color"] {
+                let c = v.float3Value
+                uniforms.color = SIMD4<Float>(c.x, c.y, c.z, 1)
+            }
             if let v = vals["Bar Spacing"] { uniforms.barSpacing = v.floatValue }
             if let v = vals["Bar Count"] { uniforms.barCount = v.floatValue }
             if let v = vals["ui_editor_properties_opacity"] { uniforms.opacity = v.floatValue }
@@ -300,6 +305,10 @@ class AudioBarsEffect: EffectType {
                 uniforms.blurY = blur.y
             }
         }
+        
+        let texDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .r8Unorm, width: 64, height: 1, mipmapped: false)
+        dummyAudioTexture = device.makeTexture(descriptor: texDesc)
+        
         let desc = MTLRenderPipelineDescriptor()
         desc.colorAttachments[0].pixelFormat = .rgba16Float
         desc.vertexFunction = library.makeFunction(name: "effect_blit_vertex")
@@ -313,6 +322,11 @@ class AudioBarsEffect: EffectType {
         if let buffer = uniformBuffer {
             memcpy(buffer.contents(), &uniforms, MemoryLayout<AudioBarsUniforms>.stride)
         }
+        if let tex = dummyAudioTexture {
+            var randomData = [UInt8](repeating: 0, count: 64)
+            for i in 0..<64 { randomData[i] = UInt8.random(in: 0...255) }
+            tex.replace(region: MTLRegionMake2D(0, 0, 64, 1), mipmapLevel: 0, withBytes: randomData, bytesPerRow: 64)
+        }
     }
     
     func encode(commandBuffer: MTLCommandBuffer, sourceTexture: MTLTexture, destinationTexture: MTLTexture) {
@@ -325,6 +339,9 @@ class AudioBarsEffect: EffectType {
         guard let enc = commandBuffer.makeRenderCommandEncoder(descriptor: pass) else { return }
         enc.setRenderPipelineState(pipeline)
         enc.setFragmentTexture(sourceTexture, index: 0)
+        if let dummy = dummyAudioTexture {
+            enc.setFragmentTexture(dummy, index: 1)
+        }
         if let sampler = EffectManager.shared.samplerState {
             enc.setFragmentSamplerState(sampler, index: 0)
         }
