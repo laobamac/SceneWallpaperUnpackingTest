@@ -45,6 +45,8 @@ struct SceneObject: Codable {
     let font: String?
     let pointsize: Float?
     let color: String?
+    let horizontalalign: String?
+    let verticalalign: String?
 
     var isVisible: Bool {
         if let v = visible {
@@ -190,6 +192,11 @@ enum ScriptableValue: Codable {
         case .float(let f): return f
         case .int(let i): return Float(i)
         case .string(let s): return Float(s) ?? 0.0
+        case .object(let dict):
+            if let val = dict["value"] {
+                return val.floatValue
+            }
+            return 0.0
         default: return 0.0
         }
     }
@@ -199,6 +206,11 @@ enum ScriptableValue: Codable {
         case .string(let s):
             let parts = s.split(separator: " ").compactMap { Float($0) }
             if parts.count >= 2 { return SIMD2<Float>(parts[0], parts[1]) }
+            return SIMD2<Float>(0, 0)
+        case .object(let dict):
+            if let val = dict["value"] {
+                return val.float2Value
+            }
             return SIMD2<Float>(0, 0)
         default: return SIMD2<Float>(0, 0)
         }

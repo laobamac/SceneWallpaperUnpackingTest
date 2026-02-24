@@ -27,6 +27,7 @@ struct AudioBarsUniforms {
 
 fragment float4 audiobars_frag(EffectVertexOut in [[stage_in]],
                                texture2d<float> sourceTex [[texture(0)]],
+                               texture2d<float> audioTex [[texture(1)]],
                                constant AudioBarsUniforms& uniforms [[buffer(0)]],
                                sampler s [[sampler(0)]]) {
     float2 uv = in.texCoord;
@@ -35,11 +36,11 @@ fragment float4 audiobars_frag(EffectVertexOut in [[stage_in]],
     float barWidth = 1.0 - uniforms.barSpacing;
     float alpha = step(barPos, barWidth);
     
-    float normalizedHeight = uv.y;
+    float normalizedHeight = 1.0 - uv.y;
     float boundsMask = step(uniforms.lowerBound, normalizedHeight) * step(normalizedHeight, uniforms.upperBound);
     
-    float intensity = sin(uniforms.g_Time * 10.0 + barIndex * 0.5) * 0.5 + 0.5;
-    float heightMask = step(1.0 - normalizedHeight, intensity);
+    float audioSample = audioTex.sample(s, float2(uv.x, 0.5)).r;
+    float heightMask = step(normalizedHeight, audioSample);
     
     float4 baseColor = sourceTex.sample(s, in.texCoord);
     float4 barColor = uniforms.color;

@@ -47,6 +47,7 @@ class RenderableObject {
         pipeline: MTLRenderPipelineState,
         depthState: MTLDepthStencilState? = nil
     ) {
+        Logger.log("[RenderableObject] Init called. Pos: \(position), Size: \(size), Scale: \(scale)")
         self.localPosition = position
         self.localRotation = rotation
         self.size = size
@@ -157,6 +158,8 @@ class RenderableObject {
             rotation.y = angleStrs[1]
             rotation.z = angleStrs[2]
         }
+        
+        Logger.log("[RenderableObject] Parsed transforms for obj \(obj.name ?? "nil") (ID: \(obj.id ?? -1)): Pos=\(pos), Rot=\(rotation), Size=\(size), Scale=\(scale)")
         return (pos, rotation, size, scale)
     }
 }

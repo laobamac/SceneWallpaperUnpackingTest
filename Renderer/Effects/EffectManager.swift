@@ -48,6 +48,7 @@ class EffectManager {
                     if let vis = eJSON.visible {
                         if case .bool(let v) = vis { fx.isVisible = v }
                     }
+                    Logger.log("[EffectManager] Loading effect: \(fx.effectName) for object ID: \(obj.id ?? -1)")
                     try? await fx.load(device: device, library: library, passJSON: pass, baseFolder: baseFolder)
                     loaded.append(fx)
                 }
@@ -242,6 +243,7 @@ class ShimmerEffect: EffectType {
             if let v = vals["ui_editor_properties_offset"] { uniforms.offset = v.floatValue }
             if let v = vals["ui_editor_properties_delay"] { uniforms.delay = v.floatValue }
         }
+        Logger.log("[ShimmerEffect] Loaded. Color: \(uniforms.color), Speed: \(uniforms.speed), Direction: \(uniforms.direction)")
         let desc = MTLRenderPipelineDescriptor()
         desc.colorAttachments[0].pixelFormat = .rgba16Float
         desc.vertexFunction = library.makeFunction(name: "effect_blit_vertex")
@@ -288,23 +290,51 @@ class AudioBarsEffect: EffectType {
     func load(device: MTLDevice, library: MTLLibrary, passJSON: EffectPassJSON, baseFolder: URL) async throws {
         if let vals = passJSON.constantshadervalues {
             if let v = vals["Bar Color"] {
-                let c = v.float3Value
+                var c = SIMD3<Float>(1, 1, 1)
+                if case .string(let s) = v {
+                    let p = s.split(separator: " ").compactMap { Float($0) }
+                    if p.count >= 3 { c = SIMD3<Float>(p[0], p[1], p[2]) }
+                } else if case .object(let dict) = v, let val = dict["value"] {
+                    if case .string(let s) = val {
+                        let p = s.split(separator: " ").compactMap { Float($0) }
+                        if p.count >= 3 { c = SIMD3<Float>(p[0], p[1], p[2]) }
+                    }
+                }
                 uniforms.color = SIMD4<Float>(c.x, c.y, c.z, 1)
             }
             if let v = vals["Bar Spacing"] { uniforms.barSpacing = v.floatValue }
             if let v = vals["Bar Count"] { uniforms.barCount = v.floatValue }
             if let v = vals["ui_editor_properties_opacity"] { uniforms.opacity = v.floatValue }
             if let v = vals["Lower/Upper Bar Bounds"] {
-                let bounds = v.float2Value
+                var bounds = SIMD2<Float>(0, 1)
+                if case .string(let s) = v {
+                    let p = s.split(separator: " ").compactMap { Float($0) }
+                    if p.count >= 2 { bounds = SIMD2<Float>(p[0], p[1]) }
+                } else if case .object(let dict) = v, let val = dict["value"] {
+                    if case .string(let s) = val {
+                        let p = s.split(separator: " ").compactMap { Float($0) }
+                        if p.count >= 2 { bounds = SIMD2<Float>(p[0], p[1]) }
+                    }
+                }
                 uniforms.lowerBound = bounds.x
                 uniforms.upperBound = bounds.y
             }
             if let v = vals["Anti-alias blurring"] {
-                let blur = v.float2Value
+                var blur = SIMD2<Float>(0.5, 0.5)
+                if case .string(let s) = v {
+                    let p = s.split(separator: " ").compactMap { Float($0) }
+                    if p.count >= 2 { blur = SIMD2<Float>(p[0], p[1]) }
+                } else if case .object(let dict) = v, let val = dict["value"] {
+                    if case .string(let s) = val {
+                        let p = s.split(separator: " ").compactMap { Float($0) }
+                        if p.count >= 2 { blur = SIMD2<Float>(p[0], p[1]) }
+                    }
+                }
                 uniforms.blurX = blur.x
                 uniforms.blurY = blur.y
             }
         }
+        Logger.log("[AudioBarsEffect] Loaded. Color: \(uniforms.color), Bounds: \(uniforms.lowerBound) - \(uniforms.upperBound), BarCount: \(uniforms.barCount)")
         
         let texDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .r8Unorm, width: 64, height: 1, mipmapped: false)
         dummyAudioTexture = device.makeTexture(descriptor: texDesc)
