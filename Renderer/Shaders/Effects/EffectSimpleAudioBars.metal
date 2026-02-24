@@ -5,13 +5,6 @@
 //  Created by laobamac on 2026/2/24.
 //
 
-//
-//  EffectSimpleAudioBars.metal
-//  Renderer
-//
-//  Created by laobamac on 2026/2/24.
-//
-
 #include <metal_stdlib>
 using namespace metal;
 
@@ -51,6 +44,7 @@ fragment float4 audiobars_frag(EffectVertexOut in [[stage_in]],
     float4 baseColor = sourceTex.sample(s, in.texCoord);
     float4 barColor = uniforms.color;
     barColor.a *= alpha * boundsMask * heightMask * uniforms.opacity;
+    barColor.rgb *= barColor.a;
     
-    return mix(baseColor, barColor, barColor.a);
+    return float4(baseColor.rgb * (1.0 - barColor.a) + barColor.rgb, baseColor.a * (1.0 - barColor.a) + barColor.a);
 }
