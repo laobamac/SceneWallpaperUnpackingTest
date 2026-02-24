@@ -322,14 +322,16 @@ class Renderer: NSObject, MTKViewDelegate {
         }
 
         if obj.image == nil {
-            if let raw = raw, let textDict = raw["text"] as? [String: Any], let script = textDict["script"] as? String {
+            if let textProp = obj.text {
                 let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
-                let fontPath = raw["font"] as? String ?? ""
-                let pointSize = (raw["pointsize"] as? NSNumber)?.floatValue ?? 28.0
-                let colorStr = raw["color"] as? String ?? "1 1 1"
+                let fontPath = obj.font ?? ""
+                let pointSize = obj.pointsize ?? 28.0
+                let colorStr = obj.color ?? "1 1 1"
+                let ha = obj.horizontalalign ?? "center"
+                let va = obj.verticalalign ?? "center"
                 guard let pipeline = pipelineState else { return nil }
                 
-                if let renderable = TextRenderableObject(device: device, position: pos, rotation: rotation, size: size, scale: scale, pipeline: pipeline, depthState: depthStencilState, script: script, fontPath: fontPath, pointSize: pointSize, colorStr: colorStr, baseFolder: base) {
+                if let renderable = TextRenderableObject(device: device, position: pos, rotation: rotation, size: size, scale: scale, pipeline: pipeline, depthState: depthStencilState, textString: textProp.value, fontPath: fontPath, pointSize: pointSize, colorStr: colorStr, horizontalAlign: ha, verticalAlign: va, baseFolder: base) {
                     applyEffectConstants(to: renderable, from: obj)
                     renderable.effects = await EffectManager.shared.loadEffects(for: obj, baseFolder: base)
                     if !renderable.effects.isEmpty {
@@ -561,6 +563,8 @@ class Renderer: NSObject, MTKViewDelegate {
         let time = Float(currentTime)
 
         for obj in renderables {
+            obj.update(commandBuffer: commandBuffer)
+            
             for fx in obj.effects {
                 fx.update(dt: dt, time: time, size: CGSize(width: CGFloat(obj.texture.width), height: CGFloat(obj.texture.height)))
             }

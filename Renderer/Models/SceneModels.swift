@@ -183,7 +183,11 @@ enum ScriptableValue: Codable {
         case .int(let i): return "\(i)"
         case .bool(let b): return "\(b)"
         case .floatArray(let a): return a.map { "\($0)" }.joined(separator: " ")
-        case .object(_): return ""
+        case .object(let dict):
+            if let val = dict["value"] {
+                return val.value
+            }
+            return ""
         }
     }
     

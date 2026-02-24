@@ -13,12 +13,12 @@ import AppKit
 class TextRenderableObject: RenderableObject {
     var textFont: NSFont
     var textColor: NSColor
-    var textString: String = ""
+    var textString: String
     var horizontalAlignment: NSTextAlignment = .center
     var verticalAlignment: String = "center"
     var isBaked: Bool = false
 
-    init?(device: MTLDevice, position: SIMD3<Float>, rotation: SIMD3<Float>, size: SIMD2<Float>, scale: SIMD3<Float>, pipeline: MTLRenderPipelineState, depthState: MTLDepthStencilState?, script: String, fontPath: String, pointSize: Float, colorStr: String, baseFolder: URL) {
+    init?(device: MTLDevice, position: SIMD3<Float>, rotation: SIMD3<Float>, size: SIMD2<Float>, scale: SIMD3<Float>, pipeline: MTLRenderPipelineState, depthState: MTLDepthStencilState?, textString: String, fontPath: String, pointSize: Float, colorStr: String, horizontalAlign: String, verticalAlign: String, baseFolder: URL) {
         
         var c = NSColor.white
         let comps = colorStr.split(separator: " ").compactMap { Float($0) }
@@ -42,32 +42,12 @@ class TextRenderableObject: RenderableObject {
             }
         }
         self.textFont = f
-
-        let sceneURL = baseFolder.appendingPathComponent("scene.json")
-        if let data = try? Data(contentsOf: sceneURL),
-           let root = try? JSONDecoder().decode(SceneRoot.self, from: data) {
-            for obj in root.objects {
-                if let textProp = obj.text {
-                    let s = textProp.script
-                    let v = textProp.value
-                    if (!script.isEmpty && s == script) || (!script.isEmpty && v == script) {
-                        self.textString = v.isEmpty ? script : v
-                        if let ha = obj.horizontalalign {
-                            if ha == "left" { self.horizontalAlignment = .left }
-                            else if ha == "right" { self.horizontalAlignment = .right }
-                        }
-                        if let va = obj.verticalalign {
-                            self.verticalAlignment = va
-                        }
-                        break
-                    }
-                }
-            }
-        }
         
-        if self.textString.isEmpty {
-            self.textString = script
-        }
+        self.textString = textString
+        if horizontalAlign == "left" { self.horizontalAlignment = .left }
+        else if horizontalAlign == "right" { self.horizontalAlignment = .right }
+        else { self.horizontalAlignment = .center }
+        self.verticalAlignment = verticalAlign
 
         let w = max(1, Int(size.x))
         let h = max(1, Int(size.y))
@@ -128,15 +108,26 @@ class TextRenderableObject: RenderableObject {
         NSGraphicsContext.restoreGraphicsState()
 
         if let data = context.data {
-            texture.replace(region: MTLRegionMake2D(0, 0, w, h), mipmapLevel: 0, slice: 0, withBytes: data, bytesPerRow: w * 4, bytesPerImage: w * h * 4)
+            texture.replace(region: MTLRegionMake2D(0, 0, w, h), mipmapLevel: 0, slice: 0, withBytes: data, bytesPerRow: context.bytesPerRow, bytesPerImage: context.bytesPerRow * h)
+        }
+    }
+
+    override func update(commandBuffer: MTLCommandBuffer) {
+        if !isBaked {
+            bakeTexture()
+            #if os(macOS)
+            if texture.storageMode == .managed {
+                if let blit = commandBuffer.makeBlitCommandEncoder() {
+                    blit.synchronize(resource: texture)
+                    blit.endEncoding()
+                }
+            }
+            #endif
+            isBaked = true
         }
     }
 
     override func draw(encoder: MTLRenderCommandEncoder) {
-        if !isBaked {
-            bakeTexture()
-            isBaked = true
-        }
         super.draw(encoder: encoder)
     }
 }

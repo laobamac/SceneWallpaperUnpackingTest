@@ -73,6 +73,9 @@ class RenderableObject {
         if let p = parent { return p.worldMatrix * local }
         return local
     }
+    
+    func update(commandBuffer: MTLCommandBuffer) {
+    }
 
     func draw(encoder: MTLRenderCommandEncoder) {
         encoder.setRenderPipelineState(pipeline)
