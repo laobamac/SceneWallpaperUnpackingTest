@@ -1,0 +1,19 @@
+{
+	"dependencies" : 
+	[
+		"materials/workshop/2487531853/effects/lens_flare_sun.json",
+		"shaders/workshop/2487531853/effects/lens_flare_sun.frag",
+		"shaders/workshop/2487531853/effects/lens_flare_sun.vert"
+	],
+	"editable" : false,
+	"group" : "localeffects",
+	"name" : "Lens Flare Sun",
+	"passes" : 
+	[
+		{
+			"material" : "materials/workshop/2487531853/effects/lens_flare_sun.json"
+		}
+	],
+	"replacementkey" : "lens_flare_sun",
+	"version" : 1
+}
