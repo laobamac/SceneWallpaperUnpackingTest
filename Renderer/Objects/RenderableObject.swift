@@ -27,11 +27,14 @@ class RenderableObject {
     let pipeline: MTLRenderPipelineState
     let depthState: MTLDepthStencilState?
 
+    var effects: [EffectType] = []
+    var offscreenTexture: MTLTexture?
+
     let vertices: [Float] = [
-        -0.5,  0.5, 0, 0, 0, // Top Left
-        -0.5, -0.5, 0, 0, 1, // Bottom Left
-         0.5,  0.5, 0, 1, 0, // Top Right
-         0.5, -0.5, 0, 1, 1  // Bottom Right
+        -0.5,  0.5, 0, 0, 0,
+        -0.5, -0.5, 0, 0, 1,
+         0.5,  0.5, 0, 1, 0,
+         0.5, -0.5, 0, 1, 1
     ]
 
     init(
@@ -103,7 +106,8 @@ class RenderableObject {
             index: 2
         )
 
-        encoder.setFragmentTexture(texture, index: 0)
+        encoder.setFragmentTexture(offscreenTexture ?? texture, index: 0)
+        
         encoder.drawPrimitives(
             type: .triangleStrip,
             vertexStart: 0,

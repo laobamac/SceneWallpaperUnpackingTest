@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import simd
 
 struct SceneRoot: Codable {
     let general: GeneralSettings?
@@ -51,12 +52,28 @@ struct SceneObject: Codable {
 }
 
 struct EffectJSON: Codable {
+    let id: Int?
     let file: String?
+    let visible: BoolOrObject?
     let passes: [EffectPassJSON]?
 }
 
 struct EffectPassJSON: Codable {
     let constantshadervalues: [String: ScriptableValue]?
+    let combos: [String: Int]?
+    let textures: [String?]?
+}
+
+struct DynamicKey: CodingKey {
+    var stringValue: String
+    init?(stringValue: String) {
+        self.stringValue = stringValue
+    }
+    var intValue: Int?
+    init?(intValue: Int) {
+        self.intValue = intValue
+        self.stringValue = "\(intValue)"
+    }
 }
 
 enum ScriptableValue: Codable {
@@ -64,34 +81,56 @@ enum ScriptableValue: Codable {
     case script(value: String)
     case float(Float)
     case int(Int)
+    case bool(Bool)
     case floatArray([Float])
+    case object([String: ScriptableValue])
 
     init(from decoder: Decoder) throws {
         if let container = try? decoder.singleValueContainer() {
-            if let str = try? container.decode(String.self) {
-                self = .string(str)
+            if let b = try? container.decode(Bool.self) {
+                self = .bool(b)
                 return
             }
-            if let num = try? container.decode(Float.self) {
-                self = .float(num)
+            if let i = try? container.decode(Int.self) {
+                self = .int(i)
                 return
             }
-            if let numInt = try? container.decode(Int.self) {
-                self = .int(numInt)
+            if let f = try? container.decode(Float.self) {
+                self = .float(f)
                 return
             }
-            if let arr = try? container.decode([Float].self) {
-                self = .floatArray(arr)
+            if let s = try? container.decode(String.self) {
+                self = .string(s)
                 return
             }
         }
-        if let container = try? decoder.container(keyedBy: CodingKeys.self),
-            let val = try? container.decode(String.self, forKey: .value)
-        {
-            self = .script(value: val)
+        if var unkeyedContainer = try? decoder.unkeyedContainer() {
+            var arr: [Float] = []
+            while !unkeyedContainer.isAtEnd {
+                if let f = try? unkeyedContainer.decode(Float.self) {
+                    arr.append(f)
+                } else {
+                    _ = try? unkeyedContainer.decode(DummyCodable.self)
+                }
+            }
+            self = .floatArray(arr)
             return
         }
-        self = .string("0 0 0")
+        if let container = try? decoder.container(keyedBy: DynamicKey.self) {
+            if container.allKeys.count == 1, let scriptKey = DynamicKey(stringValue: "value"), let val = try? container.decode(String.self, forKey: scriptKey) {
+                self = .script(value: val)
+                return
+            }
+            var dict: [String: ScriptableValue] = [:]
+            for key in container.allKeys {
+                if let val = try? container.decode(ScriptableValue.self, forKey: key) {
+                    dict[key.stringValue] = val
+                }
+            }
+            self = .object(dict)
+            return
+        }
+        self = .string("0")
     }
 
     var value: String {
@@ -100,12 +139,46 @@ enum ScriptableValue: Codable {
         case .script(let v): return v
         case .float(let f): return "\(f)"
         case .int(let i): return "\(i)"
+        case .bool(let b): return "\(b)"
         case .floatArray(let a): return a.map { "\($0)" }.joined(separator: " ")
+        case .object(_): return ""
         }
     }
-    enum CodingKeys: String, CodingKey { case value }
+    
+    var floatValue: Float {
+        switch self {
+        case .float(let f): return f
+        case .int(let i): return Float(i)
+        case .string(let s): return Float(s) ?? 0.0
+        default: return 0.0
+        }
+    }
+    
+    var float2Value: SIMD2<Float> {
+        switch self {
+        case .string(let s):
+            let parts = s.split(separator: " ").compactMap { Float($0) }
+            if parts.count >= 2 { return SIMD2<Float>(parts[0], parts[1]) }
+            return SIMD2<Float>(0, 0)
+        default: return SIMD2<Float>(0, 0)
+        }
+    }
+
+    var float3Value: SIMD3<Float> {
+        switch self {
+        case .string(let s):
+            let parts = s.split(separator: " ").compactMap { Float($0) }
+            if parts.count >= 3 { return SIMD3<Float>(parts[0], parts[1], parts[2]) }
+            if parts.count == 1 { return SIMD3<Float>(parts[0], parts[0], parts[0]) }
+            return SIMD3<Float>(0, 0, 0)
+        default: return SIMD3<Float>(0, 0, 0)
+        }
+    }
+    
     func encode(to encoder: Encoder) throws {}
 }
+
+private struct DummyCodable: Codable {}
 
 enum BoolOrObject: Codable {
     case bool(Bool)

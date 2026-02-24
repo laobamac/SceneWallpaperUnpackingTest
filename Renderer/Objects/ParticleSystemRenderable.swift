@@ -578,7 +578,7 @@ class ParticleSystemRenderable: RenderableObject {
             length: MemoryLayout<SIMD4<Float>>.stride,
             index: 4
         )
-        encoder.setFragmentTexture(texture, index: 0)
+        encoder.setFragmentTexture(offscreenTexture ?? texture, index: 0)
 
         let vBuffer = vertexBuffers[currentBufferIndex]
         let iBuffer = indexBuffers[currentBufferIndex]

@@ -48,11 +48,13 @@ class Renderer: NSObject, MTKViewDelegate {
         guard let queue = device.makeCommandQueue() else { return nil }
         self.commandQueue = queue
         super.init()
-        do { try setupPipeline() } catch { return nil }
-        Task { await TextureManager.shared.setup(device: device) }
+        Task {
+            do { try await setupPipeline() } catch {}
+            await TextureManager.shared.setup(device: device)
+        }
     }
 
-    func setupPipeline() throws {
+    func setupPipeline() async throws {
         guard let library = device.makeDefaultLibrary() else {
             throw NSError(
                 domain: "Renderer",
@@ -60,6 +62,9 @@ class Renderer: NSObject, MTKViewDelegate {
                 userInfo: [NSLocalizedDescriptionKey: "Library error"]
             )
         }
+        
+        await EffectManager.shared.setup(device: device, library: library)
+        
         let hdrFormat: MTLPixelFormat = .rgba16Float
         let depthFormat: MTLPixelFormat = .depth32Float_stencil8
 
@@ -87,9 +92,7 @@ class Renderer: NSObject, MTKViewDelegate {
         vertexDescriptor.attributes[1].bufferIndex = 0
         vertexDescriptor.layouts[0].stride = 20
         descriptor.vertexDescriptor = vertexDescriptor
-        pipelineState = try device.makeRenderPipelineState(
-            descriptor: descriptor
-        )
+        pipelineState = try await device.makeRenderPipelineState(descriptor: descriptor, options: []).0
 
         let puppetDesc = MTLRenderPipelineDescriptor()
         puppetDesc.label = "Puppet"
@@ -126,9 +129,7 @@ class Renderer: NSObject, MTKViewDelegate {
         offset += 16
         pvDesc.layouts[0].stride = 48
         puppetDesc.vertexDescriptor = pvDesc
-        puppetPipelineState = try device.makeRenderPipelineState(
-            descriptor: puppetDesc
-        )
+        puppetPipelineState = try await device.makeRenderPipelineState(descriptor: puppetDesc, options: []).0
 
         let particleDesc = MTLRenderPipelineDescriptor()
         particleDesc.label = "TranslucentSprite"
@@ -150,18 +151,14 @@ class Renderer: NSObject, MTKViewDelegate {
             .oneMinusSourceAlpha
         particleDesc.depthAttachmentPixelFormat = depthFormat
         particleDesc.stencilAttachmentPixelFormat = depthFormat
-        translucentSpritePipeline = try device.makeRenderPipelineState(
-            descriptor: particleDesc
-        )
+        translucentSpritePipeline = try await device.makeRenderPipelineState(descriptor: particleDesc, options: []).0
 
         particleDesc.label = "AdditiveSprite"
         particleDesc.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
         particleDesc.colorAttachments[0].destinationRGBBlendFactor = .one
         particleDesc.colorAttachments[0].sourceAlphaBlendFactor = .sourceAlpha
         particleDesc.colorAttachments[0].destinationAlphaBlendFactor = .one
-        additiveSpritePipeline = try device.makeRenderPipelineState(
-            descriptor: particleDesc
-        )
+        additiveSpritePipeline = try await device.makeRenderPipelineState(descriptor: particleDesc, options: []).0
 
         particleDesc.label = "TranslucentRope"
         particleDesc.vertexFunction = library.makeFunction(
@@ -173,18 +170,14 @@ class Renderer: NSObject, MTKViewDelegate {
         particleDesc.colorAttachments[0].sourceAlphaBlendFactor = .sourceAlpha
         particleDesc.colorAttachments[0].destinationAlphaBlendFactor =
             .oneMinusSourceAlpha
-        translucentRopePipeline = try device.makeRenderPipelineState(
-            descriptor: particleDesc
-        )
+        translucentRopePipeline = try await device.makeRenderPipelineState(descriptor: particleDesc, options: []).0
 
         particleDesc.label = "AdditiveRope"
         particleDesc.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
         particleDesc.colorAttachments[0].destinationRGBBlendFactor = .one
         particleDesc.colorAttachments[0].sourceAlphaBlendFactor = .sourceAlpha
         particleDesc.colorAttachments[0].destinationAlphaBlendFactor = .one
-        additiveRopePipeline = try device.makeRenderPipelineState(
-            descriptor: particleDesc
-        )
+        additiveRopePipeline = try await device.makeRenderPipelineState(descriptor: particleDesc, options: []).0
 
         let postDesc = MTLRenderPipelineDescriptor()
         postDesc.vertexFunction = library.makeFunction(name: "vertex_post")
@@ -194,22 +187,18 @@ class Renderer: NSObject, MTKViewDelegate {
         postDesc.fragmentFunction = library.makeFunction(
             name: "fragment_extract"
         )
-        extractPipeline = try device.makeRenderPipelineState(
-            descriptor: postDesc
-        )
+        extractPipeline = try await device.makeRenderPipelineState(descriptor: postDesc, options: []).0
         postDesc.fragmentFunction = library.makeFunction(name: "fragment_blur")
-        blurPipeline = try device.makeRenderPipelineState(descriptor: postDesc)
+        blurPipeline = try await device.makeRenderPipelineState(descriptor: postDesc, options: []).0
         postDesc.fragmentFunction = library.makeFunction(
             name: "fragment_upsample"
         )
-        upsamplePipeline = try device.makeRenderPipelineState(
-            descriptor: postDesc
-        )
+        upsamplePipeline = try await device.makeRenderPipelineState(descriptor: postDesc, options: []).0
         postDesc.fragmentFunction = library.makeFunction(name: "fragment_final")
         postDesc.colorAttachments[0].pixelFormat = .bgra8Unorm
         postDesc.depthAttachmentPixelFormat = depthFormat
         postDesc.stencilAttachmentPixelFormat = depthFormat
-        finalPipeline = try device.makeRenderPipelineState(descriptor: postDesc)
+        finalPipeline = try await device.makeRenderPipelineState(descriptor: postDesc, options: []).0
 
         let samplerDesc = MTLSamplerDescriptor()
         samplerDesc.minFilter = .linear
@@ -422,6 +411,14 @@ class Renderer: NSObject, MTKViewDelegate {
                 depthState: depthState
             )
             applyEffectConstants(to: renderable, from: obj)
+            
+            renderable.effects = await EffectManager.shared.loadEffects(for: obj, baseFolder: base)
+            if !renderable.effects.isEmpty {
+                let tDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Float, width: texture.width, height: texture.height, mipmapped: false)
+                tDesc.usage = [.renderTarget, .shaderRead]
+                renderable.offscreenTexture = device.makeTexture(descriptor: tDesc)
+            }
+            
             return renderable
         } catch { return nil }
     }
@@ -493,6 +490,12 @@ class Renderer: NSObject, MTKViewDelegate {
 
             if let r = renderable {
                 applyEffectConstants(to: r, from: obj)
+                r.effects = await EffectManager.shared.loadEffects(for: obj, baseFolder: base)
+                if !r.effects.isEmpty {
+                    let tDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Float, width: texture.width, height: texture.height, mipmapped: false)
+                    tDesc.usage = [.renderTarget, .shaderRead]
+                    r.offscreenTexture = device.makeTexture(descriptor: tDesc)
+                }
             }
             return renderable
         } catch { return nil }
@@ -560,7 +563,15 @@ class Renderer: NSObject, MTKViewDelegate {
                 maskTestState: maskTestState,
                 usePixelCoords: bboxWidth > 2.0
             )
-            if let r = renderable { applyEffectConstants(to: r, from: obj) }
+            if let r = renderable {
+                applyEffectConstants(to: r, from: obj)
+                r.effects = await EffectManager.shared.loadEffects(for: obj, baseFolder: base)
+                if !r.effects.isEmpty {
+                    let tDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Float, width: texture.width, height: texture.height, mipmapped: false)
+                    tDesc.usage = [.renderTarget, .shaderRead]
+                    r.offscreenTexture = device.makeTexture(descriptor: tDesc)
+                }
+            }
             return renderable
         } catch { return nil }
     }
@@ -622,6 +633,9 @@ class Renderer: NSObject, MTKViewDelegate {
         )
         desc.usage = [.renderTarget, .shaderRead]
         hdrTexture = device.makeTexture(descriptor: desc)
+        
+        EffectManager.shared.resize(width: Int(size.width), height: Int(size.height))
+        
         bloomTextures.removeAll()
         bloomTempTextures.removeAll()
         var w = Int(size.width)
@@ -688,9 +702,18 @@ class Renderer: NSObject, MTKViewDelegate {
         else { return }
 
         let currentTime = Date().timeIntervalSince(startTime)
-        let dt = lastTime == 0 ? 0 : min(Float(currentTime - lastTime), 0.1)
+        let dt = lastTime == 0 ? Float(0.0) : min(Float(currentTime - lastTime), Float(0.1))
         lastTime = currentTime
         let time = Float(currentTime)
+
+        for obj in renderables {
+            for fx in obj.effects {
+                fx.update(dt: dt, time: time, size: CGSize(width: CGFloat(obj.texture.width), height: CGFloat(obj.texture.height)))
+            }
+            if !obj.effects.isEmpty, let offscreen = obj.offscreenTexture {
+                EffectManager.shared.applyEffects(commandBuffer: commandBuffer, source: obj.texture, target: offscreen, effects: obj.effects)
+            }
+        }
 
         let hdrPassDesc = MTLRenderPassDescriptor()
         hdrPassDesc.colorAttachments[0].texture = hdrTex

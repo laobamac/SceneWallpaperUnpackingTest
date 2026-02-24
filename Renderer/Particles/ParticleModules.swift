@@ -13,9 +13,11 @@ extension ScriptableValue {
         switch self {
         case .float(let f): return f
         case .int(let i): return Float(i)
-        case .string(let s): return Float(s) ?? 0.0
-        case .script(let v): return Float(v) ?? 0.0
-        case .floatArray(let a): return a.first ?? 0.0
+        case .string(let s): return Float(s) ?? 0
+        case .script(let v): return Float(v) ?? 0
+        case .floatArray(let a): return a.first ?? 0
+        case .bool(let b): return b ? 1 : 0
+        case .object(_): return 0
         }
     }
 
@@ -37,25 +39,30 @@ extension ScriptableValue {
         case .int(let i):
             let f = Float(i)
             return SIMD3<Float>(f, f, f)
+        case .bool(let b):
+            let f: Float = b ? 1 : 0
+            return SIMD3<Float>(f, f, f)
+        case .object(_):
+            return .zero
         }
     }
 }
 
 class BoxRandomEmitter: ParticleEmitter {
     let def: ParticleEmitterDef
-    var emissionTimer: Float = 0.0
-    var elapsedTime: Float = 0.0
+    var emissionTimer: Float = 0
+    var elapsedTime: Float = 0
     var delayTimer: Float
-    var durationTimer: Float = 0.0
-    var periodicTimer: Float = 0.0
-    var periodicDuration: Float = 0.0
-    var periodicDelay: Float = 0.0
+    var durationTimer: Float = 0
+    var periodicTimer: Float = 0
+    var periodicDuration: Float = 0
+    var periodicDelay: Float = 0
     var emitting: Bool = false
     var instantaneousEmitted: Bool = false
 
     init(def: ParticleEmitterDef) {
         self.def = def
-        self.delayTimer = def.delay ?? 0.0
+        self.delayTimer = def.delay ?? 0
     }
 
     func emit(
@@ -67,12 +74,12 @@ class BoxRandomEmitter: ParticleEmitter {
         instanceOverride: ParticleInstanceOverride?,
         isOrthographic: Bool
     ) {
-        let countOverride = instanceOverride?.count ?? 1.0
+        let countOverride = instanceOverride?.count ?? 1
         let effectiveMaxCount = Int(Float(particles.count) * countOverride)
         if effectiveMaxCount <= 0 { return }
         if count >= effectiveMaxCount { return }
 
-        let baseRate = def.rate ?? 10.0
+        let baseRate = def.rate ?? 10
         let rate = baseRate * countOverride
 
         let transformedOrigin = def.origin?.getVec3() ?? .zero
@@ -93,28 +100,28 @@ class BoxRandomEmitter: ParticleEmitter {
 
         elapsedTime += dt
 
-        if delayTimer > 0.0 {
+        if delayTimer > 0 {
             delayTimer -= dt
             return
         }
 
-        let duration = def.duration ?? 0.0
-        if duration > 0.0 {
+        let duration = def.duration ?? 0
+        if duration > 0 {
             durationTimer += dt
             if durationTimer >= duration { return }
         }
 
         if randomPeriodicEmission {
             periodicTimer += dt
-            let minPDur = def.minperiodicduration ?? 2.0
-            let maxPDur = def.maxperiodicduration ?? 3.0
-            let minPDel = def.minperiodicdelay ?? 1.0
-            let maxPDel = def.maxperiodicdelay ?? 2.0
+            let minPDur = def.minperiodicduration ?? 2
+            let maxPDur = def.maxperiodicduration ?? 3
+            let minPDel = def.minperiodicdelay ?? 1
+            let maxPDel = def.maxperiodicdelay ?? 2
 
             if !emitting {
                 if periodicTimer >= periodicDelay {
                     emitting = true
-                    periodicTimer = 0.0
+                    periodicTimer = 0
                     periodicDuration = ParticleMath.randomFloat(
                         min: minPDur,
                         max: maxPDur
@@ -125,7 +132,7 @@ class BoxRandomEmitter: ParticleEmitter {
             } else {
                 if periodicTimer >= periodicDuration {
                     emitting = false
-                    periodicTimer = 0.0
+                    periodicTimer = 0
                     periodicDelay = ParticleMath.randomFloat(
                         min: minPDel,
                         max: maxPDel
@@ -142,7 +149,7 @@ class BoxRandomEmitter: ParticleEmitter {
             instantaneousEmitted = true
         }
 
-        if rate > 0.0 {
+        if rate > 0 {
             emissionTimer += dt * rate
             var rateEmit = Int(emissionTimer)
             emissionTimer -= Float(rateEmit)
@@ -186,14 +193,14 @@ class BoxRandomEmitter: ParticleEmitter {
             let cOverride =
                 instanceOverride?.colorn != nil
                 ? ScriptableValue.string(instanceOverride!.colorn!).getVec3()
-                : .one
+                : SIMD3<Float>(1, 1, 1)
             particles[count].color = cOverride
-            particles[count].alpha = instanceOverride?.alpha ?? 1.0
-            particles[count].size = 20.0 * (instanceOverride?.size ?? 1.0)
-            particles[count].lifetime = instanceOverride?.lifetime ?? 1.0
-            particles[count].age = 0.0
+            particles[count].alpha = instanceOverride?.alpha ?? 1
+            particles[count].size = 20 * (instanceOverride?.size ?? 1)
+            particles[count].lifetime = instanceOverride?.lifetime ?? 1
+            particles[count].age = 0
             particles[count].alive = true
-            particles[count].frame = -1.0
+            particles[count].frame = -1
 
             particles[count].initial.color = particles[count].color
             particles[count].initial.alpha = particles[count].alpha
@@ -219,7 +226,7 @@ class BoxRandomEmitter: ParticleEmitter {
 
 class SphereRandomEmitter: ParticleEmitter {
     let def: ParticleEmitterDef
-    var emissionTimer: Float = 0.0
+    var emissionTimer: Float = 0
     var remaining: Int
 
     init(def: ParticleEmitterDef) {
@@ -236,14 +243,14 @@ class SphereRandomEmitter: ParticleEmitter {
         instanceOverride: ParticleInstanceOverride?,
         isOrthographic: Bool
     ) {
-        let countOverride = instanceOverride?.count ?? 1.0
+        let countOverride = instanceOverride?.count ?? 1
         let effectiveMaxCount = Int(Float(particles.count) * countOverride)
         if effectiveMaxCount <= 0 { return }
         if count >= effectiveMaxCount { return }
 
-        let baseRate = def.rate ?? 10.0
+        let baseRate = def.rate ?? 10
         let rate = baseRate * countOverride
-        let lifetimeOverride = instanceOverride?.lifetime ?? 1.0
+        let lifetimeOverride = instanceOverride?.lifetime ?? 1
 
         let transformedOrigin = def.origin?.getVec3() ?? .zero
 
@@ -275,8 +282,8 @@ class SphereRandomEmitter: ParticleEmitter {
         let directions = def.directions?.getVec3() ?? SIMD3<Float>(1, 1, 0)
         let signs = def.sign?.getVec3() ?? .zero
 
-        let speedMin = def.speedmin ?? 0.0
-        let speedMax = def.speedmax ?? 0.0
+        let speedMin = def.speedmin ?? 0
+        let speedMax = def.speedmax ?? 0
 
         for _ in 0..<toEmit {
             if count >= effectiveMaxCount { break }
@@ -289,7 +296,7 @@ class SphereRandomEmitter: ParticleEmitter {
             var randomPos = SIMD3<Float>.zero
 
             if isOrthographic {
-                let angle = ParticleMath.randomFloat(min: 0, max: .pi * 2)
+                let angle = ParticleMath.randomFloat(min: 0, max: Float.pi * 2)
                 let minRadiusSq = minD.x * minD.x
                 let maxRadiusSq = maxD.x * maxD.x
                 let radiusXY = sqrt(
@@ -302,9 +309,9 @@ class SphereRandomEmitter: ParticleEmitter {
                 )
                 randomPos *= directions
             } else {
-                let theta = ParticleMath.randomFloat(min: 0, max: .pi * 2)
+                let theta = ParticleMath.randomFloat(min: 0, max: Float.pi * 2)
                 let cosTheta = ParticleMath.randomFloat(min: -1, max: 1)
-                let sinTheta = sqrt(1.0 - cosTheta * cosTheta)
+                let sinTheta = sqrt(1 - cosTheta * cosTheta)
                 randomPos = SIMD3<Float>(
                     sinTheta * cos(theta),
                     sinTheta * sin(theta),
@@ -332,9 +339,9 @@ class SphereRandomEmitter: ParticleEmitter {
 
             particles[count].position = spawnOrigin + randomPos
 
-            if speedMax > 0.0 || speedMin != 0.0 {
+            if speedMax > 0 || speedMin != 0 {
                 let direction =
-                    length(randomPos) > 0.0
+                    length(randomPos) > 0
                     ? normalize(randomPos) : SIMD3<Float>(0, 1, 0)
                 let speed = ParticleMath.randomFloat(
                     min: speedMin,
@@ -353,14 +360,14 @@ class SphereRandomEmitter: ParticleEmitter {
             let cOverride =
                 instanceOverride?.colorn != nil
                 ? ScriptableValue.string(instanceOverride!.colorn!).getVec3()
-                : .one
+                : SIMD3<Float>(1, 1, 1)
             particles[count].color = cOverride
-            particles[count].alpha = instanceOverride?.alpha ?? 1.0
-            particles[count].size = 20.0 * (instanceOverride?.size ?? 1.0)
+            particles[count].alpha = instanceOverride?.alpha ?? 1
+            particles[count].size = 20 * (instanceOverride?.size ?? 1)
             particles[count].lifetime = lifetimeOverride
-            particles[count].age = 0.0
+            particles[count].age = 0
             particles[count].alive = true
-            particles[count].frame = -1.0
+            particles[count].frame = -1
 
             particles[count].initial.color = particles[count].color
             particles[count].initial.alpha = particles[count].alpha
@@ -390,8 +397,8 @@ class ColorRandomInitializer: ParticleInitializer {
     init(def: ParticleInitializerDef) {
         var mn = def.min?.getVec3() ?? .zero
         var mx = def.max?.getVec3() ?? SIMD3<Float>(255, 255, 255)
-        if mn.x > 1.0 || mn.y > 1.0 || mn.z > 1.0 { mn /= 255.0 }
-        if mx.x > 1.0 || mx.y > 1.0 || mx.z > 1.0 { mx /= 255.0 }
+        if mn.x > 1 || mn.y > 1 || mn.z > 1 { mn /= 255 }
+        if mx.x > 1 || mx.y > 1 || mx.z > 1 { mx /= 255 }
         self.minVal = mn
         self.maxVal = mx
     }
@@ -401,7 +408,7 @@ class ColorRandomInitializer: ParticleInitializer {
     ) {
         let overrideColor =
             instanceOverride?.colorn != nil
-            ? ScriptableValue.string(instanceOverride!.colorn!).getVec3() : .one
+            ? ScriptableValue.string(instanceOverride!.colorn!).getVec3() : SIMD3<Float>(1, 1, 1)
         particle.color =
             ParticleMath.randomVec3(min: minVal, max: maxVal) * overrideColor
         particle.initial.color = particle.color
@@ -413,19 +420,19 @@ class SizeRandomInitializer: ParticleInitializer {
     let maxVal: Float
     let exponent: Float
     init(def: ParticleInitializerDef) {
-        self.minVal = def.min?.getFloat() ?? 0.0
-        self.maxVal = def.max?.getFloat() ?? 20.0
-        self.exponent = def.exponent?.getFloat() ?? 1.0
+        self.minVal = def.min?.getFloat() ?? 0
+        self.maxVal = def.max?.getFloat() ?? 20
+        self.exponent = def.exponent?.getFloat() ?? 1
     }
     func initialize(
         particle: inout ParticleInstance,
         instanceOverride: ParticleInstanceOverride?
     ) {
-        let t = ParticleMath.randomFloat(min: 0.0, max: 1.0)
+        let t = ParticleMath.randomFloat(min: 0, max: 1)
         let adjustedT = pow(t, exponent)
-        let overrideSize = instanceOverride?.size ?? 1.0
+        let overrideSize = instanceOverride?.size ?? 1
         particle.size =
-            (minVal + adjustedT * (maxVal - minVal)) * overrideSize / 2.0
+            (minVal + adjustedT * (maxVal - minVal)) * overrideSize / 2
         particle.initial.size = particle.size
     }
 }
@@ -435,13 +442,13 @@ class AlphaRandomInitializer: ParticleInitializer {
     let maxVal: Float
     init(def: ParticleInitializerDef) {
         self.minVal = def.min?.getFloat() ?? 0.05
-        self.maxVal = def.max?.getFloat() ?? 1.0
+        self.maxVal = def.max?.getFloat() ?? 1
     }
     func initialize(
         particle: inout ParticleInstance,
         instanceOverride: ParticleInstanceOverride?
     ) {
-        let overrideAlpha = instanceOverride?.alpha ?? 1.0
+        let overrideAlpha = instanceOverride?.alpha ?? 1
         particle.alpha =
             ParticleMath.randomFloat(min: minVal, max: maxVal) * overrideAlpha
         particle.initial.alpha = particle.alpha
@@ -452,14 +459,14 @@ class LifetimeRandomInitializer: ParticleInitializer {
     let minVal: Float
     let maxVal: Float
     init(def: ParticleInitializerDef) {
-        self.minVal = def.min?.getFloat() ?? 0.0
-        self.maxVal = def.max?.getFloat() ?? 1.0
+        self.minVal = def.min?.getFloat() ?? 0
+        self.maxVal = def.max?.getFloat() ?? 1
     }
     func initialize(
         particle: inout ParticleInstance,
         instanceOverride: ParticleInstanceOverride?
     ) {
-        let overrideLife = instanceOverride?.lifetime ?? 1.0
+        let overrideLife = instanceOverride?.lifetime ?? 1
         particle.lifetime =
             ParticleMath.randomFloat(min: minVal, max: maxVal) * overrideLife
         particle.initial.lifetime = particle.lifetime
@@ -477,7 +484,7 @@ class VelocityRandomInitializer: ParticleInitializer {
         particle: inout ParticleInstance,
         instanceOverride: ParticleInstanceOverride?
     ) {
-        let overrideSpeed = instanceOverride?.speed ?? 1.0
+        let overrideSpeed = instanceOverride?.speed ?? 1
         let vel =
             ParticleMath.randomVec3(min: minVal, max: maxVal) * overrideSpeed
         particle.velocity += vel
@@ -488,16 +495,16 @@ class RotationRandomInitializer: ParticleInitializer {
     let minVal: SIMD3<Float>
     let maxVal: SIMD3<Float>
     init(def: ParticleInitializerDef) {
-        let degToRad = Float.pi / 180.0
+        let degToRad = Float.pi / 180
         self.minVal = (def.min?.getVec3() ?? .zero) * degToRad
         self.maxVal =
-            (def.max?.getVec3() ?? SIMD3<Float>(0, 0, 360.0)) * degToRad
+            (def.max?.getVec3() ?? SIMD3<Float>(0, 0, 360)) * degToRad
     }
     func initialize(
         particle: inout ParticleInstance,
         instanceOverride: ParticleInstanceOverride?
     ) {
-        let overrideSpeed = instanceOverride?.speed ?? 1.0
+        let overrideSpeed = instanceOverride?.speed ?? 1
         particle.rotation =
             ParticleMath.randomVec3(min: minVal, max: maxVal) * overrideSpeed
     }
@@ -508,10 +515,10 @@ class AngularVelocityRandomInitializer: ParticleInitializer {
     let maxVal: SIMD3<Float>
     let exponent: Float
     init(def: ParticleInitializerDef) {
-        let degToRad = Float.pi / 180.0
+        let degToRad = Float.pi / 180
         self.minVal = (def.min?.getVec3() ?? SIMD3<Float>(0, 0, -5)) * degToRad
         self.maxVal = (def.max?.getVec3() ?? SIMD3<Float>(0, 0, 5)) * degToRad
-        self.exponent = def.exponent?.getFloat() ?? 1.0
+        self.exponent = def.exponent?.getFloat() ?? 1
     }
     func initialize(
         particle: inout ParticleInstance,
@@ -523,7 +530,7 @@ class AngularVelocityRandomInitializer: ParticleInitializer {
             t = pow(t, exponent)
             result[i] = minVal[i] + t * (maxVal[i] - minVal[i])
         }
-        let overrideSpeed = instanceOverride?.speed ?? 1.0
+        let overrideSpeed = instanceOverride?.speed ?? 1
         particle.angularVelocity = result * overrideSpeed
     }
 }
@@ -540,13 +547,13 @@ class TurbulentVelocityRandomInitializer: ParticleInitializer {
     let right: SIMD3<Float>
 
     init(def: ParticleInitializerDef) {
-        self.speedMin = def.speedmin?.getFloat() ?? 100.0
-        self.speedMax = def.speedmax?.getFloat() ?? 250.0
-        self.scale = def.scale?.getFloat() ?? 1.0
-        self.offset = (def.offset?.getFloat() ?? 0.0) * (Float.pi / 180.0)
+        self.speedMin = def.speedmin?.getFloat() ?? 100
+        self.speedMax = def.speedmax?.getFloat() ?? 250
+        self.scale = def.scale?.getFloat() ?? 1
+        self.offset = (def.offset?.getFloat() ?? 0) * (Float.pi / 180)
         self.forward = def.forward?.getVec3() ?? SIMD3<Float>(0, 1, 0)
-        self.timeScale = def.timescale?.getFloat() ?? 1.0
-        self.phaseMin = def.phasemin?.getFloat() ?? 0.0
+        self.timeScale = def.timescale?.getFloat() ?? 1
+        self.phaseMin = def.phasemin?.getFloat() ?? 0
         self.phaseMax = def.phasemax?.getFloat() ?? 0.1
         self.right = def.right?.getVec3() ?? SIMD3<Float>(0, 0, 1)
     }
@@ -573,7 +580,7 @@ class TurbulentVelocityRandomInitializer: ParticleInitializer {
         noisePos += SIMD3<Float>(
             repeating: Float(
                 Date().timeIntervalSince1970.truncatingRemainder(
-                    dividingBy: 1000.0
+                    dividingBy: 1000
                 )
             ) * timeScale
         )
@@ -584,10 +591,10 @@ class TurbulentVelocityRandomInitializer: ParticleInitializer {
         let len = length(result)
         if len < 0.0001 { result = fwd } else { result = result / len }
 
-        if scale < 2.0 {
+        if scale < 2 {
             let cosAngle = dot(result, fwd)
-            let angle = acos(simd_clamp(cosAngle, -1.0, 1.0)) / Float.pi
-            let maxAngle = scale / 2.0
+            let angle = acos(simd_clamp(cosAngle, -1, 1)) / Float.pi
+            let maxAngle = scale / 2
             if angle > maxAngle && maxAngle > 0.0001 {
                 var axis = cross(result, fwd)
                 let axisLen = length(axis)
@@ -611,11 +618,11 @@ class TurbulentVelocityRandomInitializer: ParticleInitializer {
             result = SIMD3<Float>(rotResult.x, rotResult.y, rotResult.z)
         }
 
-        result.z = 0.0
+        result.z = 0
         let len2d = length(result)
         if len2d > 0.0001 { result /= len2d }
 
-        let overrideSpeed = instanceOverride?.speed ?? 1.0
+        let overrideSpeed = instanceOverride?.speed ?? 1
         let finalVel = result * speed * overrideSpeed
         particle.velocity += finalVel
     }
@@ -639,8 +646,8 @@ class MapSequenceAroundControlPointInitializer: ParticleInitializer {
         particle: inout ParticleInstance,
         instanceOverride: ParticleInstanceOverride?
     ) {
-        let overrideSpeed = instanceOverride?.speed ?? 1.0
-        let angle = (Float(sequenceIndex) / Float(count)) * Float.pi * 2.0
+        let overrideSpeed = instanceOverride?.speed ?? 1
+        let angle = (Float(sequenceIndex) / Float(count)) * Float.pi * 2
         sequenceIndex = (sequenceIndex + 1) % count
 
         let speed = ParticleMath.randomVec3(min: speedMin, max: speedMax)
@@ -662,7 +669,7 @@ class MovementOperator: ParticleOperator {
     let gravity: SIMD3<Float>
 
     init(def: ParticleOperatorDef) {
-        self.drag = def.drag?.getFloat() ?? 0.0
+        self.drag = def.drag?.getFloat() ?? 0
         self.gravity = def.gravity?.getVec3() ?? .zero
     }
 
@@ -676,15 +683,15 @@ class MovementOperator: ParticleOperator {
         globalGravity: SIMD3<Float>,
         globalWind: SIMD3<Float>
     ) {
-        let speed = instanceOverride?.speed ?? 1.0
+        let speed = instanceOverride?.speed ?? 1
         let grav = gravity + globalGravity
         for i in 0..<count {
             if !particles[i].alive { continue }
             particles[i].position += particles[i].velocity * dt
             particles[i].velocity += grav * dt * speed
             particles[i].velocity += globalWind * dt * speed
-            var dragFactor = 1.0 - (drag * dt)
-            if dragFactor < 0.0 { dragFactor = 0.0 }
+            var dragFactor = 1 - (drag * dt)
+            if dragFactor < 0 { dragFactor = 0 }
             particles[i].velocity *= dragFactor
         }
     }
@@ -695,8 +702,8 @@ class AngularMovementOperator: ParticleOperator {
     let force: SIMD3<Float>
 
     init(def: ParticleOperatorDef) {
-        let degToRad = Float.pi / 180.0
-        self.drag = def.drag?.getFloat() ?? 0.0
+        let degToRad = Float.pi / 180
+        self.drag = def.drag?.getFloat() ?? 0
         self.force = (def.force?.getVec3() ?? .zero) * degToRad
     }
 
@@ -710,15 +717,15 @@ class AngularMovementOperator: ParticleOperator {
         globalGravity: SIMD3<Float>,
         globalWind: SIMD3<Float>
     ) {
-        let speed = instanceOverride?.speed ?? 1.0
+        let speed = instanceOverride?.speed ?? 1
         let pi = Float.pi
-        let two_pi = Float.pi * 2.0
+        let two_pi = Float.pi * 2
         for i in 0..<count {
             if !particles[i].alive { continue }
             particles[i].rotation += particles[i].angularVelocity * dt * speed
             particles[i].angularVelocity += force * dt * speed
-            var dragFactor = 1.0 - (drag * dt)
-            if dragFactor < 0.0 { dragFactor = 0.0 }
+            var dragFactor = 1 - (drag * dt)
+            if dragFactor < 0 { dragFactor = 0 }
             particles[i].angularVelocity *= dragFactor
             for j in 0..<3 {
                 while particles[i].rotation[j] > pi {
@@ -763,11 +770,11 @@ class AlphaFadeOperator: ParticleOperator {
                 particles[i].alpha = particles[i].initial.alpha * fade
             } else if life > fadeOutTime {
                 let fade =
-                    1.0
+                    1
                     - ParticleMath.fadeValue(
                         life: life,
                         startTime: fadeOutTime,
-                        endTime: 1.0,
+                        endTime: 1,
                         startValue: 0,
                         endValue: 1
                     )
@@ -786,10 +793,10 @@ class SizeChangeOperator: ParticleOperator {
     let startValue: Float
     let endValue: Float
     init(def: ParticleOperatorDef) {
-        self.startTime = def.starttime?.getFloat() ?? 0.0
-        self.endTime = def.endtime?.getFloat() ?? 1.0
-        self.startValue = def.startvalue?.getFloat() ?? 1.0
-        self.endValue = def.endvalue?.getFloat() ?? 0.0
+        self.startTime = def.starttime?.getFloat() ?? 0
+        self.endTime = def.endtime?.getFloat() ?? 1
+        self.startValue = def.startvalue?.getFloat() ?? 1
+        self.endValue = def.endvalue?.getFloat() ?? 0
     }
     func apply(
         particles: inout [ParticleInstance],
@@ -823,10 +830,10 @@ class AlphaChangeOperator: ParticleOperator {
     let startValue: Float
     let endValue: Float
     init(def: ParticleOperatorDef) {
-        self.startTime = def.starttime?.getFloat() ?? 0.0
-        self.endTime = def.endtime?.getFloat() ?? 1.0
-        self.startValue = def.startvalue?.getFloat() ?? 1.0
-        self.endValue = def.endvalue?.getFloat() ?? 0.0
+        self.startTime = def.starttime?.getFloat() ?? 0
+        self.endTime = def.endtime?.getFloat() ?? 1
+        self.startValue = def.startvalue?.getFloat() ?? 1
+        self.endValue = def.endvalue?.getFloat() ?? 0
     }
     func apply(
         particles: inout [ParticleInstance],
@@ -860,10 +867,10 @@ class ColorChangeOperator: ParticleOperator {
     let startValue: SIMD3<Float>
     let endValue: SIMD3<Float>
     init(def: ParticleOperatorDef) {
-        self.startTime = def.starttime?.getFloat() ?? 0.0
-        self.endTime = def.endtime?.getFloat() ?? 1.0
-        self.startValue = def.startvalue?.getVec3() ?? .one
-        self.endValue = def.endvalue?.getVec3() ?? .one
+        self.startTime = def.starttime?.getFloat() ?? 0
+        self.endTime = def.endtime?.getFloat() ?? 1
+        self.startValue = def.startvalue?.getVec3() ?? SIMD3<Float>(1, 1, 1)
+        self.endValue = def.endvalue?.getVec3() ?? SIMD3<Float>(1, 1, 1)
     }
     func apply(
         particles: inout [ParticleInstance],
@@ -916,12 +923,12 @@ class TurbulenceOperator: ParticleOperator {
 
     init(def: ParticleOperatorDef) {
         self.scale = def.scale?.getFloat() ?? 0.005
-        self.speedMin = def.speedmin?.getFloat() ?? 500.0
-        self.speedMax = def.speedmax?.getFloat() ?? 1000.0
+        self.speedMin = def.speedmin?.getFloat() ?? 500
+        self.speedMax = def.speedmax?.getFloat() ?? 1000
         self.timeScale = def.timescale?.getFloat() ?? 0.01
         self.mask = def.mask?.getVec3() ?? SIMD3<Float>(1, 1, 0)
-        self.phaseMin = def.phasemin?.getFloat() ?? 0.0
-        self.phaseMax = def.phasemax?.getFloat() ?? 0.0
+        self.phaseMin = def.phasemin?.getFloat() ?? 0
+        self.phaseMax = def.phasemax?.getFloat() ?? 0
     }
 
     func apply(
@@ -936,8 +943,8 @@ class TurbulenceOperator: ParticleOperator {
     ) {
         let phase = ParticleMath.randomFloat(min: phaseMin, max: phaseMax)
         let turbSpeed = ParticleMath.randomFloat(min: speedMin, max: speedMax)
-        let noiseScale = scale * 2.0
-        let speedOver = instanceOverride?.speed ?? 1.0
+        let noiseScale = scale * 2
+        let speedOver = instanceOverride?.speed ?? 1
 
         if turbSpeed <= 0.0001 { return }
 
@@ -978,15 +985,15 @@ class VortexOperator: ParticleOperator {
         self.flags = def.flags ?? 0
         self.axis = def.axis?.getVec3() ?? SIMD3<Float>(0, 0, 1)
         self.offset = def.offset?.getVec3() ?? .zero
-        self.distanceInner = def.distanceinner?.getFloat() ?? 500.0
-        self.distanceOuter = def.distanceouter?.getFloat() ?? 650.0
-        self.speedInner = def.speedinner?.getFloat() ?? 2500.0
-        self.speedOuter = def.speedouter?.getFloat() ?? 0.0
-        self.centerForce = def.centerforce?.getFloat() ?? 1.0
-        self.ringRadius = def.ringradius?.getFloat() ?? 300.0
-        self.ringWidth = def.ringwidth?.getFloat() ?? 50.0
-        self.ringPullDistance = def.ringpulldistance?.getFloat() ?? 50.0
-        self.ringPullForce = def.ringpullforce?.getFloat() ?? 10.0
+        self.distanceInner = def.distanceinner?.getFloat() ?? 500
+        self.distanceOuter = def.distanceouter?.getFloat() ?? 650
+        self.speedInner = def.speedinner?.getFloat() ?? 2500
+        self.speedOuter = def.speedouter?.getFloat() ?? 0
+        self.centerForce = def.centerforce?.getFloat() ?? 1
+        self.ringRadius = def.ringradius?.getFloat() ?? 300
+        self.ringWidth = def.ringwidth?.getFloat() ?? 50
+        self.ringPullDistance = def.ringpulldistance?.getFloat() ?? 50
+        self.ringPullForce = def.ringpullforce?.getFloat() ?? 10
     }
 
     func apply(
@@ -1002,10 +1009,10 @@ class VortexOperator: ParticleOperator {
         let infiniteAxis = (flags & 1) != 0
         let maintainDistance = (flags & 2) != 0
         let ringShape = (flags & 4) != 0
-        let speedOver = instanceOverride?.speed ?? 1.0
+        let speedOver = instanceOverride?.speed ?? 1
 
         var ax = axis
-        if length(ax) > 0.0 {
+        if length(ax) > 0 {
             ax = normalize(ax)
         } else {
             ax = SIMD3<Float>(0, 0, 1)
@@ -1034,27 +1041,27 @@ class VortexOperator: ParticleOperator {
                 continue
             }
 
-            var sp: Float = 0.0
+            var sp: Float = 0
             var radialForce = SIMD3<Float>.zero
 
             if ringShape {
                 let ringInner = ringRadius - ringWidth * 0.5
                 let ringOuter = ringRadius + ringWidth * 0.5
                 if dist < ringInner {
-                    sp = 0.0
+                    sp = 0
                 } else if dist <= ringOuter {
                     let t = (dist - ringInner) / ringWidth
                     sp = ParticleMath.lerp(t: t, a: speedInner, b: speedOuter)
                 } else if dist <= ringOuter + ringPullDistance {
                     let pullT = (dist - ringOuter) / ringPullDistance
-                    sp = speedOuter * (1.0 - pullT)
+                    sp = speedOuter * (1 - pullT)
                     if dist > 0.001 {
                         let towardRing = -normalize(radialVector)
                         radialForce = towardRing * ringPullForce * pullT
                     }
                 }
             } else {
-                let disMid = distanceOuter - distanceInner + 0.1
+                let disMid = distanceOuter - distanceInner + Float(0.1)
                 if disMid < 0 || dist < distanceInner {
                     sp = speedInner
                 } else if dist > distanceOuter {
@@ -1086,8 +1093,8 @@ class ControlPointAttractOperator: ParticleOperator {
     init(def: ParticleOperatorDef) {
         self.controlPoint = def.controlpoint ?? 0
         self.origin = def.origin?.getVec3() ?? .zero
-        self.scale = def.scale?.getFloat() ?? 100.0
-        self.threshold = (def.threshold?.getFloat() ?? 1000.0) / 2.0
+        self.scale = def.scale?.getFloat() ?? 100
+        self.threshold = (def.threshold?.getFloat() ?? 1000) / 2
     }
 
     func apply(
@@ -1102,7 +1109,7 @@ class ControlPointAttractOperator: ParticleOperator {
     ) {
         if controlPoint < 0 || controlPoint >= controlPoints.count { return }
         let center = controlPoints[controlPoint].position + origin
-        let speedOver = instanceOverride?.speed ?? 1.0
+        let speedOver = instanceOverride?.speed ?? 1
 
         for i in 0..<count {
             if !particles[i].alive { continue }
@@ -1125,12 +1132,12 @@ class OscillateAlphaOperator: ParticleOperator {
     let phaseMax: Float
 
     init(def: ParticleOperatorDef) {
-        self.freqMin = def.frequencymin?.getFloat() ?? 0.0
-        self.freqMax = def.frequencymax?.getFloat() ?? 10.0
-        self.scaleMin = def.scalemin?.getFloat() ?? 0.0
-        self.scaleMax = def.scalemax?.getFloat() ?? 1.0
-        self.phaseMin = def.phasemin?.getFloat() ?? 0.0
-        self.phaseMax = def.phasemax?.getFloat() ?? Float.pi * 2.0
+        self.freqMin = def.frequencymin?.getFloat() ?? 0
+        self.freqMax = def.frequencymax?.getFloat() ?? 10
+        self.scaleMin = def.scalemin?.getFloat() ?? 0
+        self.scaleMax = def.scalemax?.getFloat() ?? 1
+        self.phaseMin = def.phasemin?.getFloat() ?? 0
+        self.phaseMax = def.phasemax?.getFloat() ?? Float.pi * 2
     }
 
     func apply(
@@ -1153,7 +1160,7 @@ class OscillateAlphaOperator: ParticleOperator {
                 )
                 particles[i].oscillateAlpha.phase = ParticleMath.randomFloat(
                     min: phaseMin,
-                    max: phaseMax + Float.pi * 2.0
+                    max: phaseMax + Float.pi * 2
                 )
                 particles[i].oscillateAlpha.base = particles[i].alpha
                 particles[i].oscillateAlpha.initialized = true
@@ -1161,8 +1168,8 @@ class OscillateAlphaOperator: ParticleOperator {
             let w = particles[i].oscillateAlpha.frequency
             let t = particles[i].age
             let cosVal =
-                (cos(w * t + particles[i].oscillateAlpha.phase) + 1.0) * 0.5
-            let mul = ParticleMath.lerp(t: cosVal, a: scaleMin, b: scaleMax)
+                (cos(w * t + particles[i].oscillateAlpha.phase) + 1) * 0.5
+            let mul = ParticleMath.lerp(t: Float(cosVal), a: scaleMin, b: scaleMax)
             particles[i].alpha = particles[i].oscillateAlpha.base * mul
         }
     }
@@ -1177,12 +1184,12 @@ class OscillateSizeOperator: ParticleOperator {
     let phaseMax: Float
 
     init(def: ParticleOperatorDef) {
-        self.freqMin = def.frequencymin?.getFloat() ?? 0.0
-        self.freqMax = def.frequencymax?.getFloat() ?? 10.0
+        self.freqMin = def.frequencymin?.getFloat() ?? 0
+        self.freqMax = def.frequencymax?.getFloat() ?? 10
         self.scaleMin = def.scalemin?.getFloat() ?? 0.8
         self.scaleMax = def.scalemax?.getFloat() ?? 1.2
-        self.phaseMin = def.phasemin?.getFloat() ?? 0.0
-        self.phaseMax = def.phasemax?.getFloat() ?? Float.pi * 2.0
+        self.phaseMin = def.phasemin?.getFloat() ?? 0
+        self.phaseMax = def.phasemax?.getFloat() ?? Float.pi * 2
     }
 
     func apply(
@@ -1199,24 +1206,21 @@ class OscillateSizeOperator: ParticleOperator {
             if !particles[i].oscillateSize.initialized {
                 particles[i].oscillateSize.frequency = ParticleMath.randomFloat(
                     min: freqMin,
-                    max: freqMax
-                )
+                    max: freqMax)
                 particles[i].oscillateSize.scale = ParticleMath.randomFloat(
                     min: scaleMin,
-                    max: scaleMax
-                )
+                    max: scaleMax)
                 particles[i].oscillateSize.phase = ParticleMath.randomFloat(
                     min: phaseMin,
-                    max: phaseMax + Float.pi * 2.0
-                )
+                    max: phaseMax + Float.pi * 2)
                 particles[i].oscillateSize.base = particles[i].size
                 particles[i].oscillateSize.initialized = true
             }
             let w = particles[i].oscillateSize.frequency
             let t = particles[i].age
             let cosVal =
-                (cos(w * t + particles[i].oscillateSize.phase) + 1.0) * 0.5
-            let mul = ParticleMath.lerp(t: cosVal, a: scaleMin, b: scaleMax)
+                (cos(w * t + particles[i].oscillateSize.phase) + 1) * 0.5
+            let mul = ParticleMath.lerp(t: Float(cosVal), a: scaleMin, b: scaleMax)
             particles[i].size = particles[i].oscillateSize.base * mul
         }
     }
@@ -1232,12 +1236,12 @@ class OscillatePositionOperator: ParticleOperator {
     let mask: SIMD3<Float>
 
     init(def: ParticleOperatorDef) {
-        self.freqMin = def.frequencymin?.getFloat() ?? 0.0
-        self.freqMax = def.frequencymax?.getFloat() ?? 5.0
-        self.scaleMin = def.scalemin?.getFloat() ?? 0.0
-        self.scaleMax = def.scalemax?.getFloat() ?? 10.0
-        self.phaseMin = def.phasemin?.getFloat() ?? 0.0
-        self.phaseMax = def.phasemax?.getFloat() ?? Float.pi * 2.0
+        self.freqMin = def.frequencymin?.getFloat() ?? 0
+        self.freqMax = def.frequencymax?.getFloat() ?? 5
+        self.scaleMin = def.scalemin?.getFloat() ?? 0
+        self.scaleMax = def.scalemax?.getFloat() ?? 10
+        self.phaseMin = def.phasemin?.getFloat() ?? 0
+        self.phaseMax = def.phasemax?.getFloat() ?? Float.pi * 2
         self.mask = def.mask?.getVec3() ?? SIMD3<Float>(1, 1, 0)
     }
 
@@ -1251,7 +1255,7 @@ class OscillatePositionOperator: ParticleOperator {
         globalGravity: SIMD3<Float>,
         globalWind: SIMD3<Float>
     ) {
-        let speedOver = instanceOverride?.speed ?? 1.0
+        let speedOver = instanceOverride?.speed ?? 1
         for i in 0..<count {
             if !particles[i].oscillatePosition.initialized {
                 for axis in 0..<3 {
@@ -1262,7 +1266,7 @@ class OscillatePositionOperator: ParticleOperator {
                     particles[i].oscillatePosition.phase[axis] =
                         ParticleMath.randomFloat(
                             min: phaseMin,
-                            max: phaseMax + Float.pi * 2.0
+                            max: phaseMax + Float.pi * 2
                         )
                 }
                 particles[i].oscillatePosition.initialized = true

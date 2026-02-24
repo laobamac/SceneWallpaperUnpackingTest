@@ -419,7 +419,7 @@ class PuppetRenderable: RenderableObject {
             index: 2
         )
 
-        encoder.setFragmentTexture(texture, index: 0)
+        encoder.setFragmentTexture(offscreenTexture ?? texture, index: 0)
 
         if standardIndexCount > 0, let buf = standardIndexBuffer {
             if let ds = depthState { encoder.setDepthStencilState(ds) }

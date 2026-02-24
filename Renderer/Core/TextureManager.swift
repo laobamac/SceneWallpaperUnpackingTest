@@ -20,7 +20,7 @@ actor TextureManager {
         }
     }
 
-    func loadTexture(url: URL, options: [MTKTextureLoader.Option: Any]? = nil)
+    func loadTexture(url: URL, options: [MTKTextureLoader.Option: Any]? = nil, force2D: Bool = false)
         async throws -> MTLTexture
     {
         if let cached = cache[url] { return cached }
@@ -46,6 +46,12 @@ actor TextureManager {
                 URL: url,
                 options: options
             )
+            
+            if force2D {
+                cache[url] = tempTexture
+                return tempTexture
+            }
+
             let desc = MTLTextureDescriptor()
             desc.pixelFormat = tempTexture.pixelFormat
             desc.width = tempTexture.width
