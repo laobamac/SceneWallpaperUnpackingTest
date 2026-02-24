@@ -29,6 +29,7 @@ class RenderableObject {
 
     var effects: [EffectType] = []
     var offscreenTexture: MTLTexture?
+    var tempTexture: MTLTexture?
 
     let vertices: [Float] = [
         -0.5,  0.5, 0, 0, 0,

@@ -5,6 +5,13 @@
 //  Created by laobamac on 2026/2/24.
 //
 
+//
+//  EffectShimmer.metal
+//  Renderer
+//
+//  Created by laobamac on 2026/2/24.
+//
+
 #include <metal_stdlib>
 using namespace metal;
 
@@ -33,8 +40,8 @@ fragment float4 shimmer_frag(EffectVertexOut in [[stage_in]],
     if (baseColor.a == 0.0) return baseColor;
 
     float2 dir = float2(cos(uniforms.direction), sin(uniforms.direction));
-    float pos = dot(in.texCoord, dir) * uniforms.granularity;
-    float timeMod = fmod(uniforms.g_Time * uniforms.speed, uniforms.delay + 1.0);
+    float pos = dot(in.texCoord - 0.5, dir) * uniforms.granularity;
+    float timeMod = fmod(uniforms.g_Time * uniforms.speed, uniforms.delay + 1.0) - 0.5;
     
     float shimmer = max(0.0, 1.0 - abs(pos - timeMod + uniforms.offset) * 5.0);
     float4 finalColor = baseColor;

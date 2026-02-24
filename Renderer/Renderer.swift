@@ -421,9 +421,15 @@ class Renderer: NSObject, MTKViewDelegate {
             
             renderable.effects = await EffectManager.shared.loadEffects(for: obj, baseFolder: base)
             if !renderable.effects.isEmpty {
-                let tDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Float, width: texture.width, height: texture.height, mipmapped: false)
-                tDesc.usage = [.renderTarget, .shaderRead]
+                let tDesc = MTLTextureDescriptor()
+                tDesc.pixelFormat = .rgba16Float
+                tDesc.width = texture.width
+                tDesc.height = texture.height
+                tDesc.textureType = .type2DArray
+                tDesc.arrayLength = 1
+                tDesc.usage = [.renderTarget, .shaderRead, .pixelFormatView]
                 renderable.offscreenTexture = device.makeTexture(descriptor: tDesc)
+                renderable.tempTexture = device.makeTexture(descriptor: tDesc)
             }
             
             return renderable
@@ -499,9 +505,15 @@ class Renderer: NSObject, MTKViewDelegate {
                 applyEffectConstants(to: r, from: obj)
                 r.effects = await EffectManager.shared.loadEffects(for: obj, baseFolder: base)
                 if !r.effects.isEmpty {
-                    let tDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Float, width: texture.width, height: texture.height, mipmapped: false)
-                    tDesc.usage = [.renderTarget, .shaderRead]
+                    let tDesc = MTLTextureDescriptor()
+                    tDesc.pixelFormat = .rgba16Float
+                    tDesc.width = texture.width
+                    tDesc.height = texture.height
+                    tDesc.textureType = .type2DArray
+                    tDesc.arrayLength = 1
+                    tDesc.usage = [.renderTarget, .shaderRead, .pixelFormatView]
                     r.offscreenTexture = device.makeTexture(descriptor: tDesc)
+                    r.tempTexture = device.makeTexture(descriptor: tDesc)
                 }
             }
             return renderable
@@ -574,9 +586,15 @@ class Renderer: NSObject, MTKViewDelegate {
                 applyEffectConstants(to: r, from: obj)
                 r.effects = await EffectManager.shared.loadEffects(for: obj, baseFolder: base)
                 if !r.effects.isEmpty {
-                    let tDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Float, width: texture.width, height: texture.height, mipmapped: false)
-                    tDesc.usage = [.renderTarget, .shaderRead]
+                    let tDesc = MTLTextureDescriptor()
+                    tDesc.pixelFormat = .rgba16Float
+                    tDesc.width = texture.width
+                    tDesc.height = texture.height
+                    tDesc.textureType = .type2DArray
+                    tDesc.arrayLength = 1
+                    tDesc.usage = [.renderTarget, .shaderRead, .pixelFormatView]
                     r.offscreenTexture = device.makeTexture(descriptor: tDesc)
+                    r.tempTexture = device.makeTexture(descriptor: tDesc)
                 }
             }
             return renderable
@@ -640,8 +658,6 @@ class Renderer: NSObject, MTKViewDelegate {
         )
         desc.usage = [.renderTarget, .shaderRead]
         hdrTexture = device.makeTexture(descriptor: desc)
-        
-        EffectManager.shared.resize(width: Int(size.width), height: Int(size.height))
         
         bloomTextures.removeAll()
         bloomTempTextures.removeAll()
@@ -720,8 +736,8 @@ class Renderer: NSObject, MTKViewDelegate {
             for fx in obj.effects {
                 fx.update(dt: dt, time: time, size: CGSize(width: CGFloat(obj.texture.width), height: CGFloat(obj.texture.height)))
             }
-            if !obj.effects.isEmpty, let offscreen = obj.offscreenTexture {
-                EffectManager.shared.applyEffects(commandBuffer: commandBuffer, source: obj.texture, target: offscreen, effects: obj.effects)
+            if !obj.effects.isEmpty, let offscreen = obj.offscreenTexture, let temp = obj.tempTexture {
+                EffectManager.shared.applyEffects(commandBuffer: commandBuffer, source: obj.texture, target: offscreen, temp: temp, effects: obj.effects)
             }
         }
 

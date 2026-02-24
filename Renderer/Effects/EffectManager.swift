@@ -12,10 +12,7 @@ class EffectManager {
     static let shared = EffectManager()
     var device: MTLDevice?
     var library: MTLLibrary?
-    var pingTexture: MTLTexture?
-    var pongTexture: MTLTexture?
     var samplerState: MTLSamplerState?
-    var finalPipeline: MTLRenderPipelineState?
 
     func setup(device: MTLDevice, library: MTLLibrary) async {
         self.device = device
@@ -24,31 +21,9 @@ class EffectManager {
         let samplerDesc = MTLSamplerDescriptor()
         samplerDesc.minFilter = .linear
         samplerDesc.magFilter = .linear
-        samplerDesc.sAddressMode = .repeat
-        samplerDesc.tAddressMode = .repeat
+        samplerDesc.sAddressMode = .clampToEdge
+        samplerDesc.tAddressMode = .clampToEdge
         samplerState = device.makeSamplerState(descriptor: samplerDesc)
-        
-        let pd = MTLRenderPipelineDescriptor()
-        pd.vertexFunction = library.makeFunction(name: "effect_blit_vertex")
-        pd.fragmentFunction = library.makeFunction(name: "effect_blit_fragment")
-        pd.colorAttachments[0].pixelFormat = .rgba16Float
-        pd.colorAttachments[0].isBlendingEnabled = true
-        pd.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
-        pd.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
-        pd.colorAttachments[0].sourceAlphaBlendFactor = .sourceAlpha
-        pd.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
-        
-        if let pipeline = try? await device.makeRenderPipelineState(descriptor: pd, options: []).0 {
-            finalPipeline = pipeline
-        }
-    }
-
-    func resize(width: Int, height: Int) {
-        guard let device = device else { return }
-        let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Float, width: width, height: height, mipmapped: false)
-        desc.usage = [.renderTarget, .shaderRead]
-        pingTexture = device.makeTexture(descriptor: desc)
-        pongTexture = device.makeTexture(descriptor: desc)
     }
 
     func loadEffects(for obj: SceneObject, baseFolder: URL) async -> [EffectType] {
@@ -81,40 +56,39 @@ class EffectManager {
         return loaded
     }
     
-    func applyEffects(commandBuffer: MTLCommandBuffer, source: MTLTexture, target: MTLTexture, effects: [EffectType]) {
+    func applyEffects(commandBuffer: MTLCommandBuffer, source: MTLTexture, target: MTLTexture, temp: MTLTexture, effects: [EffectType]) {
         let activeEffects = effects.filter { $0.isVisible }
-        guard !activeEffects.isEmpty,
-              let ping = pingTexture,
-              let pong = pongTexture,
-              let pipeline = finalPipeline,
-              let sampler = samplerState else { return }
+        guard !activeEffects.isEmpty else { return }
         
         var currentSource = source
-        
         if currentSource.textureType == .type2DArray {
             if let view = currentSource.makeTextureView(pixelFormat: currentSource.pixelFormat, textureType: .type2D, levels: 0..<1, slices: 0..<1) {
                 currentSource = view
             }
         }
         
-        var currentTarget = ping
-        
-        for effect in activeEffects {
-            effect.encode(commandBuffer: commandBuffer, sourceTexture: currentSource, destinationTexture: currentTarget)
-            currentSource = currentTarget
-            currentTarget = (currentTarget === ping) ? pong : ping
+        var targetView = target
+        if target.textureType == .type2DArray {
+            if let view = target.makeTextureView(pixelFormat: target.pixelFormat, textureType: .type2D, levels: 0..<1, slices: 0..<1) {
+                targetView = view
+            }
         }
         
-        let pass = MTLRenderPassDescriptor()
-        pass.colorAttachments[0].texture = target
-        pass.colorAttachments[0].loadAction = .load
-        pass.colorAttachments[0].storeAction = .store
-        guard let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: pass) else { return }
-        encoder.setRenderPipelineState(pipeline)
-        encoder.setFragmentTexture(currentSource, index: 0)
-        encoder.setFragmentSamplerState(sampler, index: 0)
-        encoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
-        encoder.endEncoding()
+        var tempView = temp
+        if temp.textureType == .type2DArray {
+            if let view = temp.makeTextureView(pixelFormat: temp.pixelFormat, textureType: .type2D, levels: 0..<1, slices: 0..<1) {
+                tempView = view
+            }
+        }
+        
+        var dest = (activeEffects.count % 2 == 0) ? tempView : targetView
+        
+        for i in 0..<activeEffects.count {
+            let effect = activeEffects[i]
+            effect.encode(commandBuffer: commandBuffer, sourceTexture: currentSource, destinationTexture: dest)
+            currentSource = dest
+            dest = (dest === targetView) ? tempView : targetView
+        }
     }
 }
 
