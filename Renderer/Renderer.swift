@@ -42,15 +42,22 @@ class Renderer: NSObject, MTKViewDelegate {
     var bloomIterations: Int = 8
     var isHDREnabled: Bool = false
     var mousePosition: CGPoint?
+    var isReady: Bool = false
 
     init?(device: MTLDevice) {
         self.device = device
         guard let queue = device.makeCommandQueue() else { return nil }
         self.commandQueue = queue
         super.init()
+        
+        EffectManager.shared.device = device
+        
         Task {
-            do { try await setupPipeline() } catch {}
-            await TextureManager.shared.setup(device: device)
+            do {
+                try await setupPipeline()
+                await TextureManager.shared.setup(device: device)
+                self.isReady = true
+            } catch {}
         }
     }
 
@@ -695,10 +702,13 @@ class Renderer: NSObject, MTKViewDelegate {
     }
 
     func draw(in view: MTKView) {
-        guard let drawable = view.currentDrawable,
+        guard isReady,
+            let drawable = view.currentDrawable,
             let descriptor = view.currentRenderPassDescriptor,
             let hdrTex = hdrTexture,
-            let commandBuffer = commandQueue.makeCommandBuffer()
+            let commandBuffer = commandQueue.makeCommandBuffer(),
+            let sampler = samplerState,
+            let fPipeline = finalPipeline
         else { return }
 
         let currentTime = Date().timeIntervalSince(startTime)
@@ -797,9 +807,7 @@ class Renderer: NSObject, MTKViewDelegate {
             time: time,
             padding: .zero
         )
-        if let sampler = samplerState {
-            encoder.setFragmentSamplerState(sampler, index: 0)
-        }
+        encoder.setFragmentSamplerState(sampler, index: 0)
 
         for obj in renderables {
             encoder.setVertexBytes(
@@ -828,110 +836,82 @@ class Renderer: NSObject, MTKViewDelegate {
         encoder.endEncoding()
 
         if bloomTextures.count > 1 {
-            let extractDesc = MTLRenderPassDescriptor()
-            extractDesc.colorAttachments[0].texture = bloomTextures[0]
-            extractDesc.colorAttachments[0].loadAction = .clear
-            if let exEnc = commandBuffer.makeRenderCommandEncoder(
-                descriptor: extractDesc
-            ) {
-                exEnc.setRenderPipelineState(extractPipeline!)
-                exEnc.setFragmentTexture(hdrTex, index: 0)
-                exEnc.setFragmentSamplerState(samplerState, index: 0)
-                exEnc.setFragmentBytes(&bloomThreshold, length: 4, index: 0)
-                exEnc.drawPrimitives(
-                    type: .triangleStrip,
-                    vertexStart: 0,
-                    vertexCount: 4
-                )
-                exEnc.endEncoding()
-            }
-            for i in 0..<bloomTextures.count - 1 {
-                let blurHDesc = MTLRenderPassDescriptor()
-                blurHDesc.colorAttachments[0].texture = bloomTempTextures[i + 1]
-                if let encH = commandBuffer.makeRenderCommandEncoder(
-                    descriptor: blurHDesc
-                ) {
-                    var horiz = true
-                    encH.setRenderPipelineState(blurPipeline!)
-                    encH.setFragmentTexture(bloomTextures[i], index: 0)
-                    encH.setFragmentSamplerState(samplerState, index: 0)
-                    encH.setFragmentBytes(&horiz, length: 1, index: 0)
-                    encH.drawPrimitives(
-                        type: .triangleStrip,
-                        vertexStart: 0,
-                        vertexCount: 4
-                    )
-                    encH.endEncoding()
-                }
-                let blurVDesc = MTLRenderPassDescriptor()
-                blurVDesc.colorAttachments[0].texture = bloomTextures[i + 1]
-                if let encV = commandBuffer.makeRenderCommandEncoder(
-                    descriptor: blurVDesc
-                ) {
-                    var horiz = false
-                    encV.setRenderPipelineState(blurPipeline!)
-                    encV.setFragmentTexture(bloomTempTextures[i + 1], index: 0)
-                    encV.setFragmentSamplerState(samplerState, index: 0)
-                    encV.setFragmentBytes(&horiz, length: 1, index: 0)
-                    encV.drawPrimitives(
-                        type: .triangleStrip,
-                        vertexStart: 0,
-                        vertexCount: 4
-                    )
-                    encV.endEncoding()
+            if let extractPipeline = extractPipeline {
+                let extractDesc = MTLRenderPassDescriptor()
+                extractDesc.colorAttachments[0].texture = bloomTextures[0]
+                extractDesc.colorAttachments[0].loadAction = .clear
+                if let exEnc = commandBuffer.makeRenderCommandEncoder(descriptor: extractDesc) {
+                    exEnc.setRenderPipelineState(extractPipeline)
+                    exEnc.setFragmentTexture(hdrTex, index: 0)
+                    exEnc.setFragmentSamplerState(sampler, index: 0)
+                    exEnc.setFragmentBytes(&bloomThreshold, length: 4, index: 0)
+                    exEnc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
+                    exEnc.endEncoding()
                 }
             }
-            for i in stride(from: bloomTextures.count - 1, to: 0, by: -1) {
-                let upDesc = MTLRenderPassDescriptor()
-                upDesc.colorAttachments[0].texture = bloomTempTextures[i - 1]
-                if let upEnc = commandBuffer.makeRenderCommandEncoder(
-                    descriptor: upDesc
-                ) {
-                    upEnc.setRenderPipelineState(upsamplePipeline!)
-                    upEnc.setFragmentTexture(bloomTextures[i - 1], index: 0)
-                    upEnc.setFragmentTexture(bloomTextures[i], index: 1)
-                    upEnc.setFragmentSamplerState(samplerState, index: 0)
-                    upEnc.drawPrimitives(
-                        type: .triangleStrip,
-                        vertexStart: 0,
-                        vertexCount: 4
-                    )
-                    upEnc.endEncoding()
+            
+            if let blurPipeline = blurPipeline {
+                for i in 0..<bloomTextures.count - 1 {
+                    let blurHDesc = MTLRenderPassDescriptor()
+                    blurHDesc.colorAttachments[0].texture = bloomTempTextures[i + 1]
+                    if let encH = commandBuffer.makeRenderCommandEncoder(descriptor: blurHDesc) {
+                        var horiz = true
+                        encH.setRenderPipelineState(blurPipeline)
+                        encH.setFragmentTexture(bloomTextures[i], index: 0)
+                        encH.setFragmentSamplerState(sampler, index: 0)
+                        encH.setFragmentBytes(&horiz, length: 1, index: 0)
+                        encH.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
+                        encH.endEncoding()
+                    }
+                    let blurVDesc = MTLRenderPassDescriptor()
+                    blurVDesc.colorAttachments[0].texture = bloomTextures[i + 1]
+                    if let encV = commandBuffer.makeRenderCommandEncoder(descriptor: blurVDesc) {
+                        var horiz = false
+                        encV.setRenderPipelineState(blurPipeline)
+                        encV.setFragmentTexture(bloomTempTextures[i + 1], index: 0)
+                        encV.setFragmentSamplerState(sampler, index: 0)
+                        encV.setFragmentBytes(&horiz, length: 1, index: 0)
+                        encV.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
+                        encV.endEncoding()
+                    }
                 }
-                let blurFDesc = MTLRenderPassDescriptor()
-                blurFDesc.colorAttachments[0].texture = bloomTextures[i - 1]
-                if let fEnc = commandBuffer.makeRenderCommandEncoder(
-                    descriptor: blurFDesc
-                ) {
-                    var horiz = true
-                    fEnc.setRenderPipelineState(blurPipeline!)
-                    fEnc.setFragmentTexture(bloomTempTextures[i - 1], index: 0)
-                    fEnc.setFragmentSamplerState(samplerState, index: 0)
-                    fEnc.setFragmentBytes(&horiz, length: 1, index: 0)
-                    fEnc.drawPrimitives(
-                        type: .triangleStrip,
-                        vertexStart: 0,
-                        vertexCount: 4
-                    )
-                    fEnc.endEncoding()
+            }
+
+            if let upsamplePipeline = upsamplePipeline, let blurPipeline = blurPipeline {
+                for i in stride(from: bloomTextures.count - 1, to: 0, by: -1) {
+                    let upDesc = MTLRenderPassDescriptor()
+                    upDesc.colorAttachments[0].texture = bloomTempTextures[i - 1]
+                    if let upEnc = commandBuffer.makeRenderCommandEncoder(descriptor: upDesc) {
+                        upEnc.setRenderPipelineState(upsamplePipeline)
+                        upEnc.setFragmentTexture(bloomTextures[i - 1], index: 0)
+                        upEnc.setFragmentTexture(bloomTextures[i], index: 1)
+                        upEnc.setFragmentSamplerState(sampler, index: 0)
+                        upEnc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
+                        upEnc.endEncoding()
+                    }
+                    let blurFDesc = MTLRenderPassDescriptor()
+                    blurFDesc.colorAttachments[0].texture = bloomTextures[i - 1]
+                    if let fEnc = commandBuffer.makeRenderCommandEncoder(descriptor: blurFDesc) {
+                        var horiz = true
+                        fEnc.setRenderPipelineState(blurPipeline)
+                        fEnc.setFragmentTexture(bloomTempTextures[i - 1], index: 0)
+                        fEnc.setFragmentSamplerState(sampler, index: 0)
+                        fEnc.setFragmentBytes(&horiz, length: 1, index: 0)
+                        fEnc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
+                        fEnc.endEncoding()
+                    }
                 }
             }
         }
 
-        if let finalEncoder = commandBuffer.makeRenderCommandEncoder(
-            descriptor: descriptor
-        ) {
-            finalEncoder.setRenderPipelineState(finalPipeline!)
+        if let finalEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor) {
+            finalEncoder.setRenderPipelineState(fPipeline)
             finalEncoder.setFragmentTexture(hdrTex, index: 0)
-            finalEncoder.setFragmentTexture(bloomTextures[0], index: 1)
-            finalEncoder.setFragmentSamplerState(samplerState, index: 0)
+            if !bloomTextures.isEmpty { finalEncoder.setFragmentTexture(bloomTextures[0], index: 1) }
+            finalEncoder.setFragmentSamplerState(sampler, index: 0)
             finalEncoder.setFragmentBytes(&bloomStrength, length: 4, index: 0)
             finalEncoder.setFragmentBytes(&isHDREnabled, length: 1, index: 1)
-            finalEncoder.drawPrimitives(
-                type: .triangleStrip,
-                vertexStart: 0,
-                vertexCount: 4
-            )
+            finalEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
             finalEncoder.endEncoding()
         }
 

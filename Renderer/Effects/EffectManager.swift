@@ -10,12 +10,12 @@ import MetalKit
 
 class EffectManager {
     static let shared = EffectManager()
-    var device: MTLDevice!
-    var library: MTLLibrary!
+    var device: MTLDevice?
+    var library: MTLLibrary?
     var pingTexture: MTLTexture?
     var pongTexture: MTLTexture?
-    var samplerState: MTLSamplerState!
-    var finalPipeline: MTLRenderPipelineState!
+    var samplerState: MTLSamplerState?
+    var finalPipeline: MTLRenderPipelineState?
 
     func setup(device: MTLDevice, library: MTLLibrary) async {
         self.device = device
@@ -44,6 +44,7 @@ class EffectManager {
     }
 
     func resize(width: Int, height: Int) {
+        guard let device = device else { return }
         let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Float, width: width, height: height, mipmapped: false)
         desc.usage = [.renderTarget, .shaderRead]
         pingTexture = device.makeTexture(descriptor: desc)
@@ -52,7 +53,7 @@ class EffectManager {
 
     func loadEffects(for obj: SceneObject, baseFolder: URL) async -> [EffectType] {
         var loaded: [EffectType] = []
-        guard let effects = obj.effects else { return loaded }
+        guard let device = device, let library = library, let effects = obj.effects else { return loaded }
         
         for eJSON in effects {
             guard let file = eJSON.file, let passes = eJSON.passes else { continue }
@@ -82,7 +83,11 @@ class EffectManager {
     
     func applyEffects(commandBuffer: MTLCommandBuffer, source: MTLTexture, target: MTLTexture, effects: [EffectType]) {
         let activeEffects = effects.filter { $0.isVisible }
-        guard !activeEffects.isEmpty, let ping = pingTexture, let pong = pongTexture else { return }
+        guard !activeEffects.isEmpty,
+              let ping = pingTexture,
+              let pong = pongTexture,
+              let pipeline = finalPipeline,
+              let sampler = samplerState else { return }
         
         var currentSource = source
         var currentTarget = ping
@@ -98,9 +103,9 @@ class EffectManager {
         pass.colorAttachments[0].loadAction = .load
         pass.colorAttachments[0].storeAction = .store
         guard let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: pass) else { return }
-        encoder.setRenderPipelineState(finalPipeline)
+        encoder.setRenderPipelineState(pipeline)
         encoder.setFragmentTexture(currentSource, index: 0)
-        encoder.setFragmentSamplerState(samplerState, index: 0)
+        encoder.setFragmentSamplerState(sampler, index: 0)
         encoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         encoder.endEncoding()
     }
@@ -110,8 +115,8 @@ class WaterWavesEffect: EffectType {
     var id: Int = 0
     var isVisible: Bool = true
     var effectName: String = "waterwaves"
-    var pipelineState: MTLRenderPipelineState!
-    var uniformBuffer: MTLBuffer!
+    var pipelineState: MTLRenderPipelineState?
+    var uniformBuffer: MTLBuffer?
     var uniforms = WaterWavesUniforms(g_Time: 0, g_Speed: 5, g_Scale: 200, g_Exponent: 1, g_Strength: 0.1, g_Speed2: 3, g_Scale2: 66, g_Offset2: 0, g_Exponent2: 1, padding1: 0, padding2: 0, padding3: 0)
     var maskTexture: MTLTexture?
     
@@ -152,20 +157,23 @@ class WaterWavesEffect: EffectType {
     
     func update(dt: Float, time: Float, size: CGSize) {
         uniforms.g_Time = time
-        memcpy(uniformBuffer.contents(), &uniforms, MemoryLayout<WaterWavesUniforms>.stride)
+        if let buffer = uniformBuffer {
+            memcpy(buffer.contents(), &uniforms, MemoryLayout<WaterWavesUniforms>.stride)
+        }
     }
     
     func encode(commandBuffer: MTLCommandBuffer, sourceTexture: MTLTexture, destinationTexture: MTLTexture) {
+        guard let pipeline = pipelineState, let buffer = uniformBuffer else { return }
         let pass = MTLRenderPassDescriptor()
         pass.colorAttachments[0].texture = destinationTexture
         pass.colorAttachments[0].loadAction = .clear
         pass.colorAttachments[0].storeAction = .store
         pass.colorAttachments[0].clearColor = MTLClearColorMake(0,0,0,0)
         guard let enc = commandBuffer.makeRenderCommandEncoder(descriptor: pass) else { return }
-        enc.setRenderPipelineState(pipelineState)
+        enc.setRenderPipelineState(pipeline)
         enc.setFragmentTexture(sourceTexture, index: 0)
         if let m = maskTexture { enc.setFragmentTexture(m, index: 1) }
-        enc.setFragmentBuffer(uniformBuffer, offset: 0, index: 0)
+        enc.setFragmentBuffer(buffer, offset: 0, index: 0)
         enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         enc.endEncoding()
     }
@@ -175,8 +183,8 @@ class ScrollEffect: EffectType {
     var id: Int = 0
     var isVisible: Bool = true
     var effectName: String = "scroll"
-    var pipelineState: MTLRenderPipelineState!
-    var uniformBuffer: MTLBuffer!
+    var pipelineState: MTLRenderPipelineState?
+    var uniformBuffer: MTLBuffer?
     var uniforms = ScrollUniforms(speedx: 0, speedy: 0, repeatX: 1, repeatY: 1)
     var currentTimeX: Float = 0
     var currentTimeY: Float = 0
@@ -205,19 +213,22 @@ class ScrollEffect: EffectType {
         var u = uniforms
         u.speedx = currentTimeX
         u.speedy = currentTimeY
-        memcpy(uniformBuffer.contents(), &u, MemoryLayout<ScrollUniforms>.stride)
+        if let buffer = uniformBuffer {
+            memcpy(buffer.contents(), &u, MemoryLayout<ScrollUniforms>.stride)
+        }
     }
     
     func encode(commandBuffer: MTLCommandBuffer, sourceTexture: MTLTexture, destinationTexture: MTLTexture) {
+        guard let pipeline = pipelineState, let buffer = uniformBuffer else { return }
         let pass = MTLRenderPassDescriptor()
         pass.colorAttachments[0].texture = destinationTexture
         pass.colorAttachments[0].loadAction = .clear
         pass.colorAttachments[0].storeAction = .store
         pass.colorAttachments[0].clearColor = MTLClearColorMake(0,0,0,0)
         guard let enc = commandBuffer.makeRenderCommandEncoder(descriptor: pass) else { return }
-        enc.setRenderPipelineState(pipelineState)
+        enc.setRenderPipelineState(pipeline)
         enc.setFragmentTexture(sourceTexture, index: 0)
-        enc.setFragmentBuffer(uniformBuffer, offset: 0, index: 0)
+        enc.setFragmentBuffer(buffer, offset: 0, index: 0)
         enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         enc.endEncoding()
     }
@@ -227,8 +238,8 @@ class ShimmerEffect: EffectType {
     var id: Int = 0
     var isVisible: Bool = true
     var effectName: String = "shimmer"
-    var pipelineState: MTLRenderPipelineState!
-    var uniformBuffer: MTLBuffer!
+    var pipelineState: MTLRenderPipelineState?
+    var uniformBuffer: MTLBuffer?
     var uniforms = ShimmerUniforms(color: SIMD4<Float>(1,1,1,1), g_Time: 0, speed: 0.25, brightness: 0.6, granularity: 1, direction: -1.2, offset: 0, delay: 2, padding: 0)
     
     func load(device: MTLDevice, library: MTLLibrary, passJSON: EffectPassJSON, baseFolder: URL) async throws {
@@ -254,19 +265,22 @@ class ShimmerEffect: EffectType {
     
     func update(dt: Float, time: Float, size: CGSize) {
         uniforms.g_Time = time
-        memcpy(uniformBuffer.contents(), &uniforms, MemoryLayout<ShimmerUniforms>.stride)
+        if let buffer = uniformBuffer {
+            memcpy(buffer.contents(), &uniforms, MemoryLayout<ShimmerUniforms>.stride)
+        }
     }
     
     func encode(commandBuffer: MTLCommandBuffer, sourceTexture: MTLTexture, destinationTexture: MTLTexture) {
+        guard let pipeline = pipelineState, let buffer = uniformBuffer else { return }
         let pass = MTLRenderPassDescriptor()
         pass.colorAttachments[0].texture = destinationTexture
         pass.colorAttachments[0].loadAction = .clear
         pass.colorAttachments[0].storeAction = .store
         pass.colorAttachments[0].clearColor = MTLClearColorMake(0,0,0,0)
         guard let enc = commandBuffer.makeRenderCommandEncoder(descriptor: pass) else { return }
-        enc.setRenderPipelineState(pipelineState)
+        enc.setRenderPipelineState(pipeline)
         enc.setFragmentTexture(sourceTexture, index: 0)
-        enc.setFragmentBuffer(uniformBuffer, offset: 0, index: 0)
+        enc.setFragmentBuffer(buffer, offset: 0, index: 0)
         enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         enc.endEncoding()
     }
@@ -276,8 +290,8 @@ class AudioBarsEffect: EffectType {
     var id: Int = 0
     var isVisible: Bool = true
     var effectName: String = "Simple_Audio_Bars"
-    var pipelineState: MTLRenderPipelineState!
-    var uniformBuffer: MTLBuffer!
+    var pipelineState: MTLRenderPipelineState?
+    var uniformBuffer: MTLBuffer?
     var uniforms = AudioBarsUniforms(color: SIMD4<Float>(1, 0.57, 0.57, 1), g_Time: 0, barSpacing: 0.75, barCount: 128, opacity: 1, lowerBound: 0, upperBound: 1, blurX: 0.5, blurY: 0.5)
     
     func load(device: MTLDevice, library: MTLLibrary, passJSON: EffectPassJSON, baseFolder: URL) async throws {
@@ -306,19 +320,22 @@ class AudioBarsEffect: EffectType {
     
     func update(dt: Float, time: Float, size: CGSize) {
         uniforms.g_Time = time
-        memcpy(uniformBuffer.contents(), &uniforms, MemoryLayout<AudioBarsUniforms>.stride)
+        if let buffer = uniformBuffer {
+            memcpy(buffer.contents(), &uniforms, MemoryLayout<AudioBarsUniforms>.stride)
+        }
     }
     
     func encode(commandBuffer: MTLCommandBuffer, sourceTexture: MTLTexture, destinationTexture: MTLTexture) {
+        guard let pipeline = pipelineState, let buffer = uniformBuffer else { return }
         let pass = MTLRenderPassDescriptor()
         pass.colorAttachments[0].texture = destinationTexture
         pass.colorAttachments[0].loadAction = .clear
         pass.colorAttachments[0].storeAction = .store
         pass.colorAttachments[0].clearColor = MTLClearColorMake(0,0,0,0)
         guard let enc = commandBuffer.makeRenderCommandEncoder(descriptor: pass) else { return }
-        enc.setRenderPipelineState(pipelineState)
+        enc.setRenderPipelineState(pipeline)
         enc.setFragmentTexture(sourceTexture, index: 0)
-        enc.setFragmentBuffer(uniformBuffer, offset: 0, index: 0)
+        enc.setFragmentBuffer(buffer, offset: 0, index: 0)
         enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         enc.endEncoding()
     }
@@ -328,8 +345,8 @@ class GradientColorEffect: EffectType {
     var id: Int = 0
     var isVisible: Bool = true
     var effectName: String = "gradient_color"
-    var pipelineState: MTLRenderPipelineState!
-    var uniformBuffer: MTLBuffer!
+    var pipelineState: MTLRenderPipelineState?
+    var uniformBuffer: MTLBuffer?
     var uniforms = GradientColorUniforms(color1: SIMD4<Float>(1,0,0,1), color2: SIMD4<Float>(1,0.47,0,1), g_Time: 0, opacity: 1, hueSpeed: 0, amount: 2.06, oscillate: 0, padding1: 0, padding2: 0, padding3: 0)
     
     func load(device: MTLDevice, library: MTLLibrary, passJSON: EffectPassJSON, baseFolder: URL) async throws {
@@ -357,19 +374,22 @@ class GradientColorEffect: EffectType {
     
     func update(dt: Float, time: Float, size: CGSize) {
         uniforms.g_Time = time
-        memcpy(uniformBuffer.contents(), &uniforms, MemoryLayout<GradientColorUniforms>.stride)
+        if let buffer = uniformBuffer {
+            memcpy(buffer.contents(), &uniforms, MemoryLayout<GradientColorUniforms>.stride)
+        }
     }
     
     func encode(commandBuffer: MTLCommandBuffer, sourceTexture: MTLTexture, destinationTexture: MTLTexture) {
+        guard let pipeline = pipelineState, let buffer = uniformBuffer else { return }
         let pass = MTLRenderPassDescriptor()
         pass.colorAttachments[0].texture = destinationTexture
         pass.colorAttachments[0].loadAction = .clear
         pass.colorAttachments[0].storeAction = .store
         pass.colorAttachments[0].clearColor = MTLClearColorMake(0,0,0,0)
         guard let enc = commandBuffer.makeRenderCommandEncoder(descriptor: pass) else { return }
-        enc.setRenderPipelineState(pipelineState)
+        enc.setRenderPipelineState(pipeline)
         enc.setFragmentTexture(sourceTexture, index: 0)
-        enc.setFragmentBuffer(uniformBuffer, offset: 0, index: 0)
+        enc.setFragmentBuffer(buffer, offset: 0, index: 0)
         enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         enc.endEncoding()
     }
@@ -379,8 +399,8 @@ class LensFlareSunEffect: EffectType {
     var id: Int = 0
     var isVisible: Bool = true
     var effectName: String = "lens_flare_sun"
-    var pipelineState: MTLRenderPipelineState!
-    var uniformBuffer: MTLBuffer!
+    var pipelineState: MTLRenderPipelineState?
+    var uniformBuffer: MTLBuffer?
     var uniforms = LensFlareSunUniforms(color: SIMD4<Float>(1,1,1,1), g_Time: 0, angle: 0, speed: 0.25, sunScale: 32, opacity: 1, scale: 0.025, rotationSpeed: 1, speedSecondary: 0.125, pointerSpeed: 0, positionOffsetX: 0.1, positionOffsetY: 1.3, padding: 0)
     
     func load(device: MTLDevice, library: MTLLibrary, passJSON: EffectPassJSON, baseFolder: URL) async throws {
@@ -413,19 +433,22 @@ class LensFlareSunEffect: EffectType {
     
     func update(dt: Float, time: Float, size: CGSize) {
         uniforms.g_Time = time
-        memcpy(uniformBuffer.contents(), &uniforms, MemoryLayout<LensFlareSunUniforms>.stride)
+        if let buffer = uniformBuffer {
+            memcpy(buffer.contents(), &uniforms, MemoryLayout<LensFlareSunUniforms>.stride)
+        }
     }
     
     func encode(commandBuffer: MTLCommandBuffer, sourceTexture: MTLTexture, destinationTexture: MTLTexture) {
+        guard let pipeline = pipelineState, let buffer = uniformBuffer else { return }
         let pass = MTLRenderPassDescriptor()
         pass.colorAttachments[0].texture = destinationTexture
         pass.colorAttachments[0].loadAction = .clear
         pass.colorAttachments[0].storeAction = .store
         pass.colorAttachments[0].clearColor = MTLClearColorMake(0,0,0,0)
         guard let enc = commandBuffer.makeRenderCommandEncoder(descriptor: pass) else { return }
-        enc.setRenderPipelineState(pipelineState)
+        enc.setRenderPipelineState(pipeline)
         enc.setFragmentTexture(sourceTexture, index: 0)
-        enc.setFragmentBuffer(uniformBuffer, offset: 0, index: 0)
+        enc.setFragmentBuffer(buffer, offset: 0, index: 0)
         enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         enc.endEncoding()
     }
@@ -435,8 +458,8 @@ class ShadowEffect: EffectType {
     var id: Int = 0
     var isVisible: Bool = true
     var effectName: String = "shadow"
-    var pipelineState: MTLRenderPipelineState!
-    var uniformBuffer: MTLBuffer!
+    var pipelineState: MTLRenderPipelineState?
+    var uniformBuffer: MTLBuffer?
     var uniforms = ShadowUniforms(shadowColor: SIMD4<Float>(0,0,0,1), shadowOffset: SIMD4<Float>(2,-2,0,0), alpha: 0.15, shadowDrawBorder: 0.5, padding1: 0, padding2: 0)
     
     func load(device: MTLDevice, library: MTLLibrary, passJSON: EffectPassJSON, baseFolder: URL) async throws {
@@ -461,19 +484,22 @@ class ShadowEffect: EffectType {
     }
     
     func update(dt: Float, time: Float, size: CGSize) {
-        memcpy(uniformBuffer.contents(), &uniforms, MemoryLayout<ShadowUniforms>.stride)
+        if let buffer = uniformBuffer {
+            memcpy(buffer.contents(), &uniforms, MemoryLayout<ShadowUniforms>.stride)
+        }
     }
     
     func encode(commandBuffer: MTLCommandBuffer, sourceTexture: MTLTexture, destinationTexture: MTLTexture) {
+        guard let pipeline = pipelineState, let buffer = uniformBuffer else { return }
         let pass = MTLRenderPassDescriptor()
         pass.colorAttachments[0].texture = destinationTexture
         pass.colorAttachments[0].loadAction = .clear
         pass.colorAttachments[0].storeAction = .store
         pass.colorAttachments[0].clearColor = MTLClearColorMake(0,0,0,0)
         guard let enc = commandBuffer.makeRenderCommandEncoder(descriptor: pass) else { return }
-        enc.setRenderPipelineState(pipelineState)
+        enc.setRenderPipelineState(pipeline)
         enc.setFragmentTexture(sourceTexture, index: 0)
-        enc.setFragmentBuffer(uniformBuffer, offset: 0, index: 0)
+        enc.setFragmentBuffer(buffer, offset: 0, index: 0)
         enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         enc.endEncoding()
     }
