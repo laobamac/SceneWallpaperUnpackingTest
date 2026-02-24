@@ -1,138 +1,23 @@
 {
 	"contentrating" : "Everyone",
-	"description" : "effect producer/动效制作：bai22331\nmusic/音乐：赵乃吉 - 少一点天分 (破碎版伴奏)\ntips:千咲，鸣潮，朽叶千咲，京阪电车，寺庙，红叶，秋， Wuthering Waves,Autumn,temple,Chisa",
+	"description" : "I did not make the original image, I cannot find the original source.",
 	"file" : "scene.json",
 	"general" : 
 	{
 		"properties" : 
 		{
-			"audiobar" : 
-			{
-				"index" : 4,
-				"order" : 104,
-				"text" : "音频条audio bar",
-				"type" : "bool",
-				"value" : true
-			},
-			"bokeh" : 
-			{
-				"index" : 6,
-				"order" : 106,
-				"text" : "光晕气泡bokeh",
-				"type" : "bool",
-				"value" : true
-			},
-			"butterflies" : 
-			{
-				"index" : 8,
-				"order" : 108,
-				"text" : "蝴蝶butterflies",
-				"type" : "bool",
-				"value" : true
-			},
-			"centerbbbrbigbbrahrefhttpsspacebilibilicom425570450bai22331babigp" : 
-			{
-				"index" : 1,
-				"order" : 101,
-				"text" : "<center><b>壁纸全凭个人兴趣制作,完全免费,只分享在小红车使用,转载请标明出处,感谢各位订阅</b><br/><big><b>我的个人主页<br/><a href=\"https://space.bilibili.com/425570450\">bai22331的B站空间(点击跳转)</a><big></p>",
-				"type" : "bool",
-				"value" : true
-			},
-			"centerbigbbrbrimgsrchttpsmqpiccnpscv510syph2cc6sa1eabo949slxh1ewfhqtmeugtj9ek67v8ajmqrembscjehvyddpwtu2rlz5rnhvmslewjmgsbxigo2zbh86ix8rasqgr863pfjvoslvrhaubejmuq6v5sulc3abbo7ahsaewb7aedbyirfviewer_4width250abigp" : 
-			{
-				"index" : 13,
-				"order" : 113,
-				"text" : "<center><big><b>如果喜欢能否小小支持下，你们的支持是我最大的更新动力<br/>微信<br/><img src=https://m.qpic.cn/psc?/V510sYpH2cc6SA1EaBo949SLXH1ewFHq/TmEUgtj9EK6.7V8ajmQrEMBSCjEHVydDPWTu2RLZ5rNHvmsLeWJMgsBXigo2zB.*H86ix8rAsQgR863PfJVosLvrHAuBE*jMUQ6V5sulC3A!/b&bo=7AHsAewB7AEDByI!&rf=viewer_4 width=\"250\"</a><big></p>",
-				"type" : "bool",
-				"value" : true
-			},
-			"clickontheclocktodrapit" : 
-			{
-				"index" : 11,
-				"order" : 111,
-				"text" : "点击时间可拖动click on the clock to drap it",
-				"type" : "bool",
-				"value" : true
-			},
-			"clock" : 
-			{
-				"index" : 10,
-				"order" : 110,
-				"text" : "时间clock",
-				"type" : "bool",
-				"value" : true
-			},
-			"imgsrchttpi0hdslbcombfsarchivec8fd97a40bf79f03e7b76cbc87236f612caef7b2png" : 
-			{
-				"index" : 2,
-				"order" : 102,
-				"text" : "<img src=\"http://i0.hdslb.com/bfs/archive/c8fd97a40bf79f03e7b76cbc87236f612caef7b2.png\">",
-				"type" : "bool",
-				"value" : true
-			},
-			"imgsrchttpphotogzphotostoreqqcompscv12uhwit3z28ypbqqfvz5yrrgysxmvkrcqsfratqlfzr86n9euodn4nrlgp3ax9rtwtsnrhi7j6ys7cpxuv4uy0yhigma9023bydad5n5tpcicj6v5qbbohgeiaaaaaaacjxqrfviewer_4width2000height1" : 
-			{
-				"index" : 3,
-				"order" : 103,
-				"text" : "<img src=\"http://photogz.photo.store.qq.com/psc?/V12uhwIt3z28yp/bqQfVz5yrrGYSXMvKr.cqSF.*RaTqLFzr86N9EuoDN4nRLGP3a.X9rtw.tsnRh*i7J6Ys7CPxuV4UY0yhigma9023ByDaD5n5tpcicJ6V5Q!/b&bo=HgEIAAAAAAACJxQ!&rf=viewer_4\\\" width=\\\"2000\\\" height=\\\"1\\\">",
-				"type" : "bool",
-				"value" : true
-			},
-			"imgsrchttpphotogzphotostoreqqcompscv12uhwit3z28ypbqqfvz5yrrgysxmvkrcqsfratqlfzr86n9euodn4nrlgp3ax9rtwtsnrhi7j6ys7cpxuv4uy0yhigma9023bydad5n5tpcicj6v5qbbohgeiaaaaaaacjxqrfviewer_4width2000height11" : 
-			{
-				"index" : 12,
-				"order" : 112,
-				"text" : "<img src=\"http://photogz.photo.store.qq.com/psc?/V12uhwIt3z28yp/bqQfVz5yrrGYSXMvKr.cqSF.*RaTqLFzr86N9EuoDN4nRLGP3a.X9rtw.tsnRh*i7J6Ys7CPxuV4UY0yhigma9023ByDaD5n5tpcicJ6V5Q!/b&bo=HgEIAAAAAAACJxQ!&rf=viewer_4\\\" width=\\\"2000\\\" height=\\\"1\\\">",
-				"type" : "bool",
-				"value" : true
-			},
-			"leaves" : 
-			{
-				"index" : 5,
-				"order" : 105,
-				"text" : "叶子leaves",
-				"type" : "bool",
-				"value" : true
-			},
 			"schemecolor" : 
 			{
 				"order" : 0,
 				"text" : "ui_browse_properties_scheme_color",
 				"type" : "color",
-				"value" : "1 0.4627450980392157 0.25098039215686274"
-			},
-			"sunshine" : 
-			{
-				"index" : 7,
-				"order" : 107,
-				"text" : "光线sunshine",
-				"type" : "bool",
-				"value" : true
-			},
-			"watermarkpleaseturnoff" : 
-			{
-				"index" : 0,
-				"order" : 100,
-				"text" : "水印watermark(请关闭please turn off)",
-				"type" : "bool",
-				"value" : true
-			},
-			"windparticles" : 
-			{
-				"index" : 9,
-				"order" : 109,
-				"text" : "风粒子wind particles",
-				"type" : "bool",
-				"value" : true
+				"value" : "0.1450980392156863 0.2549019607843137 0.09019607843137255"
 			}
-		},
-		"supportsaudioprocessing" : true
+		}
 	},
 	"preview" : "preview.gif",
-	"ratingsex" : "none",
-	"ratingviolence" : "none",
-	"tags" : [ "Anime" ],
-	"title" : "[Chisa]Autumn and temple - Wuthering Waves",
+	"tags" : [ "Landscape" ],
+	"title" : "In The Early Morning Forest",
 	"type" : "scene",
-	"version" : 0
+	"visibility" : "public"
 }
