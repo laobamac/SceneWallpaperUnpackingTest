@@ -90,6 +90,13 @@ class EffectManager {
               let sampler = samplerState else { return }
         
         var currentSource = source
+        
+        if currentSource.textureType == .type2DArray {
+            if let view = currentSource.makeTextureView(pixelFormat: currentSource.pixelFormat, textureType: .type2D, levels: 0..<1, slices: 0..<1) {
+                currentSource = view
+            }
+        }
+        
         var currentTarget = ping
         
         for effect in activeEffects {
@@ -133,7 +140,7 @@ class WaterWavesEffect: EffectType {
         }
         
         if let textures = passJSON.textures, textures.count > 1, let mask = textures[1] {
-            let maskUrl = baseFolder.appendingPathComponent(mask).appendingPathExtension("png")
+            let maskUrl = baseFolder.appendingPathComponent("materials").appendingPathComponent(mask).appendingPathExtension("png")
             maskTexture = try? await TextureManager.shared.loadTexture(url: maskUrl, options: [.origin: MTKTextureLoader.Origin.topLeft], force2D: true)
         }
         
@@ -173,6 +180,9 @@ class WaterWavesEffect: EffectType {
         enc.setRenderPipelineState(pipeline)
         enc.setFragmentTexture(sourceTexture, index: 0)
         if let m = maskTexture { enc.setFragmentTexture(m, index: 1) }
+        if let sampler = EffectManager.shared.samplerState {
+            enc.setFragmentSamplerState(sampler, index: 0)
+        }
         enc.setFragmentBuffer(buffer, offset: 0, index: 0)
         enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         enc.endEncoding()
@@ -228,6 +238,9 @@ class ScrollEffect: EffectType {
         guard let enc = commandBuffer.makeRenderCommandEncoder(descriptor: pass) else { return }
         enc.setRenderPipelineState(pipeline)
         enc.setFragmentTexture(sourceTexture, index: 0)
+        if let sampler = EffectManager.shared.samplerState {
+            enc.setFragmentSamplerState(sampler, index: 0)
+        }
         enc.setFragmentBuffer(buffer, offset: 0, index: 0)
         enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         enc.endEncoding()
@@ -280,6 +293,9 @@ class ShimmerEffect: EffectType {
         guard let enc = commandBuffer.makeRenderCommandEncoder(descriptor: pass) else { return }
         enc.setRenderPipelineState(pipeline)
         enc.setFragmentTexture(sourceTexture, index: 0)
+        if let sampler = EffectManager.shared.samplerState {
+            enc.setFragmentSamplerState(sampler, index: 0)
+        }
         enc.setFragmentBuffer(buffer, offset: 0, index: 0)
         enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         enc.endEncoding()
@@ -335,6 +351,9 @@ class AudioBarsEffect: EffectType {
         guard let enc = commandBuffer.makeRenderCommandEncoder(descriptor: pass) else { return }
         enc.setRenderPipelineState(pipeline)
         enc.setFragmentTexture(sourceTexture, index: 0)
+        if let sampler = EffectManager.shared.samplerState {
+            enc.setFragmentSamplerState(sampler, index: 0)
+        }
         enc.setFragmentBuffer(buffer, offset: 0, index: 0)
         enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         enc.endEncoding()
@@ -389,6 +408,9 @@ class GradientColorEffect: EffectType {
         guard let enc = commandBuffer.makeRenderCommandEncoder(descriptor: pass) else { return }
         enc.setRenderPipelineState(pipeline)
         enc.setFragmentTexture(sourceTexture, index: 0)
+        if let sampler = EffectManager.shared.samplerState {
+            enc.setFragmentSamplerState(sampler, index: 0)
+        }
         enc.setFragmentBuffer(buffer, offset: 0, index: 0)
         enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         enc.endEncoding()
@@ -448,6 +470,9 @@ class LensFlareSunEffect: EffectType {
         guard let enc = commandBuffer.makeRenderCommandEncoder(descriptor: pass) else { return }
         enc.setRenderPipelineState(pipeline)
         enc.setFragmentTexture(sourceTexture, index: 0)
+        if let sampler = EffectManager.shared.samplerState {
+            enc.setFragmentSamplerState(sampler, index: 0)
+        }
         enc.setFragmentBuffer(buffer, offset: 0, index: 0)
         enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         enc.endEncoding()
@@ -499,6 +524,9 @@ class ShadowEffect: EffectType {
         guard let enc = commandBuffer.makeRenderCommandEncoder(descriptor: pass) else { return }
         enc.setRenderPipelineState(pipeline)
         enc.setFragmentTexture(sourceTexture, index: 0)
+        if let sampler = EffectManager.shared.samplerState {
+            enc.setFragmentSamplerState(sampler, index: 0)
+        }
         enc.setFragmentBuffer(buffer, offset: 0, index: 0)
         enc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
         enc.endEncoding()
