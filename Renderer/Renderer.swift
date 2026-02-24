@@ -321,37 +321,8 @@ class Renderer: NSObject, MTKViewDelegate {
             return await createParticleRenderable(from: obj, particlePath: particlePath, base: base)
         }
 
-        if obj.image == nil {
-            if let textProp = obj.text {
-                let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
-                let fontPath = obj.font ?? ""
-                let pointSize = obj.pointsize ?? 28.0
-                let colorStr = obj.color ?? "1 1 1"
-                let ha = obj.horizontalalign ?? "center"
-                let va = obj.verticalalign ?? "center"
-                guard let pipeline = pipelineState else { return nil }
-                
-                if let renderable = TextRenderableObject(device: device, position: pos, rotation: rotation, size: size, scale: scale, pipeline: pipeline, depthState: depthStencilState, textString: textProp.value, fontPath: fontPath, pointSize: pointSize, colorStr: colorStr, horizontalAlign: ha, verticalAlign: va, baseFolder: base) {
-                    applyEffectConstants(to: renderable, from: obj)
-                    renderable.effects = await EffectManager.shared.loadEffects(for: obj, baseFolder: base)
-                    if !renderable.effects.isEmpty {
-                        let tDesc = MTLTextureDescriptor()
-                        tDesc.pixelFormat = .rgba16Float
-                        tDesc.width = renderable.texture.width
-                        tDesc.height = renderable.texture.height
-                        tDesc.textureType = .type2DArray
-                        tDesc.arrayLength = 1
-                        tDesc.usage = [.renderTarget, .shaderRead, .pixelFormatView]
-                        renderable.offscreenTexture = device.makeTexture(descriptor: tDesc)
-                        renderable.tempTexture = device.makeTexture(descriptor: tDesc)
-                    }
-                    return renderable
-                }
-            }
-            return nil
-        }
-
         guard let imagePath = obj.image else { return nil }
+        
         let modelURL = base.appendingPathComponent(imagePath)
         let fileName = modelURL.deletingPathExtension().lastPathComponent
         let puppetDataURL = modelURL.deletingLastPathComponent().appendingPathComponent("\(fileName)_puppet_data.json")
