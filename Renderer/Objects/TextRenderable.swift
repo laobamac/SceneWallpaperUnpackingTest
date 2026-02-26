@@ -72,10 +72,17 @@ class TextRenderable {
         
         if let props = self.scriptPropertiesMap {
             let context = engine.context
-            var jsProps = context.objectForKeyedSubscript("scriptProperties")
+            
+            var jsProps = self.scriptObject?.objectForKeyedSubscript("scriptProperties")
+            
+            if jsProps == nil || jsProps!.isUndefined {
+                jsProps = context.objectForKeyedSubscript("scriptProperties")
+            }
+            
             if jsProps == nil || jsProps!.isUndefined {
                 jsProps = JSValue(newObjectIn: context)
                 context.setObject(jsProps, forKeyedSubscript: "scriptProperties" as NSString)
+                self.scriptObject?.setValue(jsProps, forProperty: "scriptProperties")
             }
             
             for (key, value) in props {
@@ -143,7 +150,7 @@ class TextRenderable {
         let font = CTFontCreateWithName(fontName as CFString, actualPointSize, nil)
         let attributes: [NSAttributedString.Key: Any] = [
             .font: font,
-            .foregroundColor: CGColor(red: CGFloat(color.x), green: CGFloat(color.y), blue: CGFloat(color.z), alpha: CGFloat(color.w))
+            .foregroundColor: CGColor(red: CGFloat(color.x), green: CGFloat(color.y), blue: CGFloat(color.z), alpha: CGFloat(color.w * alpha))
         ]
         
         let attributedString = NSAttributedString(string: currentText, attributes: attributes)
@@ -219,9 +226,9 @@ class TextRenderable {
         }
         
         if verticalAlign == "top" {
-            offsetY = Float(height) / 2.0
-        } else if verticalAlign == "bottom" {
             offsetY = -Float(height) / 2.0
+        } else if verticalAlign == "bottom" {
+            offsetY = Float(height) / 2.0
         }
         
         let pivotTranslation = matrix_float4x4(translationX: offsetX, y: offsetY, z: 0)

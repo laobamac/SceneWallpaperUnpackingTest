@@ -311,6 +311,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 let rawObj = rawObjects[obj.id ?? -1]
                 if let textDict = rawObj?["text"] as? [String: Any] {
                     let script = textDict["script"] as? String ?? "export function update() { return '\(textDict["value"] as? String ?? "")'; }"
+                    let scriptProps = textDict["scriptproperties"] as? [String: Any]
                     
                     var actualFontName = "Arial"
                     if let fontPath = rawObj?["font"] as? String {
@@ -335,7 +336,7 @@ class Renderer: NSObject, MTKViewDelegate {
                     let vAlign = obj.verticalalign ?? "center"
                     let pad = CGFloat(obj.padding ?? 0)
                     
-                    let tr = TextRenderable(device: self.device, id: obj.id ?? -1, parentId: obj.parent, name: obj.name ?? "", origin: pos, size: size, scale: scale, color: color, fontName: actualFontName, pointSize: pointSize, horizontalAlign: hAlign, verticalAlign: vAlign, padding: pad, sceneHeight: CGFloat(self.projectionSize.height))
+                    let tr = TextRenderable(device: self.device, id: obj.id ?? -1, parentId: obj.parent, name: obj.name ?? "", origin: pos, size: size, scale: scale, color: color, alpha: obj.alpha ?? 1.0, fontName: actualFontName, pointSize: pointSize, horizontalAlign: hAlign, verticalAlign: vAlign, padding: pad, sceneHeight: CGFloat(self.projectionSize.height), scriptProperties: scriptProps)
                     tr.setupScript(script, engine: self.jsEngine)
                     self.textRenderables.append(tr)
                     
@@ -527,7 +528,7 @@ class Renderer: NSObject, MTKViewDelegate {
             guard let firstPass = matDef.passes.first, let texName = firstPass.textures.first else { return nil }
             let texURL = resolveTextureURL(base: base, rawPath: texName)
             let texture = try await TextureManager.shared.loadTexture(url: texURL, options: [.origin: MTKTextureLoader.Origin.topLeft, .SRGB: true])
-            let (vertices, indices, triangleBoneIndices, bboxWidth) = PuppetRenderable.parseOBJ(objContent: objContent, skinning: puppetData.skinning)
+            let (vertices, indices, triangleBoneIndices, bboxWidth) = PuppetRenderable.parseOBJ(objContent: objContent, skinning: puppetData.skeleton.isEmpty ? [] : puppetData.skinning)
             let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
             var depthState = depthStencilState
             if let dw = firstPass.depthwrite, dw == "disabled" {
@@ -654,7 +655,7 @@ class Renderer: NSObject, MTKViewDelegate {
                         }
                     }
                 }
-                ro.localPosition = tr.origin
+                ro.localPosition = simd_float3(tr.localTransform.columns.3.x, tr.localTransform.columns.3.y, tr.localTransform.columns.3.z)
                 ro.scale = tr.scale
                 ro.size = simd_float2(Float(tr.width), Float(tr.height))
             }
