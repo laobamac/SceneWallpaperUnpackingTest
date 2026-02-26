@@ -48,6 +48,7 @@ struct SceneObject: Codable {
     let padding: Float?
     let text: ScriptableValue?
     let color: ScriptableValue?
+    let alpha: Float?
 
     var isVisible: Bool {
         if let v = visible {

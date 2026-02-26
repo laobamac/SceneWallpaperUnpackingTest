@@ -334,9 +334,8 @@ class Renderer: NSObject, MTKViewDelegate {
                     let hAlign = obj.horizontalalign ?? "center"
                     let vAlign = obj.verticalalign ?? "center"
                     let pad = CGFloat(obj.padding ?? 0)
-                    let scriptProps = textDict["scriptproperties"] as? [String: Any]
                     
-                    let tr = TextRenderable(device: self.device, id: obj.id ?? -1, parentId: obj.parent, name: obj.name ?? "", origin: pos, size: size, scale: scale, color: color, fontName: actualFontName, pointSize: pointSize, horizontalAlign: hAlign, verticalAlign: vAlign, padding: pad, sceneHeight: CGFloat(self.projectionSize.height), scriptProperties: scriptProps)
+                    let tr = TextRenderable(device: self.device, id: obj.id ?? -1, parentId: obj.parent, name: obj.name ?? "", origin: pos, size: size, scale: scale, color: color, fontName: actualFontName, pointSize: pointSize, horizontalAlign: hAlign, verticalAlign: vAlign, padding: pad, sceneHeight: CGFloat(self.projectionSize.height))
                     tr.setupScript(script, engine: self.jsEngine)
                     self.textRenderables.append(tr)
                     

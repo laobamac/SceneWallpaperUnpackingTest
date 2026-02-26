@@ -19,6 +19,7 @@ class TextRenderable {
     var origin: simd_float3
     var scale: simd_float3
     var color: simd_float4
+    var alpha: Float
     var fontName: String
     var pointSize: CGFloat
     var texture: MTLTexture?
@@ -43,7 +44,7 @@ class TextRenderable {
     var globalTransform: matrix_float4x4 = matrix_identity_float4x4
     var localTransform: matrix_float4x4 = matrix_identity_float4x4
     
-    init(device: MTLDevice, id: Int, parentId: Int?, name: String, origin: simd_float3, size: simd_float2, scale: simd_float3, color: simd_float4, fontName: String, pointSize: CGFloat, horizontalAlign: String = "center", verticalAlign: String = "center", padding: CGFloat = 0, sceneHeight: CGFloat = 1080.0, scriptProperties: [String: Any]? = nil) {
+    init(device: MTLDevice, id: Int, parentId: Int?, name: String, origin: simd_float3, size: simd_float2, scale: simd_float3, color: simd_float4, alpha: Float = 1.0, fontName: String, pointSize: CGFloat, horizontalAlign: String = "center", verticalAlign: String = "center", padding: CGFloat = 0, sceneHeight: CGFloat = 1080.0, scriptProperties: [String: Any]? = nil) {
         self.device = device
         self.id = id
         self.parentId = parentId
@@ -55,6 +56,7 @@ class TextRenderable {
         self.height = CGFloat(size.y) + padding * 2
         self.scale = scale
         self.color = color
+        self.alpha = alpha
         self.fontName = fontName
         self.pointSize = pointSize
         self.horizontalAlign = horizontalAlign
@@ -141,7 +143,7 @@ class TextRenderable {
         let font = CTFontCreateWithName(fontName as CFString, actualPointSize, nil)
         let attributes: [NSAttributedString.Key: Any] = [
             .font: font,
-            .foregroundColor: CGColor(red: CGFloat(color.x), green: CGFloat(color.y), blue: CGFloat(color.z), alpha: CGFloat(color.w))
+            .foregroundColor: CGColor(red: CGFloat(color.x), green: CGFloat(color.y), blue: CGFloat(color.z), alpha: CGFloat(color.w) * CGFloat(alpha))
         ]
         
         let attributedString = NSAttributedString(string: currentText, attributes: attributes)
@@ -207,9 +209,26 @@ class TextRenderable {
     }
     
     func updateTransforms(parentTransform: matrix_float4x4?) {
+        var offsetX: Float = 0
+        var offsetY: Float = 0
+        
+        if horizontalAlign == "left" {
+            offsetX = Float(width) / 2.0
+        } else if horizontalAlign == "right" {
+            offsetX = -Float(width) / 2.0
+        }
+        
+        if verticalAlign == "top" {
+            offsetY = -Float(height) / 2.0
+        } else if verticalAlign == "bottom" {
+            offsetY = Float(height) / 2.0
+        }
+        
+        let pivotTranslation = matrix_float4x4(translationX: offsetX, y: offsetY, z: 0)
         let translation = matrix_float4x4(translationX: origin.x, y: origin.y, z: origin.z)
         let scaling = matrix_float4x4(scaleX: scale.x, y: scale.y, z: scale.z)
-        localTransform = matrix_multiply(translation, scaling)
+        
+        localTransform = matrix_multiply(translation, matrix_multiply(scaling, pivotTranslation))
         
         if let pTrans = parentTransform {
             globalTransform = matrix_multiply(pTrans, localTransform)
