@@ -7,6 +7,38 @@
 
 import SwiftUI
 import MetalKit
+import AppKit
+
+class InteractiveMTKView: MTKView {
+    weak var renderer: Renderer?
+    
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        trackingAreas.forEach { removeTrackingArea($0) }
+        let area = NSTrackingArea(rect: bounds, options: [.mouseMoved, .mouseEnteredAndExited, .activeAlways], owner: self, userInfo: nil)
+        addTrackingArea(area)
+    }
+    
+    override func mouseMoved(with event: NSEvent) {
+        let loc = convert(event.locationInWindow, from: nil)
+        renderer?.updateMousePosition(loc, in: self)
+    }
+    
+    override func mouseDown(with event: NSEvent) {
+        let loc = convert(event.locationInWindow, from: nil)
+        renderer?.mouseDown(at: loc, in: self)
+    }
+    
+    override func mouseDragged(with event: NSEvent) {
+        let loc = convert(event.locationInWindow, from: nil)
+        renderer?.updateMousePosition(loc, in: self)
+    }
+    
+    override func mouseUp(with event: NSEvent) {
+        let loc = convert(event.locationInWindow, from: nil)
+        renderer?.mouseUp(at: loc, in: self)
+    }
+}
 
 struct MetalWallpaperView: NSViewRepresentable {
     var folderURL: URL?
@@ -15,8 +47,8 @@ struct MetalWallpaperView: NSViewRepresentable {
         Coordinator(self)
     }
 
-    func makeNSView(context: Context) -> MTKView {
-        let mtkView = MTKView()
+    func makeNSView(context: Context) -> InteractiveMTKView {
+        let mtkView = InteractiveMTKView()
         
         if let device = MTLCreateSystemDefaultDevice() {
             mtkView.device = device
@@ -29,6 +61,7 @@ struct MetalWallpaperView: NSViewRepresentable {
             
             if let renderer = Renderer(device: device) {
                 context.coordinator.renderer = renderer
+                mtkView.renderer = renderer
                 mtkView.delegate = renderer
             }
         }
@@ -36,7 +69,7 @@ struct MetalWallpaperView: NSViewRepresentable {
         return mtkView
     }
 
-    func updateNSView(_ nsView: MTKView, context: Context) {
+    func updateNSView(_ nsView: InteractiveMTKView, context: Context) {
         if let url = folderURL, url != context.coordinator.loadedURL {
             context.coordinator.loadedURL = url
             Task {

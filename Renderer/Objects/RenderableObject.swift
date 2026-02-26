@@ -23,7 +23,7 @@ class RenderableObject {
     var effectScale: Float = 1.0
     var sunScale: Float = 1.0
 
-    let texture: MTLTexture
+    var texture: MTLTexture
     let pipeline: MTLRenderPipelineState
     let depthState: MTLDepthStencilState?
 

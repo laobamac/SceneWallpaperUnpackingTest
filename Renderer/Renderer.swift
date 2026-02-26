@@ -8,6 +8,8 @@
 import Foundation
 import MetalKit
 import simd
+import JavaScriptCore
+import AppKit
 
 class Renderer: NSObject, MTKViewDelegate {
     let device: MTLDevice
@@ -43,6 +45,10 @@ class Renderer: NSObject, MTKViewDelegate {
     var isHDREnabled: Bool = false
     var mousePosition: CGPoint?
     var isReady: Bool = false
+    
+    var jsEngine: JSEngine = JSEngine()
+    var eventDispatcher: EventDispatcher = EventDispatcher()
+    var textRenderables: [TextRenderable] = []
 
     init?(device: MTLDevice) {
         self.device = device
@@ -244,6 +250,11 @@ class Renderer: NSObject, MTKViewDelegate {
         defer { if secured { folder.stopAccessingSecurityScopedResource() } }
         self.baseFolder = folder
         renderables.removeAll()
+        
+        self.jsEngine = JSEngine()
+        self.eventDispatcher = EventDispatcher()
+        self.textRenderables.removeAll()
+        
         await TextureManager.shared.setup(device: device)
         await TextureManager.shared.clear()
         startTime = Date()
@@ -296,13 +307,70 @@ class Renderer: NSObject, MTKViewDelegate {
             
             for obj in sceneRoot.objects {
                 if !obj.isVisible { continue }
-                if let renderable = await createRenderable(from: obj, raw: rawObjects[obj.id ?? -1]) {
-                    if let id = obj.id {
-                        tempRenderables[id] = renderable
-                        renderable.id = id
+                
+                let rawObj = rawObjects[obj.id ?? -1]
+                if let textDict = rawObj?["text"] as? [String: Any] {
+                    let script = textDict["script"] as? String ?? "export function update() { return '\(textDict["value"] as? String ?? "")'; }"
+                    
+                    var actualFontName = "Arial"
+                    if let fontPath = rawObj?["font"] as? String {
+                        let fontURL = folder.appendingPathComponent(fontPath)
+                        if let dataProvider = CGDataProvider(url: fontURL as CFURL),
+                           let cgFont = CGFont(dataProvider) {
+                            if let psName = cgFont.postScriptName {
+                                actualFontName = psName as String
+                            }
+                            var error: Unmanaged<CFError>?
+                            CTFontManagerRegisterGraphicsFont(cgFont, &error)
+                        }
                     }
-                    renderable.parentId = obj.parent
-                    orderedList.append(renderable)
+                    
+                    let pointSize = rawObj?["pointsize"] as? CGFloat ?? 32.0
+                    let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
+                    let colorStr = rawObj?["color"] as? String ?? "1 1 1"
+                    let cParts = colorStr.split(separator: " ").compactMap { Float($0) }
+                    let color = simd_float4(cParts.count > 0 ? cParts[0] : 1, cParts.count > 1 ? cParts[1] : 1, cParts.count > 2 ? cParts[2] : 1, 1)
+                    
+                    let tr = TextRenderable(device: self.device, id: obj.id ?? -1, parentId: obj.parent, name: obj.name ?? "", origin: pos, scale: scale, color: color, fontName: actualFontName, pointSize: pointSize)
+                    tr.setupScript(script, engine: self.jsEngine)
+                    self.textRenderables.append(tr)
+                    
+                    let desc = MTLTextureDescriptor()
+                    desc.textureType = .type2DArray
+                    desc.pixelFormat = .rgba8Unorm
+                    desc.width = 1
+                    desc.height = 1
+                    desc.arrayLength = 1
+                    desc.usage = [.shaderRead, .shaderWrite]
+                    let dummyTex = self.device.makeTexture(descriptor: desc)!
+                    
+                    let ro = RenderableObject(position: pos, rotation: rotation, size: size, scale: scale, texture: dummyTex, pipeline: self.pipelineState!, depthState: self.depthStencilState)
+                    ro.id = obj.id ?? -1
+                    ro.parentId = obj.parent
+                    self.applyEffectConstants(to: ro, from: obj)
+                    ro.effects = await EffectManager.shared.loadEffects(for: obj, baseFolder: folder)
+                    if !ro.effects.isEmpty {
+                        let tDesc = MTLTextureDescriptor()
+                        tDesc.textureType = .type2DArray
+                        tDesc.pixelFormat = .rgba16Float
+                        tDesc.width = 1
+                        tDesc.height = 1
+                        tDesc.arrayLength = 1
+                        tDesc.usage = [.renderTarget, .shaderRead, .pixelFormatView]
+                        ro.offscreenTexture = self.device.makeTexture(descriptor: tDesc)
+                        ro.tempTexture = self.device.makeTexture(descriptor: tDesc)
+                    }
+                    tempRenderables[ro.id] = ro
+                    orderedList.append(ro)
+                } else {
+                    if let renderable = await createRenderable(from: obj, raw: rawObj) {
+                        if let id = obj.id {
+                            tempRenderables[id] = renderable
+                            renderable.id = id
+                        }
+                        renderable.parentId = obj.parent
+                        orderedList.append(renderable)
+                    }
                 }
             }
             for renderable in orderedList {
@@ -311,7 +379,21 @@ class Renderer: NSObject, MTKViewDelegate {
                 }
             }
             self.renderables.append(contentsOf: orderedList)
+            self.eventDispatcher.renderables = self.textRenderables
         } catch {}
+    }
+
+    func updateMousePosition(_ position: CGPoint, in view: NSView) {
+        self.mousePosition = position
+        eventDispatcher.update(mouseLocation: position, in: view)
+    }
+
+    func mouseDown(at position: CGPoint, in view: NSView) {
+        eventDispatcher.mouseDown(location: position, in: view)
+    }
+
+    func mouseUp(at position: CGPoint, in view: NSView) {
+        eventDispatcher.mouseUp(location: position, in: view)
     }
 
     func createRenderable(from obj: SceneObject, raw: [String: Any]?) async -> RenderableObject? {
@@ -373,10 +455,10 @@ class Renderer: NSObject, MTKViewDelegate {
             renderable.effects = await EffectManager.shared.loadEffects(for: obj, baseFolder: base)
             if !renderable.effects.isEmpty {
                 let tDesc = MTLTextureDescriptor()
+                tDesc.textureType = .type2DArray
                 tDesc.pixelFormat = .rgba16Float
                 tDesc.width = texture.width
                 tDesc.height = texture.height
-                tDesc.textureType = .type2DArray
                 tDesc.arrayLength = 1
                 tDesc.usage = [.renderTarget, .shaderRead, .pixelFormatView]
                 renderable.offscreenTexture = device.makeTexture(descriptor: tDesc)
@@ -415,10 +497,10 @@ class Renderer: NSObject, MTKViewDelegate {
                 r.effects = await EffectManager.shared.loadEffects(for: obj, baseFolder: base)
                 if !r.effects.isEmpty {
                     let tDesc = MTLTextureDescriptor()
+                    tDesc.textureType = .type2DArray
                     tDesc.pixelFormat = .rgba16Float
                     tDesc.width = texture.width
                     tDesc.height = texture.height
-                    tDesc.textureType = .type2DArray
                     tDesc.arrayLength = 1
                     tDesc.usage = [.renderTarget, .shaderRead, .pixelFormatView]
                     r.offscreenTexture = device.makeTexture(descriptor: tDesc)
@@ -454,10 +536,10 @@ class Renderer: NSObject, MTKViewDelegate {
                 r.effects = await EffectManager.shared.loadEffects(for: obj, baseFolder: base)
                 if !r.effects.isEmpty {
                     let tDesc = MTLTextureDescriptor()
+                    tDesc.textureType = .type2DArray
                     tDesc.pixelFormat = .rgba16Float
                     tDesc.width = texture.width
                     tDesc.height = texture.height
-                    tDesc.textureType = .type2DArray
                     tDesc.arrayLength = 1
                     tDesc.usage = [.renderTarget, .shaderRead, .pixelFormatView]
                     r.offscreenTexture = device.makeTexture(descriptor: tDesc)
@@ -532,6 +614,47 @@ class Renderer: NSObject, MTKViewDelegate {
         let dt = lastTime == 0 ? Float(0.0) : min(Float(currentTime - lastTime), Float(0.1))
         lastTime = currentTime
         let time = Float(currentTime)
+
+        for tr in textRenderables {
+            tr.update(time: currentTime)
+        }
+        
+        var updatedTexts = Set<Int>()
+        func updateTR(_ tr: TextRenderable) {
+            if updatedTexts.contains(tr.id) { return }
+            if let pid = tr.parentId, let ptr = textRenderables.first(where: { $0.id == pid }) {
+                updateTR(ptr)
+                tr.updateTransforms(parentTransform: ptr.globalTransform)
+            } else {
+                tr.updateTransforms(parentTransform: nil)
+            }
+            updatedTexts.insert(tr.id)
+        }
+        for tr in textRenderables { updateTR(tr) }
+        
+        for tr in textRenderables {
+            if let ro = renderables.first(where: { $0.id == tr.id }) {
+                if let tex = tr.texture {
+                    ro.texture = tex
+                    if ro.offscreenTexture?.width != tex.width || ro.offscreenTexture?.height != tex.height {
+                        let tDesc = MTLTextureDescriptor()
+                        tDesc.textureType = .type2DArray
+                        tDesc.pixelFormat = .rgba16Float
+                        tDesc.width = tex.width
+                        tDesc.height = tex.height
+                        tDesc.arrayLength = 1
+                        tDesc.usage = [.renderTarget, .shaderRead, .pixelFormatView]
+                        if !ro.effects.isEmpty {
+                            ro.offscreenTexture = device.makeTexture(descriptor: tDesc)
+                            ro.tempTexture = device.makeTexture(descriptor: tDesc)
+                        }
+                    }
+                }
+                ro.localPosition = tr.origin
+                ro.scale = tr.scale
+                ro.size = simd_float2(Float(tr.width), Float(tr.height))
+            }
+        }
 
         for obj in renderables {
             obj.update(commandBuffer: commandBuffer)
