@@ -331,7 +331,12 @@ class Renderer: NSObject, MTKViewDelegate {
                     let cParts = colorStr.split(separator: " ").compactMap { Float($0) }
                     let color = simd_float4(cParts.count > 0 ? cParts[0] : 1, cParts.count > 1 ? cParts[1] : 1, cParts.count > 2 ? cParts[2] : 1, 1)
                     
-                    let tr = TextRenderable(device: self.device, id: obj.id ?? -1, parentId: obj.parent, name: obj.name ?? "", origin: pos, scale: scale, color: color, fontName: actualFontName, pointSize: pointSize)
+                    let hAlign = obj.horizontalalign ?? "center"
+                    let vAlign = obj.verticalalign ?? "center"
+                    let pad = CGFloat(obj.padding ?? 0)
+                    let scriptProps = textDict["scriptproperties"] as? [String: Any]
+                    
+                    let tr = TextRenderable(device: self.device, id: obj.id ?? -1, parentId: obj.parent, name: obj.name ?? "", origin: pos, size: size, scale: scale, color: color, fontName: actualFontName, pointSize: pointSize, horizontalAlign: hAlign, verticalAlign: vAlign, padding: pad, sceneHeight: CGFloat(self.projectionSize.height), scriptProperties: scriptProps)
                     tr.setupScript(script, engine: self.jsEngine)
                     self.textRenderables.append(tr)
                     
@@ -428,7 +433,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 let texURL = resolveTextureURL(base: base, rawPath: texName)
                 texture = try await TextureManager.shared.loadTexture(url: texURL, options: [.origin: MTKTextureLoader.Origin.topLeft, .SRGB: true])
             } else {
-                let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
+                let (_, _, size, _) = RenderableObject.parseTransforms(obj)
                 let w = max(1, Int(size.x))
                 let h = max(1, Int(size.y))
                 let desc = MTLTextureDescriptor()

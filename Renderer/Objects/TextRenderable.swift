@@ -24,11 +24,17 @@ class TextRenderable {
     var texture: MTLTexture?
     var jsEngine: JSEngine?
     var scriptObject: JSValue?
-    var width: CGFloat = 0
-    var height: CGFloat = 0
+    var width: CGFloat
+    var height: CGFloat
+    var originalSize: simd_float2
     var isHovered: Bool = false
     var isDragging: Bool = false
     var originalOrigin: simd_float3
+    var horizontalAlign: String
+    var verticalAlign: String
+    var padding: CGFloat
+    var sceneHeight: CGFloat
+    var scriptPropertiesMap: [String: Any]?
     
     private let device: MTLDevice
     private var isDirty: Bool = true
@@ -37,22 +43,48 @@ class TextRenderable {
     var globalTransform: matrix_float4x4 = matrix_identity_float4x4
     var localTransform: matrix_float4x4 = matrix_identity_float4x4
     
-    init(device: MTLDevice, id: Int, parentId: Int?, name: String, origin: simd_float3, scale: simd_float3, color: simd_float4, fontName: String, pointSize: CGFloat) {
+    init(device: MTLDevice, id: Int, parentId: Int?, name: String, origin: simd_float3, size: simd_float2, scale: simd_float3, color: simd_float4, fontName: String, pointSize: CGFloat, horizontalAlign: String = "center", verticalAlign: String = "center", padding: CGFloat = 0, sceneHeight: CGFloat = 1080.0, scriptProperties: [String: Any]? = nil) {
         self.device = device
         self.id = id
         self.parentId = parentId
         self.name = name
         self.origin = origin
         self.originalOrigin = origin
+        self.originalSize = size
+        self.width = CGFloat(size.x) + padding * 2
+        self.height = CGFloat(size.y) + padding * 2
         self.scale = scale
         self.color = color
         self.fontName = fontName
         self.pointSize = pointSize
+        self.horizontalAlign = horizontalAlign
+        self.verticalAlign = verticalAlign
+        self.padding = padding
+        self.sceneHeight = sceneHeight
+        self.scriptPropertiesMap = scriptProperties
     }
     
     func setupScript(_ script: String, engine: JSEngine) {
         self.jsEngine = engine
         self.scriptObject = engine.evaluate(script)
+        
+        if let props = self.scriptPropertiesMap {
+            let context = engine.context
+            var jsProps = context.objectForKeyedSubscript("scriptProperties")
+            if jsProps == nil || jsProps!.isUndefined {
+                jsProps = JSValue(newObjectIn: context)
+                context.setObject(jsProps, forKeyedSubscript: "scriptProperties" as NSString)
+            }
+            
+            for (key, value) in props {
+                if let dict = value as? [String: Any], let val = dict["value"] {
+                    jsProps?.setValue(val, forProperty: key)
+                } else {
+                    jsProps?.setValue(value, forProperty: key)
+                }
+            }
+        }
+        
         if let initFunc = scriptObject?.objectForKeyedSubscript("init"), !initFunc.isUndefined {
             let context = engine.context
             let thisLayer = JSValue(newObjectIn: context)
@@ -103,7 +135,10 @@ class TextRenderable {
     }
     
     private func generateTexture() {
-        let font = CTFontCreateWithName(fontName as CFString, pointSize, nil)
+        let weDpiScale = sceneHeight / 1080.0
+        let actualPointSize = pointSize * (96.0 / 72.0) * weDpiScale
+        
+        let font = CTFontCreateWithName(fontName as CFString, actualPointSize, nil)
         let attributes: [NSAttributedString.Key: Any] = [
             .font: font,
             .foregroundColor: CGColor(red: CGFloat(color.x), green: CGFloat(color.y), blue: CGFloat(color.z), alpha: CGFloat(color.w))
@@ -111,17 +146,14 @@ class TextRenderable {
         
         let attributedString = NSAttributedString(string: currentText, attributes: attributes)
         let line = CTLineCreateWithAttributedString(attributedString)
-        var imageBounds = CTLineGetImageBounds(line, nil)
         
-        if imageBounds.width == 0 || imageBounds.height == 0 {
-            imageBounds = CGRect(x: 0, y: 0, width: 1, height: 1)
-        }
+        var ascent: CGFloat = 0
+        var descent: CGFloat = 0
+        var leading: CGFloat = 0
+        let typoWidth = CGFloat(CTLineGetTypographicBounds(line, &ascent, &descent, &leading))
         
-        width = imageBounds.width
-        height = imageBounds.height
-        
-        let contextWidth = Int(ceil(imageBounds.width))
-        let contextHeight = Int(ceil(imageBounds.height))
+        let contextWidth = max(Int(ceil(width)), 1)
+        let contextHeight = max(Int(ceil(height)), 1)
         
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         guard let context = CGContext(data: nil,
@@ -133,7 +165,27 @@ class TextRenderable {
                                       bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return }
         
         context.clear(CGRect(x: 0, y: 0, width: CGFloat(contextWidth), height: CGFloat(contextHeight)))
-        context.textPosition = CGPoint(x: -imageBounds.origin.x, y: -imageBounds.origin.y)
+        
+        var textX: CGFloat = 0
+        var textY: CGFloat = 0
+        
+        if horizontalAlign == "left" {
+            textX = padding
+        } else if horizontalAlign == "right" {
+            textX = CGFloat(contextWidth) - typoWidth - padding
+        } else {
+            textX = (CGFloat(contextWidth) - typoWidth) / 2.0
+        }
+        
+        if verticalAlign == "top" {
+            textY = CGFloat(contextHeight) - padding - ascent
+        } else if verticalAlign == "bottom" {
+            textY = padding + descent
+        } else {
+            textY = CGFloat(contextHeight) / 2.0 - (ascent - descent) / 2.0
+        }
+        
+        context.textPosition = CGPoint(x: textX, y: textY)
         CTLineDraw(line, context)
         
         let textureDescriptor = MTLTextureDescriptor()

@@ -41,6 +41,13 @@ struct SceneObject: Codable {
     let visible: BoolOrObject?
     let effects: [EffectJSON]?
     let instanceoverride: ParticleInstanceOverride?
+    let font: String?
+    let pointsize: Float?
+    let horizontalalign: String?
+    let verticalalign: String?
+    let padding: Float?
+    let text: ScriptableValue?
+    let color: ScriptableValue?
 
     var isVisible: Bool {
         if let v = visible {
