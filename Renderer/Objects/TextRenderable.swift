@@ -143,7 +143,7 @@ class TextRenderable {
         let font = CTFontCreateWithName(fontName as CFString, actualPointSize, nil)
         let attributes: [NSAttributedString.Key: Any] = [
             .font: font,
-            .foregroundColor: CGColor(red: CGFloat(color.x), green: CGFloat(color.y), blue: CGFloat(color.z), alpha: CGFloat(color.w) * CGFloat(alpha))
+            .foregroundColor: CGColor(red: CGFloat(color.x), green: CGFloat(color.y), blue: CGFloat(color.z), alpha: CGFloat(color.w))
         ]
         
         let attributedString = NSAttributedString(string: currentText, attributes: attributes)
@@ -219,9 +219,9 @@ class TextRenderable {
         }
         
         if verticalAlign == "top" {
-            offsetY = -Float(height) / 2.0
-        } else if verticalAlign == "bottom" {
             offsetY = Float(height) / 2.0
+        } else if verticalAlign == "bottom" {
+            offsetY = -Float(height) / 2.0
         }
         
         let pivotTranslation = matrix_float4x4(translationX: offsetX, y: offsetY, z: 0)

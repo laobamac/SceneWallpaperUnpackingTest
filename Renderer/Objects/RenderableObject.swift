@@ -17,6 +17,7 @@ class RenderableObject {
     var localRotation: SIMD3<Float>
     var size: SIMD2<Float>
     var scale: SIMD3<Float>
+    var alpha: Float
 
     var speed: Float = 1.0
     var speedSecondary: Float = 1.0
@@ -43,6 +44,7 @@ class RenderableObject {
         rotation: SIMD3<Float>,
         size: SIMD2<Float>,
         scale: SIMD3<Float>,
+        alpha: Float = 1.0,
         texture: MTLTexture,
         pipeline: MTLRenderPipelineState,
         depthState: MTLDepthStencilState? = nil
@@ -54,6 +56,7 @@ class RenderableObject {
         self.localRotation = rotation
         self.size = size
         self.scale = scale
+        self.alpha = alpha
         self.texture = texture
         self.pipeline = pipeline
         self.depthState = depthState
@@ -88,7 +91,7 @@ class RenderableObject {
 
         var objUniforms = ObjectUniforms(
             modelMatrix: finalModelMatrix,
-            alpha: 1.0,
+            alpha: alpha,
             color: SIMD4<Float>(1, 1, 1, 1),
             animInfo: .zero,
             speed: speed,
