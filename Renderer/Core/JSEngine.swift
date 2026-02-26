@@ -76,20 +76,6 @@ import simd
     }
 }
 
-@objc protocol ScriptPropertiesExport: JSExport {
-    func addCheckbox(_ dict: [String: Any]) -> ScriptProperties
-    func addSlider(_ dict: [String: Any]) -> ScriptProperties
-    func addText(_ dict: [String: Any]) -> ScriptProperties
-    func finish() -> ScriptProperties
-}
-
-@objc class ScriptProperties: NSObject, ScriptPropertiesExport {
-    func addCheckbox(_ dict: [String: Any]) -> ScriptProperties { return self }
-    func addSlider(_ dict: [String: Any]) -> ScriptProperties { return self }
-    func addText(_ dict: [String: Any]) -> ScriptProperties { return self }
-    func finish() -> ScriptProperties { return self }
-}
-
 class JSEngine {
     let context: JSContext
     let sharedObject: JSValue
@@ -109,10 +95,18 @@ class JSEngine {
         sharedObject = JSValue(newObjectIn: context)
         context.setObject(sharedObject, forKeyedSubscript: "shared" as NSString)
         
-        let createScriptProperties: @convention(block) () -> ScriptProperties = {
-            return ScriptProperties()
+        let createScriptPropertiesJS = """
+        function() {
+            var props = {};
+            return {
+                addCheckbox: function(dict) { if(dict && dict.name && dict.value !== undefined) props[dict.name] = dict.value; return this; },
+                addSlider: function(dict) { if(dict && dict.name && dict.value !== undefined) props[dict.name] = dict.value; return this; },
+                addText: function(dict) { if(dict && dict.name && dict.value !== undefined) props[dict.name] = dict.value; return this; },
+                finish: function() { return props; }
+            };
         }
-        context.setObject(unsafeBitCast(createScriptProperties, to: AnyObject.self), forKeyedSubscript: "createScriptProperties" as NSString)
+        """
+        context.evaluateScript("var createScriptProperties = " + createScriptPropertiesJS)
         
         context.exceptionHandler = { _, _ in }
     }
@@ -134,7 +128,8 @@ class JSEngine {
                 cursorDown: typeof cursorDown !== 'undefined' ? cursorDown : undefined,
                 cursorUp: typeof cursorUp !== 'undefined' ? cursorUp : undefined,
                 cursorMove: typeof cursorMove !== 'undefined' ? cursorMove : undefined,
-                applyUserProperties: typeof applyUserProperties !== 'undefined' ? applyUserProperties : undefined
+                applyUserProperties: typeof applyUserProperties !== 'undefined' ? applyUserProperties : undefined,
+                scriptProperties: typeof scriptProperties !== 'undefined' ? scriptProperties : undefined
             };
         })();
         """

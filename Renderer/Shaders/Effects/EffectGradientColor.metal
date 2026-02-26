@@ -33,7 +33,7 @@ fragment float4 gradient_color_frag(EffectVertexOut in [[stage_in]],
     float4 baseColor = sourceTex.sample(s, in.texCoord);
     if (baseColor.a == 0.0) return baseColor;
 
-    float mixFactor = in.texCoord.y * uniforms.amount;
+    float mixFactor = in.texCoord.x * uniforms.amount;
     
     if (uniforms.oscillate > 0.0) {
         mixFactor += sin(uniforms.g_Time * uniforms.hueSpeed) * 0.5 + 0.5;
@@ -41,11 +41,12 @@ fragment float4 gradient_color_frag(EffectVertexOut in [[stage_in]],
         mixFactor += uniforms.g_Time * uniforms.hueSpeed;
     }
     
-    mixFactor = fract(mixFactor);
+    mixFactor = abs(fract(mixFactor * 0.5) * 2.0 - 1.0);
     float4 gradColor = mix(uniforms.color1, uniforms.color2, mixFactor);
     
     float4 finalColor = baseColor;
-    finalColor.rgb = mix(baseColor.rgb, gradColor.rgb, uniforms.opacity * baseColor.a);
+    float3 premultipliedGrad = gradColor.rgb * baseColor.a;
+    finalColor.rgb = mix(baseColor.rgb, premultipliedGrad, uniforms.opacity);
     
     return finalColor;
 }

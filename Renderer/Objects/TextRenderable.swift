@@ -43,6 +43,7 @@ class TextRenderable {
     
     var globalTransform: matrix_float4x4 = matrix_identity_float4x4
     var localTransform: matrix_float4x4 = matrix_identity_float4x4
+    var nodeTransform: matrix_float4x4 = matrix_identity_float4x4
     
     init(device: MTLDevice, id: Int, parentId: Int?, name: String, origin: simd_float3, size: simd_float2, scale: simd_float3, color: simd_float4, alpha: Float = 1.0, fontName: String, pointSize: CGFloat, horizontalAlign: String = "center", verticalAlign: String = "center", padding: CGFloat = 0, sceneHeight: CGFloat = 1080.0, scriptProperties: [String: Any]? = nil) {
         self.device = device
@@ -74,10 +75,6 @@ class TextRenderable {
             let context = engine.context
             
             var jsProps = self.scriptObject?.objectForKeyedSubscript("scriptProperties")
-            
-            if jsProps == nil || jsProps!.isUndefined {
-                jsProps = context.objectForKeyedSubscript("scriptProperties")
-            }
             
             if jsProps == nil || jsProps!.isUndefined {
                 jsProps = JSValue(newObjectIn: context)
@@ -216,32 +213,18 @@ class TextRenderable {
     }
     
     func updateTransforms(parentTransform: matrix_float4x4?) {
-        var offsetX: Float = 0
-        var offsetY: Float = 0
-        
-        if horizontalAlign == "left" {
-            offsetX = Float(width) / 2.0
-        } else if horizontalAlign == "right" {
-            offsetX = -Float(width) / 2.0
-        }
-        
-        if verticalAlign == "top" {
-            offsetY = -Float(height) / 2.0
-        } else if verticalAlign == "bottom" {
-            offsetY = Float(height) / 2.0
-        }
-        
-        let pivotTranslation = matrix_float4x4(translationX: offsetX, y: offsetY, z: 0)
         let translation = matrix_float4x4(translationX: origin.x, y: origin.y, z: origin.z)
         let scaling = matrix_float4x4(scaleX: scale.x, y: scale.y, z: scale.z)
         
-        localTransform = matrix_multiply(translation, matrix_multiply(scaling, pivotTranslation))
+        localTransform = matrix_multiply(translation, scaling)
         
         if let pTrans = parentTransform {
-            globalTransform = matrix_multiply(pTrans, localTransform)
+            nodeTransform = matrix_multiply(pTrans, localTransform)
         } else {
-            globalTransform = localTransform
+            nodeTransform = localTransform
         }
+        
+        globalTransform = nodeTransform
     }
     
     func checkHit(point: simd_float2) -> Bool {
