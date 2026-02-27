@@ -5,6 +5,9 @@
   "material_file" : "materials\/02眼组.json",
   "version" : 23
 },
+  "clipping_masks": [
+  "masks\/clipping_mask_cc1bad9d"
+],
   "skinning": [
   {
     "bone_indices" : [
@@ -6061,7 +6064,7 @@
   {
     "sim_config" : "{\"a\":null,\"lamax\":null,\"lamin\":null,\"rax\":null,\"ray\":null,\"raz\":null,\"s\":null,\"tm\":100.0,\"tp\":\"57.73502 57.73503 57.73503\"}",
     "id" : 5,
-    "render_tag" : "clipped",
+    "render_tag" : null,
     "name" : "",
     "matrix" : [
       1,
@@ -6086,7 +6089,7 @@
   {
     "sim_config" : "{\"a\":null,\"lamax\":null,\"lamin\":null,\"rax\":null,\"ray\":null,\"raz\":null,\"s\":null,\"tm\":100.0,\"tp\":\"57.73502 57.73503 57.73503\"}",
     "id" : 6,
-    "render_tag" : "clipped",
+    "render_tag" : null,
     "name" : "",
     "matrix" : [
       1,

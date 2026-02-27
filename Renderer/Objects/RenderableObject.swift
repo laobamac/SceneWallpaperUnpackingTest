@@ -80,8 +80,10 @@ class RenderableObject {
         var objUniforms = ObjectUniforms(
             modelMatrix: finalModelMatrix,
             alpha: alpha,
+            hasMask: 0.0,
+            padding1: SIMD2<Float>(0, 0),
             color: SIMD4<Float>(1, 1, 1, 1),
-            animInfo: .zero
+            animInfo: SIMD4<Float>(0, 0, 0, 0)
         )
 
         encoder.setVertexBytes(
