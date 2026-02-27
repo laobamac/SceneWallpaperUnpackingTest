@@ -19,18 +19,9 @@ class RenderableObject {
     var scale: SIMD3<Float>
     var alpha: Float
 
-    var speed: Float = 1.0
-    var speedSecondary: Float = 1.0
-    var effectScale: Float = 1.0
-    var sunScale: Float = 1.0
-
     var texture: MTLTexture
     let pipeline: MTLRenderPipelineState
     let depthState: MTLDepthStencilState?
-
-    var effects: [EffectType] = []
-    var offscreenTexture: MTLTexture?
-    var tempTexture: MTLTexture?
 
     let vertices: [Float] = [
         -0.5, 0.5, 0, 0, 0,
@@ -49,9 +40,6 @@ class RenderableObject {
         pipeline: MTLRenderPipelineState,
         depthState: MTLDepthStencilState? = nil
     ) {
-        Logger.log(
-            "[RenderableObject] Init called. Pos: \(position), Size: \(size), Scale: \(scale)"
-        )
         self.localPosition = position
         self.localRotation = rotation
         self.size = size
@@ -93,11 +81,7 @@ class RenderableObject {
             modelMatrix: finalModelMatrix,
             alpha: alpha,
             color: SIMD4<Float>(1, 1, 1, 1),
-            animInfo: .zero,
-            speed: speed,
-            speedSecondary: speedSecondary,
-            effectScale: effectScale,
-            sunScale: sunScale
+            animInfo: .zero
         )
 
         encoder.setVertexBytes(
@@ -116,7 +100,7 @@ class RenderableObject {
             index: 2
         )
 
-        encoder.setFragmentTexture(offscreenTexture ?? texture, index: 0)
+        encoder.setFragmentTexture(texture, index: 0)
 
         encoder.drawPrimitives(
             type: .triangleStrip,
@@ -167,9 +151,6 @@ class RenderableObject {
             rotation.z = angleStrs[2]
         }
 
-        Logger.log(
-            "[RenderableObject] Parsed transforms for obj \(obj.name ?? "nil") (ID: \(obj.id ?? -1)): Pos=\(pos), Rot=\(rotation), Size=\(size), Scale=\(scale)"
-        )
         return (pos, rotation, size, scale)
     }
 }

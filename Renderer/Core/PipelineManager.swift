@@ -13,10 +13,6 @@ class PipelineManager {
     
     var pipelineState: MTLRenderPipelineState?
     var puppetPipelineState: MTLRenderPipelineState?
-    var translucentSpritePipeline: MTLRenderPipelineState?
-    var additiveSpritePipeline: MTLRenderPipelineState?
-    var translucentRopePipeline: MTLRenderPipelineState?
-    var additiveRopePipeline: MTLRenderPipelineState?
     var extractPipeline: MTLRenderPipelineState?
     var blurPipeline: MTLRenderPipelineState?
     var upsamplePipeline: MTLRenderPipelineState?
@@ -85,44 +81,6 @@ class PipelineManager {
         pvDesc.layouts[0].stride = 48
         puppetDesc.vertexDescriptor = pvDesc
         puppetPipelineState = try await device.makeRenderPipelineState(descriptor: puppetDesc, options: []).0
-
-        let particleDesc = MTLRenderPipelineDescriptor()
-        particleDesc.label = "TranslucentSprite"
-        particleDesc.vertexFunction = library.makeFunction(name: "particle_sprite_vertex")
-        particleDesc.fragmentFunction = library.makeFunction(name: "particle_fragment")
-        particleDesc.colorAttachments[0].pixelFormat = hdrFormat
-        particleDesc.colorAttachments[0].isBlendingEnabled = true
-        particleDesc.colorAttachments[0].rgbBlendOperation = .add
-        particleDesc.colorAttachments[0].alphaBlendOperation = .add
-        particleDesc.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
-        particleDesc.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
-        particleDesc.colorAttachments[0].sourceAlphaBlendFactor = .sourceAlpha
-        particleDesc.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
-        particleDesc.depthAttachmentPixelFormat = depthFormat
-        particleDesc.stencilAttachmentPixelFormat = depthFormat
-        translucentSpritePipeline = try await device.makeRenderPipelineState(descriptor: particleDesc, options: []).0
-
-        particleDesc.label = "AdditiveSprite"
-        particleDesc.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
-        particleDesc.colorAttachments[0].destinationRGBBlendFactor = .one
-        particleDesc.colorAttachments[0].sourceAlphaBlendFactor = .sourceAlpha
-        particleDesc.colorAttachments[0].destinationAlphaBlendFactor = .one
-        additiveSpritePipeline = try await device.makeRenderPipelineState(descriptor: particleDesc, options: []).0
-
-        particleDesc.label = "TranslucentRope"
-        particleDesc.vertexFunction = library.makeFunction(name: "particle_rope_vertex")
-        particleDesc.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
-        particleDesc.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
-        particleDesc.colorAttachments[0].sourceAlphaBlendFactor = .sourceAlpha
-        particleDesc.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
-        translucentRopePipeline = try await device.makeRenderPipelineState(descriptor: particleDesc, options: []).0
-
-        particleDesc.label = "AdditiveRope"
-        particleDesc.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
-        particleDesc.colorAttachments[0].destinationRGBBlendFactor = .one
-        particleDesc.colorAttachments[0].sourceAlphaBlendFactor = .sourceAlpha
-        particleDesc.colorAttachments[0].destinationAlphaBlendFactor = .one
-        additiveRopePipeline = try await device.makeRenderPipelineState(descriptor: particleDesc, options: []).0
 
         let postDesc = MTLRenderPipelineDescriptor()
         postDesc.vertexFunction = library.makeFunction(name: "vertex_post")

@@ -31,7 +31,6 @@ struct SceneObject: Codable {
     let id: Int?
     let name: String?
     let image: String?
-    let particle: String?
     let type: String?
     let origin: ScriptableValue?
     let size: ScriptableValue?
@@ -39,14 +38,6 @@ struct SceneObject: Codable {
     let angles: ScriptableValue?
     let parent: Int?
     let visible: BoolOrObject?
-    let effects: [EffectJSON]?
-    let instanceoverride: ParticleInstanceOverride?
-    let font: String?
-    let pointsize: Float?
-    let horizontalalign: String?
-    let verticalalign: String?
-    let padding: Float?
-    let text: ScriptableValue?
     let color: ScriptableValue?
     let alpha: Float?
 
@@ -57,19 +48,6 @@ struct SceneObject: Codable {
         }
         return true
     }
-}
-
-struct EffectJSON: Codable {
-    let id: Int?
-    let file: String?
-    let visible: BoolOrObject?
-    let passes: [EffectPassJSON]?
-}
-
-struct EffectPassJSON: Codable {
-    let constantshadervalues: [String: ScriptableValue]?
-    let combos: [String: Int]?
-    let textures: [String?]?
 }
 
 struct DynamicKey: CodingKey {

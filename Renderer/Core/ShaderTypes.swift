@@ -12,10 +12,6 @@ struct ObjectUniforms {
     var alpha: Float
     var color: SIMD4<Float>
     var animInfo: SIMD3<Float>
-    var speed: Float
-    var speedSecondary: Float
-    var effectScale: Float
-    var sunScale: Float
 }
 
 struct GlobalUniforms {

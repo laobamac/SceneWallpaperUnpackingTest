@@ -63,7 +63,6 @@ class PuppetRenderable: RenderableObject {
                 options: .storageModeShared
             )
         else {
-            Logger.error("Failed to create Puppet Vertex Buffer")
             return nil
         }
         self.vertexBuffer = vb
@@ -84,7 +83,6 @@ class PuppetRenderable: RenderableObject {
                 options: .storageModeShared
             )
         else {
-            Logger.error("Failed to create Puppet Uniform Buffer")
             return nil
         }
         self.uniformBuffer = ub
@@ -112,10 +110,6 @@ class PuppetRenderable: RenderableObject {
         ptr.copyMemory(
             from: &boneMatrices,
             byteCount: MemoryLayout<matrix_float4x4>.stride * 100
-        )
-
-        Logger.log(
-            "Created PuppetRenderable: \(skeleton.count) bones, \(animations.count) animations, \(vertices.count) vertices"
         )
     }
 
@@ -203,10 +197,6 @@ class PuppetRenderable: RenderableObject {
             )
             standardIndexCount = standardIndices.count
         }
-
-        Logger.debug(
-            "Puppet Indices: Standard=\(standardIndexCount), Mask=\(maskIndexCount), Clipped=\(clippedIndexCount), Overlay=\(overlayIndexCount)"
-        )
     }
 
     func getGlobalBindMatrix(boneIndex: Int, localMatrices: [matrix_float4x4])
@@ -299,9 +289,6 @@ class PuppetRenderable: RenderableObject {
 
         let currentCycle = (duration > 0) ? Int(time / duration) : 0
         if currentCycle > lastAnimCycle {
-            if lastAnimCycle != -1 {
-                Logger.log("Animation loop completed. Cycle: \(currentCycle)")
-            }
             lastAnimCycle = currentCycle
         }
 
@@ -399,11 +386,7 @@ class PuppetRenderable: RenderableObject {
             modelMatrix: finalModelMatrix,
             alpha: 1.0,
             color: SIMD4<Float>(1, 1, 1, 1),
-            animInfo: .zero,
-            speed: speed,
-            speedSecondary: speedSecondary,
-            effectScale: effectScale,
-            sunScale: sunScale
+            animInfo: .zero
         )
 
         encoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
@@ -419,7 +402,7 @@ class PuppetRenderable: RenderableObject {
             index: 2
         )
 
-        encoder.setFragmentTexture(offscreenTexture ?? texture, index: 0)
+        encoder.setFragmentTexture(texture, index: 0)
 
         if standardIndexCount > 0, let buf = standardIndexBuffer {
             if let ds = depthState { encoder.setDepthStencilState(ds) }
@@ -477,7 +460,6 @@ class PuppetRenderable: RenderableObject {
     static func parseOBJ(objContent: String, skinning: [PuppetSkinning]) -> (
         [PuppetVertex], [UInt32], [Int], Float
     ) {
-        Logger.debug("Parsing OBJ content (size: \(objContent.count))")
         var rawPositions: [SIMD3<Float>] = []
         var rawUVs: [SIMD2<Float>] = []
         var finalVertices: [PuppetVertex] = []
