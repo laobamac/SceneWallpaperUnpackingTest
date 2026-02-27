@@ -216,7 +216,24 @@ class TextRenderable {
         let translation = matrix_float4x4(translationX: origin.x, y: origin.y, z: origin.z)
         let scaling = matrix_float4x4(scaleX: scale.x, y: scale.y, z: scale.z)
         
-        localTransform = matrix_multiply(translation, scaling)
+        var offsetX: Float = 0.0
+        var offsetY: Float = 0.0
+        
+        if horizontalAlign == "left" {
+            offsetX = Float(width) / 2.0
+        } else if horizontalAlign == "right" {
+            offsetX = -Float(width) / 2.0
+        }
+        
+        if verticalAlign == "top" {
+            offsetY = Float(height) / 2.0
+        } else if verticalAlign == "bottom" {
+            offsetY = -Float(height) / 2.0
+        }
+        
+        let alignOffset = matrix_float4x4(translationX: offsetX, y: offsetY, z: 0)
+        
+        localTransform = matrix_multiply(matrix_multiply(translation, scaling), alignOffset)
         
         if let pTrans = parentTransform {
             nodeTransform = matrix_multiply(pTrans, localTransform)

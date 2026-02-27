@@ -202,6 +202,23 @@ enum ScriptableValue: Codable {
         }
     }
     
+    var float4Value: SIMD4<Float> {
+        switch self {
+        case .string(let s):
+            let parts = s.split(separator: " ").compactMap { Float($0) }
+            if parts.count >= 4 { return SIMD4<Float>(parts[0], parts[1], parts[2], parts[3]) }
+            if parts.count == 3 { return SIMD4<Float>(parts[0], parts[1], parts[2], 1.0) }
+            if parts.count == 1 { return SIMD4<Float>(parts[0], parts[0], parts[0], 1.0) }
+            return SIMD4<Float>(0, 0, 0, 1)
+        case .object(let dict):
+            if let val = dict["value"] {
+                return val.float4Value
+            }
+            return SIMD4<Float>(0, 0, 0, 1)
+        default: return SIMD4<Float>(0, 0, 0, 1)
+        }
+    }
+    
     func encode(to encoder: Encoder) throws {}
 }
 
