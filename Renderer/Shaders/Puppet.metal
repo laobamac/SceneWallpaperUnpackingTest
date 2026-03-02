@@ -74,25 +74,3 @@ fragment float4 fragment_main(VertexOut in [[stage_in]],
     color.a *= object.alpha;
     return color;
 }
-
-fragment float4 fragment_puppet(VertexOut in [[stage_in]],
-                                constant GlobalUniforms &globals [[buffer(1)]],
-                                constant ObjectUniforms &object [[buffer(2)]],
-                                texture2d_array<float> baseTexture [[texture(0)]],
-                                texture2d_array<float> maskTexture [[texture(1)]],
-                                sampler textureSampler [[sampler(0)]])
-{
-    float4 color = baseTexture.sample(textureSampler, in.texCoord, 0);
-    
-    if (object.hasMask > 0.5) {
-        float4 maskColor = maskTexture.sample(textureSampler, in.texCoord, 0);
-        color.a *= maskColor.r;
-        if (color.a < 0.001) {
-            discard_fragment();
-        }
-    }
-    
-    color *= object.color;
-    color.a *= object.alpha;
-    return color;
-}

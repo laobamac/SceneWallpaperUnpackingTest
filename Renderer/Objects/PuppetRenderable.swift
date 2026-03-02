@@ -36,10 +36,6 @@ class PuppetRenderable: RenderableObject {
     private var lastAnimCycle: Int = -1
     private var boneToTrackIndex: [Int: Int] = [:]
 
-    var maskTexture: MTLTexture?
-    private var dummyTexture: MTLTexture?
-    var useFragmentMask: Bool = false
-
     init?(
         device: MTLDevice,
         vertices: [PuppetVertex],
@@ -52,7 +48,6 @@ class PuppetRenderable: RenderableObject {
         size: SIMD2<Float>,
         scale: SIMD3<Float>,
         texture: MTLTexture,
-        maskTexture: MTLTexture? = nil,
         pipeline: MTLRenderPipelineState,
         depthState: MTLDepthStencilState?,
         maskWriteState: MTLDepthStencilState?,
@@ -61,18 +56,6 @@ class PuppetRenderable: RenderableObject {
     ) {
 
         self.device = device
-        
-        self.maskTexture = maskTexture
-        if maskTexture == nil {
-            let desc = MTLTextureDescriptor()
-            desc.textureType = .type2DArray
-            desc.pixelFormat = .rgba8Unorm
-            desc.width = 1
-            desc.height = 1
-            desc.arrayLength = 1
-            self.dummyTexture = device.makeTexture(descriptor: desc)
-        }
-        
         guard
             let vb = device.makeBuffer(
                 bytes: vertices,
@@ -151,9 +134,6 @@ class PuppetRenderable: RenderableObject {
             }
         }
         maskBoneIDs.formUnion(jsonMaskIDs)
-        
-        let hasManualTags = !jsonClippedIDs.isEmpty || !jsonMaskIDs.isEmpty
-        self.useFragmentMask = (self.maskTexture != nil) && !hasManualTags
 
         var maskIndices: [UInt32] = []
         var clippedIndices: [UInt32] = []
@@ -402,16 +382,11 @@ class PuppetRenderable: RenderableObject {
             )
         }
         let finalModelMatrix = worldMatrix * geometryScale
-        
-        let hasClippingFloat: Float = useFragmentMask ? 1.0 : 0.0
-        
         var objUniforms = ObjectUniforms(
             modelMatrix: finalModelMatrix,
             alpha: 1.0,
-            hasMask: hasClippingFloat,
-            padding1: SIMD2<Float>(0, 0),
             color: SIMD4<Float>(1, 1, 1, 1),
-            animInfo: SIMD4<Float>(0, 0, 0, 0)
+            animInfo: .zero
         )
 
         encoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
@@ -428,7 +403,6 @@ class PuppetRenderable: RenderableObject {
         )
 
         encoder.setFragmentTexture(texture, index: 0)
-        encoder.setFragmentTexture(maskTexture ?? dummyTexture, index: 1)
 
         if standardIndexCount > 0, let buf = standardIndexBuffer {
             if let ds = depthState { encoder.setDepthStencilState(ds) }

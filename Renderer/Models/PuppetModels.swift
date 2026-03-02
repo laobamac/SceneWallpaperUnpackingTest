@@ -7,7 +7,6 @@
 
 struct PuppetData: Codable {
     let info: PuppetInfo
-    let clipping_masks: [String]?
     let skinning: [PuppetSkinning]
     let skeleton: [PuppetBone]
     let animations: [PuppetAnimation]

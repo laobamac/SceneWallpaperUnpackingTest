@@ -32,10 +32,8 @@ struct GlobalUniforms {
 struct ObjectUniforms {
     float4x4 modelMatrix;
     float alpha;
-    float hasMask;
-    float2 padding1;
     float4 color;
     float4 animInfo;
 };
 
-#endif
+#endif // !Puppet_H

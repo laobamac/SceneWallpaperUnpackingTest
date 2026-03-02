@@ -89,7 +89,7 @@ class Renderer: NSObject, MTKViewDelegate {
         let puppetDesc = MTLRenderPipelineDescriptor()
         puppetDesc.label = "Puppet"
         puppetDesc.vertexFunction = library.makeFunction(name: "vertex_puppet")
-        puppetDesc.fragmentFunction = library.makeFunction(name: "fragment_puppet")
+        puppetDesc.fragmentFunction = library.makeFunction(name: "fragment_main")
         puppetDesc.colorAttachments[0].pixelFormat = hdrFormat
         puppetDesc.colorAttachments[0].isBlendingEnabled = true
         puppetDesc.colorAttachments[0].rgbBlendOperation = .add
@@ -343,13 +343,6 @@ class Renderer: NSObject, MTKViewDelegate {
             guard let firstPass = matDef.passes.first, let texName = firstPass.textures.first else { return nil }
             let texURL = resolveTextureURL(base: base, rawPath: texName)
             let texture = try await TextureManager.shared.loadTexture(url: texURL, options: [.origin: MTKTextureLoader.Origin.topLeft, .SRGB: true])
-            
-            var maskTexture: MTLTexture? = nil
-            if let masks = puppetData.clipping_masks, let firstMask = masks.first {
-                let maskURL = resolveTextureURL(base: base, rawPath: firstMask)
-                maskTexture = try? await TextureManager.shared.loadTexture(url: maskURL, options: [.origin: MTKTextureLoader.Origin.topLeft])
-            }
-            
             let (vertices, indices, triangleBoneIndices, bboxWidth) = PuppetRenderable.parseOBJ(objContent: objContent, skinning: puppetData.skeleton.isEmpty ? [] : puppetData.skinning)
             let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
             var depthState = depthStencilState
@@ -357,26 +350,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 depthState = depthWriteDisabledState
             }
             guard let pipeline = puppetPipelineState else { return nil }
-            
-            let renderable = PuppetRenderable(
-                device: device,
-                vertices: vertices,
-                indices: indices,
-                triangleBones: triangleBoneIndices,
-                skeleton: puppetData.skeleton,
-                animations: puppetData.animations,
-                position: pos,
-                rotation: rotation,
-                size: size,
-                scale: scale,
-                texture: texture,
-                maskTexture: maskTexture,
-                pipeline: pipeline,
-                depthState: depthState,
-                maskWriteState: maskWriteState,
-                maskTestState: maskTestState,
-                usePixelCoords: bboxWidth > 2.0
-            )
+            let renderable = PuppetRenderable(device: device, vertices: vertices, indices: indices, triangleBones: triangleBoneIndices, skeleton: puppetData.skeleton, animations: puppetData.animations, position: pos, rotation: rotation, size: size, scale: scale, texture: texture, pipeline: pipeline, depthState: depthState, maskWriteState: maskWriteState, maskTestState: maskTestState, usePixelCoords: bboxWidth > 2.0)
             
             return renderable
         } catch { return nil }
