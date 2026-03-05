@@ -39,7 +39,7 @@ actor TextureManager {
         }
 
         await Logger.log(
-            "Loading static texture: \(url.lastPathComponent) from \(url.path)"
+            "加载截图纹理: \(url.lastPathComponent) 从 \(url.path)"
         )
         do {
             let tempTexture = try await loader.newTexture(
@@ -84,13 +84,13 @@ actor TextureManager {
             }
 
             await Logger.log(
-                "Successfully loaded static texture: \(url.lastPathComponent)"
+                "成功加载静态纹理: \(url.lastPathComponent)"
             )
             cache[url] = arrayTexture
             return arrayTexture
         } catch {
             await Logger.error(
-                "Failed to load texture \(url.lastPathComponent): \(error)"
+                "加载纹理失败 \(url.lastPathComponent): \(error)"
             )
             throw error
         }
@@ -101,7 +101,7 @@ actor TextureManager {
     {
         if let cached = cache[url] { return cached }
         await Logger.log(
-            "Loading WebP Array: \(url.lastPathComponent) from \(url.path)"
+            "加载WebP动态图集: \(url.lastPathComponent) 从 \(url.path)"
         )
 
         guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else {
@@ -167,14 +167,14 @@ actor TextureManager {
         }
 
         await Logger.log(
-            "Successfully loaded WebP Array: \(url.lastPathComponent) (\(count) frames)"
+            "成功加载WebP动态图集: \(url.lastPathComponent) (\(count) 帧)"
         )
         cache[url] = texture
         return texture
     }
 
     func clear() async {
-        await Logger.log("Clearing texture cache")
+        await Logger.log("清空纹理缓存")
         cache.removeAll()
     }
 }

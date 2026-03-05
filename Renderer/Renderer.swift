@@ -343,15 +343,53 @@ class Renderer: NSObject, MTKViewDelegate {
             guard let firstPass = matDef.passes.first, let texName = firstPass.textures.first else { return nil }
             let texURL = resolveTextureURL(base: base, rawPath: texName)
             let texture = try await TextureManager.shared.loadTexture(url: texURL, options: [.origin: MTKTextureLoader.Origin.topLeft, .SRGB: true])
-            let (vertices, indices, triangleBoneIndices, bboxWidth) = PuppetRenderable.parseOBJ(objContent: objContent, skinning: puppetData.skeleton.isEmpty ? [] : puppetData.skinning)
+            
+            Logger.log("[Puppet] ----------------------------------------------------")
+            Logger.log("[Puppet] 正在构建骨骼模型: \(dataURL.lastPathComponent)")
+            
+            let (vertices, indices, triangleBoneIndices, bboxWidth, uTrans, vTrans) = PuppetRenderable.parseOBJ(objContent: objContent, skinning: puppetData.skeleton.isEmpty ? [] : puppetData.skinning)
+            
+            Logger.log("[Puppet] OBJ 解析完毕 -> 顶点数: \(vertices.count), 索引数: \(indices.count)")
+            Logger.log("[Puppet] UV 映射矩阵 U: \(uTrans), V: \(vTrans)")
+            
             let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
             var depthState = depthStencilState
             if let dw = firstPass.depthwrite, dw == "disabled" {
                 depthState = depthWriteDisabledState
             }
-            guard let pipeline = puppetPipelineState else { return nil }
-            let renderable = PuppetRenderable(device: device, vertices: vertices, indices: indices, triangleBones: triangleBoneIndices, skeleton: puppetData.skeleton, animations: puppetData.animations, position: pos, rotation: rotation, size: size, scale: scale, texture: texture, pipeline: pipeline, depthState: depthState, maskWriteState: maskWriteState, maskTestState: maskTestState, usePixelCoords: bboxWidth > 2.0)
             
+            var maskURL: URL? = nil
+            if let masks = puppetData.clipping_masks, let firstMask = masks.first {
+                Logger.log("[Puppet] 发现 clipping_masks 字段，准备加载物理遮罩纹理: \(firstMask)")
+                maskURL = resolveTextureURL(base: base, rawPath: firstMask)
+            } else {
+                Logger.log("[Puppet] 当前模型没有 clipping_masks 字段")
+            }
+            
+            guard let pipeline = puppetPipelineState else { return nil }
+            let renderable = PuppetRenderable(
+                device: device,
+                vertices: vertices,
+                indices: indices,
+                triangleBones: triangleBoneIndices,
+                skeleton: puppetData.skeleton,
+                animations: puppetData.animations,
+                position: pos,
+                rotation: rotation,
+                size: size,
+                scale: scale,
+                texture: texture,
+                maskURL: maskURL,
+                pipeline: pipeline,
+                depthState: depthState,
+                maskWriteState: maskWriteState,
+                maskTestState: maskTestState,
+                usePixelCoords: bboxWidth > 2.0,
+                uTransform: uTrans,
+                vTransform: vTrans
+            )
+            
+            Logger.log("[Puppet] ----------------------------------------------------")
             return renderable
         } catch { return nil }
     }
