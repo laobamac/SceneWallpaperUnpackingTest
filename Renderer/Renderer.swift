@@ -15,6 +15,7 @@ class Renderer: NSObject, MTKViewDelegate {
     let commandQueue: MTLCommandQueue
     var pipelineState: MTLRenderPipelineState?
     var puppetPipelineState: MTLRenderPipelineState?
+    var puppetMaskPipelineState: MTLRenderPipelineState?
     var extractPipeline: MTLRenderPipelineState?
     var blurPipeline: MTLRenderPipelineState?
     var upsamplePipeline: MTLRenderPipelineState?
@@ -119,6 +120,17 @@ class Renderer: NSObject, MTKViewDelegate {
         pvDesc.layouts[0].stride = 48
         puppetDesc.vertexDescriptor = pvDesc
         puppetPipelineState = try await device.makeRenderPipelineState(descriptor: puppetDesc, options: []).0
+
+        let maskDesc = MTLRenderPipelineDescriptor()
+        maskDesc.label = "PuppetMask"
+        maskDesc.vertexFunction = library.makeFunction(name: "vertex_puppet")
+        maskDesc.fragmentFunction = library.makeFunction(name: "fragment_puppet_mask")
+        maskDesc.colorAttachments[0].pixelFormat = hdrFormat
+        maskDesc.colorAttachments[0].writeMask = []
+        maskDesc.depthAttachmentPixelFormat = depthFormat
+        maskDesc.stencilAttachmentPixelFormat = depthFormat
+        maskDesc.vertexDescriptor = pvDesc
+        puppetMaskPipelineState = try await device.makeRenderPipelineState(descriptor: maskDesc, options: []).0
 
         let postDesc = MTLRenderPipelineDescriptor()
         postDesc.vertexFunction = library.makeFunction(name: "vertex_post")
@@ -344,13 +356,7 @@ class Renderer: NSObject, MTKViewDelegate {
             let texURL = resolveTextureURL(base: base, rawPath: texName)
             let texture = try await TextureManager.shared.loadTexture(url: texURL, options: [.origin: MTKTextureLoader.Origin.topLeft, .SRGB: true])
             
-            Logger.log("[Puppet] ----------------------------------------------------")
-            Logger.log("[Puppet] 正在构建骨骼模型: \(dataURL.lastPathComponent)")
-            
-            let (vertices, indices, triangleBoneIndices, bboxWidth, uTrans, vTrans) = PuppetRenderable.parseOBJ(objContent: objContent, skinning: puppetData.skeleton.isEmpty ? [] : puppetData.skinning)
-            
-            Logger.log("[Puppet] OBJ 解析完毕 -> 顶点数: \(vertices.count), 索引数: \(indices.count)")
-            Logger.log("[Puppet] UV 映射矩阵 U: \(uTrans), V: \(vTrans)")
+            let (vertices, indices, bboxWidth) = PuppetRenderable.parseOBJ(objContent: objContent, skinning: puppetData.skeleton.isEmpty ? [] : puppetData.skinning)
             
             let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
             var depthState = depthStencilState
@@ -358,20 +364,30 @@ class Renderer: NSObject, MTKViewDelegate {
                 depthState = depthWriteDisabledState
             }
             
-            var maskURL: URL? = nil
-            if let masks = puppetData.clipping_masks, let firstMask = masks.first {
-                Logger.log("[Puppet] 发现 clipping_masks 字段，准备加载物理遮罩纹理: \(firstMask)")
-                maskURL = resolveTextureURL(base: base, rawPath: firstMask)
+            var maskTextures: [MTLTexture] = []
+            if let masks = puppetData.clipping_masks {
+                Logger.log("[Puppet] 发现 Clipping Masks 纹理，数量: \(masks.count)")
+                for (index, maskPath) in masks.enumerated() {
+                    Logger.log("[Puppet] 准备加载 Mask [\(index)]: \(maskPath)")
+                    let mURL = resolveTextureURL(base: base, rawPath: maskPath)
+                    if let mTex = try? await TextureManager.shared.loadTexture(url: mURL, options: [.origin: MTKTextureLoader.Origin.topLeft, .SRGB: false]) {
+                        maskTextures.append(mTex)
+                        Logger.log("[Puppet] Mask [\(index)] 加载成功: \(mTex.width)x\(mTex.height)")
+                    } else {
+                        Logger.log("[Puppet] Mask [\(index)] 加载失败!")
+                    }
+                }
             } else {
                 Logger.log("[Puppet] 当前模型没有 clipping_masks 字段")
             }
             
-            guard let pipeline = puppetPipelineState else { return nil }
+            guard let pipeline = puppetPipelineState, let maskPipe = puppetMaskPipelineState else { return nil }
             let renderable = PuppetRenderable(
                 device: device,
                 vertices: vertices,
                 indices: indices,
-                triangleBones: triangleBoneIndices,
+                subMeshes: puppetData.sub_meshes,
+                maskBindings: puppetData.mask_bindings,
                 skeleton: puppetData.skeleton,
                 animations: puppetData.animations,
                 position: pos,
@@ -379,17 +395,15 @@ class Renderer: NSObject, MTKViewDelegate {
                 size: size,
                 scale: scale,
                 texture: texture,
-                maskURL: maskURL,
-                pipeline: pipeline,
-                depthState: depthState,
+                maskTextures: maskTextures,
                 maskWriteState: maskWriteState,
                 maskTestState: maskTestState,
-                usePixelCoords: bboxWidth > 2.0,
-                uTransform: uTrans,
-                vTransform: vTrans
+                puppetMaskPipeline: maskPipe,
+                pipeline: pipeline,
+                depthState: depthState,
+                usePixelCoords: bboxWidth > 2.0
             )
             
-            Logger.log("[Puppet] ----------------------------------------------------")
             return renderable
         } catch { return nil }
     }

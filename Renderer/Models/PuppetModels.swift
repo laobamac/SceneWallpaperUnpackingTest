@@ -11,6 +11,19 @@ struct PuppetData: Codable {
     let skeleton: [PuppetBone]
     let animations: [PuppetAnimation]
     let clipping_masks: [String]?
+    let sub_meshes: [PuppetSubMesh]?
+    let mask_bindings: [PuppetMaskBinding]?
+}
+
+struct PuppetSubMesh: Codable {
+    let id: Int
+    let start: Int
+    let count: Int
+}
+
+struct PuppetMaskBinding: Codable {
+    let target_group: Int
+    let mask: Int?
 }
 
 struct PuppetInfo: Codable {

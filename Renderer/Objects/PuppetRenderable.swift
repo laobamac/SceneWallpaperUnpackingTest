@@ -8,22 +8,13 @@
 import MetalKit
 import simd
 import CoreGraphics
-import ImageIO
 import Foundation
 
 class PuppetRenderable: RenderableObject {
     let device: MTLDevice
     let vertexBuffer: MTLBuffer
-
-    var maskIndexBuffer: MTLBuffer?
-    var clippedIndexBuffer: MTLBuffer?
-    var overlayIndexBuffer: MTLBuffer?
-    var standardIndexBuffer: MTLBuffer?
-
-    var maskIndexCount: Int = 0
-    var clippedIndexCount: Int = 0
-    var overlayIndexCount: Int = 0
-    var standardIndexCount: Int = 0
+    let indexBuffer: MTLBuffer
+    let indexCount: Int
 
     let uniformBuffer: MTLBuffer
     var boneMatrices: [matrix_float4x4]
@@ -33,8 +24,13 @@ class PuppetRenderable: RenderableObject {
     let animations: [PuppetAnimation]
     var inverseBindMatrices: [matrix_float4x4] = []
 
+    let subMeshes: [PuppetSubMesh]?
+    let maskBindings: [PuppetMaskBinding]?
+    let maskTextures: [MTLTexture]
+    
     let maskWriteState: MTLDepthStencilState?
     let maskTestState: MTLDepthStencilState?
+    let puppetMaskPipeline: MTLRenderPipelineState?
 
     private var lastAnimCycle: Int = -1
     private var boneToTrackIndex: [Int: Int] = [:]
@@ -43,7 +39,8 @@ class PuppetRenderable: RenderableObject {
         device: MTLDevice,
         vertices: [PuppetVertex],
         indices: [UInt32],
-        triangleBones: [Int],
+        subMeshes: [PuppetSubMesh]?,
+        maskBindings: [PuppetMaskBinding]?,
         skeleton: [PuppetBone],
         animations: [PuppetAnimation],
         position: SIMD3<Float>,
@@ -51,16 +48,14 @@ class PuppetRenderable: RenderableObject {
         size: SIMD2<Float>,
         scale: SIMD3<Float>,
         texture: MTLTexture,
-        maskURL: URL?,
-        pipeline: MTLRenderPipelineState,
-        depthState: MTLDepthStencilState?,
+        maskTextures: [MTLTexture],
         maskWriteState: MTLDepthStencilState?,
         maskTestState: MTLDepthStencilState?,
-        usePixelCoords: Bool,
-        uTransform: SIMD4<Float>,
-        vTransform: SIMD4<Float>
+        puppetMaskPipeline: MTLRenderPipelineState?,
+        pipeline: MTLRenderPipelineState,
+        depthState: MTLDepthStencilState?,
+        usePixelCoords: Bool
     ) {
-
         self.device = device
         guard
             let vb = device.makeBuffer(
@@ -73,13 +68,28 @@ class PuppetRenderable: RenderableObject {
         }
         self.vertexBuffer = vb
 
+        guard
+            let ib = device.makeBuffer(
+                bytes: indices,
+                length: indices.count * MemoryLayout<UInt32>.stride,
+                options: .storageModeShared
+            )
+        else {
+            return nil
+        }
+        self.indexBuffer = ib
+        self.indexCount = indices.count
+
         self.usePixelCoords = usePixelCoords
         self.skeleton = skeleton
         self.animations = animations
+        self.subMeshes = subMeshes
+        self.maskBindings = maskBindings
+        self.maskTextures = maskTextures
+        
         self.maskWriteState = maskWriteState
         self.maskTestState = maskTestState
-
-        Logger.log("[Puppet] 开始初始化渲染对象, 骨骼总数: \(skeleton.count), 动画总数: \(animations.count)")
+        self.puppetMaskPipeline = puppetMaskPipeline
 
         self.boneMatrices = Array(
             repeating: matrix_identity_float4x4,
@@ -106,7 +116,6 @@ class PuppetRenderable: RenderableObject {
         )
 
         computeInverseBindMatrices()
-        setupIndexBuffers(indices: indices, triangleBones: triangleBones, maskURL: maskURL, uTransform: uTransform, vTransform: vTransform)
 
         if let firstAnim = animations.first {
             for (index, track) in firstAnim.tracks.enumerated() {
@@ -170,166 +179,6 @@ class PuppetRenderable: RenderableObject {
             } else {
                 inverseBindMatrices[i] = global.inverse
             }
-        }
-    }
-
-    private func setupIndexBuffers(indices: [UInt32], triangleBones: [Int], maskURL: URL?, uTransform: SIMD4<Float>, vTransform: SIMD4<Float>) {
-        Logger.log("[Puppet] 准备解析和切分索引缓冲 (Index Buffers)...")
-        var cpuMaskData: [UInt8]? = nil
-        var maskWidth = 0
-        var maskHeight = 0
-        if let url = maskURL, let imageSource = CGImageSourceCreateWithURL(url as CFURL, nil), let cgImage = CGImageSourceCreateImageAtIndex(imageSource, 0, nil) {
-            maskWidth = cgImage.width
-            maskHeight = cgImage.height
-            Logger.log("[Puppet] 成功读取本地遮罩图用于 CPU 检测, 尺寸: \(maskWidth)x\(maskHeight)")
-            let colorSpace = CGColorSpaceCreateDeviceRGB()
-            let bytesPerPixel = 4
-            let bytesPerRow = bytesPerPixel * maskWidth
-            var rawData = [UInt8](repeating: 0, count: maskHeight * bytesPerRow)
-            if let context = CGContext(data: &rawData, width: maskWidth, height: maskHeight, bitsPerComponent: 8, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) {
-                context.draw(cgImage, in: CGRect(x: 0, y: 0, width: maskWidth, height: maskHeight))
-                cpuMaskData = rawData
-            }
-        } else {
-            Logger.log("[Puppet] 警告: 未能加载用于 CPU 检测的遮罩图像")
-        }
-
-        var whiteZoneBones = Set<Int>()
-        if let maskData = cpuMaskData {
-            var localMatrices = Array(repeating: matrix_identity_float4x4, count: skeleton.count)
-            for i in 0..<skeleton.count {
-                let m = skeleton[i].matrix
-                localMatrices[i] = matrix_float4x4(
-                    columns: (
-                        SIMD4<Float>(m[0], m[1], m[2], m[3]),
-                        SIMD4<Float>(m[4], m[5], m[6], m[7]),
-                        SIMD4<Float>(m[8], m[9], m[10], m[11]),
-                        SIMD4<Float>(m[12], m[13], m[14], m[15])
-                    )
-                )
-            }
-            for i in 0..<skeleton.count {
-                let global = getGlobalBindMatrix(boneIndex: i, localMatrices: localMatrices)
-                let tx = global.columns.3.x
-                let ty = global.columns.3.y
-
-                let u = uTransform.x * tx + uTransform.y * ty + uTransform.z
-                let v = vTransform.x * tx + vTransform.y * ty + vTransform.z
-
-                if u >= 0 && u <= 1 && v >= 0 && v <= 1 {
-                    let px = Int(u * Float(maskWidth))
-                    let py = Int(v * Float(maskHeight))
-                    let safePx = min(max(px, 0), maskWidth - 1)
-                    let safePy = min(max(py, 0), maskHeight - 1)
-                    let pixelIndex = (safePy * maskWidth + safePx) * 4
-                    let r = maskData[pixelIndex]
-                    if r > 128 {
-                        whiteZoneBones.insert(skeleton[i].id)
-                    }
-                }
-            }
-        }
-
-        var autoMaskIDs = Set<Int>()
-        for anim in animations {
-            for track in anim.tracks {
-                let minScaleY = track.frames.map { $0.s[1] }.min() ?? 1.0
-                if minScaleY < 0.2 {
-                    autoMaskIDs.insert(track.track_id)
-                }
-            }
-        }
-
-        var autoClippedIDs = whiteZoneBones
-        autoClippedIDs.subtract(autoMaskIDs)
-
-        var maskBoneIDs = Set<Int>()
-        var clippedBoneIDs = Set<Int>()
-
-        for bone in skeleton {
-            if let tag = bone.render_tag, !tag.isEmpty {
-                Logger.log("[Puppet] 骨骼 [\(bone.name)] 具有手动标签: \(tag), 优先级最高")
-                if tag == "mask" {
-                    maskBoneIDs.insert(bone.id)
-                } else if tag == "clipped" {
-                    clippedBoneIDs.insert(bone.id)
-                }
-            } else {
-                if autoMaskIDs.contains(bone.id) {
-                    Logger.log("[Puppet] 自动分配 MASK 标签: [\(bone.name)] (ID: \(bone.id))")
-                    maskBoneIDs.insert(bone.id)
-                } else if autoClippedIDs.contains(bone.id) {
-                    Logger.log("[Puppet] 自动分配 CLIPPED 标签: [\(bone.name)] (ID: \(bone.id))")
-                    clippedBoneIDs.insert(bone.id)
-                }
-            }
-        }
-
-        Logger.log("[Puppet] 最终确定的 MASK 骨骼集: \(maskBoneIDs)")
-        Logger.log("[Puppet] 最终确定的 CLIPPED 骨骼集: \(clippedBoneIDs)")
-
-        var maskIndices: [UInt32] = []
-        var clippedIndices: [UInt32] = []
-        var overlayIndices: [UInt32] = []
-        var standardIndices: [UInt32] = []
-
-        let hasClippingLogic = !maskBoneIDs.isEmpty || !clippedBoneIDs.isEmpty
-
-        for i in stride(from: 0, to: indices.count, by: 3) {
-            let boneIdx = (i / 3 < triangleBones.count) ? triangleBones[i / 3] : -1
-
-            if maskBoneIDs.contains(boneIdx) {
-                maskIndices.append(indices[i])
-                maskIndices.append(indices[i + 1])
-                maskIndices.append(indices[i + 2])
-            } else if clippedBoneIDs.contains(boneIdx) {
-                clippedIndices.append(indices[i])
-                clippedIndices.append(indices[i + 1])
-                clippedIndices.append(indices[i + 2])
-            } else if hasClippingLogic {
-                overlayIndices.append(indices[i])
-                overlayIndices.append(indices[i + 1])
-                overlayIndices.append(indices[i + 2])
-            } else {
-                standardIndices.append(indices[i])
-                standardIndices.append(indices[i + 1])
-                standardIndices.append(indices[i + 2])
-            }
-        }
-
-        Logger.log("[Puppet] 网格分拆完毕: MASK(\(maskIndices.count/3)面) CLIPPED(\(clippedIndices.count/3)面) OVERLAY(\(overlayIndices.count/3)面) STANDARD(\(standardIndices.count/3)面)")
-
-        if !maskIndices.isEmpty {
-            maskIndexBuffer = device.makeBuffer(
-                bytes: maskIndices,
-                length: maskIndices.count * 4,
-                options: .storageModeShared
-            )
-            maskIndexCount = maskIndices.count
-        }
-        if !clippedIndices.isEmpty {
-            clippedIndexBuffer = device.makeBuffer(
-                bytes: clippedIndices,
-                length: clippedIndices.count * 4,
-                options: .storageModeShared
-            )
-            clippedIndexCount = clippedIndices.count
-        }
-        if !overlayIndices.isEmpty {
-            overlayIndexBuffer = device.makeBuffer(
-                bytes: overlayIndices,
-                length: overlayIndices.count * 4,
-                options: .storageModeShared
-            )
-            overlayIndexCount = overlayIndices.count
-        }
-        if !standardIndices.isEmpty {
-            standardIndexBuffer = device.makeBuffer(
-                bytes: standardIndices,
-                length: standardIndices.count * 4,
-                options: .storageModeShared
-            )
-            standardIndexCount = standardIndices.count
         }
     }
 
@@ -452,7 +301,6 @@ class PuppetRenderable: RenderableObject {
     }
 
     override func draw(encoder: MTLRenderCommandEncoder) {
-        encoder.setRenderPipelineState(pipeline)
         let geometryScale: matrix_float4x4
         if usePixelCoords {
             geometryScale = Matrix4x4.scale(x: scale.x, y: scale.y, z: scale.z)
@@ -464,89 +312,92 @@ class PuppetRenderable: RenderableObject {
             )
         }
         let finalModelMatrix = worldMatrix * geometryScale
+
+        encoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
+        encoder.setVertexBuffer(uniformBuffer, offset: 0, index: 3)
+
         var objUniforms = ObjectUniforms(
             modelMatrix: finalModelMatrix,
             alpha: 1.0,
             color: SIMD4<Float>(1, 1, 1, 1),
-            animInfo: .zero
+            animInfo: SIMD4<Float>(0, 0, 0, 0)
         )
+        encoder.setVertexBytes(&objUniforms, length: MemoryLayout<ObjectUniforms>.size, index: 2)
+        encoder.setFragmentBytes(&objUniforms, length: MemoryLayout<ObjectUniforms>.size, index: 2)
 
-        encoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
-        encoder.setVertexBytes(
-            &objUniforms,
-            length: MemoryLayout<ObjectUniforms>.size,
-            index: 2
-        )
-        encoder.setVertexBuffer(uniformBuffer, offset: 0, index: 3)
-        encoder.setFragmentBytes(
-            &objUniforms,
-            length: MemoryLayout<ObjectUniforms>.size,
-            index: 2
-        )
+        let hasMaskLogic = maskBindings != nil && !maskBindings!.isEmpty && !maskTextures.isEmpty
 
-        encoder.setFragmentTexture(texture, index: 0)
+        if hasMaskLogic, let maskTex = maskTextures.first, let maskWrite = maskWriteState, let maskTest = maskTestState, let maskPipe = puppetMaskPipeline {
 
-        if standardIndexCount > 0, let buf = standardIndexBuffer {
+            encoder.setRenderPipelineState(maskPipe)
+            encoder.setDepthStencilState(maskWrite)
+            encoder.setStencilReferenceValue(1)
+            encoder.setFragmentTexture(maskTex, index: 0)
+
+            encoder.drawIndexedPrimitives(
+                type: .triangle,
+                indexCount: indexCount,
+                indexType: .uint32,
+                indexBuffer: indexBuffer,
+                indexBufferOffset: 0
+            )
+
+            encoder.setRenderPipelineState(pipeline)
+            encoder.setFragmentTexture(texture, index: 0)
+
+            for mesh in subMeshes ?? [] {
+                if maskBindings!.contains(where: { $0.target_group == mesh.id }) {
+                    encoder.setDepthStencilState(maskTest)
+                    encoder.setStencilReferenceValue(1)
+                } else {
+                    if let ds = depthState {
+                        encoder.setDepthStencilState(ds)
+                    }
+                }
+
+                encoder.drawIndexedPrimitives(
+                    type: .triangle,
+                    indexCount: mesh.count,
+                    indexType: .uint32,
+                    indexBuffer: indexBuffer,
+                    indexBufferOffset: mesh.start * MemoryLayout<UInt32>.stride
+                )
+            }
+
+        } else {
+            encoder.setRenderPipelineState(pipeline)
             if let ds = depthState { encoder.setDepthStencilState(ds) }
-            encoder.drawIndexedPrimitives(
-                type: .triangle,
-                indexCount: standardIndexCount,
-                indexType: .uint32,
-                indexBuffer: buf,
-                indexBufferOffset: 0
-            )
-        }
+            encoder.setFragmentTexture(texture, index: 0)
 
-        if maskIndexCount > 0, let buf = maskIndexBuffer,
-            let ws = maskWriteState
-        {
-            encoder.setDepthStencilState(ws)
-            encoder.setStencilReferenceValue(1)
-            encoder.drawIndexedPrimitives(
-                type: .triangle,
-                indexCount: maskIndexCount,
-                indexType: .uint32,
-                indexBuffer: buf,
-                indexBufferOffset: 0
-            )
-        }
-
-        if clippedIndexCount > 0, let buf = clippedIndexBuffer,
-            let ts = maskTestState
-        {
-            encoder.setDepthStencilState(ts)
-            encoder.setStencilReferenceValue(1)
-            encoder.drawIndexedPrimitives(
-                type: .triangle,
-                indexCount: clippedIndexCount,
-                indexType: .uint32,
-                indexBuffer: buf,
-                indexBufferOffset: 0
-            )
-        }
-
-        if overlayIndexCount > 0, let buf = overlayIndexBuffer,
-            let ds = depthState
-        {
-            encoder.setDepthStencilState(ds)
-            encoder.drawIndexedPrimitives(
-                type: .triangle,
-                indexCount: overlayIndexCount,
-                indexType: .uint32,
-                indexBuffer: buf,
-                indexBufferOffset: 0
-            )
+            if let meshes = subMeshes, !meshes.isEmpty {
+                for mesh in meshes {
+                    encoder.drawIndexedPrimitives(
+                        type: .triangle,
+                        indexCount: mesh.count,
+                        indexType: .uint32,
+                        indexBuffer: indexBuffer,
+                        indexBufferOffset: mesh.start * MemoryLayout<UInt32>.stride
+                    )
+                }
+            } else {
+                encoder.drawIndexedPrimitives(
+                    type: .triangle,
+                    indexCount: indexCount,
+                    indexType: .uint32,
+                    indexBuffer: indexBuffer,
+                    indexBufferOffset: 0
+                )
+            }
         }
     }
 
     static func parseOBJ(objContent: String, skinning: [PuppetSkinning]) -> (
-        [PuppetVertex], [UInt32], [Int], Float, SIMD4<Float>, SIMD4<Float>
+        [PuppetVertex], [UInt32], Float
     ) {
         var rawPositions: [SIMD3<Float>] = []
         var rawUVs: [SIMD2<Float>] = []
         var finalVertices: [PuppetVertex] = []
         var finalIndices: [UInt32] = []
-        var triangleBoneIndices: [Int] = []
         var uniqueVertexMap: [String: UInt32] = [:]
 
         let skinMap = Dictionary(
@@ -582,7 +433,6 @@ class PuppetRenderable: RenderableObject {
                 }
             } else if parts[0] == "f" {
                 var faceIndices: [UInt32] = []
-                var dominantBone = -1
 
                 for i in 1..<parts.count {
                     let component = parts[i]
@@ -601,10 +451,6 @@ class PuppetRenderable: RenderableObject {
 
                     if let existingIndex = uniqueVertexMap[key] {
                         faceIndices.append(existingIndex)
-                        if dominantBone == -1 {
-                            let v = finalVertices[Int(existingIndex)]
-                            if v.w1 > 0.5 { dominantBone = Int(v.j1) }
-                        }
                     } else {
                         let newIndex = UInt32(finalVertices.count)
                         let position =
@@ -632,9 +478,6 @@ class PuppetRenderable: RenderableObject {
                             w2 = skin.weights[1]
                             w3 = skin.weights[2]
                             w4 = skin.weights[3]
-                            if dominantBone == -1 && w1 > 0.5 {
-                                dominantBone = Int(j1)
-                            }
                         }
 
                         finalVertices.append(
@@ -663,72 +506,15 @@ class PuppetRenderable: RenderableObject {
                     finalIndices.append(faceIndices[0])
                     finalIndices.append(faceIndices[1])
                     finalIndices.append(faceIndices[2])
-                    triangleBoneIndices.append(dominantBone)
                 }
                 if faceIndices.count >= 4 {
                     finalIndices.append(faceIndices[0])
                     finalIndices.append(faceIndices[2])
                     finalIndices.append(faceIndices[3])
-                    triangleBoneIndices.append(dominantBone)
                 }
             }
         }
 
-        var uTransform = SIMD4<Float>(0, 0, 0, 0)
-        var vTransform = SIMD4<Float>(0, 0, 0, 0)
-        var found = false
-
-        if finalVertices.count >= 3 {
-            let p0 = SIMD2<Float>(finalVertices[0].px, finalVertices[0].py)
-            let u0 = finalVertices[0].u
-            let v0 = finalVertices[0].v
-
-            for i in 1..<finalVertices.count {
-                let p1 = SIMD2<Float>(finalVertices[i].px, finalVertices[i].py)
-                let u1 = finalVertices[i].u
-                let v1 = finalVertices[i].v
-
-                let dx1 = p1.x - p0.x
-                let dy1 = p1.y - p0.y
-
-                if dx1 * dx1 + dy1 * dy1 > 0.0001 {
-                    for j in (i + 1)..<finalVertices.count {
-                        let p2 = SIMD2<Float>(finalVertices[j].px, finalVertices[j].py)
-                        let u2 = finalVertices[j].u
-                        let v2 = finalVertices[j].v
-
-                        let dx2 = p2.x - p0.x
-                        let dy2 = p2.y - p0.y
-
-                        let det = dx1 * dy2 - dx2 * dy1
-                        if abs(det) > 0.0001 {
-                            let invDet = 1.0 / det
-                            
-                            let du1 = u1 - u0
-                            let du2 = u2 - u0
-                            let A = (du1 * dy2 - du2 * dy1) * invDet
-                            let B = (dx1 * du2 - dx2 * du1) * invDet
-                            let C = u0 - A * p0.x - B * p0.y
-                            uTransform = SIMD4<Float>(A, B, C, 0)
-
-                            let dv1 = v1 - v0
-                            let dv2 = v2 - v0
-                            let D = (dv1 * dy2 - dv2 * dy1) * invDet
-                            let E = (dx1 * dv2 - dx2 * dv1) * invDet
-                            let F = v0 - D * p0.x - E * p0.y
-                            vTransform = SIMD4<Float>(D, E, F, 0)
-
-                            found = true
-                            break
-                        }
-                    }
-                }
-                if found { break }
-            }
-        }
-
-        return (
-            finalVertices, finalIndices, triangleBoneIndices, maxPos.x - minPos.x, uTransform, vTransform
-        )
+        return (finalVertices, finalIndices, maxPos.x - minPos.x)
     }
 }
