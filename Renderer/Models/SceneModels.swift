@@ -40,6 +40,11 @@ struct SceneObject: Codable {
     let visible: BoolOrObject?
     let color: ScriptableValue?
     let alpha: Float?
+    let font: String?
+    let pointsize: Float?
+    let horizontalalign: String?
+    let verticalalign: String?
+    let text: ScriptableValue?
 
     var isVisible: Bool {
         if let v = visible {
@@ -62,7 +67,13 @@ struct DynamicKey: CodingKey {
     }
 }
 
-enum ScriptableValue: Codable {
+struct ScriptData: Codable {
+    let script: String?
+    let scriptproperties: [String: ScriptableValue]?
+    let value: ScriptableValue?
+}
+
+indirect enum ScriptableValue: Codable {
     case string(String)
     case script(value: String)
     case float(Float)
@@ -70,6 +81,7 @@ enum ScriptableValue: Codable {
     case bool(Bool)
     case floatArray([Float])
     case object([String: ScriptableValue])
+    case scriptData(ScriptData)
 
     init(from decoder: Decoder) throws {
         if let container = try? decoder.singleValueContainer() {
@@ -103,6 +115,12 @@ enum ScriptableValue: Codable {
             return
         }
         if let container = try? decoder.container(keyedBy: DynamicKey.self) {
+            if let scriptKey = DynamicKey(stringValue: "script"), let _ = try? container.decode(String.self, forKey: scriptKey) {
+                if let data = try? ScriptData(from: decoder) {
+                    self = .scriptData(data)
+                    return
+                }
+            }
             if container.allKeys.count == 1, let scriptKey = DynamicKey(stringValue: "value"), let val = try? container.decode(String.self, forKey: scriptKey) {
                 self = .script(value: val)
                 return
@@ -132,6 +150,26 @@ enum ScriptableValue: Codable {
                 return val.value
             }
             return ""
+        case .scriptData(let data):
+            return data.value?.value ?? ""
+        }
+    }
+    
+    var rawValue: Any {
+        switch self {
+        case .string(let s): return s
+        case .float(let f): return f
+        case .int(let i): return i
+        case .bool(let b): return b
+        case .floatArray(let a): return a
+        case .object(let dict):
+            if let val = dict["value"] {
+                return val.rawValue
+            }
+            return dict.mapValues { $0.rawValue }
+        case .scriptData(let data):
+            return data.value?.rawValue ?? ""
+        default: return ""
         }
     }
     
@@ -145,6 +183,8 @@ enum ScriptableValue: Codable {
                 return val.floatValue
             }
             return 0.0
+        case .scriptData(let data):
+            return data.value?.floatValue ?? 0.0
         default: return 0.0
         }
     }
@@ -160,6 +200,8 @@ enum ScriptableValue: Codable {
                 return val.float2Value
             }
             return SIMD2<Float>(0, 0)
+        case .scriptData(let data):
+            return data.value?.float2Value ?? SIMD2<Float>(0, 0)
         default: return SIMD2<Float>(0, 0)
         }
     }
@@ -176,6 +218,8 @@ enum ScriptableValue: Codable {
                 return val.float3Value
             }
             return SIMD3<Float>(0, 0, 0)
+        case .scriptData(let data):
+            return data.value?.float3Value ?? SIMD3<Float>(0, 0, 0)
         default: return SIMD3<Float>(0, 0, 0)
         }
     }
@@ -193,6 +237,8 @@ enum ScriptableValue: Codable {
                 return val.float4Value
             }
             return SIMD4<Float>(0, 0, 0, 1)
+        case .scriptData(let data):
+            return data.value?.float4Value ?? SIMD4<Float>(0, 0, 0, 1)
         default: return SIMD4<Float>(0, 0, 0, 1)
         }
     }
