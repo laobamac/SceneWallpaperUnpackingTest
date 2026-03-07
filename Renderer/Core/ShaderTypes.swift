@@ -11,7 +11,7 @@ struct ObjectUniforms {
     var modelMatrix: matrix_float4x4
     var alpha: Float
     var color: SIMD4<Float>
-    var animInfo: SIMD3<Float>
+    var animInfo: SIMD4<Float>
 }
 
 struct GlobalUniforms {

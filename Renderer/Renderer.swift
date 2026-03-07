@@ -15,6 +15,7 @@ class Renderer: NSObject, MTKViewDelegate {
     let commandQueue: MTLCommandQueue
     var pipelineState: MTLRenderPipelineState?
     var puppetPipelineState: MTLRenderPipelineState?
+    var puppetMaskPipelineState: MTLRenderPipelineState?
     var extractPipeline: MTLRenderPipelineState?
     var blurPipeline: MTLRenderPipelineState?
     var upsamplePipeline: MTLRenderPipelineState?
@@ -22,6 +23,8 @@ class Renderer: NSObject, MTKViewDelegate {
     var samplerState: MTLSamplerState?
     var depthStencilState: MTLDepthStencilState?
     var depthWriteDisabledState: MTLDepthStencilState?
+    var maskWriteState: MTLDepthStencilState?
+    var maskTestState: MTLDepthStencilState?
     var baseFolder: URL?
     var renderables: [RenderableObject] = []
     var startTime: Date = Date()
@@ -87,7 +90,7 @@ class Renderer: NSObject, MTKViewDelegate {
         let puppetDesc = MTLRenderPipelineDescriptor()
         puppetDesc.label = "Puppet"
         puppetDesc.vertexFunction = library.makeFunction(name: "vertex_puppet")
-        puppetDesc.fragmentFunction = library.makeFunction(name: "fragment_puppet")
+        puppetDesc.fragmentFunction = library.makeFunction(name: "fragment_main")
         puppetDesc.colorAttachments[0].pixelFormat = hdrFormat
         puppetDesc.colorAttachments[0].isBlendingEnabled = true
         puppetDesc.colorAttachments[0].rgbBlendOperation = .add
@@ -117,6 +120,17 @@ class Renderer: NSObject, MTKViewDelegate {
         pvDesc.layouts[0].stride = 48
         puppetDesc.vertexDescriptor = pvDesc
         puppetPipelineState = try await device.makeRenderPipelineState(descriptor: puppetDesc, options: []).0
+
+        let maskDesc = MTLRenderPipelineDescriptor()
+        maskDesc.label = "PuppetMask"
+        maskDesc.vertexFunction = library.makeFunction(name: "vertex_puppet")
+        maskDesc.fragmentFunction = library.makeFunction(name: "fragment_puppet_mask")
+        maskDesc.colorAttachments[0].pixelFormat = hdrFormat
+        maskDesc.colorAttachments[0].writeMask = []
+        maskDesc.depthAttachmentPixelFormat = depthFormat
+        maskDesc.stencilAttachmentPixelFormat = depthFormat
+        maskDesc.vertexDescriptor = pvDesc
+        puppetMaskPipelineState = try await device.makeRenderPipelineState(descriptor: maskDesc, options: []).0
 
         let postDesc = MTLRenderPipelineDescriptor()
         postDesc.vertexFunction = library.makeFunction(name: "vertex_post")
@@ -148,14 +162,42 @@ class Renderer: NSObject, MTKViewDelegate {
 
     func setupDepthStencilStates() {
         let depthDesc = MTLDepthStencilDescriptor()
-        depthDesc.isDepthWriteEnabled = false
-        depthDesc.depthCompareFunction = .always
+        depthDesc.isDepthWriteEnabled = true
+        depthDesc.depthCompareFunction = .lessEqual
         depthStencilState = device.makeDepthStencilState(descriptor: depthDesc)
 
         let depthDisabledDesc = MTLDepthStencilDescriptor()
         depthDisabledDesc.isDepthWriteEnabled = false
-        depthDisabledDesc.depthCompareFunction = .always
+        depthDisabledDesc.depthCompareFunction = .lessEqual
         depthWriteDisabledState = device.makeDepthStencilState(descriptor: depthDisabledDesc)
+
+        let maskWriteDesc = MTLDepthStencilDescriptor()
+        maskWriteDesc.isDepthWriteEnabled = false
+        maskWriteDesc.depthCompareFunction = .always
+        let sw = MTLStencilDescriptor()
+        sw.stencilCompareFunction = .always
+        sw.stencilFailureOperation = .keep
+        sw.depthFailureOperation = .keep
+        sw.depthStencilPassOperation = .replace
+        sw.readMask = 0xFF
+        sw.writeMask = 0xFF
+        maskWriteDesc.frontFaceStencil = sw
+        maskWriteDesc.backFaceStencil = sw
+        maskWriteState = device.makeDepthStencilState(descriptor: maskWriteDesc)
+
+        let maskTestDesc = MTLDepthStencilDescriptor()
+        maskTestDesc.isDepthWriteEnabled = false
+        maskTestDesc.depthCompareFunction = .always
+        let st = MTLStencilDescriptor()
+        st.stencilCompareFunction = .equal
+        st.stencilFailureOperation = .keep
+        st.depthFailureOperation = .keep
+        st.depthStencilPassOperation = .keep
+        st.readMask = 0xFF
+        st.writeMask = 0x00
+        maskTestDesc.frontFaceStencil = st
+        maskTestDesc.backFaceStencil = st
+        maskTestState = device.makeDepthStencilState(descriptor: maskTestDesc)
     }
 
     func loadScene(folder: URL) async {
@@ -233,26 +275,6 @@ class Renderer: NSObject, MTKViewDelegate {
                 }
             }
             self.renderables.append(contentsOf: orderedList)
-            
-            DispatchQueue.main.async {
-                var newPuppets: [ObjectIdentifier: [(id: Int, name: String)]] = [:]
-                var newNames: [ObjectIdentifier: String] = [:]
-                for r in self.renderables {
-                    if let pr = r as? PuppetRenderable {
-                        let oid = ObjectIdentifier(pr)
-                        var bones: [(id: Int, name: String)] = []
-                        for b in pr.skeleton {
-                            bones.append((id: b.id, name: "Bone \(b.id)"))
-                        }
-                        newPuppets[oid] = bones
-                        newNames[oid] = "Puppet \(pr.id)"
-                    }
-                }
-                BoneManager.shared.puppets = newPuppets
-                BoneManager.shared.puppetNames = newNames
-                BoneManager.shared.hiddenBones.removeAll()
-            }
-            
         } catch {}
     }
 
@@ -334,7 +356,7 @@ class Renderer: NSObject, MTKViewDelegate {
             let texURL = resolveTextureURL(base: base, rawPath: texName)
             let texture = try await TextureManager.shared.loadTexture(url: texURL, options: [.origin: MTKTextureLoader.Origin.topLeft, .SRGB: true])
             
-            let (vertices, indices, bboxWidth, uTrans, vTrans) = PuppetRenderable.parseOBJ(objContent: objContent, skinning: puppetData.skeleton.isEmpty ? [] : puppetData.skinning)
+            let (vertices, indices, bboxWidth) = PuppetRenderable.parseOBJ(objContent: objContent, skinning: puppetData.skeleton.isEmpty ? [] : puppetData.skinning)
             
             let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
             var depthState = depthStencilState
@@ -342,42 +364,44 @@ class Renderer: NSObject, MTKViewDelegate {
                 depthState = depthWriteDisabledState
             }
             
-            var maskTex: MTLTexture? = nil
-            var maskedGroupIDs = Set<Int>()
-            
-            if let bindings = puppetData.mask_bindings, let firstBinding = bindings.first {
-                let maskURL = resolveTextureURL(base: base, rawPath: firstBinding.path)
-                do {
-                    maskTex = try await TextureManager.shared.loadTexture(url: maskURL, options: [.origin: MTKTextureLoader.Origin.topLeft, .SRGB: false])
-                } catch {}
-                
-                for binding in bindings {
-                    maskedGroupIDs.insert(binding.target_group)
+            var maskTextures: [MTLTexture] = []
+            if let masks = puppetData.clipping_masks {
+                Logger.log("[Puppet] 发现 Clipping Masks 纹理，数量: \(masks.count)")
+                for (index, maskPath) in masks.enumerated() {
+                    Logger.log("[Puppet] 准备加载 Mask [\(index)]: \(maskPath)")
+                    let mURL = resolveTextureURL(base: base, rawPath: maskPath)
+                    if let mTex = try? await TextureManager.shared.loadTexture(url: mURL, options: [.origin: MTKTextureLoader.Origin.topLeft, .SRGB: false]) {
+                        maskTextures.append(mTex)
+                        Logger.log("[Puppet] Mask [\(index)] 加载成功: \(mTex.width)x\(mTex.height)")
+                    } else {
+                        Logger.log("[Puppet] Mask [\(index)] 加载失败!")
+                    }
                 }
+            } else {
+                Logger.log("[Puppet] 当前模型没有 clipping_masks 字段")
             }
             
-            let subMeshes = puppetData.sub_meshes ?? []
-            
-            guard let pipeline = puppetPipelineState else { return nil }
+            guard let pipeline = puppetPipelineState, let maskPipe = puppetMaskPipelineState else { return nil }
             let renderable = PuppetRenderable(
                 device: device,
                 vertices: vertices,
                 indices: indices,
+                subMeshes: puppetData.sub_meshes,
+                maskBindings: puppetData.mask_bindings,
                 skeleton: puppetData.skeleton,
                 animations: puppetData.animations,
-                subMeshes: subMeshes,
-                maskedGroupIDs: maskedGroupIDs,
                 position: pos,
                 rotation: rotation,
                 size: size,
                 scale: scale,
                 texture: texture,
-                maskTexture: maskTex,
+                maskTextures: maskTextures,
+                maskWriteState: maskWriteState,
+                maskTestState: maskTestState,
+                puppetMaskPipeline: maskPipe,
                 pipeline: pipeline,
                 depthState: depthState,
-                usePixelCoords: bboxWidth > 2.0,
-                uTransform: uTrans,
-                vTransform: vTrans
+                usePixelCoords: bboxWidth > 2.0
             )
             
             return renderable

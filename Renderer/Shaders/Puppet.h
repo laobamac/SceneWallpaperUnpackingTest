@@ -20,8 +20,6 @@ struct VertexOut {
     float4 position [[position]];
     float2 texCoord;
     float2 localCoord;
-    float2 maskUV;
-    float visibility;
 };
 
 struct GlobalUniforms {
@@ -38,4 +36,4 @@ struct ObjectUniforms {
     float4 animInfo;
 };
 
-#endif
+#endif // !Puppet_H
