@@ -8,6 +8,66 @@
   "clipping_masks": [
   "masks\/clipping_mask_e5b07ba8"
 ],
+  "sub_meshes": [
+  {
+    "flag" : 0,
+    "id" : 1,
+    "count" : 582,
+    "start" : 0
+  },
+  {
+    "flag" : 0,
+    "id" : 2,
+    "count" : 291,
+    "start" : 582
+  },
+  {
+    "flag" : 0,
+    "id" : 3,
+    "count" : 240,
+    "start" : 873
+  },
+  {
+    "flag" : 0,
+    "id" : 4,
+    "count" : 465,
+    "start" : 1113
+  },
+  {
+    "flag" : 0,
+    "id" : 5,
+    "count" : 822,
+    "start" : 1578
+  },
+  {
+    "flag" : 0,
+    "id" : 6,
+    "count" : 696,
+    "start" : 2400
+  },
+  {
+    "flag" : 0,
+    "id" : 7,
+    "count" : 243,
+    "start" : 3096
+  },
+  {
+    "flag" : 0,
+    "id" : 8,
+    "count" : 291,
+    "start" : 3339
+  }
+],
+  "mask_bindings": [
+  {
+    "path" : "masks\/clipping_mask_e5b07ba8",
+    "target_group" : 2
+  },
+  {
+    "path" : "masks\/clipping_mask_e5b07ba8",
+    "target_group" : 3
+  }
+],
   "skinning": [
   {
     "bone_indices" : [
