@@ -345,23 +345,25 @@ class PuppetRenderable: RenderableObject {
             encoder.setRenderPipelineState(pipeline)
             encoder.setFragmentTexture(texture, index: 0)
 
-            for mesh in subMeshes ?? [] {
-                if maskBindings!.contains(where: { $0.target_group == mesh.id }) {
-                    encoder.setDepthStencilState(maskTest)
-                    encoder.setStencilReferenceValue(1)
-                } else {
-                    if let ds = depthState {
-                        encoder.setDepthStencilState(ds)
+            if let meshes = subMeshes {
+                for (index, mesh) in meshes.enumerated() {
+                    if maskBindings!.contains(where: { $0.target_group == index }) {
+                        encoder.setDepthStencilState(maskTest)
+                        encoder.setStencilReferenceValue(1)
+                    } else {
+                        if let ds = depthState {
+                            encoder.setDepthStencilState(ds)
+                        }
                     }
-                }
 
-                encoder.drawIndexedPrimitives(
-                    type: .triangle,
-                    indexCount: mesh.count,
-                    indexType: .uint32,
-                    indexBuffer: indexBuffer,
-                    indexBufferOffset: mesh.start * MemoryLayout<UInt32>.stride
-                )
+                    encoder.drawIndexedPrimitives(
+                        type: .triangle,
+                        indexCount: mesh.count,
+                        indexType: .uint32,
+                        indexBuffer: indexBuffer,
+                        indexBufferOffset: mesh.start * MemoryLayout<UInt32>.stride
+                    )
+                }
             }
 
         } else {
