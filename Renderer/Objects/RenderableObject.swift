@@ -81,7 +81,7 @@ class RenderableObject {
             modelMatrix: finalModelMatrix,
             alpha: alpha,
             color: SIMD4<Float>(1, 1, 1, 1),
-            animInfo: SIMD4<Float>(0, 0, 0, 0)
+            animInfo: .zero
         )
 
         encoder.setVertexBytes(

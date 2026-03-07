@@ -28,13 +28,16 @@ vertex VertexOut vertex_main(VertexIn in [[stage_in]],
     out.position = globals.projectionMatrix * globals.viewMatrix * object.modelMatrix * pos;
     out.texCoord = in.texCoord;
     out.localCoord = in.texCoord - 0.5;
+    out.maskUV = float2(0.0);
     return out;
 }
 
 vertex VertexOut vertex_puppet(PuppetVertexIn in [[stage_in]],
                                constant GlobalUniforms &globals [[buffer(1)]],
                                constant ObjectUniforms &object [[buffer(2)]],
-                               constant PuppetUniforms &puppet [[buffer(3)]])
+                               constant PuppetUniforms &puppet [[buffer(3)]],
+                               constant float4 &uTransform [[buffer(4)]],
+                               constant float4 &vTransform [[buffer(5)]])
 {
     VertexOut out;
     
@@ -60,6 +63,11 @@ vertex VertexOut vertex_puppet(PuppetVertexIn in [[stage_in]],
     out.position = globals.projectionMatrix * globals.viewMatrix * worldPos;
     out.texCoord = in.texCoord;
     out.localCoord = in.texCoord - 0.5;
+    
+    float maskU = uTransform.x * localPos.x + uTransform.y * localPos.y + uTransform.z;
+    float maskV = vTransform.x * localPos.x + vTransform.y * localPos.y + vTransform.z;
+    out.maskUV = float2(maskU, maskV);
+    
     return out;
 }
 
@@ -75,14 +83,20 @@ fragment float4 fragment_main(VertexOut in [[stage_in]],
     return color;
 }
 
-fragment float4 fragment_puppet_mask(VertexOut in [[stage_in]],
-                                     texture2d_array<float> maskTexture [[texture(0)]],
-                                     sampler textureSampler [[sampler(0)]])
+fragment float4 fragment_puppet(VertexOut in [[stage_in]],
+                                constant GlobalUniforms &globals [[buffer(1)]],
+                                constant ObjectUniforms &object [[buffer(2)]],
+                                constant bool &hasMask [[buffer(3)]],
+                                texture2d_array<float> baseTexture [[texture(0)]],
+                                texture2d_array<float> maskTexture [[texture(1)]],
+                                sampler textureSampler [[sampler(0)]])
 {
-    float4 maskColor = maskTexture.sample(textureSampler, in.texCoord, 0);
-    float maskAlpha = maskColor.r * maskColor.a;
-    if (maskAlpha < 0.1) {
-        discard_fragment();
+    float4 color = baseTexture.sample(textureSampler, in.texCoord, 0);
+    if (hasMask) {
+        float maskVal = maskTexture.sample(textureSampler, in.maskUV, 0).r;
+        color.a *= maskVal;
     }
-    return float4(1.0);
+    color *= object.color;
+    color.a *= object.alpha;
+    return color;
 }
