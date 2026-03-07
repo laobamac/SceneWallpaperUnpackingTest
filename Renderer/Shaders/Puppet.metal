@@ -29,6 +29,7 @@ vertex VertexOut vertex_main(VertexIn in [[stage_in]],
     out.texCoord = in.texCoord;
     out.localCoord = in.texCoord - 0.5;
     out.maskUV = float2(0.0);
+    out.visibility = 1.0;
     return out;
 }
 
@@ -37,23 +38,32 @@ vertex VertexOut vertex_puppet(PuppetVertexIn in [[stage_in]],
                                constant ObjectUniforms &object [[buffer(2)]],
                                constant PuppetUniforms &puppet [[buffer(3)]],
                                constant float4 &uTransform [[buffer(4)]],
-                               constant float4 &vTransform [[buffer(5)]])
+                               constant float4 &vTransform [[buffer(5)]],
+                               constant float *boneVisibility [[buffer(6)]])
 {
     VertexOut out;
     
     float4x4 skinMatrix = float4x4(0.0);
     bool hasBones = false;
+    float visibility = 0.0;
+    float totalWeight = 0.0;
+    
     for (int i = 0; i < 4; i++) {
         int boneIndex = int(in.joints[i]);
         float weight = in.weights[i];
         if (weight > 0.0) {
             skinMatrix += puppet.bones[boneIndex] * weight;
+            visibility += boneVisibility[boneIndex] * weight;
+            totalWeight += weight;
             hasBones = true;
         }
     }
     
     if (!hasBones) {
         skinMatrix = float4x4(1.0);
+        out.visibility = 1.0;
+    } else {
+        out.visibility = totalWeight > 0.0 ? visibility / totalWeight : 1.0;
     }
     
     float4 pos = float4(in.position, 1.0);
@@ -91,6 +101,10 @@ fragment float4 fragment_puppet(VertexOut in [[stage_in]],
                                 texture2d_array<float> maskTexture [[texture(1)]],
                                 sampler textureSampler [[sampler(0)]])
 {
+    if (in.visibility < 0.5) {
+        discard_fragment();
+    }
+
     float4 color = baseTexture.sample(textureSampler, in.texCoord, 0);
     if (hasMask) {
         float maskVal = maskTexture.sample(textureSampler, in.maskUV, 0).r;

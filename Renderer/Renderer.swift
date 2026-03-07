@@ -233,6 +233,26 @@ class Renderer: NSObject, MTKViewDelegate {
                 }
             }
             self.renderables.append(contentsOf: orderedList)
+            
+            DispatchQueue.main.async {
+                var newPuppets: [ObjectIdentifier: [(id: Int, name: String)]] = [:]
+                var newNames: [ObjectIdentifier: String] = [:]
+                for r in self.renderables {
+                    if let pr = r as? PuppetRenderable {
+                        let oid = ObjectIdentifier(pr)
+                        var bones: [(id: Int, name: String)] = []
+                        for b in pr.skeleton {
+                            bones.append((id: b.id, name: "Bone \(b.id)"))
+                        }
+                        newPuppets[oid] = bones
+                        newNames[oid] = "Puppet \(pr.id)"
+                    }
+                }
+                BoneManager.shared.puppets = newPuppets
+                BoneManager.shared.puppetNames = newNames
+                BoneManager.shared.hiddenBones.removeAll()
+            }
+            
         } catch {}
     }
 

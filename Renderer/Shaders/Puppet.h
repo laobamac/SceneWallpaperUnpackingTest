@@ -21,6 +21,7 @@ struct VertexOut {
     float2 texCoord;
     float2 localCoord;
     float2 maskUV;
+    float visibility;
 };
 
 struct GlobalUniforms {

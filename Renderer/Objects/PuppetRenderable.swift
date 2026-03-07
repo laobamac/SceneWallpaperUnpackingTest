@@ -29,6 +29,8 @@ class PuppetRenderable: RenderableObject {
     var maskTexture: MTLTexture?
     let uTransform: SIMD4<Float>
     let vTransform: SIMD4<Float>
+    
+    let boneVisibilityBuffer: MTLBuffer
 
     private var lastAnimCycle: Int = -1
     private var boneToTrackIndex: [Int: Int] = [:]
@@ -87,6 +89,14 @@ class PuppetRenderable: RenderableObject {
             return nil
         }
         self.uniformBuffer = ub
+        
+        guard let bvb = device.makeBuffer(
+            length: MemoryLayout<Float>.stride * 100,
+            options: .storageModeShared
+        ) else {
+            return nil
+        }
+        self.boneVisibilityBuffer = bvb
 
         super.init(
             position: position,
@@ -326,6 +336,18 @@ class PuppetRenderable: RenderableObject {
         var vT = vTransform
         encoder.setVertexBytes(&uT, length: MemoryLayout<SIMD4<Float>>.stride, index: 4)
         encoder.setVertexBytes(&vT, length: MemoryLayout<SIMD4<Float>>.stride, index: 5)
+        
+        var visArray: [Float] = Array(repeating: 1.0, count: 100)
+        let oid = ObjectIdentifier(self)
+        if let hidden = BoneManager.shared.hiddenBones[oid] {
+            for i in 0..<skeleton.count {
+                if hidden.contains(skeleton[i].id) {
+                    visArray[skeleton[i].id] = 0.0
+                }
+            }
+        }
+        boneVisibilityBuffer.contents().copyMemory(from: visArray, byteCount: 100 * MemoryLayout<Float>.stride)
+        encoder.setVertexBuffer(boneVisibilityBuffer, offset: 0, index: 6)
         
         encoder.setFragmentBytes(
             &objUniforms,
