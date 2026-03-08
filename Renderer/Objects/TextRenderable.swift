@@ -15,6 +15,7 @@ class TextRenderable: RenderableObject {
     var currentText: String = ""
     var scriptEngine: ScriptEngine?
     var originScriptEngine: ScriptEngine?
+    
     init?(
         sceneObject: SceneObject,
         textureManager: TextTextureManager,
@@ -73,6 +74,7 @@ class TextRenderable: RenderableObject {
         }
         updateTexture()
     }
+    
     override func update(commandBuffer: MTLCommandBuffer) {
         var needsUpdate = false
         if let originEngine = originScriptEngine {
@@ -98,16 +100,19 @@ class TextRenderable: RenderableObject {
             updateTexture()
         }
     }
+    
     private func updateTexture() {
         let fontSize = sceneObject.pointsize ?? 32.0
         let padding = sceneObject.padding ?? 0.0
         let limitWidth = sceneObject.limitwidth
+        
         let referenceSize: SIMD2<Float>
         if let s = sceneObject.size {
             referenceSize = s.float2Value
         } else {
             referenceSize = SIMD2<Float>(400, 400)
         }
+        
         if let newTexture = textTextureManager.createTexture(
             text: currentText,
             fontPath: sceneObject.font,

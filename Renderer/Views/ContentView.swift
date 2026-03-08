@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AppKit
 
 struct ContentView: View {
     @State private var wallpaperFolder: URL?
@@ -43,6 +44,12 @@ struct ContentView: View {
                             Spacer()
                             HStack {
                                 Spacer()
+                                Button("Enter Preview Mode") {
+                                    enterPreviewMode()
+                                }
+                                .buttonStyle(.bordered)
+                                .background(Material.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+
                                 Button("Change Wallpaper") {
                                     openFolder()
                                 }
@@ -74,5 +81,22 @@ struct ContentView: View {
         if panel.runModal() == .OK {
             self.wallpaperFolder = panel.url
         }
+    }
+
+    func enterPreviewMode() {
+        guard let window = NSApp.windows.first(where: { $0.isVisible && !($0 is NSPanel) }) else { return }
+        
+        window.styleMask = [.borderless, .fullSizeContentView]
+        
+        if let screen = NSScreen.main {
+            window.setFrame(screen.frame, display: true)
+        }
+        
+        window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.desktopWindow)) - 1)
+        window.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
+        window.backgroundColor = .clear
+        window.hasShadow = false
+        window.isMovable = false
+        window.isMovableByWindowBackground = false
     }
 }

@@ -14,9 +14,11 @@ class TextTextureManager {
     static let shared = TextTextureManager()
     private var registeredFonts: [String: NSFont] = [:]
     private var device: MTLDevice?
+    
     func setup(device: MTLDevice) {
         self.device = device
     }
+    
     func registerFont(path: String, baseURL: URL) {
         let fontURL = baseURL.appendingPathComponent(path)
         guard FileManager.default.fileExists(atPath: fontURL.path) else {
@@ -34,6 +36,7 @@ class TextTextureManager {
             }
         }
     }
+    
     func createTexture(
         text: String,
         fontPath: String?,
@@ -45,14 +48,19 @@ class TextTextureManager {
         limitWidth: Bool?
     ) -> MTLTexture? {
         guard let device = device else { return nil }
-        let weFontScale: CGFloat = 2.8
+        
+        let weBaseFontScale: CGFloat = 4.0
         let backingScale: CGFloat = 2.0
-        let adjustedFontSize = CGFloat(fontSize) * weFontScale * backingScale
-        let scaledPadding = CGFloat(padding) * backingScale
-        let baseWidth = CGFloat(size.x) * backingScale
-        let baseHeight = CGFloat(size.y) * backingScale
+        let totalScale = weBaseFontScale * backingScale
+        
+        let adjustedFontSize = CGFloat(fontSize) * totalScale
+        let scaledPadding = CGFloat(padding) * totalScale
+        let baseWidth = CGFloat(size.x) * totalScale
+        let baseHeight = CGFloat(size.y) * totalScale
+        
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         var font = NSFont.systemFont(ofSize: adjustedFontSize)
+        
         if let fontPath = fontPath {
             if let customFont = registeredFonts[fontPath] {
                 font = customFont.withSize(adjustedFontSize)
@@ -62,45 +70,48 @@ class TextTextureManager {
                 }
             }
         }
+        
         let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineSpacing = 0
+        paragraphStyle.minimumLineHeight = adjustedFontSize
+        paragraphStyle.maximumLineHeight = adjustedFontSize
+        
         switch horizontalAlign {
         case "left": paragraphStyle.alignment = .left
         case "right": paragraphStyle.alignment = .right
         case "center": paragraphStyle.alignment = .center
         default: paragraphStyle.alignment = .left
         }
+        
         let attributes: [NSAttributedString.Key: Any] = [
             .font: font,
             .foregroundColor: NSColor.white,
             .paragraphStyle: paragraphStyle,
         ]
+        
         let attributedString = NSAttributedString(
             string: text,
             attributes: attributes
         )
+        
         let isLimited = limitWidth ?? false
-        let drawingWidth =
-            isLimited ? max(1, baseWidth - scaledPadding * 2) : 100000.0
+        let drawingWidth = isLimited ? max(1, baseWidth - scaledPadding * 2) : 100000.0
         let options: NSString.DrawingOptions = [
             .usesLineFragmentOrigin, .usesFontLeading,
         ]
+        
         let textRect = attributedString.boundingRect(
             with: CGSize(width: drawingWidth, height: .greatestFiniteMagnitude),
             options: options
         )
-        let finalWidth = max(
-            baseWidth,
-            ceil(textRect.width + scaledPadding * 2)
-        )
-        let finalHeight = max(
-            baseHeight,
-            ceil(textRect.height + scaledPadding * 2)
-        )
+        
+        let finalWidth = max(baseWidth, ceil(textRect.width + scaledPadding * 2))
+        let finalHeight = max(baseHeight, ceil(textRect.height + scaledPadding * 2))
         let width = max(1, Int(finalWidth))
         let height = max(1, Int(finalHeight))
+        
         let bytesPerPixel = 4
         let bytesPerRow = bytesPerPixel * width
+        
         guard
             let context = CGContext(
                 data: nil,
@@ -112,7 +123,9 @@ class TextTextureManager {
                 bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
             )
         else { return nil }
+        
         context.clear(CGRect(x: 0, y: 0, width: width, height: height))
+        
         let drawX: CGFloat
         if isLimited {
             drawX = scaledPadding
@@ -123,6 +136,7 @@ class TextTextureManager {
             default: drawX = scaledPadding
             }
         }
+        
         let drawY: CGFloat
         switch verticalAlign {
         case "top": drawY = CGFloat(height) - textRect.height - scaledPadding
@@ -130,18 +144,21 @@ class TextTextureManager {
         case "center": drawY = (CGFloat(height) - textRect.height) / 2.0
         default: drawY = CGFloat(height) - textRect.height - scaledPadding
         }
+        
         NSGraphicsContext.saveGraphicsState()
         let nsContext = NSGraphicsContext(cgContext: context, flipped: false)
         NSGraphicsContext.current = nsContext
+        
         let targetRect = CGRect(
             x: drawX,
             y: drawY,
-            width: isLimited
-                ? (baseWidth - scaledPadding * 2) : (textRect.width + 1),
+            width: isLimited ? (baseWidth - scaledPadding * 2) : (textRect.width + 1),
             height: textRect.height
         )
+        
         attributedString.draw(with: targetRect, options: options)
         NSGraphicsContext.restoreGraphicsState()
+        
         let textureDescriptor = MTLTextureDescriptor()
         textureDescriptor.pixelFormat = .rgba8Unorm
         textureDescriptor.width = width
@@ -149,8 +166,10 @@ class TextTextureManager {
         textureDescriptor.textureType = .type2DArray
         textureDescriptor.arrayLength = 1
         textureDescriptor.usage = [.shaderRead]
+        
         guard let texture = device.makeTexture(descriptor: textureDescriptor)
         else { return nil }
+        
         if let data = context.data {
             texture.replace(
                 region: MTLRegionMake2D(0, 0, width, height),
@@ -161,6 +180,7 @@ class TextTextureManager {
                 bytesPerImage: bytesPerRow * height
             )
         }
+        
         return texture
     }
 }
