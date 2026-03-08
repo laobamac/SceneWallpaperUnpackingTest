@@ -291,11 +291,6 @@ class Renderer: NSObject, MTKViewDelegate {
     func createRenderable(from obj: SceneObject, raw: [String: Any]?) async -> RenderableObject? {
         guard let base = baseFolder else { return nil }
 
-        if obj.text != nil || obj.font != nil {
-            guard let pipeline = pipelineState else { return nil }
-            return TextRenderable(device: device, obj: obj, baseFolder: base, pipeline: pipeline, depthState: depthStencilState, canvasSize: projectionSize)
-        }
-
         guard let imagePath = obj.image else { return nil }
         
         let modelURL = base.appendingPathComponent(imagePath)
