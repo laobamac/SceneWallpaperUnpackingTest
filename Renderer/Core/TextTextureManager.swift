@@ -39,8 +39,14 @@ class TextTextureManager {
     func createTexture(text: String, fontPath: String?, fontSize: Float, size: SIMD2<Float>, horizontalAlign: String?, verticalAlign: String?, padding: Float) -> MTLTexture? {
         guard let device = device else { return nil }
         
-        let width = max(1, Int(size.x))
-        let height = max(1, Int(size.y))
+        let weFontScale: CGFloat = 2.8
+        let backingScale: CGFloat = 2.0
+        
+        let width = max(1, Int(CGFloat(size.x) * backingScale))
+        let height = max(1, Int(CGFloat(size.y) * backingScale))
+        
+        let adjustedFontSize = CGFloat(fontSize) * weFontScale * backingScale
+        let scaledPadding = CGFloat(padding) * backingScale
 
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         let bytesPerPixel = 4
@@ -56,18 +62,24 @@ class TextTextureManager {
 
         context.clear(CGRect(x: 0, y: 0, width: width, height: height))
         
-        var font = NSFont.systemFont(ofSize: CGFloat(fontSize))
+        var font = NSFont.systemFont(ofSize: adjustedFontSize)
         if let fontPath = fontPath {
             if let customFont = registeredFonts[fontPath] {
-                font = customFont.withSize(CGFloat(fontSize))
+                font = customFont.withSize(adjustedFontSize)
             } else if fontPath.lowercased().contains("arial") {
-                if let arial = NSFont(name: "Arial", size: CGFloat(fontSize)) {
+                if let arial = NSFont(name: "Arial", size: adjustedFontSize) {
                     font = arial
                 }
             }
         }
 
         let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 0
+        paragraphStyle.paragraphSpacing = 0
+        paragraphStyle.lineHeightMultiple = 1.0
+        paragraphStyle.maximumLineHeight = adjustedFontSize
+        paragraphStyle.minimumLineHeight = adjustedFontSize
+        
         switch horizontalAlign {
         case "left": paragraphStyle.alignment = .left
         case "right": paragraphStyle.alignment = .right
@@ -78,26 +90,27 @@ class TextTextureManager {
         let attributes: [NSAttributedString.Key: Any] = [
             .font: font,
             .foregroundColor: NSColor.white,
-            .paragraphStyle: paragraphStyle
+            .paragraphStyle: paragraphStyle,
+            .baselineOffset: 0
         ]
 
         let attributedString = NSAttributedString(string: text, attributes: attributes)
-        let safePadding = CGFloat(padding)
-        let drawingWidth = max(1, CGFloat(size.x) - safePadding * 2)
-        let textRect = attributedString.boundingRect(with: CGSize(width: drawingWidth, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin)
+        let drawingWidth = max(1, CGFloat(width) - scaledPadding * 2)
+        let options: NSString.DrawingOptions = [.usesLineFragmentOrigin, .usesFontLeading]
+        let textRect = attributedString.boundingRect(with: CGSize(width: drawingWidth, height: .greatestFiniteMagnitude), options: options)
 
-        let drawX = safePadding
+        let drawX = scaledPadding
         var drawY: CGFloat = 0
 
         switch verticalAlign {
         case "top":
-            drawY = CGFloat(size.y) - textRect.height - safePadding
+            drawY = CGFloat(height) - textRect.height - scaledPadding
         case "bottom":
-            drawY = safePadding
+            drawY = scaledPadding
         case "center":
-            drawY = (CGFloat(size.y) - textRect.height) / 2.0
+            drawY = (CGFloat(height) - textRect.height) / 2.0
         default:
-            drawY = CGFloat(size.y) - textRect.height - safePadding
+            drawY = CGFloat(height) - textRect.height - scaledPadding
         }
 
         NSGraphicsContext.saveGraphicsState()
@@ -105,7 +118,7 @@ class TextTextureManager {
         NSGraphicsContext.current = nsContext
         
         let targetRect = CGRect(x: drawX, y: drawY, width: drawingWidth, height: textRect.height)
-        attributedString.draw(in: targetRect)
+        attributedString.draw(with: targetRect, options: options)
         
         NSGraphicsContext.restoreGraphicsState()
 
