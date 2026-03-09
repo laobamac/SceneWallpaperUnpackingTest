@@ -40,19 +40,6 @@ struct SceneObject: Codable {
     let visible: BoolOrObject?
     let color: ScriptableValue?
     let alpha: Float?
-    
-    let text: TextData?
-    let font: String?
-    let pointsize: Float?
-    let horizontalalign: String?
-    let verticalalign: String?
-    let padding: Float?
-    let maxrows: Int?
-    let maxwidth: Float?
-    let limitrows: Bool?
-    let limitwidth: Bool?
-    let limituseellipsis: Bool?
-    let blockalign: Bool?
 
     var isVisible: Bool {
         if let v = visible {
@@ -61,33 +48,6 @@ struct SceneObject: Codable {
         }
         return true
     }
-}
-
-enum TextData: Codable {
-    case string(String)
-    case object(TextObject)
-
-    init(from decoder: Decoder) throws {
-        if let container = try? decoder.singleValueContainer() {
-            if let str = try? container.decode(String.self) {
-                self = .string(str)
-                return
-            }
-            if let obj = try? container.decode(TextObject.self) {
-                self = .object(obj)
-                return
-            }
-        }
-        self = .string("")
-    }
-
-    func encode(to encoder: Encoder) throws {}
-}
-
-struct TextObject: Codable {
-    let script: String?
-    let value: String?
-    let scriptproperties: [String: ScriptableValue]?
 }
 
 struct DynamicKey: CodingKey {
@@ -110,7 +70,6 @@ enum ScriptableValue: Codable {
     case bool(Bool)
     case floatArray([Float])
     case object([String: ScriptableValue])
-    case complex(script: String?, value: String?, properties: [String: ScriptableValue]?)
 
     init(from decoder: Decoder) throws {
         if let container = try? decoder.singleValueContainer() {
@@ -144,18 +103,6 @@ enum ScriptableValue: Codable {
             return
         }
         if let container = try? decoder.container(keyedBy: DynamicKey.self) {
-            if container.allKeys.contains(where: { $0.stringValue == "script" }) {
-                let scriptKey = DynamicKey(stringValue: "script")!
-                let valueKey = DynamicKey(stringValue: "value")!
-                let propsKey = DynamicKey(stringValue: "scriptproperties")!
-                
-                let s = try? container.decode(String.self, forKey: scriptKey)
-                let v = try? container.decode(String.self, forKey: valueKey)
-                let p = try? container.decode([String: ScriptableValue].self, forKey: propsKey)
-                
-                self = .complex(script: s, value: v, properties: p)
-                return
-            }
             if container.allKeys.count == 1, let scriptKey = DynamicKey(stringValue: "value"), let val = try? container.decode(String.self, forKey: scriptKey) {
                 self = .script(value: val)
                 return
@@ -185,7 +132,6 @@ enum ScriptableValue: Codable {
                 return val.value
             }
             return ""
-        case .complex(_, let v, _): return v ?? ""
         }
     }
     
@@ -199,14 +145,13 @@ enum ScriptableValue: Codable {
                 return val.floatValue
             }
             return 0.0
-        case .complex(_, let v, _): return Float(v ?? "") ?? 0.0
         default: return 0.0
         }
     }
     
     var float2Value: SIMD2<Float> {
         switch self {
-        case .string(let s), .complex(_, let s?, _):
+        case .string(let s):
             let parts = s.split(separator: " ").compactMap { Float($0) }
             if parts.count >= 2 { return SIMD2<Float>(parts[0], parts[1]) }
             return SIMD2<Float>(0, 0)
@@ -221,7 +166,7 @@ enum ScriptableValue: Codable {
 
     var float3Value: SIMD3<Float> {
         switch self {
-        case .string(let s), .complex(_, let s?, _):
+        case .string(let s):
             let parts = s.split(separator: " ").compactMap { Float($0) }
             if parts.count >= 3 { return SIMD3<Float>(parts[0], parts[1], parts[2]) }
             if parts.count == 1 { return SIMD3<Float>(parts[0], parts[0], parts[0]) }
@@ -237,7 +182,7 @@ enum ScriptableValue: Codable {
     
     var float4Value: SIMD4<Float> {
         switch self {
-        case .string(let s), .complex(_, let s?, _):
+        case .string(let s):
             let parts = s.split(separator: " ").compactMap { Float($0) }
             if parts.count >= 4 { return SIMD4<Float>(parts[0], parts[1], parts[2], parts[3]) }
             if parts.count == 3 { return SIMD4<Float>(parts[0], parts[1], parts[2], 1.0) }

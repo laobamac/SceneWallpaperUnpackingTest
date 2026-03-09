@@ -51,7 +51,6 @@ class Renderer: NSObject, MTKViewDelegate {
             do {
                 try await setupPipeline()
                 await TextureManager.shared.setup(device: device)
-                TextTextureManager.shared.setup(device: device)
                 self.isReady = true
             } catch {}
         }
@@ -261,27 +260,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 if !obj.isVisible { continue }
                 
                 let rawObj = rawObjects[obj.id ?? -1]
-                var renderable: RenderableObject? = nil
-                
-                if obj.text != nil {
-                    if let fontPath = obj.font {
-                        TextTextureManager.shared.registerFont(path: fontPath, baseURL: folder)
-                    }
-                    if let pipeline = pipelineState {
-                        renderable = TextRenderable(
-                            sceneObject: obj,
-                            textureManager: TextTextureManager.shared,
-                            canvasSize: SIMD2<Float>(Float(self.projectionSize.width), Float(self.projectionSize.height)),
-                            pipeline: pipeline,
-                            depthState: depthStencilState,
-                            device: device
-                        )
-                    }
-                } else {
-                    renderable = await createRenderable(from: obj, raw: rawObj)
-                }
-                
-                if let renderable = renderable {
+                if let renderable = await createRenderable(from: obj, raw: rawObj) {
                     if let id = obj.id {
                         tempRenderables[id] = renderable
                         renderable.id = id
