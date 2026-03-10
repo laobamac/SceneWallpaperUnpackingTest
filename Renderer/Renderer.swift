@@ -258,7 +258,6 @@ class Renderer: NSObject, MTKViewDelegate {
             
             for obj in sceneRoot.objects {
                 if !obj.isVisible { continue }
-                
                 let rawObj = rawObjects[obj.id ?? -1]
                 if let renderable = await createRenderable(from: obj, raw: rawObj) {
                     if let id = obj.id {
@@ -290,6 +289,10 @@ class Renderer: NSObject, MTKViewDelegate {
 
     func createRenderable(from obj: SceneObject, raw: [String: Any]?) async -> RenderableObject? {
         guard let base = baseFolder else { return nil }
+
+        if obj.text != nil {
+            return await createTextRenderable(from: obj)
+        }
 
         guard let imagePath = obj.image else { return nil }
         
@@ -343,6 +346,26 @@ class Renderer: NSObject, MTKViewDelegate {
         } catch { return nil }
     }
 
+    func createTextRenderable(from obj: SceneObject) async -> RenderableObject? {
+        guard let pipeline = pipelineState else { return nil }
+        let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
+        let depthState = depthWriteDisabledState
+        
+        let textRenderable = TextRenderable(
+            device: device,
+            sceneObject: obj,
+            baseFolder: baseFolder,
+            position: pos,
+            rotation: rotation,
+            size: size,
+            scale: scale,
+            pipeline: pipeline,
+            depthState: depthState,
+            projectionSize: self.projectionSize
+        )
+        return textRenderable
+    }
+
     func createPuppetRenderable(from obj: SceneObject, dataURL: URL, objURL: URL) async -> RenderableObject? {
         do {
             let jsonData = try Data(contentsOf: dataURL)
@@ -366,19 +389,12 @@ class Renderer: NSObject, MTKViewDelegate {
             
             var maskTextures: [MTLTexture] = []
             if let masks = puppetData.clipping_masks {
-                Logger.log("[Puppet] 发现 Clipping Masks 纹理，数量: \(masks.count)")
-                for (index, maskPath) in masks.enumerated() {
-                    Logger.log("[Puppet] 准备加载 Mask [\(index)]: \(maskPath)")
+                for (_, maskPath) in masks.enumerated() {
                     let mURL = resolveTextureURL(base: base, rawPath: maskPath)
                     if let mTex = try? await TextureManager.shared.loadTexture(url: mURL, options: [.origin: MTKTextureLoader.Origin.topLeft, .SRGB: false]) {
                         maskTextures.append(mTex)
-                        Logger.log("[Puppet] Mask [\(index)] 加载成功: \(mTex.width)x\(mTex.height)")
-                    } else {
-                        Logger.log("[Puppet] Mask [\(index)] 加载失败!")
                     }
                 }
-            } else {
-                Logger.log("[Puppet] 当前模型没有 clipping_masks 字段")
             }
             
             guard let pipeline = puppetPipelineState, let maskPipe = puppetMaskPipelineState else { return nil }
