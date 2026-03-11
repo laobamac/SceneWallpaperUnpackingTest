@@ -40,17 +40,6 @@ struct SceneObject: Codable {
     let visible: BoolOrObject?
     let color: ScriptableValue?
     let alpha: Float?
-    let text: ScriptableValue?
-    let font: String?
-    let pointsize: Float?
-    let horizontalalign: String?
-    let verticalalign: String?
-    let padding: Float?
-    let limitwidth: Bool?
-    let limitlines: Bool?
-    let limitrow: Bool?
-    let wordwrap: Bool?
-    let linespacing: Float?
 
     var isVisible: Bool {
         if let v = visible {
@@ -75,7 +64,7 @@ struct DynamicKey: CodingKey {
 
 enum ScriptableValue: Codable {
     case string(String)
-    case script(value: String, script: String, properties: [String: ScriptableValue])
+    case script(value: String)
     case float(Float)
     case int(Int)
     case bool(Bool)
@@ -114,24 +103,8 @@ enum ScriptableValue: Codable {
             return
         }
         if let container = try? decoder.container(keyedBy: DynamicKey.self) {
-            if let scriptKey = DynamicKey(stringValue: "script"),
-               let valKey = DynamicKey(stringValue: "value"),
-               let script = try? container.decode(String.self, forKey: scriptKey),
-               let val = try? container.decode(String.self, forKey: valKey) {
-                var props: [String: ScriptableValue] = [:]
-                if let propsKey = DynamicKey(stringValue: "scriptproperties"),
-                   let propsContainer = try? container.nestedContainer(keyedBy: DynamicKey.self, forKey: propsKey) {
-                    for key in propsContainer.allKeys {
-                        if let pVal = try? propsContainer.decode(ScriptableValue.self, forKey: key) {
-                            props[key.stringValue] = pVal
-                        }
-                    }
-                }
-                self = .script(value: val, script: script, properties: props)
-                return
-            }
             if container.allKeys.count == 1, let scriptKey = DynamicKey(stringValue: "value"), let val = try? container.decode(String.self, forKey: scriptKey) {
-                self = .script(value: val, script: "", properties: [:])
+                self = .script(value: val)
                 return
             }
             var dict: [String: ScriptableValue] = [:]
@@ -149,7 +122,7 @@ enum ScriptableValue: Codable {
     var value: String {
         switch self {
         case .string(let s): return s
-        case .script(let v, _, _): return v
+        case .script(let v): return v
         case .float(let f): return "\(f)"
         case .int(let i): return "\(i)"
         case .bool(let b): return "\(b)"
