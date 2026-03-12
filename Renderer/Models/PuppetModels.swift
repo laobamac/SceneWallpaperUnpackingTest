@@ -61,6 +61,7 @@ struct PuppetTrack: Codable {
 }
 
 struct PuppetKeyframe: Codable {
+    let time: Float?
     let p: [Float]
     let r: [Float]
     let s: [Float]

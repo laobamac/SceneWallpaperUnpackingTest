@@ -8,6 +8,75 @@
 import simd
 import Foundation
 
+struct Quaternion {
+    var x: Float, y: Float, z: Float, w: Float
+
+    static func fromEuler(_ euler: SIMD3<Float>) -> Quaternion {
+        let cx = cos(euler.x * 0.5)
+        let sx = sin(euler.x * 0.5)
+        let cy = cos(euler.y * 0.5)
+        let sy = sin(euler.y * 0.5)
+        let cz = cos(euler.z * 0.5)
+        let sz = sin(euler.z * 0.5)
+        
+        return Quaternion(
+            x: sx * cy * cz - cx * sy * sz,
+            y: cx * sy * cz + sx * cy * sz,
+            z: cx * cy * sz - sx * sy * cz,
+            w: cx * cy * cz + sx * sy * sz
+        )
+    }
+
+    static func slerp(_ q1: Quaternion, _ q2: Quaternion, t: Float) -> Quaternion {
+        var cosHalfTheta = q1.w * q2.w + q1.x * q2.x + q1.y * q2.y + q1.z * q2.z
+        var q2m = q2
+
+        if cosHalfTheta < 0 {
+            q2m = Quaternion(x: -q2.x, y: -q2.y, z: -q2.z, w: -q2.w)
+            cosHalfTheta = -cosHalfTheta
+        }
+
+        if abs(cosHalfTheta) >= 1.0 {
+            return q1
+        }
+
+        let halfTheta = acos(cosHalfTheta)
+        let sinHalfTheta = sqrt(1.0 - cosHalfTheta * cosHalfTheta)
+
+        if abs(sinHalfTheta) < 0.001 {
+            return Quaternion(
+                x: q1.x * 0.5 + q2m.x * 0.5,
+                y: q1.y * 0.5 + q2m.y * 0.5,
+                z: q1.z * 0.5 + q2m.z * 0.5,
+                w: q1.w * 0.5 + q2m.w * 0.5
+            )
+        }
+
+        let ratioA = sin((1 - t) * halfTheta) / sinHalfTheta
+        let ratioB = sin(t * halfTheta) / sinHalfTheta
+
+        return Quaternion(
+            x: q1.x * ratioA + q2m.x * ratioB,
+            y: q1.y * ratioA + q2m.y * ratioB,
+            z: q1.z * ratioA + q2m.z * ratioB,
+            w: q1.w * ratioA + q2m.w * ratioB
+        )
+    }
+
+    func toMatrix() -> matrix_float4x4 {
+        let xx = x * x, yy = y * y, zz = z * z
+        let xy = x * y, xz = x * z, xw = x * w
+        let yz = y * z, yw = y * w, zw = z * w
+
+        return matrix_float4x4(columns: (
+            SIMD4<Float>(1 - 2 * (yy + zz), 2 * (xy + zw), 2 * (xz - yw), 0),
+            SIMD4<Float>(2 * (xy - zw), 1 - 2 * (xx + zz), 2 * (yz + xw), 0),
+            SIMD4<Float>(2 * (xz + yw), 2 * (yz - xw), 1 - 2 * (xx + yy), 0),
+            SIMD4<Float>(0, 0, 0, 1)
+        ))
+    }
+}
+
 struct Matrix4x4 {
     static func translation(x: Float, y: Float, z: Float) -> matrix_float4x4 {
         var matrix = matrix_identity_float4x4

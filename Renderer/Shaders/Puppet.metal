@@ -40,16 +40,23 @@ vertex VertexOut vertex_puppet(PuppetVertexIn in [[stage_in]],
     
     float4x4 skinMatrix = float4x4(0.0);
     bool hasBones = false;
+    float totalWeight = 0.0;
+    
+    for (int i = 0; i < 4; i++) {
+        totalWeight += in.weights[i];
+    }
+    
     for (int i = 0; i < 4; i++) {
         int boneIndex = int(in.joints[i]);
         float weight = in.weights[i];
         if (weight > 0.0) {
-            skinMatrix += puppet.bones[boneIndex] * weight;
+            float normalizedWeight = totalWeight > 0.0 ? (weight / totalWeight) : 0.0;
+            skinMatrix += puppet.bones[boneIndex] * normalizedWeight;
             hasBones = true;
         }
     }
     
-    if (!hasBones) {
+    if (!hasBones || totalWeight == 0.0) {
         skinMatrix = float4x4(1.0);
     }
     
