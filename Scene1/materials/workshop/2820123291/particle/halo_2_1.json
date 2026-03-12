@@ -1,0 +1,17 @@
+{
+	"passes" : 
+	[
+		{
+			"blending" : "additive",
+			"constantshadervalues" : 
+			{
+				"ui_editor_properties_overbright" : 0.25
+			},
+			"cullmode" : "nocull",
+			"depthtest" : "disabled",
+			"depthwrite" : "disabled",
+			"shader" : "genericparticle",
+			"textures" : [ "workshop/2820123291/particle/Boke_hex_tex" ]
+		}
+	]
+}
