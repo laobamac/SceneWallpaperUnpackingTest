@@ -5,10 +5,10 @@
 //  Created by laobamac on 2026/1/23.
 //
 
-import MetalKit
-import simd
 import CoreGraphics
 import Foundation
+import MetalKit
+import simd
 
 class PuppetRenderable: RenderableObject {
     let device: MTLDevice
@@ -27,7 +27,7 @@ class PuppetRenderable: RenderableObject {
     let subMeshes: [PuppetSubMesh]?
     let maskBindings: [PuppetMaskBinding]?
     let maskTextures: [MTLTexture]
-    
+
     let maskWriteState: MTLDepthStencilState?
     let maskTestState: MTLDepthStencilState?
     let puppetMaskPipeline: MTLRenderPipelineState?
@@ -86,7 +86,7 @@ class PuppetRenderable: RenderableObject {
         self.subMeshes = subMeshes
         self.maskBindings = maskBindings
         self.maskTextures = maskTextures
-        
+
         self.maskWriteState = maskWriteState
         self.maskTestState = maskTestState
         self.puppetMaskPipeline = puppetMaskPipeline
@@ -249,7 +249,7 @@ class PuppetRenderable: RenderableObject {
                         var idx0 = 0
                         var idx1 = 0
                         var fraction: Float = 0
-                        
+
                         for j in 0..<track.frames.count {
                             let fTime = track.frames[j].time ?? (Float(j) / fps)
                             if fTime <= t {
@@ -257,34 +257,35 @@ class PuppetRenderable: RenderableObject {
                             }
                         }
                         idx1 = (idx0 + 1) % track.frames.count
-                        
+
                         let k1 = track.frames[idx0]
                         let k2 = track.frames[idx1]
                         let t1 = k1.time ?? (Float(idx0) / fps)
                         var t2 = k2.time ?? (Float(idx1) / fps)
-                        
+
                         if idx1 == 0 {
                             t2 = duration
                         }
-                        
+
                         if t2 > t1 {
                             fraction = (t - t1) / (t2 - t1)
                         }
-                        
+
                         let p1 = SIMD3<Float>(k1.p[0], k1.p[1], k1.p[2])
                         let p2 = SIMD3<Float>(k2.p[0], k2.p[1], k2.p[2])
                         let p = mix(p1, p2, t: fraction)
-                        
+
                         let r1 = SIMD3<Float>(k1.r[0], k1.r[1], k1.r[2])
                         let r2 = SIMD3<Float>(k2.r[0], k2.r[1], k2.r[2])
                         let q1 = Quaternion.fromEuler(r1)
                         let q2 = Quaternion.fromEuler(r2)
-                        let matR = Quaternion.slerp(q1, q2, t: fraction).toMatrix()
-                        
+                        let matR = Quaternion.slerp(q1, q2, t: fraction)
+                            .toMatrix()
+
                         let s1 = SIMD3<Float>(k1.s[0], k1.s[1], k1.s[2])
                         let s2 = SIMD3<Float>(k2.s[0], k2.s[1], k2.s[2])
                         let s = mix(s1, s2, t: fraction)
-                        
+
                         let matT = Matrix4x4.translation(x: p.x, y: p.y, z: p.z)
                         let matS = Matrix4x4.scale(x: s.x, y: s.y, z: s.z)
                         localMatrices[i] = matT * matR * matS
@@ -345,12 +346,25 @@ class PuppetRenderable: RenderableObject {
             color: SIMD4<Float>(1, 1, 1, 1),
             animInfo: SIMD4<Float>(0, 0, 0, 0)
         )
-        encoder.setVertexBytes(&objUniforms, length: MemoryLayout<ObjectUniforms>.size, index: 2)
-        encoder.setFragmentBytes(&objUniforms, length: MemoryLayout<ObjectUniforms>.size, index: 2)
+        encoder.setVertexBytes(
+            &objUniforms,
+            length: MemoryLayout<ObjectUniforms>.size,
+            index: 2
+        )
+        encoder.setFragmentBytes(
+            &objUniforms,
+            length: MemoryLayout<ObjectUniforms>.size,
+            index: 2
+        )
 
-        let hasMaskLogic = maskBindings != nil && !maskBindings!.isEmpty && !maskTextures.isEmpty
+        let hasMaskLogic =
+            maskBindings != nil && !maskBindings!.isEmpty
+            && !maskTextures.isEmpty
 
-        if hasMaskLogic, let maskTex = maskTextures.first, let maskWrite = maskWriteState, let maskTest = maskTestState, let maskPipe = puppetMaskPipeline {
+        if hasMaskLogic, let maskTex = maskTextures.first,
+            let maskWrite = maskWriteState, let maskTest = maskTestState,
+            let maskPipe = puppetMaskPipeline
+        {
 
             encoder.setRenderPipelineState(maskPipe)
             encoder.setDepthStencilState(maskWrite)
@@ -370,7 +384,9 @@ class PuppetRenderable: RenderableObject {
 
             if let meshes = subMeshes {
                 for (index, mesh) in meshes.enumerated() {
-                    if maskBindings!.contains(where: { $0.target_group == index }) {
+                    if maskBindings!.contains(where: {
+                        $0.target_group == index
+                    }) {
                         encoder.setDepthStencilState(maskTest)
                         encoder.setStencilReferenceValue(1)
                     } else {
@@ -384,7 +400,8 @@ class PuppetRenderable: RenderableObject {
                         indexCount: mesh.count,
                         indexType: .uint32,
                         indexBuffer: indexBuffer,
-                        indexBufferOffset: mesh.start * MemoryLayout<UInt32>.stride
+                        indexBufferOffset: mesh.start
+                            * MemoryLayout<UInt32>.stride
                     )
                 }
             }
@@ -401,7 +418,8 @@ class PuppetRenderable: RenderableObject {
                         indexCount: mesh.count,
                         indexType: .uint32,
                         indexBuffer: indexBuffer,
-                        indexBufferOffset: mesh.start * MemoryLayout<UInt32>.stride
+                        indexBufferOffset: mesh.start
+                            * MemoryLayout<UInt32>.stride
                     )
                 }
             } else {

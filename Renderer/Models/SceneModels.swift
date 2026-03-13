@@ -103,13 +103,19 @@ enum ScriptableValue: Codable {
             return
         }
         if let container = try? decoder.container(keyedBy: DynamicKey.self) {
-            if container.allKeys.count == 1, let scriptKey = DynamicKey(stringValue: "value"), let val = try? container.decode(String.self, forKey: scriptKey) {
+            if container.allKeys.count == 1,
+                let scriptKey = DynamicKey(stringValue: "value"),
+                let val = try? container.decode(String.self, forKey: scriptKey)
+            {
                 self = .script(value: val)
                 return
             }
             var dict: [String: ScriptableValue] = [:]
             for key in container.allKeys {
-                if let val = try? container.decode(ScriptableValue.self, forKey: key) {
+                if let val = try? container.decode(
+                    ScriptableValue.self,
+                    forKey: key
+                ) {
                     dict[key.stringValue] = val
                 }
             }
@@ -134,7 +140,7 @@ enum ScriptableValue: Codable {
             return ""
         }
     }
-    
+
     var floatValue: Float {
         switch self {
         case .float(let f): return f
@@ -148,7 +154,7 @@ enum ScriptableValue: Codable {
         default: return 0.0
         }
     }
-    
+
     var float2Value: SIMD2<Float> {
         switch self {
         case .string(let s):
@@ -168,8 +174,12 @@ enum ScriptableValue: Codable {
         switch self {
         case .string(let s):
             let parts = s.split(separator: " ").compactMap { Float($0) }
-            if parts.count >= 3 { return SIMD3<Float>(parts[0], parts[1], parts[2]) }
-            if parts.count == 1 { return SIMD3<Float>(parts[0], parts[0], parts[0]) }
+            if parts.count >= 3 {
+                return SIMD3<Float>(parts[0], parts[1], parts[2])
+            }
+            if parts.count == 1 {
+                return SIMD3<Float>(parts[0], parts[0], parts[0])
+            }
             return SIMD3<Float>(0, 0, 0)
         case .object(let dict):
             if let val = dict["value"] {
@@ -179,14 +189,20 @@ enum ScriptableValue: Codable {
         default: return SIMD3<Float>(0, 0, 0)
         }
     }
-    
+
     var float4Value: SIMD4<Float> {
         switch self {
         case .string(let s):
             let parts = s.split(separator: " ").compactMap { Float($0) }
-            if parts.count >= 4 { return SIMD4<Float>(parts[0], parts[1], parts[2], parts[3]) }
-            if parts.count == 3 { return SIMD4<Float>(parts[0], parts[1], parts[2], 1.0) }
-            if parts.count == 1 { return SIMD4<Float>(parts[0], parts[0], parts[0], 1.0) }
+            if parts.count >= 4 {
+                return SIMD4<Float>(parts[0], parts[1], parts[2], parts[3])
+            }
+            if parts.count == 3 {
+                return SIMD4<Float>(parts[0], parts[1], parts[2], 1.0)
+            }
+            if parts.count == 1 {
+                return SIMD4<Float>(parts[0], parts[0], parts[0], 1.0)
+            }
             return SIMD4<Float>(0, 0, 0, 1)
         case .object(let dict):
             if let val = dict["value"] {
@@ -196,7 +212,7 @@ enum ScriptableValue: Codable {
         default: return SIMD4<Float>(0, 0, 0, 1)
         }
     }
-    
+
     func encode(to encoder: Encoder) throws {}
 }
 

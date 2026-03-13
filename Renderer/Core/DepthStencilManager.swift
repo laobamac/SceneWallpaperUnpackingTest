@@ -9,18 +9,18 @@ import MetalKit
 
 class DepthStencilManager {
     let device: MTLDevice
-    
+
     var depthStencilState: MTLDepthStencilState?
     var depthWriteDisabledState: MTLDepthStencilState?
     var particleDepthState: MTLDepthStencilState?
     var maskWriteState: MTLDepthStencilState?
     var maskTestState: MTLDepthStencilState?
-    
+
     init(device: MTLDevice) {
         self.device = device
         setupStates()
     }
-    
+
     func setupStates() {
         let depthDesc = MTLDepthStencilDescriptor()
         depthDesc.isDepthWriteEnabled = true
@@ -30,12 +30,16 @@ class DepthStencilManager {
         let depthDisabledDesc = MTLDepthStencilDescriptor()
         depthDisabledDesc.isDepthWriteEnabled = false
         depthDisabledDesc.depthCompareFunction = .lessEqual
-        depthWriteDisabledState = device.makeDepthStencilState(descriptor: depthDisabledDesc)
+        depthWriteDisabledState = device.makeDepthStencilState(
+            descriptor: depthDisabledDesc
+        )
 
         let particleDepthDesc = MTLDepthStencilDescriptor()
         particleDepthDesc.isDepthWriteEnabled = false
         particleDepthDesc.depthCompareFunction = .lessEqual
-        particleDepthState = device.makeDepthStencilState(descriptor: particleDepthDesc)
+        particleDepthState = device.makeDepthStencilState(
+            descriptor: particleDepthDesc
+        )
 
         let maskWriteDesc = MTLDepthStencilDescriptor()
         maskWriteDesc.isDepthWriteEnabled = false

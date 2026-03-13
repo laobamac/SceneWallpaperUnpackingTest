@@ -5,10 +5,10 @@
 //  Created by laobamac on 2026/1/23.
 //
 
+import AppKit
 import Foundation
 import MetalKit
 import simd
-import AppKit
 
 class Renderer: NSObject, MTKViewDelegate {
     let device: MTLDevice
@@ -46,7 +46,7 @@ class Renderer: NSObject, MTKViewDelegate {
         guard let queue = device.makeCommandQueue() else { return nil }
         self.commandQueue = queue
         super.init()
-        
+
         Task {
             do {
                 try await setupPipeline()
@@ -58,22 +58,29 @@ class Renderer: NSObject, MTKViewDelegate {
 
     func setupPipeline() async throws {
         guard let library = device.makeDefaultLibrary() else {
-            throw NSError(domain: "Renderer", code: 1, userInfo: [NSLocalizedDescriptionKey: "Library error"])
+            throw NSError(
+                domain: "Renderer",
+                code: 1,
+                userInfo: [NSLocalizedDescriptionKey: "Library error"]
+            )
         }
-        
+
         let hdrFormat: MTLPixelFormat = .rgba16Float
         let depthFormat: MTLPixelFormat = .depth32Float_stencil8
 
         let descriptor = MTLRenderPipelineDescriptor()
         descriptor.label = "Standard"
         descriptor.vertexFunction = library.makeFunction(name: "vertex_main")
-        descriptor.fragmentFunction = library.makeFunction(name: "fragment_main")
+        descriptor.fragmentFunction = library.makeFunction(
+            name: "fragment_main"
+        )
         descriptor.colorAttachments[0].pixelFormat = hdrFormat
         descriptor.colorAttachments[0].isBlendingEnabled = true
         descriptor.colorAttachments[0].rgbBlendOperation = .add
         descriptor.colorAttachments[0].alphaBlendOperation = .add
         descriptor.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
-        descriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
+        descriptor.colorAttachments[0].destinationRGBBlendFactor =
+            .oneMinusSourceAlpha
         descriptor.depthAttachmentPixelFormat = depthFormat
         descriptor.stencilAttachmentPixelFormat = depthFormat
         let vertexDescriptor = MTLVertexDescriptor()
@@ -85,18 +92,24 @@ class Renderer: NSObject, MTKViewDelegate {
         vertexDescriptor.attributes[1].bufferIndex = 0
         vertexDescriptor.layouts[0].stride = 20
         descriptor.vertexDescriptor = vertexDescriptor
-        pipelineState = try await device.makeRenderPipelineState(descriptor: descriptor, options: []).0
+        pipelineState = try await device.makeRenderPipelineState(
+            descriptor: descriptor,
+            options: []
+        ).0
 
         let puppetDesc = MTLRenderPipelineDescriptor()
         puppetDesc.label = "Puppet"
         puppetDesc.vertexFunction = library.makeFunction(name: "vertex_puppet")
-        puppetDesc.fragmentFunction = library.makeFunction(name: "fragment_main")
+        puppetDesc.fragmentFunction = library.makeFunction(
+            name: "fragment_main"
+        )
         puppetDesc.colorAttachments[0].pixelFormat = hdrFormat
         puppetDesc.colorAttachments[0].isBlendingEnabled = true
         puppetDesc.colorAttachments[0].rgbBlendOperation = .add
         puppetDesc.colorAttachments[0].alphaBlendOperation = .add
         puppetDesc.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
-        puppetDesc.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
+        puppetDesc.colorAttachments[0].destinationRGBBlendFactor =
+            .oneMinusSourceAlpha
         puppetDesc.depthAttachmentPixelFormat = depthFormat
         puppetDesc.stencilAttachmentPixelFormat = depthFormat
         let pvDesc = MTLVertexDescriptor()
@@ -119,35 +132,59 @@ class Renderer: NSObject, MTKViewDelegate {
         offset += 16
         pvDesc.layouts[0].stride = 48
         puppetDesc.vertexDescriptor = pvDesc
-        puppetPipelineState = try await device.makeRenderPipelineState(descriptor: puppetDesc, options: []).0
+        puppetPipelineState = try await device.makeRenderPipelineState(
+            descriptor: puppetDesc,
+            options: []
+        ).0
 
         let maskDesc = MTLRenderPipelineDescriptor()
         maskDesc.label = "PuppetMask"
         maskDesc.vertexFunction = library.makeFunction(name: "vertex_puppet")
-        maskDesc.fragmentFunction = library.makeFunction(name: "fragment_puppet_mask")
+        maskDesc.fragmentFunction = library.makeFunction(
+            name: "fragment_puppet_mask"
+        )
         maskDesc.colorAttachments[0].pixelFormat = hdrFormat
         maskDesc.colorAttachments[0].writeMask = []
         maskDesc.depthAttachmentPixelFormat = depthFormat
         maskDesc.stencilAttachmentPixelFormat = depthFormat
         maskDesc.vertexDescriptor = pvDesc
-        puppetMaskPipelineState = try await device.makeRenderPipelineState(descriptor: maskDesc, options: []).0
+        puppetMaskPipelineState = try await device.makeRenderPipelineState(
+            descriptor: maskDesc,
+            options: []
+        ).0
 
         let postDesc = MTLRenderPipelineDescriptor()
         postDesc.vertexFunction = library.makeFunction(name: "vertex_post")
         postDesc.colorAttachments[0].pixelFormat = hdrFormat
         postDesc.depthAttachmentPixelFormat = .invalid
         postDesc.stencilAttachmentPixelFormat = .invalid
-        postDesc.fragmentFunction = library.makeFunction(name: "fragment_extract")
-        extractPipeline = try await device.makeRenderPipelineState(descriptor: postDesc, options: []).0
+        postDesc.fragmentFunction = library.makeFunction(
+            name: "fragment_extract"
+        )
+        extractPipeline = try await device.makeRenderPipelineState(
+            descriptor: postDesc,
+            options: []
+        ).0
         postDesc.fragmentFunction = library.makeFunction(name: "fragment_blur")
-        blurPipeline = try await device.makeRenderPipelineState(descriptor: postDesc, options: []).0
-        postDesc.fragmentFunction = library.makeFunction(name: "fragment_upsample")
-        upsamplePipeline = try await device.makeRenderPipelineState(descriptor: postDesc, options: []).0
+        blurPipeline = try await device.makeRenderPipelineState(
+            descriptor: postDesc,
+            options: []
+        ).0
+        postDesc.fragmentFunction = library.makeFunction(
+            name: "fragment_upsample"
+        )
+        upsamplePipeline = try await device.makeRenderPipelineState(
+            descriptor: postDesc,
+            options: []
+        ).0
         postDesc.fragmentFunction = library.makeFunction(name: "fragment_final")
         postDesc.colorAttachments[0].pixelFormat = .bgra8Unorm
         postDesc.depthAttachmentPixelFormat = depthFormat
         postDesc.stencilAttachmentPixelFormat = depthFormat
-        finalPipeline = try await device.makeRenderPipelineState(descriptor: postDesc, options: []).0
+        finalPipeline = try await device.makeRenderPipelineState(
+            descriptor: postDesc,
+            options: []
+        ).0
 
         let samplerDesc = MTLSamplerDescriptor()
         samplerDesc.minFilter = .linear
@@ -169,7 +206,9 @@ class Renderer: NSObject, MTKViewDelegate {
         let depthDisabledDesc = MTLDepthStencilDescriptor()
         depthDisabledDesc.isDepthWriteEnabled = false
         depthDisabledDesc.depthCompareFunction = .lessEqual
-        depthWriteDisabledState = device.makeDepthStencilState(descriptor: depthDisabledDesc)
+        depthWriteDisabledState = device.makeDepthStencilState(
+            descriptor: depthDisabledDesc
+        )
 
         let maskWriteDesc = MTLDepthStencilDescriptor()
         maskWriteDesc.isDepthWriteEnabled = false
@@ -205,7 +244,7 @@ class Renderer: NSObject, MTKViewDelegate {
         defer { if secured { folder.stopAccessingSecurityScopedResource() } }
         self.baseFolder = folder
         renderables.removeAll()
-        
+
         await TextureManager.shared.setup(device: device)
         await TextureManager.shared.clear()
         startTime = Date()
@@ -213,16 +252,26 @@ class Renderer: NSObject, MTKViewDelegate {
         let projectURL = folder.appendingPathComponent("project.json")
         do {
             let projData = try Data(contentsOf: projectURL)
-            guard let projJson = try JSONSerialization.jsonObject(with: projData, options: []) as? [String: Any],
-                  let sceneFile = projJson["file"] as? String else { return }
-            
+            guard
+                let projJson = try JSONSerialization.jsonObject(
+                    with: projData,
+                    options: []
+                ) as? [String: Any],
+                let sceneFile = projJson["file"] as? String
+            else { return }
+
             let sceneURL = folder.appendingPathComponent(sceneFile)
             let sceneData = try Data(contentsOf: sceneURL)
-            let sceneRoot = try JSONDecoder().decode(SceneRoot.self, from: sceneData)
+            let sceneRoot = try JSONDecoder().decode(
+                SceneRoot.self,
+                from: sceneData
+            )
 
             var rawObjects: [Int: [String: Any]] = [:]
-            if let sceneDict = try JSONSerialization.jsonObject(with: sceneData) as? [String: Any],
-               let objs = sceneDict["objects"] as? [[String: Any]] {
+            if let sceneDict = try JSONSerialization.jsonObject(with: sceneData)
+                as? [String: Any],
+                let objs = sceneDict["objects"] as? [[String: Any]]
+            {
                 for o in objs {
                     if let id = o["id"] as? Int {
                         rawObjects[id] = o
@@ -231,8 +280,11 @@ class Renderer: NSObject, MTKViewDelegate {
             }
 
             var isBloomEnabled = false
-            if let sceneDict = try? JSONSerialization.jsonObject(with: sceneData) as? [String: Any],
-               let genDict = sceneDict["general"] as? [String: Any] {
+            if let sceneDict = try? JSONSerialization.jsonObject(
+                with: sceneData
+            ) as? [String: Any],
+                let genDict = sceneDict["general"] as? [String: Any]
+            {
                 if let bloom = genDict["bloom"] as? Bool {
                     isBloomEnabled = bloom
                 }
@@ -243,24 +295,34 @@ class Renderer: NSObject, MTKViewDelegate {
 
             if let gen = sceneRoot.general {
                 self.bloomThreshold = gen.bloomhdrthreshold ?? 1.0
-                self.bloomStrength = isBloomEnabled ? (gen.bloomhdrstrength ?? 2.0) : 0.0
-                self.bloomIterations = isBloomEnabled ? (gen.bloomhdriterations ?? 8) : 0
+                self.bloomStrength =
+                    isBloomEnabled ? (gen.bloomhdrstrength ?? 2.0) : 0.0
+                self.bloomIterations =
+                    isBloomEnabled ? (gen.bloomhdriterations ?? 8) : 0
             }
             if let proj = sceneRoot.general?.orthogonalprojection {
-                self.projectionSize = CGSize(width: Double(proj.width), height: Double(proj.height))
+                self.projectionSize = CGSize(
+                    width: Double(proj.width),
+                    height: Double(proj.height)
+                )
             }
             if let fov = sceneRoot.general?.fov { self.currentFOV = fov }
-            if let overrideFov = sceneRoot.general?.perspectiveoverridefov, overrideFov > 0 {
+            if let overrideFov = sceneRoot.general?.perspectiveoverridefov,
+                overrideFov > 0
+            {
                 self.currentFOV = overrideFov
             }
             var tempRenderables: [Int: RenderableObject] = [:]
             var orderedList: [RenderableObject] = []
-            
+
             for obj in sceneRoot.objects {
                 if !obj.isVisible { continue }
-                
+
                 let rawObj = rawObjects[obj.id ?? -1]
-                if let renderable = await createRenderable(from: obj, raw: rawObj) {
+                if let renderable = await createRenderable(
+                    from: obj,
+                    raw: rawObj
+                ) {
                     if let id = obj.id {
                         tempRenderables[id] = renderable
                         renderable.id = id
@@ -270,7 +332,9 @@ class Renderer: NSObject, MTKViewDelegate {
                 }
             }
             for renderable in orderedList {
-                if let pid = renderable.parentId, let parentObj = tempRenderables[pid] {
+                if let pid = renderable.parentId,
+                    let parentObj = tempRenderables[pid]
+                {
                     renderable.parent = parentObj
                 }
             }
@@ -288,33 +352,52 @@ class Renderer: NSObject, MTKViewDelegate {
     func mouseUp(at position: CGPoint, in view: NSView) {
     }
 
-    func createRenderable(from obj: SceneObject, raw: [String: Any]?) async -> RenderableObject? {
+    func createRenderable(from obj: SceneObject, raw: [String: Any]?) async
+        -> RenderableObject?
+    {
         guard let base = baseFolder else { return nil }
 
         guard let imagePath = obj.image else { return nil }
-        
+
         let modelURL = base.appendingPathComponent(imagePath)
         let fileName = modelURL.deletingPathExtension().lastPathComponent
-        let puppetDataURL = modelURL.deletingLastPathComponent().appendingPathComponent("\(fileName)_puppet_data.json")
-        let puppetObjURL = modelURL.deletingLastPathComponent().appendingPathComponent("\(fileName)_puppet.obj")
+        let puppetDataURL = modelURL.deletingLastPathComponent()
+            .appendingPathComponent("\(fileName)_puppet_data.json")
+        let puppetObjURL = modelURL.deletingLastPathComponent()
+            .appendingPathComponent("\(fileName)_puppet.obj")
 
         if FileManager.default.fileExists(atPath: puppetDataURL.path) {
-            return await createPuppetRenderable(from: obj, dataURL: puppetDataURL, objURL: puppetObjURL)
+            return await createPuppetRenderable(
+                from: obj,
+                dataURL: puppetDataURL,
+                objURL: puppetObjURL
+            )
         }
 
         do {
             let modelData = try Data(contentsOf: modelURL)
-            let modelDef = try JSONDecoder().decode(ModelJSON.self, from: modelData)
+            let modelDef = try JSONDecoder().decode(
+                ModelJSON.self,
+                from: modelData
+            )
             guard let matPath = modelDef.material else { return nil }
             let matURL = base.appendingPathComponent(matPath)
             let matData = try Data(contentsOf: matURL)
-            let matDef = try JSONDecoder().decode(MaterialJSON.self, from: matData)
+            let matDef = try JSONDecoder().decode(
+                MaterialJSON.self,
+                from: matData
+            )
             guard let firstPass = matDef.passes.first else { return nil }
-            
+
             var texture: MTLTexture!
             if let texName = firstPass.textures.first {
                 let texURL = resolveTextureURL(base: base, rawPath: texName)
-                texture = try await TextureManager.shared.loadTexture(url: texURL, options: [.origin: MTKTextureLoader.Origin.topLeft, .SRGB: true])
+                texture = try await TextureManager.shared.loadTexture(
+                    url: texURL,
+                    options: [
+                        .origin: MTKTextureLoader.Origin.topLeft, .SRGB: true,
+                    ]
+                )
             } else {
                 let (_, _, size, _) = RenderableObject.parseTransforms(obj)
                 let w = max(1, Int(size.x))
@@ -328,51 +411,100 @@ class Renderer: NSObject, MTKViewDelegate {
                 desc.usage = [.shaderRead, .renderTarget, .pixelFormatView]
                 texture = device.makeTexture(descriptor: desc)!
                 let bytes = [UInt8](repeating: 0, count: w * h * 8)
-                texture.replace(region: MTLRegionMake2D(0, 0, w, h), mipmapLevel: 0, slice: 0, withBytes: bytes, bytesPerRow: w * 8, bytesPerImage: w * h * 8)
+                texture.replace(
+                    region: MTLRegionMake2D(0, 0, w, h),
+                    mipmapLevel: 0,
+                    slice: 0,
+                    withBytes: bytes,
+                    bytesPerRow: w * 8,
+                    bytesPerImage: w * h * 8
+                )
             }
-            
-            let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
+
+            let (pos, rotation, size, scale) = RenderableObject.parseTransforms(
+                obj
+            )
             var depthState = depthStencilState
             if let dw = firstPass.depthwrite, dw == "disabled" {
                 depthState = depthWriteDisabledState
             }
             guard let pipeline = pipelineState else { return nil }
-            let renderable = RenderableObject(position: pos, rotation: rotation, size: size, scale: scale, texture: texture, pipeline: pipeline, depthState: depthState)
-            
+            let renderable = RenderableObject(
+                position: pos,
+                rotation: rotation,
+                size: size,
+                scale: scale,
+                texture: texture,
+                pipeline: pipeline,
+                depthState: depthState
+            )
+
             return renderable
         } catch { return nil }
     }
 
-    func createPuppetRenderable(from obj: SceneObject, dataURL: URL, objURL: URL) async -> RenderableObject? {
+    func createPuppetRenderable(
+        from obj: SceneObject,
+        dataURL: URL,
+        objURL: URL
+    ) async -> RenderableObject? {
         do {
             let jsonData = try Data(contentsOf: dataURL)
-            let puppetData = try JSONDecoder().decode(PuppetData.self, from: jsonData)
+            let puppetData = try JSONDecoder().decode(
+                PuppetData.self,
+                from: jsonData
+            )
             let objContent = try String(contentsOf: objURL, encoding: .utf8)
-            guard let matFile = puppetData.info.material_file, let base = baseFolder else { return nil }
+            guard let matFile = puppetData.info.material_file,
+                let base = baseFolder
+            else { return nil }
             let matURL = base.appendingPathComponent(matFile)
             let matData = try Data(contentsOf: matURL)
-            let matDef = try JSONDecoder().decode(MaterialJSON.self, from: matData)
-            guard let firstPass = matDef.passes.first, let texName = firstPass.textures.first else { return nil }
+            let matDef = try JSONDecoder().decode(
+                MaterialJSON.self,
+                from: matData
+            )
+            guard let firstPass = matDef.passes.first,
+                let texName = firstPass.textures.first
+            else { return nil }
             let texURL = resolveTextureURL(base: base, rawPath: texName)
-            let texture = try await TextureManager.shared.loadTexture(url: texURL, options: [.origin: MTKTextureLoader.Origin.topLeft, .SRGB: true])
-            
-            let (vertices, indices, bboxWidth) = PuppetRenderable.parseOBJ(objContent: objContent, skinning: puppetData.skeleton.isEmpty ? [] : puppetData.skinning)
-            
-            let (pos, rotation, size, scale) = RenderableObject.parseTransforms(obj)
+            let texture = try await TextureManager.shared.loadTexture(
+                url: texURL,
+                options: [
+                    .origin: MTKTextureLoader.Origin.topLeft, .SRGB: true,
+                ]
+            )
+
+            let (vertices, indices, bboxWidth) = PuppetRenderable.parseOBJ(
+                objContent: objContent,
+                skinning: puppetData.skeleton.isEmpty ? [] : puppetData.skinning
+            )
+
+            let (pos, rotation, size, scale) = RenderableObject.parseTransforms(
+                obj
+            )
             var depthState = depthStencilState
             if let dw = firstPass.depthwrite, dw == "disabled" {
                 depthState = depthWriteDisabledState
             }
-            
+
             var maskTextures: [MTLTexture] = []
             if let masks = puppetData.clipping_masks {
                 Logger.log("[Puppet] 发现 Clipping Masks 纹理，数量: \(masks.count)")
                 for (index, maskPath) in masks.enumerated() {
                     Logger.log("[Puppet] 准备加载 Mask [\(index)]: \(maskPath)")
                     let mURL = resolveTextureURL(base: base, rawPath: maskPath)
-                    if let mTex = try? await TextureManager.shared.loadTexture(url: mURL, options: [.origin: MTKTextureLoader.Origin.topLeft, .SRGB: false]) {
+                    if let mTex = try? await TextureManager.shared.loadTexture(
+                        url: mURL,
+                        options: [
+                            .origin: MTKTextureLoader.Origin.topLeft,
+                            .SRGB: false,
+                        ]
+                    ) {
                         maskTextures.append(mTex)
-                        Logger.log("[Puppet] Mask [\(index)] 加载成功: \(mTex.width)x\(mTex.height)")
+                        Logger.log(
+                            "[Puppet] Mask [\(index)] 加载成功: \(mTex.width)x\(mTex.height)"
+                        )
                     } else {
                         Logger.log("[Puppet] Mask [\(index)] 加载失败!")
                     }
@@ -380,8 +512,10 @@ class Renderer: NSObject, MTKViewDelegate {
             } else {
                 Logger.log("[Puppet] 当前模型没有 clipping_masks 字段")
             }
-            
-            guard let pipeline = puppetPipelineState, let maskPipe = puppetMaskPipelineState else { return nil }
+
+            guard let pipeline = puppetPipelineState,
+                let maskPipe = puppetMaskPipelineState
+            else { return nil }
             let renderable = PuppetRenderable(
                 device: device,
                 vertices: vertices,
@@ -403,7 +537,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 depthState: depthState,
                 usePixelCoords: bboxWidth > 2.0
             )
-            
+
             return renderable
         } catch { return nil }
     }
@@ -412,52 +546,102 @@ class Renderer: NSObject, MTKViewDelegate {
         let extensions = ["png", "webp", "tga", "mp4"]
         let fileName = URL(fileURLWithPath: rawPath).lastPathComponent
         for ext in extensions {
-            let directURL = base.appendingPathComponent("materials/\(rawPath).\(ext)")
-            if FileManager.default.fileExists(atPath: directURL.path) { return directURL }
-            let flatURL = base.appendingPathComponent("materials/\(fileName).\(ext)")
-            if FileManager.default.fileExists(atPath: flatURL.path) { return flatURL }
-            let folderURL = base.appendingPathComponent(rawPath).appendingPathExtension(ext)
-            if FileManager.default.fileExists(atPath: folderURL.path) { return folderURL }
+            let directURL = base.appendingPathComponent(
+                "materials/\(rawPath).\(ext)"
+            )
+            if FileManager.default.fileExists(atPath: directURL.path) {
+                return directURL
+            }
+            let flatURL = base.appendingPathComponent(
+                "materials/\(fileName).\(ext)"
+            )
+            if FileManager.default.fileExists(atPath: flatURL.path) {
+                return flatURL
+            }
+            let folderURL = base.appendingPathComponent(rawPath)
+                .appendingPathExtension(ext)
+            if FileManager.default.fileExists(atPath: folderURL.path) {
+                return folderURL
+            }
         }
         return base.appendingPathComponent("materials/\(fileName).png")
     }
 
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-        let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Float, width: Int(size.width), height: Int(size.height), mipmapped: false)
+        let desc = MTLTextureDescriptor.texture2DDescriptor(
+            pixelFormat: .rgba16Float,
+            width: Int(size.width),
+            height: Int(size.height),
+            mipmapped: false
+        )
         desc.usage = [.renderTarget, .shaderRead]
         hdrTexture = device.makeTexture(descriptor: desc)
-        
+
         bloomTextures.removeAll()
         bloomTempTextures.removeAll()
         var w = Int(size.width)
         var h = Int(size.height)
         for _ in 0...bloomIterations {
-            let bDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Float, width: w, height: h, mipmapped: false)
+            let bDesc = MTLTextureDescriptor.texture2DDescriptor(
+                pixelFormat: .rgba16Float,
+                width: w,
+                height: h,
+                mipmapped: false
+            )
             bDesc.usage = [.renderTarget, .shaderRead]
-            if let tex = device.makeTexture(descriptor: bDesc) { bloomTextures.append(tex) }
-            if let tTex = device.makeTexture(descriptor: bDesc) { bloomTempTextures.append(tTex) }
+            if let tex = device.makeTexture(descriptor: bDesc) {
+                bloomTextures.append(tex)
+            }
+            if let tTex = device.makeTexture(descriptor: bDesc) {
+                bloomTempTextures.append(tTex)
+            }
             w = max(1, w / 2)
             h = max(1, h / 2)
         }
     }
 
-    private func makePerspective(fovyRadians: Float, aspect: Float, near: Float, far: Float) -> matrix_float4x4 {
+    private func makePerspective(
+        fovyRadians: Float,
+        aspect: Float,
+        near: Float,
+        far: Float
+    ) -> matrix_float4x4 {
         let ys = 1 / tanf(fovyRadians * 0.5)
         let xs = ys / aspect
         let zs = far / (near - far)
-        return matrix_float4x4.init(columns: (vector_float4(xs, 0, 0, 0), vector_float4(0, ys, 0, 0), vector_float4(0, 0, zs, -1), vector_float4(0, 0, zs * near, 0)))
+        return matrix_float4x4.init(
+            columns: (
+                vector_float4(xs, 0, 0, 0), vector_float4(0, ys, 0, 0),
+                vector_float4(0, 0, zs, -1), vector_float4(0, 0, zs * near, 0)
+            )
+        )
     }
 
-    private func makeLookAt(eye: SIMD3<Float>, center: SIMD3<Float>, up: SIMD3<Float>) -> matrix_float4x4 {
+    private func makeLookAt(
+        eye: SIMD3<Float>,
+        center: SIMD3<Float>,
+        up: SIMD3<Float>
+    ) -> matrix_float4x4 {
         let z = normalize(eye - center)
         let x = normalize(cross(z, up))
         let y = cross(x, z)
         let t = SIMD3<Float>(-dot(x, eye), -dot(y, eye), -dot(z, eye))
-        return matrix_float4x4.init(columns: (vector_float4(x.x, y.x, z.x, 0), vector_float4(x.y, y.y, z.y, 0), vector_float4(x.z, y.z, z.z, 0), vector_float4(t.x, t.y, t.z, 1)))
+        return matrix_float4x4.init(
+            columns: (
+                vector_float4(x.x, y.x, z.x, 0),
+                vector_float4(x.y, y.y, z.y, 0),
+                vector_float4(x.z, y.z, z.z, 0), vector_float4(t.x, t.y, t.z, 1)
+            )
+        )
     }
 
     func draw(in view: MTKView) {
-        guard isReady, let drawable = view.currentDrawable, let descriptor = view.currentRenderPassDescriptor, let hdrTex = hdrTexture, let commandBuffer = commandQueue.makeCommandBuffer(), let sampler = samplerState, let fPipeline = finalPipeline else { return }
+        guard isReady, let drawable = view.currentDrawable,
+            let descriptor = view.currentRenderPassDescriptor,
+            let hdrTex = hdrTexture,
+            let commandBuffer = commandQueue.makeCommandBuffer(),
+            let sampler = samplerState, let fPipeline = finalPipeline
+        else { return }
 
         let currentTime = Date().timeIntervalSince(startTime)
         lastTime = currentTime
@@ -471,21 +655,33 @@ class Renderer: NSObject, MTKViewDelegate {
         hdrPassDesc.colorAttachments[0].texture = hdrTex
         hdrPassDesc.colorAttachments[0].loadAction = .clear
         hdrPassDesc.colorAttachments[0].storeAction = .store
-        hdrPassDesc.colorAttachments[0].clearColor = MTLClearColor(red: 0, green: 0, blue: 0, alpha: 1)
+        hdrPassDesc.colorAttachments[0].clearColor = MTLClearColor(
+            red: 0,
+            green: 0,
+            blue: 0,
+            alpha: 1
+        )
         hdrPassDesc.depthAttachment.texture = descriptor.depthAttachment.texture
         hdrPassDesc.depthAttachment.loadAction = .clear
         hdrPassDesc.depthAttachment.storeAction = .dontCare
         hdrPassDesc.depthAttachment.clearDepth = 1.0
-        hdrPassDesc.stencilAttachment.texture = descriptor.stencilAttachment.texture
+        hdrPassDesc.stencilAttachment.texture =
+            descriptor.stencilAttachment.texture
         hdrPassDesc.stencilAttachment.loadAction = .clear
         hdrPassDesc.stencilAttachment.storeAction = .dontCare
         hdrPassDesc.stencilAttachment.clearStencil = 0
 
-        guard let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: hdrPassDesc) else { return }
+        guard
+            let encoder = commandBuffer.makeRenderCommandEncoder(
+                descriptor: hdrPassDesc
+            )
+        else { return }
         encoder.setCullMode(.none)
 
         let targetAspect = Double(projectionSize.width / projectionSize.height)
-        let currentAspect = Double(view.drawableSize.width / view.drawableSize.height)
+        let currentAspect = Double(
+            view.drawableSize.width / view.drawableSize.height
+        )
         var drawWidth = Double(view.drawableSize.width)
         var drawHeight = Double(view.drawableSize.height)
         var vx: Double = 0
@@ -497,20 +693,59 @@ class Renderer: NSObject, MTKViewDelegate {
             drawHeight = Double(view.drawableSize.width) / targetAspect
             vy = (Double(view.drawableSize.height) - drawHeight) / 2
         }
-        encoder.setViewport(MTLViewport(originX: vx, originY: vy, width: drawWidth, height: drawHeight, znear: 0, zfar: 1))
+        encoder.setViewport(
+            MTLViewport(
+                originX: vx,
+                originY: vy,
+                width: drawWidth,
+                height: drawHeight,
+                znear: 0,
+                zfar: 1
+            )
+        )
 
         let fov = currentFOV * (.pi / 180.0)
         let aspect = Float(projectionSize.width / projectionSize.height)
         let camDist = (Float(projectionSize.height) / 2.0) / tan(fov / 2.0)
-        let proj = makePerspective(fovyRadians: fov, aspect: aspect, near: 10.0, far: 10000.0)
-        let viewMat = makeLookAt(eye: SIMD3<Float>(Float(projectionSize.width) / 2, Float(projectionSize.height) / 2, -camDist), center: SIMD3<Float>(Float(projectionSize.width) / 2, Float(projectionSize.height) / 2, 0), up: SIMD3<Float>(0, 1, 0))
+        let proj = makePerspective(
+            fovyRadians: fov,
+            aspect: aspect,
+            near: 10.0,
+            far: 10000.0
+        )
+        let viewMat = makeLookAt(
+            eye: SIMD3<Float>(
+                Float(projectionSize.width) / 2,
+                Float(projectionSize.height) / 2,
+                -camDist
+            ),
+            center: SIMD3<Float>(
+                Float(projectionSize.width) / 2,
+                Float(projectionSize.height) / 2,
+                0
+            ),
+            up: SIMD3<Float>(0, 1, 0)
+        )
 
-        var globals = GlobalUniforms(projectionMatrix: proj, viewMatrix: viewMat, time: time, padding: .zero)
+        var globals = GlobalUniforms(
+            projectionMatrix: proj,
+            viewMatrix: viewMat,
+            time: time,
+            padding: .zero
+        )
         encoder.setFragmentSamplerState(sampler, index: 0)
 
         for obj in renderables {
-            encoder.setVertexBytes(&globals, length: MemoryLayout<GlobalUniforms>.size, index: 1)
-            encoder.setFragmentBytes(&globals, length: MemoryLayout<GlobalUniforms>.size, index: 1)
+            encoder.setVertexBytes(
+                &globals,
+                length: MemoryLayout<GlobalUniforms>.size,
+                index: 1
+            )
+            encoder.setFragmentBytes(
+                &globals,
+                length: MemoryLayout<GlobalUniforms>.size,
+                index: 1
+            )
             if let puppet = obj as? PuppetRenderable {
                 puppet.updateAnimation(time: time)
             }
@@ -523,76 +758,124 @@ class Renderer: NSObject, MTKViewDelegate {
                 let extractDesc = MTLRenderPassDescriptor()
                 extractDesc.colorAttachments[0].texture = bloomTextures[0]
                 extractDesc.colorAttachments[0].loadAction = .clear
-                if let exEnc = commandBuffer.makeRenderCommandEncoder(descriptor: extractDesc) {
+                if let exEnc = commandBuffer.makeRenderCommandEncoder(
+                    descriptor: extractDesc
+                ) {
                     exEnc.setRenderPipelineState(extractPipeline)
                     exEnc.setFragmentTexture(hdrTex, index: 0)
                     exEnc.setFragmentSamplerState(sampler, index: 0)
                     exEnc.setFragmentBytes(&bloomThreshold, length: 4, index: 0)
-                    exEnc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
+                    exEnc.drawPrimitives(
+                        type: .triangleStrip,
+                        vertexStart: 0,
+                        vertexCount: 4
+                    )
                     exEnc.endEncoding()
                 }
             }
             if let blurPipeline = blurPipeline {
                 for i in 0..<bloomTextures.count - 1 {
                     let blurHDesc = MTLRenderPassDescriptor()
-                    blurHDesc.colorAttachments[0].texture = bloomTempTextures[i + 1]
-                    if let encH = commandBuffer.makeRenderCommandEncoder(descriptor: blurHDesc) {
+                    blurHDesc.colorAttachments[0].texture =
+                        bloomTempTextures[i + 1]
+                    if let encH = commandBuffer.makeRenderCommandEncoder(
+                        descriptor: blurHDesc
+                    ) {
                         var horiz = true
                         encH.setRenderPipelineState(blurPipeline)
                         encH.setFragmentTexture(bloomTextures[i], index: 0)
                         encH.setFragmentSamplerState(sampler, index: 0)
                         encH.setFragmentBytes(&horiz, length: 1, index: 0)
-                        encH.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
+                        encH.drawPrimitives(
+                            type: .triangleStrip,
+                            vertexStart: 0,
+                            vertexCount: 4
+                        )
                         encH.endEncoding()
                     }
                     let blurVDesc = MTLRenderPassDescriptor()
                     blurVDesc.colorAttachments[0].texture = bloomTextures[i + 1]
-                    if let encV = commandBuffer.makeRenderCommandEncoder(descriptor: blurVDesc) {
+                    if let encV = commandBuffer.makeRenderCommandEncoder(
+                        descriptor: blurVDesc
+                    ) {
                         var horiz = false
                         encV.setRenderPipelineState(blurPipeline)
-                        encV.setFragmentTexture(bloomTempTextures[i + 1], index: 0)
+                        encV.setFragmentTexture(
+                            bloomTempTextures[i + 1],
+                            index: 0
+                        )
                         encV.setFragmentSamplerState(sampler, index: 0)
                         encV.setFragmentBytes(&horiz, length: 1, index: 0)
-                        encV.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
+                        encV.drawPrimitives(
+                            type: .triangleStrip,
+                            vertexStart: 0,
+                            vertexCount: 4
+                        )
                         encV.endEncoding()
                     }
                 }
             }
-            if let upsamplePipeline = upsamplePipeline, let blurPipeline = blurPipeline {
+            if let upsamplePipeline = upsamplePipeline,
+                let blurPipeline = blurPipeline
+            {
                 for i in stride(from: bloomTextures.count - 1, to: 0, by: -1) {
                     let upDesc = MTLRenderPassDescriptor()
-                    upDesc.colorAttachments[0].texture = bloomTempTextures[i - 1]
-                    if let upEnc = commandBuffer.makeRenderCommandEncoder(descriptor: upDesc) {
+                    upDesc.colorAttachments[0].texture =
+                        bloomTempTextures[i - 1]
+                    if let upEnc = commandBuffer.makeRenderCommandEncoder(
+                        descriptor: upDesc
+                    ) {
                         upEnc.setRenderPipelineState(upsamplePipeline)
                         upEnc.setFragmentTexture(bloomTextures[i - 1], index: 0)
                         upEnc.setFragmentTexture(bloomTextures[i], index: 1)
                         upEnc.setFragmentSamplerState(sampler, index: 0)
-                        upEnc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
+                        upEnc.drawPrimitives(
+                            type: .triangleStrip,
+                            vertexStart: 0,
+                            vertexCount: 4
+                        )
                         upEnc.endEncoding()
                     }
                     let blurFDesc = MTLRenderPassDescriptor()
                     blurFDesc.colorAttachments[0].texture = bloomTextures[i - 1]
-                    if let fEnc = commandBuffer.makeRenderCommandEncoder(descriptor: blurFDesc) {
+                    if let fEnc = commandBuffer.makeRenderCommandEncoder(
+                        descriptor: blurFDesc
+                    ) {
                         var horiz = true
                         fEnc.setRenderPipelineState(blurPipeline)
-                        fEnc.setFragmentTexture(bloomTempTextures[i - 1], index: 0)
+                        fEnc.setFragmentTexture(
+                            bloomTempTextures[i - 1],
+                            index: 0
+                        )
                         fEnc.setFragmentSamplerState(sampler, index: 0)
                         fEnc.setFragmentBytes(&horiz, length: 1, index: 0)
-                        fEnc.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
+                        fEnc.drawPrimitives(
+                            type: .triangleStrip,
+                            vertexStart: 0,
+                            vertexCount: 4
+                        )
                         fEnc.endEncoding()
                     }
                 }
             }
         }
 
-        if let finalEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor) {
+        if let finalEncoder = commandBuffer.makeRenderCommandEncoder(
+            descriptor: descriptor
+        ) {
             finalEncoder.setRenderPipelineState(fPipeline)
             finalEncoder.setFragmentTexture(hdrTex, index: 0)
-            if !bloomTextures.isEmpty { finalEncoder.setFragmentTexture(bloomTextures[0], index: 1) }
+            if !bloomTextures.isEmpty {
+                finalEncoder.setFragmentTexture(bloomTextures[0], index: 1)
+            }
             finalEncoder.setFragmentSamplerState(sampler, index: 0)
             finalEncoder.setFragmentBytes(&bloomStrength, length: 4, index: 0)
             finalEncoder.setFragmentBytes(&isHDREnabled, length: 1, index: 1)
-            finalEncoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
+            finalEncoder.drawPrimitives(
+                type: .triangleStrip,
+                vertexStart: 0,
+                vertexCount: 4
+            )
             finalEncoder.endEncoding()
         }
 
