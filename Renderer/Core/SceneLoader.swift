@@ -198,16 +198,13 @@ class SceneLoader {
     }
 
     private func resolveTextureURL(base: URL, rawPath: String) -> URL {
-        let extensions = ["png", "webp", "tga", "mp4"]
-        let fileName = URL(fileURLWithPath: rawPath).lastPathComponent
-        for ext in extensions {
-            let directURL = base.appendingPathComponent("materials/\(rawPath).\(ext)")
-            if FileManager.default.fileExists(atPath: directURL.path) { return directURL }
-            let flatURL = base.appendingPathComponent("materials/\(fileName).\(ext)")
-            if FileManager.default.fileExists(atPath: flatURL.path) { return flatURL }
-            let folderURL = base.appendingPathComponent(rawPath).appendingPathExtension(ext)
-            if FileManager.default.fileExists(atPath: folderURL.path) { return folderURL }
-        }
-        return base.appendingPathComponent("materials/\(fileName).png")
+        let fileName = URL(fileURLWithPath: rawPath).deletingPathExtension().lastPathComponent
+        let directURL = base.appendingPathComponent("materials/\(rawPath).tex")
+        if FileManager.default.fileExists(atPath: directURL.path) { return directURL }
+        let flatURL = base.appendingPathComponent("materials/\(fileName).tex")
+        if FileManager.default.fileExists(atPath: flatURL.path) { return flatURL }
+        let folderURL = base.appendingPathComponent(rawPath).deletingPathExtension().appendingPathExtension("tex")
+        if FileManager.default.fileExists(atPath: folderURL.path) { return folderURL }
+        return base.appendingPathComponent("materials/\(fileName).tex")
     }
 }
