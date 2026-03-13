@@ -27,6 +27,16 @@ struct ProjectionSize: Codable {
     let height: Float
 }
 
+struct AnimationLayer: Codable {
+    let additive: Bool?
+    let animation: Int?
+    let blend: Float?
+    let id: Int?
+    let name: String?
+    let rate: Float?
+    let visible: BoolOrObject?
+}
+
 struct SceneObject: Codable {
     let id: Int?
     let name: String?
@@ -40,10 +50,12 @@ struct SceneObject: Codable {
     let visible: BoolOrObject?
     let color: ScriptableValue?
     let alpha: Float?
+    let animationlayers: [AnimationLayer]?
 
     var isVisible: Bool {
         if let v = visible {
             if case .bool(let b) = v { return b }
+            if case .object(let o) = v { return o.value ?? true }
             return true
         }
         return true

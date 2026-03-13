@@ -22,6 +22,7 @@ class PuppetRenderable: RenderableObject {
     let usePixelCoords: Bool
     let skeleton: [PuppetBone]
     let animations: [PuppetAnimation]
+    let animationLayers: [AnimationLayer]
     var inverseBindMatrices: [matrix_float4x4] = []
 
     let subMeshes: [PuppetSubMesh]?
@@ -43,6 +44,7 @@ class PuppetRenderable: RenderableObject {
         maskBindings: [PuppetMaskBinding]?,
         skeleton: [PuppetBone],
         animations: [PuppetAnimation],
+        animationLayers: [AnimationLayer],
         position: SIMD3<Float>,
         rotation: SIMD3<Float>,
         size: SIMD2<Float>,
@@ -57,10 +59,12 @@ class PuppetRenderable: RenderableObject {
         usePixelCoords: Bool
     ) {
         self.device = device
-        
+
         Logger.log("[Puppet] === 开始初始化 PuppetRenderable ===")
-        Logger.log("[Puppet] 顶点数量: \(vertices.count), 索引数量: \(indices.count), 是否使用像素坐标: \(usePixelCoords)")
-        
+        Logger.log(
+            "[Puppet] 顶点数量: \(vertices.count), 索引数量: \(indices.count), 是否使用像素坐标: \(usePixelCoords)"
+        )
+
         guard
             let vb = device.makeBuffer(
                 bytes: vertices,
@@ -89,6 +93,7 @@ class PuppetRenderable: RenderableObject {
         self.usePixelCoords = usePixelCoords
         self.skeleton = skeleton
         self.animations = animations
+        self.animationLayers = animationLayers
         self.subMeshes = subMeshes
         self.maskBindings = maskBindings
         self.maskTextures = maskTextures
@@ -96,11 +101,13 @@ class PuppetRenderable: RenderableObject {
         self.maskWriteState = maskWriteState
         self.maskTestState = maskTestState
         self.puppetMaskPipeline = puppetMaskPipeline
-        
+
         if let sm = subMeshes {
             Logger.log("[Puppet] 发现 SubMeshes 数量: \(sm.count)")
             for (i, m) in sm.enumerated() {
-                Logger.log("[Puppet] -> SubMesh[\(i)] ID: \(m.id), Start: \(m.start), Count: \(m.count)")
+                Logger.log(
+                    "[Puppet] -> SubMesh[\(i)] ID: \(m.id), Start: \(m.start), Count: \(m.count)"
+                )
             }
         } else {
             Logger.log("[Puppet] 未发现 SubMeshes 数据")
@@ -109,14 +116,18 @@ class PuppetRenderable: RenderableObject {
         if let mb = maskBindings {
             Logger.log("[Puppet] 发现 Mask Bindings 数量: \(mb.count)")
             for (i, b) in mb.enumerated() {
-                Logger.log("[Puppet] -> Binding[\(i)] TargetGroup: \(b.target_group), Mask: \(b.mask ?? -1)")
+                Logger.log(
+                    "[Puppet] -> Binding[\(i)] TargetGroup: \(b.target_group), Mask: \(b.mask ?? -1)"
+                )
             }
         } else {
             Logger.log("[Puppet] 未发现 Mask Bindings 数据")
         }
 
         Logger.log("[Puppet] 传入的 Mask Textures 数量: \(maskTextures.count)")
-        Logger.log("[Puppet] 传入骨骼节点数量: \(skeleton.count), 动画数量: \(animations.count)")
+        Logger.log(
+            "[Puppet] 传入骨骼节点数量: \(skeleton.count), 动画数量: \(animations.count)"
+        )
 
         self.boneMatrices = Array(
             repeating: matrix_identity_float4x4,
@@ -146,7 +157,9 @@ class PuppetRenderable: RenderableObject {
         computeInverseBindMatrices()
 
         if let firstAnim = animations.first {
-            Logger.log("[Puppet] 开始绑定动画轨道 <\(firstAnim.name)>, Tracks: \(firstAnim.tracks.count), FPS: \(firstAnim.fps), Length: \(firstAnim.length)")
+            Logger.log(
+                "[Puppet] 开始绑定动画轨道 <\(firstAnim.name)>, Tracks: \(firstAnim.tracks.count), FPS: \(firstAnim.fps), Length: \(firstAnim.length)"
+            )
             for (index, track) in firstAnim.tracks.enumerated() {
                 boneToTrackIndex[track.track_id] = index
             }
@@ -181,7 +194,9 @@ class PuppetRenderable: RenderableObject {
     }
 
     func computeInverseBindMatrices() {
-        Logger.log("[Puppet] 开始计算 Inverse Bind Matrices (骨骼数量: \(skeleton.count))...")
+        Logger.log(
+            "[Puppet] 开始计算 Inverse Bind Matrices (骨骼数量: \(skeleton.count))..."
+        )
         inverseBindMatrices = Array(
             repeating: matrix_identity_float4x4,
             count: skeleton.count
@@ -246,97 +261,104 @@ class PuppetRenderable: RenderableObject {
 
     func updateAnimation(time: Float) {
         if animations.isEmpty { return }
-        let anim = animations[0]
-        let fps = anim.fps > 0 ? anim.fps : 30.0
-        let duration = Float(anim.length) / fps
-        let t = (duration > 0) ? fmod(time, duration) : 0
-
-        let currentCycle = (duration > 0) ? Int(time / duration) : 0
-        if currentCycle > lastAnimCycle {
-            lastAnimCycle = currentCycle
-            Logger.log("[Puppet] 动画进入新周期: <\(anim.name)> Cycle: \(currentCycle), Time: \(time)")
-        }
 
         var localMatrices = Array(
             repeating: matrix_identity_float4x4,
             count: skeleton.count
         )
-
         for i in 0..<skeleton.count {
-            let bone = skeleton[i]
-            var hasTrack = false
+            let m = skeleton[i].matrix
+            localMatrices[i] = matrix_float4x4(
+                columns: (
+                    SIMD4<Float>(m[0], m[1], m[2], m[3]),
+                    SIMD4<Float>(m[4], m[5], m[6], m[7]),
+                    SIMD4<Float>(m[8], m[9], m[10], m[11]),
+                    SIMD4<Float>(m[12], m[13], m[14], m[15])
+                )
+            )
+        }
 
-            if let trackIndex = boneToTrackIndex[bone.id] {
-                let track = anim.tracks[trackIndex]
-                if !track.frames.isEmpty {
-                    hasTrack = true
+        let activeLayers = animationLayers.filter { layer in
+            if let v = layer.visible {
+                if case .bool(let b) = v { return b }
+                if case .object(let o) = v { return o.value ?? true }
+            }
+            return true
+        }
+
+        for layer in activeLayers {
+            guard let animId = layer.animation,
+                let anim = animations.first(where: { $0.id == animId })
+            else { continue }
+
+            let layerRate = layer.rate ?? 1.0
+            let layerBlend = layer.blend ?? 1.0
+            let fps = anim.fps > 0 ? anim.fps : 30.0
+            let duration = Float(anim.length) / fps
+            let t = (duration > 0) ? fmod(time * layerRate, duration) : 0
+
+            for i in 0..<skeleton.count {
+                let bone = skeleton[i]
+                if let track = anim.tracks.first(where: {
+                    $0.track_id == bone.id
+                }), !track.frames.isEmpty {
+                    let animMat: matrix_float4x4
                     if track.frames.count == 1 {
                         let k1 = track.frames[0]
                         let p = SIMD3<Float>(k1.p[0], k1.p[1], k1.p[2])
                         let r = SIMD3<Float>(k1.r[0], k1.r[1], k1.r[2])
                         let s = SIMD3<Float>(k1.s[0], k1.s[1], k1.s[2])
-                        let matT = Matrix4x4.translation(x: p.x, y: p.y, z: p.z)
-                        let matR = Quaternion.fromEuler(r).toMatrix()
-                        let matS = Matrix4x4.scale(x: s.x, y: s.y, z: s.z)
-                        localMatrices[i] = matT * matR * matS
+                        animMat =
+                            Matrix4x4.translation(x: p.x, y: p.y, z: p.z)
+                            * Quaternion.fromEuler(r).toMatrix()
+                            * Matrix4x4.scale(x: s.x, y: s.y, z: s.z)
                     } else {
                         var idx0 = 0
-                        var idx1 = 0
-                        var fraction: Float = 0
-
                         for j in 0..<track.frames.count {
                             let fTime = track.frames[j].time ?? (Float(j) / fps)
-                            if fTime <= t {
-                                idx0 = j
-                            }
+                            if fTime <= t { idx0 = j }
                         }
-                        idx1 = (idx0 + 1) % track.frames.count
-
+                        let idx1 = (idx0 + 1) % track.frames.count
                         let k1 = track.frames[idx0]
                         let k2 = track.frames[idx1]
                         let t1 = k1.time ?? (Float(idx0) / fps)
                         var t2 = k2.time ?? (Float(idx1) / fps)
-
-                        if idx1 == 0 {
-                            t2 = duration
-                        }
-
-                        if t2 > t1 {
-                            fraction = (t - t1) / (t2 - t1)
-                        }
-
-                        let p1 = SIMD3<Float>(k1.p[0], k1.p[1], k1.p[2])
-                        let p2 = SIMD3<Float>(k2.p[0], k2.p[1], k2.p[2])
-                        let p = mix(p1, p2, t: fraction)
-
-                        let r1 = SIMD3<Float>(k1.r[0], k1.r[1], k1.r[2])
-                        let r2 = SIMD3<Float>(k2.r[0], k2.r[1], k2.r[2])
-                        let q1 = Quaternion.fromEuler(r1)
-                        let q2 = Quaternion.fromEuler(r2)
-                        let matR = Quaternion.slerp(q1, q2, t: fraction)
-                            .toMatrix()
-
-                        let s1 = SIMD3<Float>(k1.s[0], k1.s[1], k1.s[2])
-                        let s2 = SIMD3<Float>(k2.s[0], k2.s[1], k2.s[2])
-                        let s = mix(s1, s2, t: fraction)
-
-                        let matT = Matrix4x4.translation(x: p.x, y: p.y, z: p.z)
-                        let matS = Matrix4x4.scale(x: s.x, y: s.y, z: s.z)
-                        localMatrices[i] = matT * matR * matS
+                        if idx1 == 0 { t2 = duration }
+                        let fraction = (t2 > t1) ? (t - t1) / (t2 - t1) : 0
+                        let p = mix(
+                            SIMD3<Float>(k1.p[0], k1.p[1], k1.p[2]),
+                            SIMD3<Float>(k2.p[0], k2.p[1], k2.p[2]),
+                            t: fraction
+                        )
+                        let matR = Quaternion.slerp(
+                            Quaternion.fromEuler(
+                                SIMD3<Float>(k1.r[0], k1.r[1], k1.r[2])
+                            ),
+                            Quaternion.fromEuler(
+                                SIMD3<Float>(k2.r[0], k2.r[1], k2.r[2])
+                            ),
+                            t: fraction
+                        ).toMatrix()
+                        let s = mix(
+                            SIMD3<Float>(k1.s[0], k1.s[1], k1.s[2]),
+                            SIMD3<Float>(k2.s[0], k2.s[1], k2.s[2]),
+                            t: fraction
+                        )
+                        animMat =
+                            Matrix4x4.translation(x: p.x, y: p.y, z: p.z) * matR
+                            * Matrix4x4.scale(x: s.x, y: s.y, z: s.z)
                     }
-                }
-            }
-
-            if !hasTrack {
-                let m = bone.matrix
-                localMatrices[i] = matrix_float4x4(
-                    columns: (
-                        SIMD4<Float>(m[0], m[1], m[2], m[3]),
-                        SIMD4<Float>(m[4], m[5], m[6], m[7]),
-                        SIMD4<Float>(m[8], m[9], m[10], m[11]),
-                        SIMD4<Float>(m[12], m[13], m[14], m[15])
+                    let m1 = localMatrices[i]
+                    let m2 = animMat
+                    localMatrices[i] = matrix_float4x4(
+                        columns: (
+                            mix(m1.columns.0, m2.columns.0, t: layerBlend),
+                            mix(m1.columns.1, m2.columns.1, t: layerBlend),
+                            mix(m1.columns.2, m2.columns.2, t: layerBlend),
+                            mix(m1.columns.3, m2.columns.3, t: layerBlend)
+                        )
                     )
-                )
+                }
             }
         }
 
@@ -471,7 +493,9 @@ class PuppetRenderable: RenderableObject {
     static func parseOBJ(objContent: String, skinning: [PuppetSkinning]) -> (
         [PuppetVertex], [UInt32], Float
     ) {
-        Logger.log("[Puppet] 开始解析 OBJ 模型, 字符串长度: \(objContent.count), 蒙皮信息数: \(skinning.count)")
+        Logger.log(
+            "[Puppet] 开始解析 OBJ 模型, 字符串长度: \(objContent.count), 蒙皮信息数: \(skinning.count)"
+        )
         var rawPositions: [SIMD3<Float>] = []
         var rawUVs: [SIMD2<Float>] = []
         var finalVertices: [PuppetVertex] = []
@@ -593,7 +617,9 @@ class PuppetRenderable: RenderableObject {
             }
         }
 
-        Logger.log("[Puppet] OBJ 解析完成: 提取顶点数 \(finalVertices.count), 面数 \(finalIndices.count / 3)")
+        Logger.log(
+            "[Puppet] OBJ 解析完成: 提取顶点数 \(finalVertices.count), 面数 \(finalIndices.count / 3)"
+        )
         return (finalVertices, finalIndices, maxPos.x - minPos.x)
     }
 }
