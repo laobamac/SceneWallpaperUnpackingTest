@@ -57,6 +57,10 @@ class PuppetRenderable: RenderableObject {
         usePixelCoords: Bool
     ) {
         self.device = device
+        
+        Logger.log("[Puppet] === 开始初始化 PuppetRenderable ===")
+        Logger.log("[Puppet] 顶点数量: \(vertices.count), 索引数量: \(indices.count), 是否使用像素坐标: \(usePixelCoords)")
+        
         guard
             let vb = device.makeBuffer(
                 bytes: vertices,
@@ -64,6 +68,7 @@ class PuppetRenderable: RenderableObject {
                 options: .storageModeShared
             )
         else {
+            Logger.log("[Puppet] 错误: 创建顶点缓冲区失败")
             return nil
         }
         self.vertexBuffer = vb
@@ -75,6 +80,7 @@ class PuppetRenderable: RenderableObject {
                 options: .storageModeShared
             )
         else {
+            Logger.log("[Puppet] 错误: 创建索引缓冲区失败")
             return nil
         }
         self.indexBuffer = ib
@@ -90,6 +96,27 @@ class PuppetRenderable: RenderableObject {
         self.maskWriteState = maskWriteState
         self.maskTestState = maskTestState
         self.puppetMaskPipeline = puppetMaskPipeline
+        
+        if let sm = subMeshes {
+            Logger.log("[Puppet] 发现 SubMeshes 数量: \(sm.count)")
+            for (i, m) in sm.enumerated() {
+                Logger.log("[Puppet] -> SubMesh[\(i)] ID: \(m.id), Start: \(m.start), Count: \(m.count)")
+            }
+        } else {
+            Logger.log("[Puppet] 未发现 SubMeshes 数据")
+        }
+
+        if let mb = maskBindings {
+            Logger.log("[Puppet] 发现 Mask Bindings 数量: \(mb.count)")
+            for (i, b) in mb.enumerated() {
+                Logger.log("[Puppet] -> Binding[\(i)] TargetGroup: \(b.target_group), Mask: \(b.mask ?? -1)")
+            }
+        } else {
+            Logger.log("[Puppet] 未发现 Mask Bindings 数据")
+        }
+
+        Logger.log("[Puppet] 传入的 Mask Textures 数量: \(maskTextures.count)")
+        Logger.log("[Puppet] 传入骨骼节点数量: \(skeleton.count), 动画数量: \(animations.count)")
 
         self.boneMatrices = Array(
             repeating: matrix_identity_float4x4,
@@ -101,6 +128,7 @@ class PuppetRenderable: RenderableObject {
                 options: .storageModeShared
             )
         else {
+            Logger.log("[Puppet] 错误: 创建骨骼 Uniform 缓冲区失败")
             return nil
         }
         self.uniformBuffer = ub
@@ -118,9 +146,11 @@ class PuppetRenderable: RenderableObject {
         computeInverseBindMatrices()
 
         if let firstAnim = animations.first {
+            Logger.log("[Puppet] 开始绑定动画轨道 <\(firstAnim.name)>, Tracks: \(firstAnim.tracks.count), FPS: \(firstAnim.fps), Length: \(firstAnim.length)")
             for (index, track) in firstAnim.tracks.enumerated() {
                 boneToTrackIndex[track.track_id] = index
             }
+            Logger.log("[Puppet] 动画轨道绑定完成, 映射了 \(boneToTrackIndex.count) 个轨道")
         }
 
         let ptr = uniformBuffer.contents()
@@ -128,6 +158,7 @@ class PuppetRenderable: RenderableObject {
             from: &boneMatrices,
             byteCount: MemoryLayout<matrix_float4x4>.stride * 100
         )
+        Logger.log("[Puppet] === PuppetRenderable 初始化完成 ===")
     }
 
     func getGlobalBindMatrix(boneIndex: Int, localMatrices: [matrix_float4x4])
@@ -150,6 +181,7 @@ class PuppetRenderable: RenderableObject {
     }
 
     func computeInverseBindMatrices() {
+        Logger.log("[Puppet] 开始计算 Inverse Bind Matrices (骨骼数量: \(skeleton.count))...")
         inverseBindMatrices = Array(
             repeating: matrix_identity_float4x4,
             count: skeleton.count
@@ -180,6 +212,7 @@ class PuppetRenderable: RenderableObject {
                 inverseBindMatrices[i] = global.inverse
             }
         }
+        Logger.log("[Puppet] Inverse Bind Matrices 计算完成")
     }
 
     func getGlobalAnimMatrix(
@@ -221,6 +254,7 @@ class PuppetRenderable: RenderableObject {
         let currentCycle = (duration > 0) ? Int(time / duration) : 0
         if currentCycle > lastAnimCycle {
             lastAnimCycle = currentCycle
+            Logger.log("[Puppet] 动画进入新周期: <\(anim.name)> Cycle: \(currentCycle), Time: \(time)")
         }
 
         var localMatrices = Array(
@@ -437,6 +471,7 @@ class PuppetRenderable: RenderableObject {
     static func parseOBJ(objContent: String, skinning: [PuppetSkinning]) -> (
         [PuppetVertex], [UInt32], Float
     ) {
+        Logger.log("[Puppet] 开始解析 OBJ 模型, 字符串长度: \(objContent.count), 蒙皮信息数: \(skinning.count)")
         var rawPositions: [SIMD3<Float>] = []
         var rawUVs: [SIMD2<Float>] = []
         var finalVertices: [PuppetVertex] = []
@@ -558,6 +593,7 @@ class PuppetRenderable: RenderableObject {
             }
         }
 
+        Logger.log("[Puppet] OBJ 解析完成: 提取顶点数 \(finalVertices.count), 面数 \(finalIndices.count / 3)")
         return (finalVertices, finalIndices, maxPos.x - minPos.x)
     }
 }
