@@ -1,27 +1,58 @@
 {
-	"approved" : true,
 	"contentrating" : "Everyone",
-	"description" : "Source：https://www.pixiv.net/artworks/88554345\r\nArtist：Vardan\r\n神里绫华，参上",
+	"description" : "初音\n初音未来",
 	"file" : "scene.json",
 	"general" : 
 	{
 		"properties" : 
 		{
+			"bb1" : 
+			{
+				"index" : 0,
+				"order" : 100,
+				"text" : "BB1",
+				"type" : "bool",
+				"value" : true
+			},
+			"bb2" : 
+			{
+				"index" : 1,
+				"order" : 101,
+				"text" : "BB2",
+				"type" : "bool",
+				"value" : true
+			},
+			"bb3" : 
+			{
+				"index" : 2,
+				"order" : 102,
+				"text" : "BB3",
+				"type" : "bool",
+				"value" : true
+			},
 			"schemecolor" : 
 			{
 				"order" : 0,
 				"text" : "ui_browse_properties_scheme_color",
 				"type" : "color",
-				"value" : "0.69020 0.21176 0.35294"
+				"value" : "0.51373 0.62353 0.62353"
+			},
+			"ss4" : 
+			{
+				"index" : 3,
+				"order" : 103,
+				"text" : "SS 4",
+				"type" : "bool",
+				"value" : true
 			}
 		}
 	},
 	"preview" : "preview.gif",
-	"tags" : [ "Game" ],
-	"title" : "[神里绫华]武士刀 - 原神",
-	"type" : "Scene",
-	"version" : 2,
-	"visibility" : "public",
-	"workshopid" : "2685898597",
-	"workshopurl" : "steam://url/CommunityFilePage/2685898597"
+	"ratingsex" : "none",
+	"ratingviolence" : "none",
+	"tags" : [ "Anime" ],
+	"title" : "Hatsune Miku | 夏日Summer's [4K]",
+	"type" : "scene",
+	"version" : 0,
+	"visibility" : "public"
 }

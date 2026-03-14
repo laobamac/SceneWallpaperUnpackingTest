@@ -1,35 +1,38 @@
 {
 	"camera" : 
 	{
-		"center" : "0.00000 0.00000 0.00000",
-		"eye" : "0.00000 0.00000 1.00000",
+		"center" : "0.00000 0.00000 -1.00000",
+		"eye" : "0.00000 0.00000 0.00000",
 		"up" : "0.00000 1.00000 0.00000"
 	},
 	"general" : 
 	{
-		"ambientcolor" : "0.30000 0.30000 0.30000",
-		"bloom" : false,
-		"bloomhdrfeather" : 0.1,
-		"bloomhdriterations" : 8,
-		"bloomhdrscatter" : 1.619,
-		"bloomhdrstrength" : 2.0,
-		"bloomhdrthreshold" : 1.0,
-		"bloomstrength" : 2.0,
-		"bloomthreshold" : 0.64999998,
+		"ambientcolor" : "1.00000 1.00000 1.00000",
+		"bloom" : true,
+		"bloomhdrfeather" : 0.0,
+		"bloomhdriterations" : 2,
+		"bloomhdrscatter" : 0.0,
+		"bloomhdrstrength" : 0.63,
+		"bloomhdrthreshold" : 0.30000001,
+		"bloomstrength" : 0.0,
+		"bloomthreshold" : 0.0,
+		"bloomtint" : "1.00000 1.00000 1.00000",
 		"camerafade" : true,
 		"cameraparallax" : false,
 		"cameraparallaxamount" : 0.5,
 		"cameraparallaxdelay" : 0.1,
 		"cameraparallaxmouseinfluence" : 0.5,
-		"camerapreview" : true,
+		"camerapreview" : false,
 		"camerashake" : false,
-		"camerashakeamplitude" : 0.5,
-		"camerashakeroughness" : 1.0,
-		"camerashakespeed" : 3.0,
-		"clearcolor" : "0.70000 0.70000 0.70000",
+		"camerashakeamplitude" : 0.19,
+		"camerashakeroughness" : 0.49000001,
+		"camerashakespeed" : 0.34999999,
+		"clearcolor" : "1.00000 1.00000 1.00000",
 		"clearenabled" : true,
 		"farz" : 10000.0,
 		"fov" : 50.0,
+		"gravitydirection" : "0.47059 0.88235 0.00000",
+		"gravitystrength" : 1.0,
 		"hdr" : false,
 		"nearz" : 0.0099999998,
 		"orthogonalprojection" : 
@@ -37,915 +40,133 @@
 			"height" : 2160,
 			"width" : 3840
 		},
+		"perspectiveoverridefov" : 5.0,
 		"skylightcolor" : "0.30000 0.30000 0.30000",
+		"winddirection" : "0.70700 0.70700 0.00000",
+		"windenabled" : false,
+		"windstrength" : 1.0,
 		"zoom" : 1.0
 	},
 	"objects" : 
 	[
 		{
-			"alignment" : "center",
-			"alpha" : 1.0,
-			"angles" : "0.00000 0.00000 0.00000",
-			"brightness" : 1.0,
-			"color" : "1.00000 1.00000 1.00000",
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"id" : 14,
-			"image" : "models/背景.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "背景",
-			"origin" : "1920.00000 1080.00000 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : "1.00000 1.00000 1.00000",
-			"size" : "3840.00000 2160.00000",
-			"solid" : true,
-			"visible" : true
-		},
-		{
-			"angles" : "-0.00000 -0.00000 -0.28652",
-			"id" : 202,
-			"instanceoverride" : 
-			{
-				"colorn" : "0.96863 0.38431 0.67059",
-				"id" : 203
-			},
-			"locktransforms" : true,
-			"name" : "Light shafts 0",
-			"origin" : "1690.32129 1311.14929 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"particle" : "particles/presets/light_shafts_0.json",
-			"scale" : "4.00000 4.00000 1.00000",
-			"visible" : true
-		},
-		{
-			"angles" : "0.00000 -0.00000 1.37881",
-			"id" : 216,
-			"instanceoverride" : 
-			{
-				"colorn" : "0.02353 1.00000 0.96471",
-				"count" : 0.14,
-				"id" : 217,
-				"lifetime" : 0.94,
-				"speed" : 0.28999999
-			},
-			"locktransforms" : true,
-			"name" : "Interactive Embers",
-			"origin" : "1983.67261 -165.57489 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"particle" : "particles/workshop/2165978137/presets/ember_small.json",
-			"scale" : "1.00000 1.00000 1.00000",
-			"visible" : true
-		},
-		{
-			"angles" : "0.00000 -0.00000 0.79486",
-			"id" : 158,
-			"instanceoverride" : 
-			{
-				"count" : 0.60000002,
-				"id" : 17
-			},
-			"locktransforms" : true,
-			"name" : "Sakura",
-			"origin" : "1069.78503 1826.46362 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"particle" : "particles/presets/leaves5.json",
-			"scale" : "2.00000 2.00000 1.00000",
-			"visible" : true
-		},
-		{
-			"angles" : "0.00000 -0.00000 0.79486",
-			"id" : 168,
-			"instanceoverride" : 
-			{
-				"count" : 0.60000002,
-				"id" : 22
-			},
-			"locktransforms" : true,
-			"name" : "Sakura",
-			"origin" : "3165.70508 1744.74194 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"particle" : "particles/presets/leaves5.json",
-			"scale" : "2.00000 2.00000 1.00000",
-			"visible" : true
-		},
-		{
-			"angles" : "0.00000 -0.00000 0.18886",
-			"id" : 458,
-			"instanceoverride" : 
-			{
-				"colorn" : "0.05098 0.79216 1.00000",
-				"count" : 0.44999999,
-				"id" : 459
-			},
-			"locktransforms" : true,
-			"name" : "Ember",
-			"origin" : "1711.22119 -77.13092 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"particle" : "particles/presets/ember.json",
-			"scale" : "1.40000 1.40000 1.00000",
-			"visible" : true
-		},
-		{
-			"angles" : "0.00000 0.00000 0.00000",
-			"id" : 520,
-			"instanceoverride" : 
-			{
-				"colorn" : "0.16863 0.95686 0.95686",
-				"id" : 521
-			},
-			"locktransforms" : true,
-			"name" : "Fireflies",
-			"origin" : "1999.26025 1158.92273 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"particle" : "particles/presets/fireflies.json",
-			"scale" : "2.50000 2.50000 1.00000",
-			"visible" : true
-		},
-		{
-			"alignment" : "center",
-			"alpha" : 1.0,
-			"angles" : "0.00000 0.00000 0.00000",
-			"brightness" : 1.0,
-			"color" : "1.00000 1.00000 1.00000",
-			"colorBlendMode" : 0,
-			"copybackground" : true,
+			"castshadow" : false,
 			"effects" : 
 			[
 				{
-					"file" : "effects/waterwaves/effect.json",
-					"id" : 219,
+					"file" : "effects/foliagesway/effect.json",
+					"id" : 50,
 					"name" : "",
 					"passes" : 
 					[
 						{
 							"constantshadervalues" : 
 							{
-								"direction" : 1.9038547,
-								"perspective" : 0.0,
-								"scale" : 4,
-								"speed" : 1.87,
-								"strength" : 0.23
-							},
-							"id" : 220,
-							"textures" : [ null, "masks/waterwaves_mask_b010827a" ]
-						}
-					],
-					"visible" : true
-				}
-			],
-			"id" : 44,
-			"image" : "models/toufa2.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "toufa2",
-			"origin" : "2435.15210 639.82312 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : "1.00000 1.00000 1.00000",
-			"size" : "580.00000 700.00000",
-			"solid" : true,
-			"visible" : true
-		},
-		{
-			"alignment" : "center",
-			"alpha" : 1.0,
-			"angles" : "0.00000 0.00000 0.00000",
-			"brightness" : 1.0,
-			"color" : "1.00000 1.00000 1.00000",
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"effects" : 
-			[
-				{
-					"file" : "effects/waterwaves/effect.json",
-					"id" : 106,
-					"name" : "",
-					"passes" : 
-					[
-						{
-							"constantshadervalues" : 
-							{
-								"direction" : -1.2635974,
-								"perspective" : 0.0,
-								"scale" : 6,
-								"speed" : 2.6600001,
-								"strength" : 0.1
-							},
-							"id" : 107,
-							"textures" : [ null, "masks/waterwaves_mask_11c61c6f" ]
-						}
-					],
-					"visible" : true
-				}
-			],
-			"id" : 57,
-			"image" : "models/toufa1.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "toufa1",
-			"origin" : "2110.37061 1034.04846 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : "1.00000 1.00000 1.00000",
-			"size" : "1900.00000 2000.00000",
-			"solid" : true,
-			"visible" : true
-		},
-		{
-			"alignment" : "center",
-			"alpha" : 1.0,
-			"angles" : "-0.00000 -0.00000 -0.17380",
-			"brightness" : 1.0,
-			"color" : "1.00000 1.00000 1.00000",
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"effects" : 
-			[
-				{
-					"file" : "effects/waterwaves/effect.json",
-					"id" : 118,
-					"name" : "",
-					"passes" : 
-					[
-						{
-							"constantshadervalues" : 
-							{
-								"direction" : 2.0722163,
-								"perspective" : 0.0,
-								"scale" : 4,
-								"speed" : 2.6600001,
-								"strength" : 0.19
-							},
-							"id" : 119,
-							"textures" : [ null, "masks/waterwaves_mask_8e2f522c" ]
-						}
-					],
-					"visible" : true
-				}
-			],
-			"id" : 40,
-			"image" : "models/si.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "si",
-			"origin" : "2297.33423 1500.96594 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : "1.00000 1.00000 1.00000",
-			"size" : "600.00000 700.00000",
-			"solid" : true,
-			"visible" : true
-		},
-		{
-			"alignment" : "center",
-			"alpha" : 1.0,
-			"angles" : "0.00000 0.00000 0.00000",
-			"animationlayers" : 
-			[
-				{
-					"additive" : false,
-					"animation" : 483,
-					"blend" : 0.81999999,
-					"id" : 497,
-					"name" : "动画 2",
-					"rate" : 0.2,
-					"visible" : true
-				}
-			],
-			"brightness" : 1.0,
-			"color" : "1.00000 1.00000 1.00000",
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"effects" : 
-			[
-				{
-					"file" : "effects/waterwaves/effect.json",
-					"id" : 130,
-					"name" : "",
-					"passes" : 
-					[
-						{
-							"constantshadervalues" : 
-							{
-								"direction" : -2.4135084,
-								"perspective" : 0.0,
-								"scale" : 5,
-								"speed" : 2.9300001,
-								"strength" : 0.1
-							},
-							"id" : 131,
-							"textures" : [ null, "masks/waterwaves_mask_d7ecb377" ]
-						}
-					],
-					"visible" : true
-				}
-			],
-			"id" : 48,
-			"image" : "models/xiu.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "xiu",
-			"origin" : "1485.95068 1031.44543 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : "1.00000 1.00000 1.00000",
-			"size" : "767.00000 494.00000",
-			"solid" : true,
-			"visible" : true
-		},
-		{
-			"alignment" : "center",
-			"alpha" : 1.0,
-			"angles" : "0.00000 0.00000 0.00000",
-			"brightness" : 1.0,
-			"color" : "1.00000 1.00000 1.00000",
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"effects" : 
-			[
-				{
-					"file" : "effects/waterwaves/effect.json",
-					"id" : 278,
-					"name" : "",
-					"passes" : 
-					[
-						{
-							"constantshadervalues" : 
-							{
-								"direction" : 1.3319649,
-								"perspective" : 0.0,
-								"scale" : 15.93,
-								"speed" : 3.72,
-								"strength" : 0.090000004
-							},
-							"id" : 279,
-							"textures" : [ null, "masks/waterwaves_mask_cc2e8dc9" ]
-						}
-					],
-					"visible" : true
-				},
-				{
-					"file" : "effects/shake/effect.json",
-					"id" : 298,
-					"name" : "",
-					"passes" : 
-					[
-						{
-							"constantshadervalues" : 
-							{
-								"bounds" : "0 1",
-								"friction" : "1 1",
-								"speed" : 0.74000001,
-								"strength" : 0.059999999
-							},
-							"id" : 299,
-							"textures" : [ null, "masks/shake_mask_0d72dab0", "util/white" ]
-						}
-					],
-					"visible" : true
-				},
-				{
-					"file" : "effects/waterwaves/effect.json",
-					"id" : 314,
-					"name" : "",
-					"passes" : 
-					[
-						{
-							"constantshadervalues" : 
-							{
-								"direction" : -2.0594885,
-								"perspective" : 0.0,
-								"scale" : 10.63,
-								"speed" : 2.9300001,
-								"strength" : 0.07
-							},
-							"id" : 315,
-							"textures" : [ null, "masks/waterwaves_mask_238d4dd5" ]
-						}
-					],
-					"visible" : true
-				},
-				{
-					"file" : "effects/shake/effect.json",
-					"id" : 123,
-					"name" : "",
-					"passes" : 
-					[
-						{
-							"constantshadervalues" : 
-							{
-								"bounds" : "0 1",
-								"friction" : "1 1",
-								"speed" : 1,
-								"strength" : 0.11
-							},
-							"id" : 124,
-							"textures" : [ null, "masks/shake_mask_009d6a6c", "util/white" ]
-						}
-					],
-					"visible" : true
-				}
-			],
-			"id" : 56,
-			"image" : "models/zhong.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "zhong",
-			"origin" : "1920.00000 1080.00000 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : "1.00000 1.00000 1.00000",
-			"size" : "2000.00000 2160.00000",
-			"solid" : true,
-			"visible" : true
-		},
-		{
-			"alignment" : "center",
-			"alpha" : 1.0,
-			"angles" : "0.00000 0.00000 0.00000",
-			"animationlayers" : 
-			[
-				{
-					"additive" : false,
-					"animation" : 238,
-					"blend" : 1.0,
-					"id" : 254,
-					"name" : "动画 2",
-					"rate" : 1.0,
-					"visible" : true
-				}
-			],
-			"brightness" : 1.0,
-			"color" : "1.00000 1.00000 1.00000",
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"id" : 117,
-			"image" : "models/yanqiu2.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "yanqiu2",
-			"origin" : "1956.96997 1433.06506 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : "1.00000 1.00000 1.00000",
-			"size" : "362.00000 113.00000",
-			"solid" : true,
-			"visible" : true
-		},
-		{
-			"alignment" : "center",
-			"alpha" : 1.0,
-			"angles" : "0.00000 0.00000 0.00000",
-			"animationlayers" : 
-			[
-				{
-					"additive" : false,
-					"animation" : 244,
-					"blend" : 1.0,
-					"id" : 248,
-					"name" : "动画 2",
-					"rate" : 1.0,
-					"visible" : true
-				}
-			],
-			"brightness" : 1.0,
-			"color" : "1.00000 1.00000 1.00000",
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"id" : 111,
-			"image" : "models/jiemao2.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "jiemao2",
-			"origin" : "1953.58740 1444.93872 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : "1.00000 1.00000 1.00000",
-			"size" : "354.00000 101.00000",
-			"solid" : true,
-			"visible" : true
-		},
-		{
-			"alignment" : "center",
-			"alpha" : 1.0,
-			"angles" : "0.00000 0.00000 0.00000",
-			"brightness" : 1.0,
-			"color" : "1.00000 1.00000 1.00000",
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"effects" : 
-			[
-				{
-					"file" : "effects/waterwaves/effect.json",
-					"id" : 329,
-					"name" : "",
-					"passes" : 
-					[
-						{
-							"constantshadervalues" : 
-							{
-								"direction" : 0.2681106,
-								"perspective" : 0.0,
-								"scale" : 2,
-								"speed" : 4.79,
-								"strength" : 0.17
-							},
-							"id" : 330,
-							"textures" : [ null, "masks/waterwaves_mask_1237bd58" ]
-						}
-					],
-					"visible" : true
-				}
-			],
-			"id" : 24,
-			"image" : "models/fa.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "fa",
-			"origin" : "1956.78381 1472.85132 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : "1.00000 1.00000 1.00000",
-			"size" : "330.00000 190.00000",
-			"solid" : true,
-			"visible" : true
-		},
-		{
-			"alignment" : "center",
-			"alpha" : 1.0,
-			"angles" : "0.00000 0.00000 0.00000",
-			"brightness" : 1.0,
-			"color" : "1.00000 1.00000 1.00000",
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"effects" : 
-			[
-				{
-					"file" : "effects/waterwaves/effect.json",
-					"id" : 361,
-					"name" : "",
-					"passes" : 
-					[
-						{
-							"constantshadervalues" : 
-							{
-								"direction" : 0.5951792,
-								"perspective" : 0.0,
-								"scale" : 3,
-								"speed" : 3.1900001,
-								"strength" : 0.1
-							},
-							"id" : 362,
-							"textures" : [ null, "masks/waterwaves_mask_5f5b74ac" ]
-						}
-					],
-					"visible" : true
-				}
-			],
-			"id" : 28,
-			"image" : "models/fayou.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "fayou",
-			"origin" : "2174.97607 1427.16602 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : "1.00000 1.00000 1.00000",
-			"size" : "400.00000 630.00000",
-			"solid" : true,
-			"visible" : true
-		},
-		{
-			"alignment" : "center",
-			"alpha" : 1.0,
-			"angles" : "0.00000 0.00000 0.00000",
-			"animationlayers" : 
-			[
-				{
-					"additive" : false,
-					"animation" : 431,
-					"blend" : 1.0,
-					"id" : 434,
-					"name" : "动画 1",
-					"rate" : 0.30000001,
-					"visible" : true
-				}
-			],
-			"brightness" : 1.0,
-			"color" : "1.00000 1.00000 1.00000",
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"effects" : 
-			[
-				{
-					"file" : "effects/waterwaves/effect.json",
-					"id" : 435,
-					"name" : "",
-					"passes" : 
-					[
-						{
-							"constantshadervalues" : 
-							{
-								"direction" : 2.6909311,
-								"perspective" : 0.0,
-								"scale" : 5.3200002,
-								"speed" : 3.1900001,
-								"strength" : 0.12
-							},
-							"id" : 436,
-							"textures" : [ null, "masks/waterwaves_mask_da910eca" ]
-						}
-					],
-					"visible" : true
-				}
-			],
-			"id" : 32,
-			"image" : "models/jia.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "jia",
-			"origin" : "1750.10852 324.19119 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : "1.00000 1.00000 1.00000",
-			"size" : "480.00000 670.00000",
-			"solid" : true,
-			"visible" : true
-		},
-		{
-			"alignment" : "center",
-			"alpha" : 1.0,
-			"angles" : "0.00000 0.00000 0.00000",
-			"animationlayers" : 
-			[
-				{
-					"additive" : false,
-					"animation" : 533,
-					"blend" : 1.0,
-					"id" : 536,
-					"name" : "动画 2",
-					"rate" : 0.20999999,
-					"visible" : true
-				}
-			],
-			"brightness" : 1.0,
-			"color" : "1.00000 1.00000 1.00000",
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"id" : 36,
-			"image" : "models/shou.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "shou",
-			"origin" : "1790.70410 1166.19727 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : "1.00000 1.00000 1.00000",
-			"size" : "960.00000 256.00000",
-			"solid" : true,
-			"visible" : true
-		},
-		{
-			"alignment" : "center",
-			"alpha" : 1.0,
-			"angles" : "0.00000 0.00000 0.00000",
-			"brightness" : 1.0,
-			"color" : "1.00000 1.00000 1.00000",
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"effects" : 
-			[
-				{
-					"file" : "effects/pulse/effect.json",
-					"id" : 571,
-					"name" : "",
-					"passes" : 
-					[
-						{
-							"constantshadervalues" : 
-							{
-								"amount" : 0.14,
-								"bounds" : "0 1",
-								"noiseamount" : 0.0,
-								"noisespeed" : 0.5,
-								"phase" : 0.1,
+								"phase" : 0.5,
 								"power" : 1.0,
-								"speed" : 3.0,
-								"tinthigh" : "0.01569 0.96471 1.00000",
-								"tintlow" : "0.9254901960784314 0.9254901960784314 0.9254901960784314"
+								"ratio" : 0.30000001,
+								"scale" : 0.050000001,
+								"scrolldirection" : -2.316916,
+								"speeduv" : 5.0,
+								"strength" : 0.40000001
 							},
-							"id" : 572,
-							"textures" : [ null, "util/noise", "masks/pulse_mask_37a035bb" ]
+							"id" : 51,
+							"textures" : [ null, "masks/foliagesway_mask_3be73cc9", null ]
 						}
 					],
-					"visible" : true
+					"visible" : 
+					{
+						"user" : "bb1",
+						"value" : true
+					}
 				},
 				{
-					"file" : "effects/shine/effect.json",
-					"id" : 602,
+					"file" : "effects/foliagesway/effect.json",
+					"id" : 93,
 					"name" : "",
 					"passes" : 
 					[
 						{
 							"constantshadervalues" : 
 							{
-								"noiseamount" : 0.40000001,
-								"noisescale" : 3.0,
-								"noisespeed" : 0.15000001,
-								"raythreshold" : 0.41
+								"phase" : 0.5,
+								"power" : 1.0,
+								"ratio" : 0.30000001,
+								"scale" : 0.050000001,
+								"scrolldirection" : 0.47267073,
+								"speeduv" : 5.0,
+								"strength" : 0.40000001
 							},
-							"id" : 603,
-							"textures" : [ null, "masks/shine_downsample2_mask_14de11ab", "util/clouds_256" ]
-						},
-						{
-							"constantshadervalues" : 
-							{
-								"color" : "0 0.5058823529411764 0.6666666666666666",
-								"direction" : 0.0,
-								"rayintensity" : 0.30000001,
-								"raylength" : 0.0099999998,
-								"speed" : 0.0
-							},
-							"id" : 604
-						},
-						{
-							"constantshadervalues" : 
-							{
-								"scale" : "1 1"
-							},
-							"id" : 605
-						},
-						{
-							"combos" : 
-							{
-								"VERTICAL" : 1
-							},
-							"constantshadervalues" : 
-							{
-								"scale" : "1 1"
-							},
-							"id" : 606
-						},
-						{
-							"id" : 607,
-							"textures" : [ null, "_rt_imageLayerComposite_18_a" ]
+							"id" : 94,
+							"textures" : [ null, "masks/foliagesway_mask_7eacc852", null ]
 						}
 					],
-					"visible" : true
+					"visible" : 
+					{
+						"user" : "bb2",
+						"value" : true
+					}
 				},
 				{
-					"file" : "effects/godrays/effect.json",
-					"id" : 622,
+					"file" : "effects/foliagesway/effect.json",
+					"id" : 119,
 					"name" : "",
 					"passes" : 
 					[
 						{
 							"constantshadervalues" : 
 							{
-								"noiseamount" : 1,
-								"noisescale" : 3.0,
-								"noisesmoothness" : 0.2,
-								"noisespeed" : 0.13,
-								"raythreshold" : 0.54000002
+								"phase" : 0.5,
+								"power" : 1.0,
+								"ratio" : 0.30000001,
+								"scale" : 0.050000001,
+								"scrolldirection" : 0.0,
+								"speeduv" : 5.0,
+								"strength" : 0.40000001
 							},
-							"id" : 623,
-							"textures" : [ null, "masks/godrays_downsample2_mask_2bf68a08", "util/clouds_256" ]
-						},
-						{
-							"constantshadervalues" : 
-							{
-								"center" : "0.31910649 0.95063967",
-								"color" : "0.00000 0.98039 0.97255",
-								"rayintensity" : 0.95999998,
-								"raylength" : 0.13
-							},
-							"id" : 624
-						},
-						{
-							"combos" : 
-							{
-								"KERNEL" : 0
-							},
-							"constantshadervalues" : 
-							{
-								"blurscale" : "1 1"
-							},
-							"id" : 625
-						},
-						{
-							"combos" : 
-							{
-								"KERNEL" : 0,
-								"VERTICAL" : 1
-							},
-							"constantshadervalues" : 
-							{
-								"blurscale" : "1 1"
-							},
-							"id" : 626
-						},
-						{
-							"id" : 627,
-							"textures" : [ null, "_rt_imageLayerComposite_18_b" ]
+							"id" : 120,
+							"textures" : [ null, "masks/foliagesway_mask_6c6f7541", null ]
 						}
 					],
-					"visible" : true
+					"visible" : 
+					{
+						"user" : "bb3",
+						"value" : true
+					}
 				},
 				{
-					"file" : "effects/nitro/effect.json",
-					"id" : 641,
+					"file" : "effects/iris/effect.json",
+					"id" : 28,
 					"name" : "",
 					"passes" : 
 					[
 						{
 							"constantshadervalues" : 
 							{
-								"bounds" : "0.3 0.25",
-								"colorend" : "0.5568627450980392 0.9490196078431372 0.984313725490196",
-								"colorstart" : "0.7058823529411765 0.8784313725490196 1",
-								"multiply" : 1.6,
-								"scale" : "1 2",
-								"smoothness" : 5,
-								"speed" : "-0.1 0.7 0.1 -0.5"
+								"noiseamount" : 0.5,
+								"phase" : 0.0,
+								"rough" : 0.2,
+								"scale" : "1 1",
+								"speed" : 1.0
 							},
-							"id" : 642,
-							"textures" : [ null, "util/clouds_256", "masks/nitro_mask_e0d7aa58" ]
+							"id" : 29,
+							"textures" : [ null, "masks/iris_mask_a95fb533" ]
 						}
 					],
-					"visible" : true
+					"visible" : 
+					{
+						"user" : "ss4",
+						"value" : true
+					}
 				}
 			],
-			"id" : 18,
-			"image" : "models/dao.json",
-			"ledsource" : false,
+			"id" : 16,
+			"image" : "models/电脑.json",
 			"locktransforms" : true,
-			"name" : "dao",
-			"origin" : "1972.13635 1079.62231 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : "1.00000 1.00000 1.00000",
-			"size" : "500.00000 2222.00000",
-			"solid" : true,
-			"visible" : true
-		},
-		{
-			"angles" : "-0.00000 -0.00000 -0.11952",
-			"id" : 208,
-			"instanceoverride" : 
-			{
-				"colorn" : "0.08627 0.96471 0.96471",
-				"id" : 209
-			},
-			"locktransforms" : true,
-			"name" : "Fog 1",
-			"origin" : "1964.30334 964.34717 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"particle" : "particles/presets/fog1.json",
-			"scale" : "0.06000 2.30000 1.00000",
-			"visible" : true
-		},
-		{
-			"angles" : "-0.00000 -0.00000 -0.48362",
-			"id" : 412,
-			"instanceoverride" : 
-			{
-				"colorn" : "0.25490 0.79608 0.99216",
-				"id" : 413
-			},
-			"locktransforms" : true,
-			"name" : "Ember small",
-			"origin" : "1942.43933 760.15448 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"particle" : "particles/presets/ember_small.json",
-			"scale" : "1.00000 1.00000 1.00000",
-			"visible" : true
-		},
-		{
-			"angles" : "0.00000 0.00000 0.00000",
-			"id" : 792,
-			"instanceoverride" : null,
-			"locktransforms" : true,
-			"name" : "Dust motes",
-			"origin" : "583.70947 1057.54138 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"particle" : "particles/presets/dust_motes_0.json",
-			"scale" : "2.00000 2.00000 1.00000",
-			"visible" : true
-		},
-		{
-			"angles" : "0.00000 0.00000 0.00000",
-			"id" : 846,
-			"instanceoverride" : null,
-			"locktransforms" : true,
-			"name" : "Dust motes",
-			"origin" : "3284.36377 1057.54138 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"particle" : "particles/presets/dust_motes_0.json",
-			"scale" : "2.00000 2.00000 1.00000",
-			"visible" : true
+			"name" : "电脑",
+			"origin" : "1920.00000 1080.00000 0.00000",
+			"size" : "3840.00000 2160.00000"
 		}
 	],
-	"version" : 1
+	"version" : 5
 }

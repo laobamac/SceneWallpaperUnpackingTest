@@ -3,15 +3,12 @@
 	[
 		{
 			"blending" : "translucent",
-			"combos" : 
-			{
-				"VERSION" : 2
-			},
+			"combos" : {},
 			"cullmode" : "nocull",
 			"depthtest" : "disabled",
 			"depthwrite" : "disabled",
-			"shader" : "genericimage2",
-			"textures" : [ "yanqiu2" ]
+			"shader" : "genericimage4",
+			"textures" : [ "电脑" ]
 		}
 	]
 }
