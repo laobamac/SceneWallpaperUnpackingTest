@@ -36,10 +36,6 @@ class ParticleRenderable: RenderableObject {
     
     var indexCount: Int = 0
     
-    var localPosition: SIMD3<Float> = .zero
-    var localRotation: SIMD3<Float> = .zero
-    var localScale: SIMD3<Float> = SIMD3<Float>(1, 1, 1)
-    
     init(device: MTLDevice,
          object: SceneObject,
          definition: ParticleDefinition,
@@ -55,10 +51,6 @@ class ParticleRenderable: RenderableObject {
         let rot = object.angles?.float3Value ?? .zero
         let sz = object.size?.float2Value ?? .zero
         let sc = object.scale?.float3Value ?? SIMD3<Float>(1, 1, 1)
-        
-        self.localPosition = pos
-        self.localRotation = rot
-        self.localScale = sc
         
         super.init(position: pos, rotation: rot, size: sz, scale: sc, texture: texture, frameInfo: nil, pipeline: pipeline, depthState: depthState)
         
@@ -380,7 +372,7 @@ class ParticleRenderable: RenderableObject {
         let rZ = makeRotationMatrix(angle: -self.localRotation.z, axis: SIMD3<Float>(0, 0, 1))
         let rY = makeRotationMatrix(angle: self.localRotation.y, axis: SIMD3<Float>(0, 1, 0))
         let rX = makeRotationMatrix(angle: -self.localRotation.x, axis: SIMD3<Float>(1, 0, 0))
-        let sMat = makeScaleMatrix(self.localScale)
+        let sMat = makeScaleMatrix(self.scale)
         
         var m = matrix_multiply(matrix_identity_float4x4, tMat)
         m = matrix_multiply(m, rZ)

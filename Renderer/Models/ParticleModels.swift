@@ -23,9 +23,9 @@ struct ParticleInstanceOverride: Codable {
 struct ParticleDefinition: Codable {
     let material: String?
     let animationmode: String?
-    let sequencemultiplier: Float?
+    let sequencemultiplier: Swift.Float?
     let maxcount: Int?
-    let starttime: Float?
+    let starttime: Swift.Float?
     let flags: Int?
     let emitter: [ParticleEmitter]?
     let initializer: [ParticleInitializer]?
@@ -44,23 +44,23 @@ struct ParticleEmitter: Codable {
     let origin: ScriptableValue?
     let sign: ScriptableValue?
     let instantaneous: Int?
-    let speedmin: Float?
-    let speedmax: Float?
-    let rate: Float?
+    let speedmin: Swift.Float?
+    let speedmax: Swift.Float?
+    let rate: Swift.Float?
     let controlpoint: Int?
     let flags: Int?
-    let cone: Float?
-    let delay: Float?
-    let duration: Float?
+    let cone: Swift.Float?
+    let delay: Swift.Float?
+    let duration: Swift.Float?
     let audioprocessingbounds: ScriptableValue?
-    let audioprocessingexponent: Float?
+    let audioprocessingexponent: Swift.Float?
     let audioprocessingfrequencystart: Int?
     let audioprocessingfrequencyend: Int?
     let audioprocessingmode: Int?
-    let minperiodicdelay: Float?
-    let maxperiodicdelay: Float?
-    let minperiodicduration: Float?
-    let maxperiodicduration: Float?
+    let minperiodicdelay: Swift.Float?
+    let maxperiodicdelay: Swift.Float?
+    let minperiodicduration: Swift.Float?
+    let maxperiodicduration: Swift.Float?
 }
 
 struct ParticleInitializer: Codable {
@@ -125,12 +125,12 @@ struct ParticleOperator: Codable {
 struct ParticleRenderer: Codable {
     let id: Int?
     let name: String?
-    let length: Float?
-    let maxlength: Float?
-    let minlength: Float?
-    let subdivision: Float?
-    let segments: Float?
-    let uvscale: Float?
+    let length: Swift.Float?
+    let maxlength: Swift.Float?
+    let minlength: Swift.Float?
+    let subdivision: Swift.Float?
+    let segments: Swift.Float?
+    let uvscale: Swift.Float?
     let uvscrolling: Bool?
     let uvsmoothing: Bool?
     let fadealpha: Bool?
@@ -150,7 +150,7 @@ struct ParticleChild: Codable {
     let name: String?
     let maxcount: Int?
     let controlpointstartindex: Int?
-    let probability: Float?
+    let probability: Swift.Float?
     let angles: ScriptableValue?
     let origin: ScriptableValue?
     let scale: ScriptableValue?

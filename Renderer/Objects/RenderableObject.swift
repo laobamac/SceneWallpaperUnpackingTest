@@ -5,13 +5,6 @@
 //  Created by laobamac on 2026/1/23.
 //
 
-//
-//  RenderableObject.swift
-//  Renderer
-//
-//  Created by laobamac on 2026/1/23.
-//
-
 import MetalKit
 import simd
 import QuartzCore
@@ -27,7 +20,7 @@ class RenderableObject {
     var scale: SIMD3<Float>
     var alpha: Float
 
-    var texture: MTLTexture
+    var texture: MTLTexture?
     var frameInfo: [TexFrameInfo]?
     var currentAnimInfo: SIMD4<Float> = SIMD4<Float>(0, 0, 1, 1)
 
@@ -47,7 +40,7 @@ class RenderableObject {
         size: SIMD2<Float>,
         scale: SIMD3<Float>,
         alpha: Float = 1.0,
-        texture: MTLTexture,
+        texture: MTLTexture?,
         frameInfo: [TexFrameInfo]? = nil,
         pipeline: MTLRenderPipelineState,
         depthState: MTLDepthStencilState? = nil
@@ -98,8 +91,8 @@ class RenderableObject {
             t -= f.frametime
         }
 
-        let tw = Float(texture.width)
-        let th = Float(texture.height)
+        let tw = Float(texture?.width ?? 0)
+        let th = Float(texture?.height ?? 0)
         if tw > 0 && th > 0 {
             let nx = currentFrame.x / tw
             let ny = currentFrame.y / th
@@ -149,7 +142,9 @@ class RenderableObject {
             index: 2
         )
 
-        encoder.setFragmentTexture(texture, index: 0)
+        if let tex = texture {
+            encoder.setFragmentTexture(tex, index: 0)
+        }
 
         encoder.drawPrimitives(
             type: .triangleStrip,
