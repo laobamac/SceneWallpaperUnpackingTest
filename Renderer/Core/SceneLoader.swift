@@ -131,7 +131,9 @@ class SceneLoader {
                 }
             }
             context.renderables = orderedList
-        } catch {}
+        } catch {
+            Logger.log("Scene load error: \(error)")
+        }
         return context
     }
 

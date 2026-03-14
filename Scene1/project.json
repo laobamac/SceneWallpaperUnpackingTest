@@ -1,176 +1,129 @@
 {
-	"approved" : true,
 	"contentrating" : "Everyone",
-	"description" : "双击触发台词",
+	"description" : "contact me: histaoff@gmail.com\nmusic: NieR Replicant - City of Commerce\n\nConsider [url=https://steamcommunity.com:/linkfilter/?url=https://www.paypal.me/historyk]donating[/url] if you want to support me!\n\n[url=https://steamcommunity.com/sharedfiles/filedetails/?id=1727210908]/ /   APPROVED WORKS[/url]",
 	"file" : "scene.json",
 	"general" : 
 	{
 		"properties" : 
 		{
-			"bjgd" : 
-			{
-				"index" : 6,
-				"order" : 106,
-				"text" : "背景滚动",
-				"type" : "bool",
-				"value" : true
-			},
-			"bjys" : 
-			{
-				"index" : 15,
-				"order" : 115,
-				"text" : "背景颜色-1",
-				"type" : "color",
-				"value" : "1 1 1"
-			},
-			"bk" : 
-			{
-				"index" : 3,
-				"order" : 103,
-				"text" : "边框",
-				"type" : "bool",
-				"value" : true
-			},
-			"cs" : 
-			{
-				"index" : 9,
-				"order" : 109,
-				"text" : "测试",
-				"type" : "bool",
-				"value" : false
-			},
-			"csbg" : 
-			{
-				"index" : 4,
-				"order" : 104,
-				"text" : "彩色背景",
-				"type" : "bool",
-				"value" : false
-			},
-			"logo1tz" : 
-			{
-				"condition" : "cs.value == true",
-				"index" : 10,
-				"order" : 110,
-				"text" : "logo1拖拽",
-				"type" : "bool",
-				"value" : false
-			},
-			"logo2" : 
-			{
-				"condition" : "cs.value == true",
-				"index" : 11,
-				"order" : 111,
-				"text" : "logo2拖拽",
-				"type" : "bool",
-				"value" : false
-			},
-			"rwdx" : 
-			{
-				"fraction" : true,
-				"index" : 0,
-				"max" : 2,
-				"min" : 0,
-				"order" : 100,
-				"precision" : 3,
-				"step" : 0.01,
-				"text" : "人物大小",
-				"type" : "slider",
-				"value" : 1
-			},
-			"rwtz" : 
-			{
-				"index" : 1,
-				"order" : 101,
-				"text" : "人物拖拽",
-				"type" : "bool",
-				"value" : false
-			},
-			"schemecolor" : 
-			{
-				"index" : 14,
-				"order" : 114,
-				"text" : "ui_browse_properties_scheme_color",
-				"type" : "color",
-				"value" : "0.49411764705882355 0.06666666666666667 0.050980392156862744"
-			},
-			"sdx" : 
-			{
-				"condition" : "bjgd.value == true",
-				"fraction" : true,
-				"index" : 7,
-				"max" : 0.5,
-				"min" : -0.5,
-				"order" : 107,
-				"precision" : 3,
-				"step" : 0.01,
-				"text" : "速度X",
-				"type" : "slider",
-				"value" : 0.1
-			},
-			"sdy" : 
-			{
-				"condition" : "bjgd.value == true",
-				"fraction" : true,
-				"index" : 8,
-				"max" : 0.5,
-				"min" : -0.5,
-				"order" : 108,
-				"precision" : 3,
-				"step" : 0.01,
-				"text" : "速度Y",
-				"type" : "slider",
-				"value" : 0
-			},
-			"sjtz" : 
-			{
-				"condition" : "cs.value == true",
-				"index" : 12,
-				"order" : 112,
-				"text" : "时间拖拽",
-				"type" : "bool",
-				"value" : false
-			},
-			"xzsd" : 
-			{
-				"condition" : "csbg.value == true",
-				"fraction" : true,
-				"index" : 5,
-				"max" : 0.5,
-				"min" : -0.5,
-				"order" : 105,
-				"precision" : 3,
-				"step" : 0.01,
-				"text" : "彩色背景速度",
-				"type" : "slider",
-				"value" : 0.1
-			},
-			"yl" : 
+			"additionalblur" : 
 			{
 				"index" : 2,
 				"order" : 102,
-				"text" : "音栏",
+				"text" : "Additional Blur",
 				"type" : "bool",
 				"value" : true
 			},
-			"ys_1tz" : 
+			"additionalclouds" : 
 			{
-				"condition" : "cs.value == true",
-				"index" : 13,
-				"order" : 113,
-				"text" : "元素1拖拽",
+				"index" : 8,
+				"order" : 108,
+				"text" : "Additional Clouds",
 				"type" : "bool",
-				"value" : false
+				"value" : true
+			},
+			"birdsclose" : 
+			{
+				"index" : 6,
+				"order" : 106,
+				"text" : "Birds (Close)",
+				"type" : "bool",
+				"value" : true
+			},
+			"birdsfar" : 
+			{
+				"index" : 7,
+				"order" : 107,
+				"text" : "Birds (Far)",
+				"type" : "bool",
+				"value" : true
+			},
+			"birdsvolume" : 
+			{
+				"fraction" : true,
+				"index" : 10,
+				"max" : 1,
+				"min" : 0,
+				"order" : 110,
+				"precision" : 4,
+				"step" : 0.001,
+				"text" : "Birds Volume",
+				"type" : "slider",
+				"value" : 1
+			},
+			"camerashake" : 
+			{
+				"index" : 9,
+				"order" : 109,
+				"text" : "Camera Shake",
+				"type" : "bool",
+				"value" : true
+			},
+			"filmgrain" : 
+			{
+				"index" : 1,
+				"order" : 101,
+				"text" : "Film Grain",
+				"type" : "bool",
+				"value" : true
+			},
+			"hdr" : 
+			{
+				"index" : 0,
+				"order" : 100,
+				"text" : "HDR",
+				"type" : "bool",
+				"value" : true
+			},
+			"leaves" : 
+			{
+				"index" : 3,
+				"order" : 103,
+				"text" : "Leaves",
+				"type" : "bool",
+				"value" : true
+			},
+			"musicvolume" : 
+			{
+				"fraction" : true,
+				"index" : 11,
+				"max" : 1,
+				"min" : 0,
+				"order" : 111,
+				"precision" : 4,
+				"step" : 0.001,
+				"text" : "Music Volume",
+				"type" : "slider",
+				"value" : 0.2
+			},
+			"particles1" : 
+			{
+				"index" : 4,
+				"order" : 104,
+				"text" : "Particles #1",
+				"type" : "bool",
+				"value" : true
+			},
+			"particles2" : 
+			{
+				"index" : 5,
+				"order" : 105,
+				"text" : "Particles #2",
+				"type" : "bool",
+				"value" : true
+			},
+			"schemecolor" : 
+			{
+				"order" : 0,
+				"text" : "ui_browse_properties_scheme_color",
+				"type" : "color",
+				"value" : "0.16470588235294117 0.1803921568627451 0.1607843137254902"
 			}
-		},
-		"supportsaudioprocessing" : true
+		}
 	},
 	"preview" : "preview.gif",
-	"tags" : [ "Girls" ],
-	"title" : "《NIKKE》Rapi",
+	"tags" : [ "Game" ],
+	"title" : "NARAKA: Kurumi | 4K",
 	"type" : "scene",
-	"version" : 3,
-	"visibility" : "public",
-	"workshopid" : "2910422008",
-	"workshopurl" : "steam://url/CommunityFilePage/2910422008"
+	"version" : 0
 }

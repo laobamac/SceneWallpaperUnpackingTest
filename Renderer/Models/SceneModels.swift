@@ -49,8 +49,28 @@ struct SceneObject: Codable {
     let parent: Int?
     let visible: BoolOrObject?
     let color: ScriptableValue?
-    let alpha: Float?
+    let rawAlpha: ScriptableValue?
     let animationlayers: [AnimationLayer]?
+
+    var alpha: Float? {
+        return rawAlpha?.floatValue
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case image
+        case type
+        case origin
+        case size
+        case scale
+        case angles
+        case parent
+        case visible
+        case color
+        case rawAlpha = "alpha"
+        case animationlayers
+    }
 
     var isVisible: Bool {
         if let v = visible {
@@ -172,6 +192,11 @@ enum ScriptableValue: Codable {
         case .string(let s):
             let parts = s.split(separator: " ").compactMap { Float($0) }
             if parts.count >= 2 { return SIMD2<Float>(parts[0], parts[1]) }
+            if parts.count == 1 { return SIMD2<Float>(parts[0], parts[0]) }
+            return SIMD2<Float>(0, 0)
+        case .floatArray(let a):
+            if a.count >= 2 { return SIMD2<Float>(a[0], a[1]) }
+            if a.count == 1 { return SIMD2<Float>(a[0], a[0]) }
             return SIMD2<Float>(0, 0)
         case .object(let dict):
             if let val = dict["value"] {
@@ -186,12 +211,14 @@ enum ScriptableValue: Codable {
         switch self {
         case .string(let s):
             let parts = s.split(separator: " ").compactMap { Float($0) }
-            if parts.count >= 3 {
-                return SIMD3<Float>(parts[0], parts[1], parts[2])
-            }
-            if parts.count == 1 {
-                return SIMD3<Float>(parts[0], parts[0], parts[0])
-            }
+            if parts.count >= 3 { return SIMD3<Float>(parts[0], parts[1], parts[2]) }
+            if parts.count == 2 { return SIMD3<Float>(parts[0], parts[1], 1.0) }
+            if parts.count == 1 { return SIMD3<Float>(parts[0], parts[0], parts[0]) }
+            return SIMD3<Float>(0, 0, 0)
+        case .floatArray(let a):
+            if a.count >= 3 { return SIMD3<Float>(a[0], a[1], a[2]) }
+            if a.count == 2 { return SIMD3<Float>(a[0], a[1], 1.0) }
+            if a.count == 1 { return SIMD3<Float>(a[0], a[0], a[0]) }
             return SIMD3<Float>(0, 0, 0)
         case .object(let dict):
             if let val = dict["value"] {
@@ -206,15 +233,16 @@ enum ScriptableValue: Codable {
         switch self {
         case .string(let s):
             let parts = s.split(separator: " ").compactMap { Float($0) }
-            if parts.count >= 4 {
-                return SIMD4<Float>(parts[0], parts[1], parts[2], parts[3])
-            }
-            if parts.count == 3 {
-                return SIMD4<Float>(parts[0], parts[1], parts[2], 1.0)
-            }
-            if parts.count == 1 {
-                return SIMD4<Float>(parts[0], parts[0], parts[0], 1.0)
-            }
+            if parts.count >= 4 { return SIMD4<Float>(parts[0], parts[1], parts[2], parts[3]) }
+            if parts.count == 3 { return SIMD4<Float>(parts[0], parts[1], parts[2], 1.0) }
+            if parts.count == 2 { return SIMD4<Float>(parts[0], parts[1], 1.0, 1.0) }
+            if parts.count == 1 { return SIMD4<Float>(parts[0], parts[0], parts[0], 1.0) }
+            return SIMD4<Float>(0, 0, 0, 1)
+        case .floatArray(let a):
+            if a.count >= 4 { return SIMD4<Float>(a[0], a[1], a[2], a[3]) }
+            if a.count == 3 { return SIMD4<Float>(a[0], a[1], a[2], 1.0) }
+            if a.count == 2 { return SIMD4<Float>(a[0], a[1], 1.0, 1.0) }
+            if a.count == 1 { return SIMD4<Float>(a[0], a[0], a[0], 1.0) }
             return SIMD4<Float>(0, 0, 0, 1)
         case .object(let dict):
             if let val = dict["value"] {

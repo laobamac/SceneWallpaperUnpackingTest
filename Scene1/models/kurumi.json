@@ -1,0 +1,5 @@
+{
+	"autosize" : true,
+	"material" : "materials/kurumi.json",
+	"puppet" : "models/kurumi_puppet.mdl"
+}
