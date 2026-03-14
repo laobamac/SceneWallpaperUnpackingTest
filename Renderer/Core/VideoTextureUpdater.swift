@@ -15,18 +15,16 @@ class VideoTextureUpdater: @unchecked Sendable {
     private var videoOutput: AVPlayerItemVideoOutput?
     private var texture: MTLTexture
     private var timer: Timer?
+    private var videoURL: URL?
 
     init(url: URL, texture: MTLTexture) {
         self.texture = texture
+        self.videoURL = url
 
         let attributes: [String: Any] = [
-            kCVPixelBufferPixelFormatTypeKey as String: Int(
-                kCVPixelFormatType_32BGRA
-            )
+            kCVPixelBufferPixelFormatTypeKey as String: Int(kCVPixelFormatType_32BGRA)
         ]
-        self.videoOutput = AVPlayerItemVideoOutput(
-            pixelBufferAttributes: attributes
-        )
+        self.videoOutput = AVPlayerItemVideoOutput(pixelBufferAttributes: attributes)
 
         let playerItem = AVPlayerItem(url: url)
         if let output = self.videoOutput {
@@ -35,7 +33,6 @@ class VideoTextureUpdater: @unchecked Sendable {
 
         self.player = AVPlayer(playerItem: playerItem)
         self.player?.actionAtItemEnd = .none
-
         self.player?.isMuted = true
         self.player?.volume = 0.0
 
@@ -46,15 +43,13 @@ class VideoTextureUpdater: @unchecked Sendable {
             object: playerItem
         )
 
-        DispatchQueue.main.async {
-            self.timer = Timer.scheduledTimer(
-                timeInterval: 1.0 / 60.0,
-                target: self,
-                selector: #selector(self.updateTexture),
-                userInfo: nil,
-                repeats: true
-            )
-            RunLoop.current.add(self.timer!, forMode: .common)
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let t = Timer.scheduledTimer(withTimeInterval: 1.0 / 60.0, repeats: true) { [weak self] _ in
+                self?.updateTexture()
+            }
+            self.timer = t
+            RunLoop.current.add(t, forMode: .common)
         }
 
         self.player?.play()
@@ -62,8 +57,7 @@ class VideoTextureUpdater: @unchecked Sendable {
 
     @objc private func loopVideo(notification: Notification) {
         guard let item = notification.object as? AVPlayerItem,
-            item == player?.currentItem
-        else { return }
+              item == player?.currentItem else { return }
         item.seek(to: .zero, completionHandler: nil)
     }
 
@@ -71,10 +65,7 @@ class VideoTextureUpdater: @unchecked Sendable {
         guard let output = videoOutput else { return }
         let time = output.itemTime(forHostTime: CACurrentMediaTime())
         if output.hasNewPixelBuffer(forItemTime: time) {
-            if let pixelBuffer = output.copyPixelBuffer(
-                forItemTime: time,
-                itemTimeForDisplay: nil
-            ) {
+            if let pixelBuffer = output.copyPixelBuffer(forItemTime: time, itemTimeForDisplay: nil) {
                 CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
                 defer { CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly) }
 
@@ -103,12 +94,21 @@ class VideoTextureUpdater: @unchecked Sendable {
     }
 
     func stop() {
+        let t = timer
+        timer = nil
         DispatchQueue.main.async {
-            self.timer?.invalidate()
-            self.timer = nil
+            t?.invalidate()
         }
         player?.pause()
+        player?.replaceCurrentItem(with: nil)
         NotificationCenter.default.removeObserver(self)
+        
+        if let url = videoURL {
+            DispatchQueue.global(qos: .background).async {
+                try? FileManager.default.removeItem(at: url)
+            }
+            videoURL = nil
+        }
     }
 
     deinit {
