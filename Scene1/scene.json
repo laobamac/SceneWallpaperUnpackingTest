@@ -7,166 +7,1184 @@
 	},
 	"general" : 
 	{
-		"ambientcolor" : "1.00000 1.00000 1.00000",
-		"bloom" : true,
-		"bloomhdrfeather" : 0.0,
-		"bloomhdriterations" : 2,
-		"bloomhdrscatter" : 0.0,
-		"bloomhdrstrength" : 0.63,
-		"bloomhdrthreshold" : 0.30000001,
-		"bloomstrength" : 0.0,
-		"bloomthreshold" : 0.0,
-		"bloomtint" : "1.00000 1.00000 1.00000",
+		"ambientcolor" : "0.30000 0.30000 0.30000",
+		"bloom" : false,
+		"bloomhdrfeather" : 0.1,
+		"bloomhdriterations" : 8,
+		"bloomhdrscatter" : 1.619,
+		"bloomhdrstrength" : 2.0,
+		"bloomhdrthreshold" : 1.0,
+		"bloomstrength" : 2.0,
+		"bloomthreshold" : 0.64999998,
 		"camerafade" : true,
 		"cameraparallax" : false,
 		"cameraparallaxamount" : 0.5,
 		"cameraparallaxdelay" : 0.1,
 		"cameraparallaxmouseinfluence" : 0.5,
-		"camerapreview" : false,
+		"camerapreview" : true,
 		"camerashake" : false,
-		"camerashakeamplitude" : 0.19,
-		"camerashakeroughness" : 0.49000001,
-		"camerashakespeed" : 0.34999999,
-		"clearcolor" : "1.00000 1.00000 1.00000",
+		"camerashakeamplitude" : 0.5,
+		"camerashakeroughness" : 1.0,
+		"camerashakespeed" : 3.0,
+		"clearcolor" : 
+		{
+			"user" : "schemecolor",
+			"value" : "0.49412 0.06667 0.05098"
+		},
 		"clearenabled" : true,
 		"farz" : 10000.0,
 		"fov" : 50.0,
-		"gravitydirection" : "0.47059 0.88235 0.00000",
-		"gravitystrength" : 1.0,
 		"hdr" : false,
 		"nearz" : 0.0099999998,
 		"orthogonalprojection" : 
 		{
-			"height" : 2160,
-			"width" : 3840
+			"height" : 1080,
+			"width" : 1920
 		},
-		"perspectiveoverridefov" : 5.0,
 		"skylightcolor" : "0.30000 0.30000 0.30000",
-		"winddirection" : "0.70700 0.70700 0.00000",
-		"windenabled" : false,
-		"windstrength" : 1.0,
 		"zoom" : 1.0
 	},
 	"objects" : 
 	[
 		{
-			"castshadow" : false,
+			"alpha" : 1.0,
+			"anchor" : "none",
+			"angles" : "0.00000 0.00000 0.00000",
+			"backgroundbrightness" : 1.0,
+			"backgroundcolor" : "0.00000 0.00000 0.00000",
+			"blockalign" : false,
+			"brightness" : 1.0,
+			"color" : "1.00000 1.00000 1.00000",
+			"colorBlendMode" : 0,
+			"copybackground" : true,
+			"font" : "systemfont_arial",
+			"horizontalalign" : "center",
+			"id" : 269,
+			"ledsource" : false,
+			"limitrows" : false,
+			"limituseellipsis" : false,
+			"limitwidth" : false,
+			"locktransforms" : true,
+			"maxrows" : 1,
+			"maxwidth" : 500.0,
+			"name" : "————————",
+			"opaquebackground" : false,
+			"origin" : "960.00000 540.00000 0.00000",
+			"padding" : 32,
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"pointsize" : 32.0,
+			"scale" : "1.00000 1.00000 1.00000",
+			"size" : "615.00000 153.00000",
+			"solid" : true,
+			"text" : "Text Layer",
+			"verticalalign" : "center",
+			"visible" : false
+		},
+		{
+			"alignment" : "center",
+			"alpha" : 1.0,
+			"angles" : 
+			{
+				"script" : "'use strict';\n/** Bind this script to the \"Angles\" property of a layer for a simple 2D rotation. */\n\n/*\n * Adding new properties to the editor so you can tweak these values in the editor\n */\nexport let scriptProperties = createScriptProperties()\n\t.addSlider({\n\t\tname: 'speed',\n\t\tlabel: 'ui_editor_properties_speed',\n\t\tvalue: 0.1,\n\t\tmin: -1,\n\t\tmax: 1,\n\t\tinteger: false\n\t}).finish();\n\n/**\n * @param {Vec3} value\n */\nexport function update(value) {\n\tvalue.z = (engine.runtime * scriptProperties.speed) % 1.0 * 360;\n\treturn value;\n}\n",
+				"scriptproperties" : 
+				{
+					"speed" : 0.1
+				},
+				"user" : "xzsd",
+				"value" : "0.10000 0.10000 0.10000"
+			},
+			"brightness" : 1.0,
+			"color" : "1.00000 1.00000 1.00000",
+			"colorBlendMode" : 0,
+			"copybackground" : true,
+			"id" : 189,
+			"image" : "models/workshop/2093591151/r_angle.json",
+			"ledsource" : false,
+			"locktransforms" : true,
+			"name" : "r_angle",
+			"origin" : "960.00000 540.00000 0.00000",
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"scale" : "8.50000 8.50000 1.00000",
+			"size" : "256.00000 256.00000",
+			"solid" : true,
+			"visible" : 
+			{
+				"user" : "csbg",
+				"value" : false
+			}
+		},
+		{
+			"alignment" : "center",
+			"alpha" : 1.0,
+			"angles" : "0.00000 0.00000 0.00000",
+			"brightness" : 1.0,
+			"color" : 
+			{
+				"user" : "bjys",
+				"value" : "1.00000 1.00000 1.00000"
+			},
+			"colorBlendMode" : 0,
+			"copybackground" : true,
 			"effects" : 
 			[
 				{
-					"file" : "effects/foliagesway/effect.json",
-					"id" : 50,
+					"file" : "effects/scroll/effect.json",
+					"id" : 173,
 					"name" : "",
 					"passes" : 
 					[
 						{
 							"constantshadervalues" : 
 							{
-								"phase" : 0.5,
-								"power" : 1.0,
-								"ratio" : 0.30000001,
-								"scale" : 0.050000001,
-								"scrolldirection" : -2.316916,
-								"speeduv" : 5.0,
-								"strength" : 0.40000001
+								"repeat" : "1 1",
+								"speedx" : 
+								{
+									"user" : "sdx",
+									"value" : 0.1
+								},
+								"speedy" : 
+								{
+									"user" : "sdy",
+									"value" : 0
+								}
 							},
-							"id" : 51,
-							"textures" : [ null, "masks/foliagesway_mask_3be73cc9", null ]
+							"id" : 174
 						}
 					],
 					"visible" : 
 					{
-						"user" : "bb1",
-						"value" : true
-					}
-				},
-				{
-					"file" : "effects/foliagesway/effect.json",
-					"id" : 93,
-					"name" : "",
-					"passes" : 
-					[
-						{
-							"constantshadervalues" : 
-							{
-								"phase" : 0.5,
-								"power" : 1.0,
-								"ratio" : 0.30000001,
-								"scale" : 0.050000001,
-								"scrolldirection" : 0.47267073,
-								"speeduv" : 5.0,
-								"strength" : 0.40000001
-							},
-							"id" : 94,
-							"textures" : [ null, "masks/foliagesway_mask_7eacc852", null ]
-						}
-					],
-					"visible" : 
-					{
-						"user" : "bb2",
-						"value" : true
-					}
-				},
-				{
-					"file" : "effects/foliagesway/effect.json",
-					"id" : 119,
-					"name" : "",
-					"passes" : 
-					[
-						{
-							"constantshadervalues" : 
-							{
-								"phase" : 0.5,
-								"power" : 1.0,
-								"ratio" : 0.30000001,
-								"scale" : 0.050000001,
-								"scrolldirection" : 0.0,
-								"speeduv" : 5.0,
-								"strength" : 0.40000001
-							},
-							"id" : 120,
-							"textures" : [ null, "masks/foliagesway_mask_6c6f7541", null ]
-						}
-					],
-					"visible" : 
-					{
-						"user" : "bb3",
-						"value" : true
-					}
-				},
-				{
-					"file" : "effects/iris/effect.json",
-					"id" : 28,
-					"name" : "",
-					"passes" : 
-					[
-						{
-							"constantshadervalues" : 
-							{
-								"noiseamount" : 0.5,
-								"phase" : 0.0,
-								"rough" : 0.2,
-								"scale" : "1 1",
-								"speed" : 1.0
-							},
-							"id" : 29,
-							"textures" : [ null, "masks/iris_mask_a95fb533" ]
-						}
-					],
-					"visible" : 
-					{
-						"user" : "ss4",
+						"user" : "bjgd",
 						"value" : true
 					}
 				}
 			],
-			"id" : 16,
-			"image" : "models/电脑.json",
+			"id" : 62,
+			"image" : "models/part2.json",
+			"ledsource" : false,
 			"locktransforms" : true,
-			"name" : "电脑",
-			"origin" : "1920.00000 1080.00000 0.00000",
-			"size" : "3840.00000 2160.00000"
+			"name" : "part2",
+			"origin" : "960.00000 540.00000 0.00000",
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"scale" : "1.00000 1.00000 1.00000",
+			"size" : "1920.00000 1280.00000",
+			"solid" : true,
+			"visible" : true
+		},
+		{
+			"alignment" : "topleft",
+			"alpha" : 1.0,
+			"angles" : "0.00000 0.00000 0.00000",
+			"animationlayers" : 
+			[
+				{
+					"additive" : false,
+					"animation" : 161,
+					"blend" : 1.0,
+					"id" : 169,
+					"name" : "动画 1",
+					"rate" : 1.0,
+					"visible" : true
+				}
+			],
+			"brightness" : 1.0,
+			"color" : "1.00000 1.00000 1.00000",
+			"colorBlendMode" : 1,
+			"copybackground" : true,
+			"id" : 27,
+			"image" : "models/swiper_big_img1.json",
+			"ledsource" : false,
+			"locktransforms" : true,
+			"name" : "swiper_big_img1",
+			"origin" : "0.00000 1080.00000 0.00000",
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"scale" : 
+			{
+				"script" : "'use strict';\n\n/*\n * Adding new properties to the editor so you can tweak these values in the editor\n */\nexport var scriptProperties = createScriptProperties()\n\t.addSlider({\n\t\tname: 'frequency',\n\t\tlabel: 'ui_editor_properties_audio_frequency',\n\t\tvalue: 0,\n\t\tmin: 0,\n\t\tmax: 15,\n\t\tinteger: true\n\t})\n\t.addSlider({\n\t\tname: 'smoothing',\n\t\tlabel: 'ui_editor_properties_audio_response',\n\t\tvalue: 15,\n\t\tmin: 0,\n\t\tmax: 25,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'minvalue',\n\t\tlabel: 'ui_editor_properties_min',\n\t\tvalue: 0.8,\n\t\tmin: 0,\n\t\tmax: 3,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'maxvalue',\n\t\tlabel: 'ui_editor_properties_max',\n\t\tvalue: 1.2,\n\t\tmin: 0,\n\t\tmax: 3,\n\t\tinteger: false\n\t})\n\t.finish();\n\n/**\n * This creates a permanent link to the audio response data.\n */\nconst audioBuffer = engine.registerAudioBuffers(engine.AUDIO_RESOLUTION_16);\nlet smoothValue = 0;\nlet initialValue;\n\n/**\n * Calculate new audio-scaled value\n */\nexport function update() {\n\tconst valueDelta = scriptProperties.maxvalue - scriptProperties.minvalue;\n\tconst audioDelta = audioBuffer.average[scriptProperties.frequency] - smoothValue;\n\t\n\tsmoothValue += audioDelta * Math.min(1.0, engine.frametime * scriptProperties.smoothing);\n\tsmoothValue = Math.min(1.0, smoothValue);\n\n\treturn initialValue * (smoothValue * valueDelta + scriptProperties.minvalue);\n}\n\nexport function init(value) {\n\tinitialValue = (typeof value === 'number') ? value : value.x;\n}\n",
+				"scriptproperties" : 
+				{
+					"frequency" : 0,
+					"maxvalue" : 1,
+					"minvalue" : 0.94999999,
+					"smoothing" : 15
+				},
+				"value" : "0.83000 0.83000 0.83000"
+			},
+			"size" : "1297.00000 1303.00000",
+			"solid" : true,
+			"visible" : true
+		},
+		{
+			"alignment" : "center",
+			"alpha" : 1.0,
+			"angles" : "0.00000 0.00000 0.00000",
+			"animationlayers" : 
+			[
+				{
+					"additive" : false,
+					"animation" : 344,
+					"blend" : 1.0,
+					"id" : 383,
+					"name" : "动画 1",
+					"rate" : 1.0,
+					"visible" : true
+				}
+			],
+			"brightness" : 1.0,
+			"color" : 
+			{
+				"user" : "schemecolor",
+				"value" : "0.49412 0.06667 0.05098"
+			},
+			"colorBlendMode" : 1,
+			"copybackground" : true,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 41,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 
+								{
+									"script" : "'use strict';\n\n/*\n * Adding new properties to the editor so you can tweak these values in the editor\n */\nexport var scriptProperties = createScriptProperties()\n\t.addSlider({\n\t\tname: 'frequency',\n\t\tlabel: 'ui_editor_properties_audio_frequency',\n\t\tvalue: 0,\n\t\tmin: 0,\n\t\tmax: 15,\n\t\tinteger: true\n\t})\n\t.addSlider({\n\t\tname: 'smoothing',\n\t\tlabel: 'ui_editor_properties_audio_response',\n\t\tvalue: 15,\n\t\tmin: 0,\n\t\tmax: 25,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'minvalue',\n\t\tlabel: 'ui_editor_properties_min',\n\t\tvalue: 0.8,\n\t\tmin: 0,\n\t\tmax: 3,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'maxvalue',\n\t\tlabel: 'ui_editor_properties_max',\n\t\tvalue: 1.2,\n\t\tmin: 0,\n\t\tmax: 3,\n\t\tinteger: false\n\t})\n\t.finish();\n\n/**\n * This creates a permanent link to the audio response data.\n */\nconst audioBuffer = engine.registerAudioBuffers(engine.AUDIO_RESOLUTION_16);\nlet smoothValue = 0;\nlet initialValue;\n\n/**\n * Calculate new audio-scaled value\n */\nexport function update() {\n\tconst valueDelta = scriptProperties.maxvalue - scriptProperties.minvalue;\n\tconst audioDelta = audioBuffer.average[scriptProperties.frequency] - smoothValue;\n\t\n\tsmoothValue += audioDelta * Math.min(1.0, engine.frametime * scriptProperties.smoothing);\n\tsmoothValue = Math.min(1.0, smoothValue);\n\n\treturn initialValue * (smoothValue * valueDelta + scriptProperties.minvalue);\n}\n\nexport function init(value) {\n\tinitialValue = (typeof value === 'number') ? value : value.x;\n}\n",
+									"scriptproperties" : 
+									{
+										"frequency" : 0,
+										"maxvalue" : 1.2,
+										"minvalue" : 0.80000001,
+										"smoothing" : 15
+									},
+									"value" : 1.5707963
+								},
+								"perspective" : 0.0,
+								"scale" : 5,
+								"speed" : 5.0,
+								"strength" : 
+								{
+									"script" : "'use strict';\n\n/*\n * Adding new properties to the editor so you can tweak these values in the editor\n */\nexport var scriptProperties = createScriptProperties()\n\t.addSlider({\n\t\tname: 'frequency',\n\t\tlabel: 'ui_editor_properties_audio_frequency',\n\t\tvalue: 0,\n\t\tmin: 0,\n\t\tmax: 15,\n\t\tinteger: true\n\t})\n\t.addSlider({\n\t\tname: 'smoothing',\n\t\tlabel: 'ui_editor_properties_audio_response',\n\t\tvalue: 15,\n\t\tmin: 0,\n\t\tmax: 25,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'minvalue',\n\t\tlabel: 'ui_editor_properties_min',\n\t\tvalue: 0.8,\n\t\tmin: 0,\n\t\tmax: 3,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'maxvalue',\n\t\tlabel: 'ui_editor_properties_max',\n\t\tvalue: 1.2,\n\t\tmin: 0,\n\t\tmax: 3,\n\t\tinteger: false\n\t})\n\t.finish();\n\n/**\n * This creates a permanent link to the audio response data.\n */\nconst audioBuffer = engine.registerAudioBuffers(engine.AUDIO_RESOLUTION_16);\nlet smoothValue = 0;\nlet initialValue;\n\n/**\n * Calculate new audio-scaled value\n */\nexport function update() {\n\tconst valueDelta = scriptProperties.maxvalue - scriptProperties.minvalue;\n\tconst audioDelta = audioBuffer.average[scriptProperties.frequency] - smoothValue;\n\t\n\tsmoothValue += audioDelta * Math.min(1.0, engine.frametime * scriptProperties.smoothing);\n\tsmoothValue = Math.min(1.0, smoothValue);\n\n\treturn initialValue * (smoothValue * valueDelta + scriptProperties.minvalue);\n}\n\nexport function init(value) {\n\tinitialValue = (typeof value === 'number') ? value : value.x;\n}\n",
+									"scriptproperties" : 
+									{
+										"frequency" : 0,
+										"maxvalue" : 1,
+										"minvalue" : 0.1,
+										"smoothing" : 15
+									},
+									"value" : 0.1
+								}
+							},
+							"id" : 42
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 34,
+			"image" : "models/swiper4_color_box1.json",
+			"ledsource" : false,
+			"locktransforms" : true,
+			"name" : "swiper4_color_box1",
+			"origin" : 
+			{
+				"script" : "'use strict';\n\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'gifMove',\n\t\tlabel: '拖拽',\n\t\tvalue: false\n\t})\n\t.finish();\n/** 此脚本允许用户在屏幕上拖放元素。 */\n// 基于官方预设拖拽脚本修改\n\nlet isDragging = false;\nlet dragOffset;\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorDown(event) {\t\n\tif(scriptProperties.gifMove){\n\t\tisDragging = true;\n\t}\n\tdragOffset = thisLayer.origin.subtract(event.worldPosition);\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorUp(event) {\n\tisDragging = false;\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorMove(event) {\n\tif (isDragging) {\n\t\tthisLayer.origin = event.worldPosition.add(dragOffset);\n\t}\n}\n\n\n",
+				"scriptproperties" : 
+				{
+					"gifMove" : 
+					{
+						"user" : "ys_1tz",
+						"value" : false
+					}
+				},
+				"value" : "1015.00000 705.00000 0.00000"
+			},
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"scale" : "1.00000 1.00000 1.00000",
+			"size" : "265.00000 825.00000",
+			"solid" : true,
+			"visible" : true
+		},
+		{
+			"alignment" : "right",
+			"alpha" : 1.0,
+			"angles" : "0.00000 0.00000 0.00000",
+			"animationlayers" : 
+			[
+				{
+					"additive" : false,
+					"animation" : 210,
+					"blend" : 1.0,
+					"id" : 225,
+					"name" : "动画 1",
+					"rate" : 1.0,
+					"visible" : true
+				}
+			],
+			"brightness" : 1.0,
+			"color" : 
+			{
+				"user" : "bjys",
+				"value" : "1.00000 1.00000 1.00000"
+			},
+			"colorBlendMode" : 0,
+			"copybackground" : true,
+			"id" : 58,
+			"image" : "models/swiper4_right_bg.c057a0f3.json",
+			"ledsource" : false,
+			"locktransforms" : true,
+			"name" : "swiper4_right_bg.c057a0f3",
+			"origin" : "1920.00000 540.00000 0.00000",
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"scale" : "0.93000 0.93000 0.93000",
+			"size" : "971.00000 1165.00000",
+			"solid" : true,
+			"visible" : true
+		},
+		{
+			"alpha" : 1.0,
+			"anchor" : "none",
+			"angles" : "0.00000 0.00000 0.00000",
+			"backgroundbrightness" : 1.0,
+			"backgroundcolor" : "0.00000 0.00000 0.00000",
+			"blockalign" : false,
+			"brightness" : 1.0,
+			"color" : 
+			{
+				"user" : "schemecolor",
+				"value" : "0.49412 0.06667 0.05098"
+			},
+			"colorBlendMode" : 0,
+			"copybackground" : true,
+			"font" : "fonts/CursedTimerUlil-Aznm.ttf",
+			"horizontalalign" : "center",
+			"id" : 700,
+			"ledsource" : false,
+			"limitrows" : false,
+			"limituseellipsis" : false,
+			"limitwidth" : false,
+			"locktransforms" : true,
+			"maxrows" : 1,
+			"maxwidth" : 500.0,
+			"name" : "Clock",
+			"opaquebackground" : false,
+			"origin" : 
+			{
+				"script" : "'use strict';\n\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'gifMove',\n\t\tlabel: '拖拽',\n\t\tvalue: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhix',\n\t\tlabel: 'X',\n\t\tvalue: 1920,\n\t\tmin: 0,\n\t\tmax: 3840,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiy',\n\t\tlabel: 'Y',\n\t\tvalue: 1080,\n\t\tmin: 0,\n\t\tmax: 2160,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiz',\n\t\tlabel: 'Z',\n\t\tvalue: 0,\n\t\tmin: -2000,\n\t\tmax: 2000,\n\t\tinteger: false\n\t})\n\t.finish();\n/** 此脚本允许用户在屏幕上拖放元素。 */\n// 基于官方预设拖拽脚本修改\n\nlet isDragging = false;\nlet dragOffset;\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorDown(event) {\t\n\tif(scriptProperties.gifMove){\n\t\tisDragging = true;\n\t}\n\tdragOffset = thisLayer.origin.subtract(event.worldPosition);\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorUp(event) {\n\tisDragging = false;\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorMove(event) {\n\tif (isDragging) {\n\t\tthisLayer.origin = event.worldPosition.add(dragOffset);\n\t\tscriptProperties.weizhix = thisLayer.origin.x;\n\t\tscriptProperties.weizhiy = thisLayer.origin.y;\n\t\tscriptProperties.weizhiz = thisLayer.origin.z;\n\t}\n}\n\n/**\n * @param {Vec3} value - for property 'origin'\n * @return {Vec3} - update current property value\n */\nexport function update(value) {\t\n\n\tvalue.x = scriptProperties.weizhix;\n\tvalue.y = scriptProperties.weizhiy;\n\tvalue.z = scriptProperties.weizhiz;\n\treturn value;\n}\n\n\n",
+				"scriptproperties" : 
+				{
+					"gifMove" : 
+					{
+						"user" : "sjtz",
+						"value" : false
+					},
+					"weizhix" : 1535,
+					"weizhiy" : 350,
+					"weizhiz" : 0
+				},
+				"value" : "1535.00000 350.00000 0.00000"
+			},
+			"padding" : 32,
+			"parallaxDepth" : "0.00000 0.00000",
+			"perspective" : false,
+			"pointsize" : 32.0,
+			"scale" : "1.00000 1.00000 1.00000",
+			"size" : "415.00000 145.00000",
+			"solid" : true,
+			"text" : 
+			{
+				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '2834605113';\n// Please note: Do not remove this line or asset references may break.\n\nexport var scriptProperties = createScriptProperties()\n\t// Whether you want a 24h or 12h style format\n\t.addCheckbox({\n\t\tname: 'use24hFormat',\n\t\tlabel: 'ui_editor_properties_use_24h_format',\n\t\tvalue: true\n\t})\n\t// Whether you want to see the seconds or not\n\t.addCheckbox({\n\t\tname: 'showSeconds',\n\t\tlabel: 'ui_editor_properties_show_seconds',\n\t\tvalue: false\n\t})\n\t// This will be used to separate each element\n\t.addText({\n\t\tname: 'delimiter',\n\t\tlabel: 'ui_editor_properties_delimiter',\n\t\tvalue: ':'\n\t})\n\t.finish();\n\n/**\n * @param {String} value (for property 'text')\n */\nexport function update(value) {\n\tlet time = new Date();\n\tvar hours = time.getHours();\n\tif (!scriptProperties.use24hFormat) {\n\t\thours %= 12;\n\t\tif (hours == 0) {\n\t\t\thours = 12;\n\t\t}\n\t}\n\thours = (\"00\" + hours).slice(-2);\n\tlet minutes = (\"00\" + time.getMinutes()).slice(-2);\n\tvalue = hours + scriptProperties.delimiter + minutes;\n\tif (scriptProperties.showSeconds) {\n\t\tlet seconds = (\"00\" + time.getSeconds()).slice(-2);\n\t\tvalue += scriptProperties.delimiter + seconds;\n\t}\n\treturn value;\n}\n",
+				"scriptproperties" : 
+				{
+					"delimiter" : ":",
+					"showSeconds" : false,
+					"use24hFormat" : true
+				},
+				"value" : "12:34"
+			},
+			"verticalalign" : "center",
+			"visible" : 
+			{
+				"user" : "sfxs",
+				"value" : true
+			}
+		},
+		{
+			"alpha" : 1.0,
+			"anchor" : "none",
+			"angles" : "0.00000 0.00000 0.00000",
+			"backgroundbrightness" : 1.0,
+			"backgroundcolor" : "0.00000 0.00000 0.00000",
+			"blockalign" : false,
+			"brightness" : 1.0,
+			"color" : 
+			{
+				"user" : "schemecolor",
+				"value" : "0.49412 0.06667 0.05098"
+			},
+			"colorBlendMode" : 0,
+			"copybackground" : true,
+			"font" : "fonts/CursedTimerUlil-Aznm.ttf",
+			"horizontalalign" : "center",
+			"id" : 701,
+			"ledsource" : false,
+			"limitrows" : false,
+			"limituseellipsis" : false,
+			"limitwidth" : false,
+			"locktransforms" : true,
+			"maxrows" : 1,
+			"maxwidth" : 500.0,
+			"name" : "Date",
+			"opaquebackground" : false,
+			"origin" : 
+			{
+				"script" : "'use strict';\n\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'gifMove',\n\t\tlabel: '拖拽',\n\t\tvalue: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhix',\n\t\tlabel: 'X',\n\t\tvalue: 1920,\n\t\tmin: 0,\n\t\tmax: 3840,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiy',\n\t\tlabel: 'Y',\n\t\tvalue: 1080,\n\t\tmin: 0,\n\t\tmax: 2160,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiz',\n\t\tlabel: 'Z',\n\t\tvalue: 0,\n\t\tmin: -2000,\n\t\tmax: 2000,\n\t\tinteger: false\n\t})\n\t.finish();\n/** 此脚本允许用户在屏幕上拖放元素。 */\n// 基于官方预设拖拽脚本修改\n\nlet isDragging = false;\nlet dragOffset;\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorDown(event) {\t\n\tif(scriptProperties.gifMove){\n\t\tisDragging = true;\n\t}\n\tdragOffset = thisLayer.origin.subtract(event.worldPosition);\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorUp(event) {\n\tisDragging = false;\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorMove(event) {\n\tif (isDragging) {\n\t\tthisLayer.origin = event.worldPosition.add(dragOffset);\n\t\tscriptProperties.weizhix = thisLayer.origin.x;\n\t\tscriptProperties.weizhiy = thisLayer.origin.y;\n\t\tscriptProperties.weizhiz = thisLayer.origin.z;\n\t}\n}\n\n/**\n * @param {Vec3} value - for property 'origin'\n * @return {Vec3} - update current property value\n */\nexport function update(value) {\t\n\n\tvalue.x = scriptProperties.weizhix;\n\tvalue.y = scriptProperties.weizhiy;\n\tvalue.z = scriptProperties.weizhiz;\n\treturn value;\n}\n\n\n",
+				"scriptproperties" : 
+				{
+					"gifMove" : 
+					{
+						"user" : "sjtz",
+						"value" : false
+					},
+					"weizhix" : 1535,
+					"weizhiy" : 250,
+					"weizhiz" : 0
+				},
+				"value" : "1535.00000 250.00000 0.00000"
+			},
+			"padding" : 32,
+			"parallaxDepth" : "0.00000 0.00000",
+			"perspective" : false,
+			"pointsize" : 9.0,
+			"scale" : "1.00000 1.00000 1.00000",
+			"size" : "503.00000 42.00000",
+			"solid" : true,
+			"text" : 
+			{
+				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '2834605113';\n// Please note: Do not remove this line or asset references may break.\n\n\n/**\n * @param {String} value (for property 'text')\n */\nexport function update(value) {\n\tlet time = new Date();\n\tlet year = time.getFullYear();\n\tlet month = (\"00\" + (time.getMonth() + 1)).slice(-2);\n\tlet day = (\"00\" + time.getDate()).slice(-2);\n\tlet weekday = [\"星期日\", \"星期一\", \"星期二\", \"星期三\", \"星期四\", \"星期五\", \"星期六\"];\n\tvalue = year + \" | \" + month + \" | \" + day + \" | \" + weekday[time.getDay()];\n\treturn value;\n}\n",
+				"value" : "2021 | 02 | 01 | 星期一"
+			},
+			"verticalalign" : "center",
+			"visible" : 
+			{
+				"user" : "nyrxs",
+				"value" : true
+			}
+		},
+		{
+			"alignment" : "center",
+			"alpha" : 1.0,
+			"angles" : "0.00000 0.00000 0.00000",
+			"brightness" : 1.0,
+			"color" : 
+			{
+				"user" : "schemecolor",
+				"value" : "0.49412 0.06667 0.05098"
+			},
+			"colorBlendMode" : 0,
+			"copybackground" : true,
+			"id" : 702,
+			"image" : "models/util/solidlayer.json",
+			"ledsource" : false,
+			"locktransforms" : true,
+			"name" : "Second",
+			"origin" : 
+			{
+				"script" : "'use strict';\n\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'gifMove',\n\t\tlabel: '拖拽',\n\t\tvalue: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhix',\n\t\tlabel: 'X',\n\t\tvalue: 1920,\n\t\tmin: 0,\n\t\tmax: 3840,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiy',\n\t\tlabel: 'Y',\n\t\tvalue: 1080,\n\t\tmin: 0,\n\t\tmax: 2160,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiz',\n\t\tlabel: 'Z',\n\t\tvalue: 0,\n\t\tmin: -2000,\n\t\tmax: 2000,\n\t\tinteger: false\n\t})\n\t.finish();\n/** 此脚本允许用户在屏幕上拖放元素。 */\n// 基于官方预设拖拽脚本修改\n\nlet isDragging = false;\nlet dragOffset;\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorDown(event) {\t\n\tif(scriptProperties.gifMove){\n\t\tisDragging = true;\n\t}\n\tdragOffset = thisLayer.origin.subtract(event.worldPosition);\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorUp(event) {\n\tisDragging = false;\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorMove(event) {\n\tif (isDragging) {\n\t\tthisLayer.origin = event.worldPosition.add(dragOffset);\n\t\tscriptProperties.weizhix = thisLayer.origin.x;\n\t\tscriptProperties.weizhiy = thisLayer.origin.y;\n\t\tscriptProperties.weizhiz = thisLayer.origin.z;\n\t}\n}\n\n/**\n * @param {Vec3} value - for property 'origin'\n * @return {Vec3} - update current property value\n */\nexport function update(value) {\t\n\n\tvalue.x = scriptProperties.weizhix;\n\tvalue.y = scriptProperties.weizhiy;\n\tvalue.z = scriptProperties.weizhiz;\n\treturn value;\n}\n\n\n",
+				"scriptproperties" : 
+				{
+					"gifMove" : 
+					{
+						"user" : "sjtz",
+						"value" : false
+					},
+					"weizhix" : 1535,
+					"weizhiy" : 280,
+					"weizhiz" : 0
+				},
+				"value" : "1535.00000 280.00000 0.00000"
+			},
+			"parallaxDepth" : "0.00000 0.00000",
+			"perspective" : false,
+			"scale" : 
+			{
+				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '2834605113';\n// Please note: Do not remove this line or asset references may break.\n\n/**\n * @param {Vec3} value - for property 'scale'\n * @return {Vec3} - update current property value\n */\nexport function update(value) {\n\tlet second = new Date().getSeconds();\n\tvalue.x = second / 60;\n\treturn value;\n}\n",
+				"value" : "1.00000 1.00000 1.00000"
+			},
+			"size" : "400.00000 5.00000",
+			"solid" : true,
+			"visible" : 
+			{
+				"user" : "mxxs",
+				"value" : true
+			}
+		},
+		{
+			"alignment" : "center",
+			"alpha" : 
+			{
+				"animation" : 
+				{
+					"c0" : 
+					[
+						{
+							"back" : 
+							{
+								"enabled" : true,
+								"x" : -1,
+								"y" : 0
+							},
+							"frame" : 0,
+							"front" : 
+							{
+								"enabled" : true,
+								"x" : 1,
+								"y" : 0
+							},
+							"lockangle" : true,
+							"locklength" : true,
+							"value" : 0
+						},
+						{
+							"back" : 
+							{
+								"enabled" : true,
+								"x" : -1,
+								"y" : 0
+							},
+							"frame" : 180,
+							"front" : 
+							{
+								"enabled" : true,
+								"x" : 1,
+								"y" : 0
+							},
+							"lockangle" : true,
+							"locklength" : true,
+							"value" : 1
+						}
+					],
+					"options" : 
+					{
+						"fps" : 60,
+						"length" : 180,
+						"mode" : "single",
+						"parent" : 
+						{
+							"key" : "origin"
+						},
+						"wraploop" : null
+					}
+				},
+				"value" : 1.0
+			},
+			"angles" : "0.00000 0.00000 0.00000",
+			"animationlayers" : 
+			[
+				{
+					"additive" : false,
+					"animation" : 459,
+					"blend" : 1.0,
+					"id" : 467,
+					"name" : "动画 1",
+					"rate" : 1.0,
+					"visible" : true
+				}
+			],
+			"brightness" : 1.0,
+			"color" : 
+			{
+				"script" : "'use strict';\n/** This script works on Color properties and cycles through all colors with a constant speed. */\n\n/**\n * Adding new properties to the editor so you can tweak these values in the editor\n */\nexport let scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'kaiguan',\n\t\tlabel: '开关',\n\t\tvalue: false\n\t})\n\t.addSlider({\n\t\tname: 'speed',\n\t\tlabel: 'ui_editor_properties_speed',\n\t\tvalue: 0.25,\n\t\tmin: 0,\n\t\tmax: 1,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'saturation',\n\t\tlabel: 'ui_editor_properties_saturation',\n\t\tvalue: 1,\n\t\tmin: 0,\n\t\tmax: 1,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'brightness',\n\t\tlabel: 'ui_editor_properties_brightness',\n\t\tvalue: 1,\n\t\tmin: 0,\n\t\tmax: 1,\n\t\tinteger: false\n\t}).finish();\n\nimport * as WEColor from 'WEColor';\n\n/**\n * @param {Vec3} value\n */\nlet isDragging = false;\n\nexport function update(value) {\n\tif(scriptProperties.kaiguan){\n\t\tisDragging = true;\n\t\n\tvalue = WEColor.hsv2rgb({\n\t\tx: engine.runtime * scriptProperties.speed,\n\t\ty: scriptProperties.saturation,\n\t\tz: scriptProperties.brightness\n\t});\n\t\n\treturn value;\n}\n}",
+				"scriptproperties" : 
+				{
+					"brightness" : 1,
+					"kaiguan" : false,
+					"saturation" : 1,
+					"speed" : 0.050000001
+				},
+				"value" : "0.19608 0.19608 0.19608"
+			},
+			"colorBlendMode" : 3,
+			"copybackground" : true,
+			"id" : 46,
+			"image" : "models/text_bg1.json",
+			"ledsource" : false,
+			"locktransforms" : true,
+			"name" : "text_bg1",
+			"origin" : 
+			{
+				"script" : "'use strict';\n\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'gifMove',\n\t\tlabel: '拖拽',\n\t\tvalue: false\n\t})\n\t.finish();\n/** 此脚本允许用户在屏幕上拖放元素。 */\n// 基于官方预设拖拽脚本修改\n\nlet isDragging = false;\nlet dragOffset;\n\nexport function cursorDown(event) {\t\n\tif(scriptProperties.gifMove){\n\t\tisDragging = true;\n\t}\n\tdragOffset = thisLayer.origin.subtract(event.worldPosition);\n}\n\nexport function cursorUp(event) {\n\tisDragging = false;\n}\nexport function cursorMove(event) {\n\tif (isDragging) {\n\t\tthisLayer.origin = event.worldPosition.add(dragOffset);\n\t}\n}\n\n",
+				"scriptproperties" : 
+				{
+					"gifMove" : 
+					{
+						"user" : "logo2",
+						"value" : false
+					}
+				},
+				"value" : "750.00000 750.00000 0.00000"
+			},
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"scale" : "1.00000 1.00000 1.00000",
+			"size" : "820.00000 327.00000",
+			"solid" : true,
+			"visible" : true
+		},
+		{
+			"alignment" : "center",
+			"alpha" : 1.0,
+			"angles" : "0.00000 0.00000 0.00000",
+			"brightness" : 1.0,
+			"color" : "1.00000 1.00000 1.00000",
+			"colorBlendMode" : 0,
+			"copybackground" : true,
+			"effects" : 
+			[
+				{
+					"file" : "effects/workshop/2440553694/constellation/effect.json",
+					"id" : 151,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"combos" : 
+							{
+								"AUDIOPROCESSING" : 3
+							},
+							"constantshadervalues" : 
+							{
+								"Opacity" : 1.0,
+								"Scale" : 2.0,
+								"Sparkle Glow" : 20.0,
+								"Sparkle Speed" : 1.0,
+								"Speed" : 1.0,
+								"audioamount" : 1.0,
+								"audiobounds" : "1.0 0.2",
+								"audioexponent" : 1.0,
+								"color 1" : 
+								{
+									"user" : "schemecolor",
+									"value" : "0.49412 0.06667 0.05098"
+								},
+								"frequencymax" : 1.0,
+								"frequencymin" : 0.0,
+								"pointerspeed" : 0.0
+							},
+							"id" : 152
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 216,
+			"image" : "models/logo.json",
+			"ledsource" : false,
+			"locktransforms" : true,
+			"name" : "logo",
+			"origin" : 
+			{
+				"script" : "'use strict';\n\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'gifMove',\n\t\tlabel: '拖拽',\n\t\tvalue: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhix',\n\t\tlabel: 'X',\n\t\tvalue: 1920,\n\t\tmin: 0,\n\t\tmax: 3840,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiy',\n\t\tlabel: 'Y',\n\t\tvalue: 1080,\n\t\tmin: 0,\n\t\tmax: 2160,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiz',\n\t\tlabel: 'Z',\n\t\tvalue: 0,\n\t\tmin: -2000,\n\t\tmax: 2000,\n\t\tinteger: false\n\t})\n\t.finish();\n/** 此脚本允许用户在屏幕上拖放元素。 */\n// 基于官方预设拖拽脚本修改\n\nlet isDragging = false;\nlet dragOffset;\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorDown(event) {\t\n\tif(scriptProperties.gifMove){\n\t\tisDragging = true;\n\t}\n\tdragOffset = thisLayer.origin.subtract(event.worldPosition);\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorUp(event) {\n\tisDragging = false;\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorMove(event) {\n\tif (isDragging) {\n\t\tthisLayer.origin = event.worldPosition.add(dragOffset);\n\t\tscriptProperties.weizhix = thisLayer.origin.x;\n\t\tscriptProperties.weizhiy = thisLayer.origin.y;\n\t\tscriptProperties.weizhiz = thisLayer.origin.z;\n\t}\n}\n\n/**\n * @param {Vec3} value - for property 'origin'\n * @return {Vec3} - update current property value\n */\nexport function update(value) {\t\n\n\tvalue.x = scriptProperties.weizhix;\n\tvalue.y = scriptProperties.weizhiy;\n\tvalue.z = scriptProperties.weizhiz;\n\treturn value;\n}\n\n\n",
+				"scriptproperties" : 
+				{
+					"gifMove" : 
+					{
+						"user" : "logo1tz",
+						"value" : false
+					},
+					"weizhix" : 1560,
+					"weizhiy" : 600,
+					"weizhiz" : 0
+				},
+				"value" : "1560.00000 600.00000 0.00000"
+			},
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"scale" : "2.00000 2.00000 2.00000",
+			"size" : "192.00000 97.00000",
+			"solid" : true,
+			"visible" : true
+		},
+		{
+			"alignment" : "center",
+			"alpha" : 1.0,
+			"angles" : "0.00000 0.00000 0.00000",
+			"brightness" : 1.0,
+			"color" : 
+			{
+				"user" : "schemecolor",
+				"value" : "0.49412 0.06667 0.05098"
+			},
+			"colorBlendMode" : 0,
+			"copybackground" : true,
+			"effects" : 
+			[
+				{
+					"file" : "effects/scroll/effect.json",
+					"id" : 176,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"repeat" : "1 1",
+								"speedx" : 0,
+								"speedy" : 
+								{
+									"script" : "'use strict';\n\n/*\n * Adding new properties to the editor so you can tweak these values in the editor\n */\nexport var scriptProperties = createScriptProperties()\n\t.addSlider({\n\t\tname: 'frequency',\n\t\tlabel: 'ui_editor_properties_audio_frequency',\n\t\tvalue: 0,\n\t\tmin: 0,\n\t\tmax: 15,\n\t\tinteger: true\n\t})\n\t.addSlider({\n\t\tname: 'smoothing',\n\t\tlabel: 'ui_editor_properties_audio_response',\n\t\tvalue: 15,\n\t\tmin: 0,\n\t\tmax: 25,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'minvalue',\n\t\tlabel: 'ui_editor_properties_min',\n\t\tvalue: 0.8,\n\t\tmin: 0,\n\t\tmax: 3,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'maxvalue',\n\t\tlabel: 'ui_editor_properties_max',\n\t\tvalue: 1.2,\n\t\tmin: 0,\n\t\tmax: 3,\n\t\tinteger: false\n\t})\n\t.finish();\n\n/**\n * This creates a permanent link to the audio response data.\n */\nconst audioBuffer = engine.registerAudioBuffers(engine.AUDIO_RESOLUTION_16);\nlet smoothValue = 0;\nlet initialValue;\n\n/**\n * Calculate new audio-scaled value\n */\nexport function update() {\n\tconst valueDelta = scriptProperties.maxvalue - scriptProperties.minvalue;\n\tconst audioDelta = audioBuffer.average[scriptProperties.frequency] - smoothValue;\n\t\n\tsmoothValue += audioDelta * Math.min(1.0, engine.frametime * scriptProperties.smoothing);\n\tsmoothValue = Math.min(1.0, smoothValue);\n\n\treturn initialValue * (smoothValue * valueDelta + scriptProperties.minvalue);\n}\n\nexport function init(value) {\n\tinitialValue = (typeof value === 'number') ? value : value.x;\n}\n",
+									"scriptproperties" : 
+									{
+										"frequency" : 0,
+										"maxvalue" : 1.1,
+										"minvalue" : 1,
+										"smoothing" : 15
+									},
+									"value" : 0.1
+								}
+							},
+							"id" : 177
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 170,
+			"image" : "models/swiper4_left_icon.json",
+			"ledsource" : false,
+			"locktransforms" : true,
+			"name" : "swiper4_left_icon",
+			"origin" : "50.00000 540.00000 0.00000",
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"scale" : "1.50000 1.50000 1.50000",
+			"size" : "20.00000 740.00000",
+			"solid" : true,
+			"visible" : true
+		},
+		{
+			"alpha" : 1.0,
+			"anchor" : "none",
+			"angles" : "0.00000 0.00000 0.00000",
+			"backgroundbrightness" : 1.0,
+			"backgroundcolor" : "0.00000 0.00000 0.00000",
+			"blockalign" : false,
+			"brightness" : 1.0,
+			"color" : "1.00000 1.00000 1.00000",
+			"colorBlendMode" : 0,
+			"copybackground" : true,
+			"font" : "systemfont_arial",
+			"horizontalalign" : "center",
+			"id" : 271,
+			"ledsource" : false,
+			"limitrows" : false,
+			"limituseellipsis" : false,
+			"limitwidth" : false,
+			"locktransforms" : true,
+			"maxrows" : 1,
+			"maxwidth" : 500.0,
+			"name" : "————————",
+			"opaquebackground" : false,
+			"origin" : "960.00000 540.00000 0.00000",
+			"padding" : 32,
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"pointsize" : 32.0,
+			"scale" : "1.00000 1.00000 1.00000",
+			"size" : "615.00000 153.00000",
+			"solid" : true,
+			"text" : "Text Layer",
+			"verticalalign" : "center",
+			"visible" : false
+		},
+		{
+			"alignment" : "center",
+			"alpha" : 1.0,
+			"angles" : "0.00000 0.00000 0.00000",
+			"animationlayers" : 
+			[
+				{
+					"additive" : false,
+					"animation" : 110,
+					"blend" : 1.0,
+					"id" : 118,
+					"name" : "动画 1",
+					"rate" : 1.0,
+					"visible" : true
+				}
+			],
+			"brightness" : 1.0,
+			"color" : "1.00000 1.00000 1.00000",
+			"colorBlendMode" : 0,
+			"copybackground" : true,
+			"id" : 13,
+			"image" : "models/c010_idle00.json",
+			"ledsource" : false,
+			"locktransforms" : true,
+			"name" : "c010_idle00",
+			"origin" : 
+			{
+				"animation" : 
+				{
+					"c0" : 
+					[
+						{
+							"back" : 
+							{
+								"enabled" : true,
+								"x" : -1,
+								"y" : 0
+							},
+							"frame" : 0,
+							"front" : 
+							{
+								"enabled" : true,
+								"x" : 1,
+								"y" : 0
+							},
+							"lockangle" : true,
+							"locklength" : true,
+							"value" : 490
+						},
+						{
+							"back" : 
+							{
+								"enabled" : true,
+								"x" : -1,
+								"y" : 0
+							},
+							"frame" : 180,
+							"front" : 
+							{
+								"enabled" : true,
+								"x" : 1,
+								"y" : 0
+							},
+							"lockangle" : true,
+							"locklength" : true,
+							"value" : 0
+						}
+					],
+					"c1" : 
+					[
+						{
+							"back" : 
+							{
+								"enabled" : true,
+								"x" : -1,
+								"y" : 0
+							},
+							"frame" : 0,
+							"front" : 
+							{
+								"enabled" : true,
+								"x" : 1,
+								"y" : 0
+							},
+							"lockangle" : true,
+							"locklength" : true,
+							"value" : 0
+						},
+						{
+							"back" : 
+							{
+								"enabled" : true,
+								"x" : -1,
+								"y" : 0
+							},
+							"frame" : 180,
+							"front" : 
+							{
+								"enabled" : true,
+								"x" : 1,
+								"y" : 0
+							},
+							"lockangle" : true,
+							"locklength" : true,
+							"value" : 0
+						}
+					],
+					"c2" : 
+					[
+						{
+							"back" : 
+							{
+								"enabled" : true,
+								"x" : -1,
+								"y" : 0
+							},
+							"frame" : 0,
+							"front" : 
+							{
+								"enabled" : true,
+								"x" : 1,
+								"y" : 0
+							},
+							"lockangle" : true,
+							"locklength" : true,
+							"value" : 0
+						},
+						{
+							"back" : 
+							{
+								"enabled" : true,
+								"x" : -1,
+								"y" : 0
+							},
+							"frame" : 180,
+							"front" : 
+							{
+								"enabled" : true,
+								"x" : 1,
+								"y" : 0
+							},
+							"lockangle" : true,
+							"locklength" : true,
+							"value" : 0
+						}
+					],
+					"options" : 
+					{
+						"children" : [],
+						"fps" : 60,
+						"length" : 180,
+						"mode" : "single",
+						"wraploop" : null
+					},
+					"relative" : true
+				},
+				"script" : "'use strict';\n\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'gifMove',\n\t\tlabel: '拖拽',\n\t\tvalue: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhix',\n\t\tlabel: 'X',\n\t\tvalue: 1920,\n\t\tmin: 0,\n\t\tmax: 3840,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiy',\n\t\tlabel: 'Y',\n\t\tvalue: 1080,\n\t\tmin: 0,\n\t\tmax: 2160,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiz',\n\t\tlabel: 'Z',\n\t\tvalue: 0,\n\t\tmin: -2000,\n\t\tmax: 2000,\n\t\tinteger: false\n\t})\n\t.finish();\n/** 此脚本允许用户在屏幕上拖放元素。 */\n// 基于官方预设拖拽脚本修改\n\nlet isDragging = false;\nlet dragOffset;\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorDown(event) {\t\n\tif(scriptProperties.gifMove){\n\t\tisDragging = true;\n\t}\n\tdragOffset = thisLayer.origin.subtract(event.worldPosition);\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorUp(event) {\n\tisDragging = false;\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorMove(event) {\n\tif (isDragging) {\n\t\tthisLayer.origin = event.worldPosition.add(dragOffset);\n\t\tscriptProperties.weizhix = thisLayer.origin.x;\n\t\tscriptProperties.weizhiy = thisLayer.origin.y;\n\t\tscriptProperties.weizhiz = thisLayer.origin.z;\n\t}\n}\n\n/**\n * @param {Vec3} value - for property 'origin'\n * @return {Vec3} - update current property value\n */\nexport function update(value) {\t\n\n\tvalue.x = scriptProperties.weizhix;\n\tvalue.y = scriptProperties.weizhiy;\n\tvalue.z = scriptProperties.weizhiz;\n\treturn value;\n}\n\n\n",
+				"scriptproperties" : 
+				{
+					"gifMove" : 
+					{
+						"user" : "rwtz",
+						"value" : false
+					},
+					"weizhix" : 960,
+					"weizhiy" : 540,
+					"weizhiz" : 0
+				},
+				"value" : "960.00000 540.00000 0.00000"
+			},
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"scale" : 
+			{
+				"user" : "rwdx",
+				"value" : "1.00000 1.00000 1.00000"
+			},
+			"size" : "419.00000 900.00000",
+			"solid" : true,
+			"visible" : 
+			{
+				"script" : "let count = 0, firstClickTime;\nlet doubleClickFrameTime = 500; //milliseconds\nexport function cursorClick(event) {\n\n\n    count++;\n    if (count % 2 !== 0) //if count of clicks is odd number (1, 3, 5)\n    {\n        firstClickTime = Date.now(); //remember time when clicked\n    }\n    if (count % 2 === 0) //if amount of clicks is even number (2, 4, 6)\n    {\n        if (Date.now() - firstClickTime > doubleClickFrameTime) //if amount of time from first click to second is more than expected time frame for double click\n        {\n            firstClickTime = Date.now(); //remember new time\n            count--; //-1 click\n        }\n        else //click is in expected time frame for double click\n        {\n           if (thisScene.getLayer(\"拉毗台词.mp3\").stop){\n\t\t\t   thisScene.getLayer(\"拉毗台词.mp3\").play();\n\t\t   }\n\t\t   else thisScene.getLayer(\"拉毗台词.mp3\").stop();\n            \n            count = 0; //reset click count\n        }\n    }\n}\n",
+				"value" : true
+			}
+		},
+		{
+			"alpha" : 1.0,
+			"anchor" : "none",
+			"angles" : "0.00000 0.00000 0.00000",
+			"backgroundbrightness" : 1.0,
+			"backgroundcolor" : "0.00000 0.00000 0.00000",
+			"blockalign" : false,
+			"brightness" : 1.0,
+			"color" : "1.00000 1.00000 1.00000",
+			"colorBlendMode" : 0,
+			"copybackground" : true,
+			"font" : "systemfont_arial",
+			"horizontalalign" : "center",
+			"id" : 263,
+			"ledsource" : false,
+			"limitrows" : false,
+			"limituseellipsis" : false,
+			"limitwidth" : false,
+			"locktransforms" : true,
+			"maxrows" : 1,
+			"maxwidth" : 500.0,
+			"name" : "————————",
+			"opaquebackground" : false,
+			"origin" : "960.00000 540.00000 0.00000",
+			"padding" : 32,
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"pointsize" : 32.0,
+			"scale" : "1.00000 1.00000 1.00000",
+			"size" : "615.00000 153.00000",
+			"solid" : true,
+			"text" : "Text Layer",
+			"verticalalign" : "center",
+			"visible" : false
+		},
+		{
+			"alignment" : "bottom",
+			"alpha" : 1.0,
+			"angles" : "0.00000 0.00000 0.00000",
+			"brightness" : 1.0,
+			"color" : "1.00000 1.00000 1.00000",
+			"colorBlendMode" : 0,
+			"copybackground" : true,
+			"effects" : 
+			[
+				{
+					"file" : "effects/workshop/2846660316/_____________________/effect.json",
+					"id" : 626,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"combos" : 
+							{
+								"BLENDMODE" : 30
+							},
+							"constantshadervalues" : 
+							{
+								"ui_browse_properties_scheme_color" : 
+								{
+									"user" : "schemecolor",
+									"value" : "0.49412 0.06667 0.05098"
+								},
+								"ui_editor_properties_opacity" : 1.0,
+								"栏的上下限" : "0.0, 1.0",
+								"栏的条数" : 32.0,
+								"栏的间距" : 0.1
+							},
+							"id" : 627
+						}
+					],
+					"visible" : 
+					{
+						"user" : "yl",
+						"value" : true
+					}
+				},
+				{
+					"file" : "effects/opacity/effect.json",
+					"id" : 631,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"alpha" : 1
+							},
+							"id" : 632,
+							"textures" : [ null, "masks/opacity_mask_3ac1a7fe" ]
+						}
+					],
+					"visible" : 
+					{
+						"user" : "yl",
+						"value" : true
+					}
+				}
+			],
+			"id" : 623,
+			"image" : "models/util/solidlayer.json",
+			"ledsource" : false,
+			"locktransforms" : true,
+			"name" : "音频响应",
+			"origin" : "960.00000 0.00000 0.00000",
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"scale" : "1.00000 1.00000 1.00000",
+			"size" : "1920.00000 150.00000",
+			"solid" : true,
+			"visible" : 
+			{
+				"user" : "yl",
+				"value" : true
+			}
+		},
+		{
+			"alignment" : "center",
+			"alpha" : 1.0,
+			"angles" : "0.00000 0.00000 0.00000",
+			"brightness" : 1.0,
+			"color" : 
+			{
+				"user" : "schemecolor",
+				"value" : "0.49412 0.06667 0.05098"
+			},
+			"colorBlendMode" : 1,
+			"copybackground" : true,
+			"id" : 220,
+			"image" : "models/video_bg_border.json",
+			"ledsource" : false,
+			"locktransforms" : true,
+			"name" : "video_bg_border",
+			"origin" : "960.00000 540.00000 0.00000",
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"scale" : "2.87000 2.98000 1.00000",
+			"size" : "670.00000 365.00000",
+			"solid" : true,
+			"visible" : 
+			{
+				"user" : "bk",
+				"value" : true
+			}
+		},
+		{
+			"alpha" : 1.0,
+			"anchor" : "none",
+			"angles" : "0.00000 0.00000 0.00000",
+			"backgroundbrightness" : 1.0,
+			"backgroundcolor" : "0.00000 0.00000 0.00000",
+			"blockalign" : false,
+			"brightness" : 1.0,
+			"color" : "1.00000 1.00000 1.00000",
+			"colorBlendMode" : 0,
+			"copybackground" : true,
+			"font" : "systemfont_arial",
+			"horizontalalign" : "center",
+			"id" : 267,
+			"ledsource" : false,
+			"limitrows" : false,
+			"limituseellipsis" : false,
+			"limitwidth" : false,
+			"locktransforms" : true,
+			"maxrows" : 1,
+			"maxwidth" : 500.0,
+			"name" : "————————",
+			"opaquebackground" : false,
+			"origin" : "960.00000 540.00000 0.00000",
+			"padding" : 32,
+			"parallaxDepth" : "1.00000 1.00000",
+			"perspective" : false,
+			"pointsize" : 32.0,
+			"scale" : "1.00000 1.00000 1.00000",
+			"size" : "615.00000 153.00000",
+			"solid" : true,
+			"text" : "Text Layer",
+			"verticalalign" : "center",
+			"visible" : false
+		},
+		{
+			"angles" : "0.00000 0.00000 0.00000",
+			"id" : 102,
+			"locktransforms" : false,
+			"maxtime" : 5.0,
+			"mintime" : 1.0,
+			"muteineditor" : true,
+			"name" : "拉毗台词.mp3",
+			"origin" : "0.00000 0.00000 0.00000",
+			"parallaxDepth" : "1.00000 1.00000",
+			"playbackmode" : "single",
+			"scale" : "1.00000 1.00000 1.00000",
+			"sound" : [ "sounds/拉毗台词.mp3" ],
+			"startsilent" : true,
+			"volume" : 1.0
 		}
 	],
-	"version" : 5
+	"version" : 1
 }

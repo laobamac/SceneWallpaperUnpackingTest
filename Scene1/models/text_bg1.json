@@ -1,0 +1,5 @@
+{
+	"autosize" : true,
+	"material" : "materials/text_bg1.json",
+	"puppet" : "models/text_bg1_puppet.mdl"
+}

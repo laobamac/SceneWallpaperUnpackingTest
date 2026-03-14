@@ -1,0 +1,13071 @@
+{
+  "info": {
+  "flag" : 25165833,
+  "generator" : "MDL Parser by laobamac (Modified)",
+  "material_file" : "materials\/c010_idle00.json",
+  "version" : 16
+},
+  "clipping_masks": [
+
+],
+  "sub_meshes": [
+
+],
+  "mask_bindings": [
+
+],
+  "skinning": [
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 0,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 1,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 2,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 3,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 4,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 5,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 6,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 7,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 8,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 9,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 10,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 11,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 12,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 13,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 14,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 15,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 16,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 17,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 18,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 19,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 20,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 21,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 22,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 23,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 24,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 25,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 26,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 27,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 28,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 29,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 30,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 31,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 32,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 33,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 34,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 35,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 36,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 37,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 38,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 39,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 40,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 41,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 42,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 43,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 44,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 45,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 46,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 47,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 48,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 49,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 50,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 51,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 52,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 53,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 54,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 55,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 56,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 57,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 58,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 59,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 60,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 61,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 62,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 63,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 64,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 65,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 66,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 67,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 68,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 69,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 70,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 71,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 72,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 73,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 74,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 75,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 76,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 77,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 78,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 79,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 80,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 81,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 82,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 83,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 84,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 85,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 86,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 87,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 88,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 89,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 90,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 91,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 92,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 93,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 94,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 95,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 96,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 97,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 98,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 99,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 100,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 101,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 102,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 103,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 104,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 105,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 106,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 107,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 108,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 109,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 110,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 111,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 112,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 113,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 114,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 115,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 116,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 117,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 118,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 119,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 120,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 121,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 122,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 123,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 124,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 125,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 126,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 127,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 128,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 129,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 130,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 131,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 132,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 133,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 134,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 135,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 136,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 137,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 138,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 139,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 140,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 141,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 142,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 143,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 144,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 145,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 146,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 147,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 148,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 149,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 150,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 151,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 152,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 153,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 154,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 155,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 156,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 157,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 158,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 159,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 160,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 161,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 162,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 163,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 164,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 165,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 166,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 167,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 168,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 169,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 170,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 171,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 172,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 173,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 174,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 175,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 176,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 177,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 178,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 179,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 180,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 181,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 182,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 183,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 184,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 185,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 186,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 187,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 188,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 189,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 190,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 191,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 192,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 193,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 194,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 195,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 196,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 197,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 198,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 199,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 200,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 201,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 202,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 203,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 204,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 205,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 206,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 207,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 208,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 209,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 210,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 211,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 212,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 213,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 214,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 215,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 216,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 217,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 218,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 219,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 220,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 221,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 222,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 223,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 224,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 225,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 226,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 227,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 228,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 229,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 230,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 231,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 232,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 233,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 234,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 235,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 236,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 237,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 238,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 239,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 240,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 241,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 242,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 243,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 244,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 245,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 246,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 247,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 248,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 249,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 250,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 251,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 252,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 253,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 254,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 255,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 256,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 257,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 258,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 259,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 260,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 261,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 262,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 263,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 264,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 265,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 266,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 267,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 268,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 269,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 270,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 271,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 272,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 273,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 274,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 275,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 276,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 277,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 278,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 279,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 280,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 281,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 282,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 283,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 284,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 285,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 286,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 287,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 288,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 289,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 290,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 291,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 292,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 293,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 294,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 295,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 296,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 297,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 298,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 299,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 300,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 301,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 302,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 303,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 304,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 305,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 306,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 307,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 308,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 309,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 310,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 311,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 312,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 313,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 314,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 315,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 316,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 317,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 318,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 319,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 320,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 321,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 322,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 323,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 324,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 325,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 326,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 327,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 328,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 329,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 330,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 331,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 332,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 333,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 334,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 335,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 336,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 337,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 338,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 339,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 340,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 341,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 342,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 343,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 344,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 345,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 346,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 347,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 348,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 349,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 350,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 351,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 352,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 353,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 354,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 355,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 356,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 357,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 358,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 359,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 360,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 361,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 362,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 363,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 364,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 365,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 366,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 367,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 368,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 369,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 370,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 371,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 372,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 373,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 374,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 375,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 376,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 377,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 378,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 379,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 380,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 381,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 382,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 383,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 384,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 385,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 386,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 387,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 388,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 389,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 390,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 391,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 392,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 393,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 394,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 395,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 396,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 397,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 398,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 399,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 400,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 401,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 402,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 403,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 404,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 405,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 406,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 407,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 408,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 409,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 410,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 411,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 412,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 413,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 414,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 415,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 416,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 417,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 418,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 419,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 420,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 421,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 422,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 423,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 424,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 425,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 426,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 427,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 428,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 429,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 430,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 431,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 432,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 433,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 434,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 435,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 436,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 437,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 438,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 439,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 440,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 441,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 442,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 443,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 444,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 445,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 446,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 447,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 448,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 449,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 450,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 451,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 452,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 453,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 454,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 455,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 456,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 457,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 458,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 459,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 460,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 461,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 462,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 463,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 464,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 465,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 466,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 467,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 468,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 469,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 470,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 471,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 472,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 473,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 474,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 475,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 476,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 477,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 478,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 479,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 480,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 481,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 482,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 483,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 484,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 485,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 486,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 487,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 488,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 489,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 490,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 491,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 492,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 493,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 494,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 495,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 496,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 497,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 498,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 499,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 500,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 501,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 502,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 503,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 504,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 505,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 506,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 507,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 508,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 509,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 510,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 511,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 512,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 513,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 514,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 515,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 516,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 517,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 518,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 519,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 520,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 521,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 522,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 523,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 524,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 525,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 526,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 527,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 528,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 529,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 530,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 531,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 532,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 533,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 534,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 535,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 536,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 537,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 538,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 539,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 540,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 541,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 542,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 543,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 544,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 545,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 546,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 547,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 548,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 549,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 550,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 551,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 552,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 553,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 554,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 555,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 556,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 557,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 558,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 559,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 560,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 561,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 562,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 563,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 564,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 565,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 566,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 567,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 568,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 569,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 570,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 571,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 572,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 573,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 574,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 575,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 576,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 577,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 578,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 579,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 580,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 581,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 582,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 583,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 584,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 585,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 586,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 587,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 588,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 589,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 590,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 591,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 592,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 593,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 594,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 595,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 596,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 597,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 598,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 599,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 600,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 601,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 602,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 603,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 604,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 605,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 606,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 607,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 608,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 609,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 610,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 611,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 612,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 613,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 614,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 615,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 616,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 617,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 618,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 619,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 620,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 621,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 622,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 623,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 624,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 625,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 626,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 627,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 628,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 629,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 630,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 631,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 632,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 633,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 634,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 635,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 636,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 637,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 638,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 639,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 640,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 641,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 642,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 643,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 644,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 645,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 646,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 647,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 648,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 649,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 650,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 651,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 652,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 653,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 654,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 655,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 656,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 657,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 658,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 659,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 660,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "bone_indices" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "vertex_id" : 661,
+    "weights" : [
+      1,
+      0,
+      0,
+      0
+    ]
+  }
+],
+  "skeleton": [
+  {
+    "sim_config" : "",
+    "id" : 0,
+    "render_tag" : null,
+    "name" : "",
+    "matrix" : [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+    ],
+    "parent" : 4294967295
+  }
+],
+  "animations": [
+  {
+    "length" : 180,
+    "tracks" : [
+      {
+        "track_id" : 0,
+        "frames" : [
+          {
+            "p" : [
+              500,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              499.979248046875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              499.91738891601562,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              499.81259155273438,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              499.66317749023438,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              499.47076416015625,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999988079071045,
+              0.99999988079071045,
+              0.99999988079071045
+            ]
+          },
+          {
+            "p" : [
+              499.23590087890625,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              498.95858764648438,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999988079071045,
+              0.99999988079071045,
+              0.99999988079071045
+            ]
+          },
+          {
+            "p" : [
+              498.62872314453125,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              498.25457763671875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1.0000001192092896,
+              1.0000001192092896,
+              1.0000001192092896
+            ]
+          },
+          {
+            "p" : [
+              497.83648681640625,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              497.36752319335938,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              496.85403442382812,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999988079071045,
+              0.99999988079071045,
+              0.99999988079071045
+            ]
+          },
+          {
+            "p" : [
+              496.28781127929688,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              495.66705322265625,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1.0000001192092896,
+              1.0000001192092896,
+              1.0000001192092896
+            ]
+          },
+          {
+            "p" : [
+              495.00033569335938,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              494.2882080078125,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              493.5079345703125,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              492.692626953125,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              491.80618286132812,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              490.885498046875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              489.89056396484375,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999988079071045,
+              0.99999988079071045,
+              0.99999988079071045
+            ]
+          },
+          {
+            "p" : [
+              488.84771728515625,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              487.7418212890625,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              486.5875244140625,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              485.36865234375,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              484.0662841796875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              482.73138427734375,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1.0000001192092896,
+              1.0000001192092896,
+              1.0000001192092896
+            ]
+          },
+          {
+            "p" : [
+              481.3289794921875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1.0000001192092896,
+              1.0000001192092896,
+              1.0000001192092896
+            ]
+          },
+          {
+            "p" : [
+              479.85772705078125,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              478.33621215820312,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              476.72381591796875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              475.081298828125,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              473.34521484375,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              471.55780029296875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1.0000001192092896,
+              1.0000001192092896,
+              1.0000001192092896
+            ]
+          },
+          {
+            "p" : [
+              469.67303466796875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              467.73580932617188,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1.0000001192092896,
+              1.0000001192092896,
+              1.0000001192092896
+            ]
+          },
+          {
+            "p" : [
+              465.74673461914062,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999988079071045,
+              0.99999988079071045,
+              0.99999988079071045
+            ]
+          },
+          {
+            "p" : [
+              463.65625,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999988079071045,
+              0.99999988079071045,
+              0.99999988079071045
+            ]
+          },
+          {
+            "p" : [
+              461.51312255859375,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              459.3179931640625,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999988079071045,
+              0.99999988079071045,
+              0.99999988079071045
+            ]
+          },
+          {
+            "p" : [
+              457.0177001953125,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              454.60934448242188,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999988079071045,
+              0.99999988079071045,
+              0.99999988079071045
+            ]
+          },
+          {
+            "p" : [
+              452.20327758789062,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              449.65960693359375,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              447.0623779296875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              444.38232421875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              441.58819580078125,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1.0000001192092896,
+              1.0000001192092896,
+              1.0000001192092896
+            ]
+          },
+          {
+            "p" : [
+              438.73980712890625,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              435.83828735351562,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              432.82000732421875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              429.74844360351562,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              426.5577392578125,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              423.31396484375,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              420.018310546875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              416.53134155273438,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              413.06201171875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              409.47021484375,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1.0000001192092896,
+              1.0000001192092896,
+              1.0000001192092896
+            ]
+          },
+          {
+            "p" : [
+              405.75393676757812,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1.0000001192092896,
+              1.0000001192092896,
+              1.0000001192092896
+            ]
+          },
+          {
+            "p" : [
+              401.986083984375,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1.0000001192092896,
+              1.0000001192092896,
+              1.0000001192092896
+            ]
+          },
+          {
+            "p" : [
+              398.16806030273438,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1.0000001192092896,
+              1.0000001192092896,
+              1.0000001192092896
+            ]
+          },
+          {
+            "p" : [
+              394.2249755859375,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              390.23294067382812,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              386.1151123046875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1.0000001192092896,
+              1.0000001192092896,
+              1.0000001192092896
+            ]
+          },
+          {
+            "p" : [
+              381.9493408203125,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999988079071045,
+              0.99999988079071045,
+              0.99999988079071045
+            ]
+          },
+          {
+            "p" : [
+              377.65771484375,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              373.31976318359375,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1.0000001192092896,
+              1.0000001192092896,
+              1.0000001192092896
+            ]
+          },
+          {
+            "p" : [
+              368.85562133789062,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999988079071045,
+              0.99999988079071045,
+              0.99999988079071045
+            ]
+          },
+          {
+            "p" : [
+              364.3472900390625,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              359.79629516601562,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1.0000001192092896,
+              1.0000001192092896,
+              1.0000001192092896
+            ]
+          },
+          {
+            "p" : [
+              355.12060546875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              350.4046630859375,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              345.56512451171875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1.0000001192092896,
+              1.0000001192092896,
+              1.0000001192092896
+            ]
+          },
+          {
+            "p" : [
+              340.68768310546875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              335.68795776367188,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999982118606567,
+              0.99999982118606567,
+              0.99999982118606567
+            ]
+          },
+          {
+            "p" : [
+              330.74053955078125,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1.0000001192092896,
+              1.0000001192092896,
+              1.0000001192092896
+            ]
+          },
+          {
+            "p" : [
+              325.67361450195312,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              320.48797607421875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1.0000001192092896,
+              1.0000001192092896,
+              1.0000001192092896
+            ]
+          },
+          {
+            "p" : [
+              315.27264404296875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999988079071045,
+              0.99999988079071045,
+              0.99999988079071045
+            ]
+          },
+          {
+            "p" : [
+              310.030029296875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999988079071045,
+              0.99999988079071045,
+              0.99999988079071045
+            ]
+          },
+          {
+            "p" : [
+              304.762451171875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              299.38201904296875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              294.07061767578125,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              288.65032958984375,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              283.21353149414062,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              277.67135620117188,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              272.1170654296875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1.0000001192092896,
+              1.0000001192092896,
+              1.0000001192092896
+            ]
+          },
+          {
+            "p" : [
+              266.64413452148438,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              261.07266235351562,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              255.587890625,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              250.00917053222656,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              244.43046569824219,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              238.85418701171875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              233.37411499023438,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              227.81008911132812,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              222.3468017578125,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              216.80470275878906,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              211.36775207519531,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              205.94747924804688,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              200.54606628417969,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              195.25544738769531,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              189.9876708984375,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              184.65643310546875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              179.5296630859375,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              174.34388732910156,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              169.27690124511719,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              164.24272155761719,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              159.32949829101562,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              154.45199584960938,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              149.61233520507812,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              144.89620971679688,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              140.220458984375,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              135.58689880371094,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              131.07916259765625,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1.0000001192092896,
+              1.0000001192092896,
+              1.0000001192092896
+            ]
+          },
+          {
+            "p" : [
+              126.69648742675781,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              122.35832214355469,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              118.06646728515625,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              113.90058135986328,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              109.78257751464844,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              105.79026031494141,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              101.84703826904297,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              97.954513549804688,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              94.187446594238281,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              90.544357299804688,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              86.952232360839844,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              83.412452697753906,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              79.99560546875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              76.699615478515625,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              73.388641357421875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              70.2647705078125,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              67.160591125488281,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              64.174423217773438,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              61.210189819335938,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              58.362747192382812,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              55.62969970703125,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              52.949390411376953,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              50.322994232177734,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              47.808036804199219,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              45.346328735351562,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              42.993087768554688,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              40.69256591796875,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              38.497177124023438,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              36.328556060791016,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              34.26312255859375,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              32.249843597412109,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              30.312961578369141,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              28.451303482055664,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              26.663549423217773,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              24.927236557006836,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              23.263740539550781,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              21.651750564575195,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              20.150129318237305,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              18.6597900390625,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              17.257776260375977,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              15.923244476318359,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              14.638106346130371,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              13.418971061706543,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              12.248931884765625,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              11.158224105834961,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              10.11505126953125,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              9.1199235916137695,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              8.1861362457275391,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              7.3122186660766602,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              6.4851560592651367,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              5.7161517143249512,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              5.0037117004394531,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              4.336766242980957,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              0.99999994039535522,
+              0.99999994039535522,
+              0.99999994039535522
+            ]
+          },
+          {
+            "p" : [
+              3.715745210647583,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              3.1491715908050537,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              2.6280219554901123,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              2.1662101745605469,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              1.741798996925354,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              1.3680171966552734,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              1.0432276725769043,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              0.76169103384017944,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              0.52714437246322632,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              0.33518990874290466,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              0.18820780515670776,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              0.083135031163692474,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              0.020295800641179085,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          },
+          {
+            "p" : [
+              0,
+              0,
+              0
+            ],
+            "r" : [
+              0,
+              0,
+              0
+            ],
+            "s" : [
+              1,
+              1,
+              1
+            ]
+          }
+        ],
+        "_debug_header_val" : 0
+      }
+    ],
+    "id" : 110,
+    "track_count" : 1,
+    "mode" : "single",
+    "fps" : 60,
+    "name" : "动画 1"
+  }
+]
+}

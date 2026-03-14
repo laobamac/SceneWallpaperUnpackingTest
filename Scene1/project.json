@@ -1,58 +1,176 @@
 {
+	"approved" : true,
 	"contentrating" : "Everyone",
-	"description" : "初音\n初音未来",
+	"description" : "双击触发台词",
 	"file" : "scene.json",
 	"general" : 
 	{
 		"properties" : 
 		{
-			"bb1" : 
+			"bjgd" : 
 			{
-				"index" : 0,
-				"order" : 100,
-				"text" : "BB1",
+				"index" : 6,
+				"order" : 106,
+				"text" : "背景滚动",
 				"type" : "bool",
 				"value" : true
 			},
-			"bb2" : 
+			"bjys" : 
 			{
-				"index" : 1,
-				"order" : 101,
-				"text" : "BB2",
-				"type" : "bool",
-				"value" : true
-			},
-			"bb3" : 
-			{
-				"index" : 2,
-				"order" : 102,
-				"text" : "BB3",
-				"type" : "bool",
-				"value" : true
-			},
-			"schemecolor" : 
-			{
-				"order" : 0,
-				"text" : "ui_browse_properties_scheme_color",
+				"index" : 15,
+				"order" : 115,
+				"text" : "背景颜色-1",
 				"type" : "color",
-				"value" : "0.51373 0.62353 0.62353"
+				"value" : "1 1 1"
 			},
-			"ss4" : 
+			"bk" : 
 			{
 				"index" : 3,
 				"order" : 103,
-				"text" : "SS 4",
+				"text" : "边框",
 				"type" : "bool",
 				"value" : true
+			},
+			"cs" : 
+			{
+				"index" : 9,
+				"order" : 109,
+				"text" : "测试",
+				"type" : "bool",
+				"value" : false
+			},
+			"csbg" : 
+			{
+				"index" : 4,
+				"order" : 104,
+				"text" : "彩色背景",
+				"type" : "bool",
+				"value" : false
+			},
+			"logo1tz" : 
+			{
+				"condition" : "cs.value == true",
+				"index" : 10,
+				"order" : 110,
+				"text" : "logo1拖拽",
+				"type" : "bool",
+				"value" : false
+			},
+			"logo2" : 
+			{
+				"condition" : "cs.value == true",
+				"index" : 11,
+				"order" : 111,
+				"text" : "logo2拖拽",
+				"type" : "bool",
+				"value" : false
+			},
+			"rwdx" : 
+			{
+				"fraction" : true,
+				"index" : 0,
+				"max" : 2,
+				"min" : 0,
+				"order" : 100,
+				"precision" : 3,
+				"step" : 0.01,
+				"text" : "人物大小",
+				"type" : "slider",
+				"value" : 1
+			},
+			"rwtz" : 
+			{
+				"index" : 1,
+				"order" : 101,
+				"text" : "人物拖拽",
+				"type" : "bool",
+				"value" : false
+			},
+			"schemecolor" : 
+			{
+				"index" : 14,
+				"order" : 114,
+				"text" : "ui_browse_properties_scheme_color",
+				"type" : "color",
+				"value" : "0.49411764705882355 0.06666666666666667 0.050980392156862744"
+			},
+			"sdx" : 
+			{
+				"condition" : "bjgd.value == true",
+				"fraction" : true,
+				"index" : 7,
+				"max" : 0.5,
+				"min" : -0.5,
+				"order" : 107,
+				"precision" : 3,
+				"step" : 0.01,
+				"text" : "速度X",
+				"type" : "slider",
+				"value" : 0.1
+			},
+			"sdy" : 
+			{
+				"condition" : "bjgd.value == true",
+				"fraction" : true,
+				"index" : 8,
+				"max" : 0.5,
+				"min" : -0.5,
+				"order" : 108,
+				"precision" : 3,
+				"step" : 0.01,
+				"text" : "速度Y",
+				"type" : "slider",
+				"value" : 0
+			},
+			"sjtz" : 
+			{
+				"condition" : "cs.value == true",
+				"index" : 12,
+				"order" : 112,
+				"text" : "时间拖拽",
+				"type" : "bool",
+				"value" : false
+			},
+			"xzsd" : 
+			{
+				"condition" : "csbg.value == true",
+				"fraction" : true,
+				"index" : 5,
+				"max" : 0.5,
+				"min" : -0.5,
+				"order" : 105,
+				"precision" : 3,
+				"step" : 0.01,
+				"text" : "彩色背景速度",
+				"type" : "slider",
+				"value" : 0.1
+			},
+			"yl" : 
+			{
+				"index" : 2,
+				"order" : 102,
+				"text" : "音栏",
+				"type" : "bool",
+				"value" : true
+			},
+			"ys_1tz" : 
+			{
+				"condition" : "cs.value == true",
+				"index" : 13,
+				"order" : 113,
+				"text" : "元素1拖拽",
+				"type" : "bool",
+				"value" : false
 			}
-		}
+		},
+		"supportsaudioprocessing" : true
 	},
 	"preview" : "preview.gif",
-	"ratingsex" : "none",
-	"ratingviolence" : "none",
-	"tags" : [ "Anime" ],
-	"title" : "Hatsune Miku | 夏日Summer's [4K]",
+	"tags" : [ "Girls" ],
+	"title" : "《NIKKE》Rapi",
 	"type" : "scene",
-	"version" : 0,
-	"visibility" : "public"
+	"version" : 3,
+	"visibility" : "public",
+	"workshopid" : "2910422008",
+	"workshopurl" : "steam://url/CommunityFilePage/2910422008"
 }
