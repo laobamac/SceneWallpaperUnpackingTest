@@ -264,10 +264,19 @@ class PuppetRenderable: RenderableObject {
             let fps = anim.fps > 0 ? anim.fps : 30.0
             let duration = Float(anim.length) / fps
             let isPingPong = anim.mode == "ping_pong" || anim.mode == "mirror"
+            let isSingle = anim.mode == "single"
             let cycleDuration = isPingPong ? duration * 2.0 : duration
             
-            var t = (cycleDuration > 0) ? fmod(time * layerRate, cycleDuration) : 0.0
-            if t < 0 { t += cycleDuration }
+            let scaledTime = time * layerRate
+            var t: Float = 0.0
+            if isSingle {
+                t = scaledTime
+                if t < 0 { t = 0 }
+                if t > duration { t = duration }
+            } else {
+                t = (cycleDuration > 0) ? fmod(scaledTime, cycleDuration) : 0.0
+                if t < 0 { t += cycleDuration }
+            }
             
             for i in 0..<skeleton.count {
                 let bone = skeleton[i]
@@ -297,7 +306,7 @@ class PuppetRenderable: RenderableObject {
                         }
                         
                         if localT < firstTime {
-                            if isPingPong {
+                            if isPingPong || isSingle {
                                 idx0 = 0
                                 idx1 = 0
                                 fraction = 0.0
@@ -316,7 +325,7 @@ class PuppetRenderable: RenderableObject {
                             }
                             
                             if idx0 >= track.frames.count - 1 {
-                                if isPingPong {
+                                if isPingPong || isSingle {
                                     idx0 = track.frames.count - 1
                                     idx1 = idx0
                                     fraction = 0.0
