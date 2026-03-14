@@ -34,7 +34,7 @@ class PipelineManager {
     init(device: MTLDevice) {
         self.device = device
         guard let lib = device.makeDefaultLibrary() else {
-            fatalError()
+            fatalError("Failed to load default library")
         }
         self.library = lib
     }
@@ -44,30 +44,44 @@ class PipelineManager {
         try setupPuppetPipelines()
         try setupParticlePipelines()
         try setupPostProcessPipelines()
+        setupDepthStencilStates()
         setupSamplers()
     }
 
+    private func makeFunction(name: String) throws -> MTLFunction {
+        guard let function = library.makeFunction(name: name) else {
+            throw NSError(domain: "PipelineManager", code: -1, userInfo: [NSLocalizedDescriptionKey: "Shader function '\(name)' not found in library"])
+        }
+        return function
+    }
+
     private func setupBasicPipelines() throws {
+        guard let vertex = try? makeFunction(name: "vertexShader"),
+              let fragment = try? makeFunction(name: "fragmentShader") else { return }
+              
         for blendMode in 0...2 {
             let desc = MTLRenderPipelineDescriptor()
             desc.colorAttachments[0].pixelFormat = .rgba16Float
             desc.depthAttachmentPixelFormat = .depth32Float_stencil8
             desc.stencilAttachmentPixelFormat = .depth32Float_stencil8
-            desc.vertexFunction = library.makeFunction(name: "vertexShader")
-            desc.fragmentFunction = library.makeFunction(name: "fragmentShader")
+            desc.vertexFunction = vertex
+            desc.fragmentFunction = fragment
             configureBlendMode(desc.colorAttachments[0], mode: blendMode)
             pipelines[blendMode] = try device.makeRenderPipelineState(descriptor: desc)
         }
     }
 
     private func setupPuppetPipelines() throws {
+        let v = try makeFunction(name: "puppetVertex")
+        let f = try makeFunction(name: "puppetFragment")
+        
         for blendMode in 0...2 {
             let desc = MTLRenderPipelineDescriptor()
             desc.colorAttachments[0].pixelFormat = .rgba16Float
             desc.depthAttachmentPixelFormat = .depth32Float_stencil8
             desc.stencilAttachmentPixelFormat = .depth32Float_stencil8
-            desc.vertexFunction = library.makeFunction(name: "puppetVertex")
-            desc.fragmentFunction = library.makeFunction(name: "puppetFragment")
+            desc.vertexFunction = v
+            desc.fragmentFunction = f
             configureBlendMode(desc.colorAttachments[0], mode: blendMode)
             puppetPipelines[blendMode] = try device.makeRenderPipelineState(descriptor: desc)
         }
@@ -76,8 +90,8 @@ class PipelineManager {
         maskDesc.colorAttachments[0].pixelFormat = .rgba16Float
         maskDesc.depthAttachmentPixelFormat = .depth32Float_stencil8
         maskDesc.stencilAttachmentPixelFormat = .depth32Float_stencil8
-        maskDesc.vertexFunction = library.makeFunction(name: "puppetMaskVertex")
-        maskDesc.fragmentFunction = library.makeFunction(name: "puppetMaskFragment")
+        maskDesc.vertexFunction = try makeFunction(name: "puppetMaskVertex")
+        maskDesc.fragmentFunction = try makeFunction(name: "puppetMaskFragment")
         maskDesc.colorAttachments[0].isBlendingEnabled = false
         puppetMaskPipelineState = try device.makeRenderPipelineState(descriptor: maskDesc)
     }
@@ -88,18 +102,18 @@ class PipelineManager {
         spriteVertexDescriptor.attributes[0].offset = 0
         spriteVertexDescriptor.attributes[0].bufferIndex = 0
         spriteVertexDescriptor.attributes[1].format = .float4
-        spriteVertexDescriptor.attributes[1].offset = MemoryLayout<SIMD3<Float>>.stride
+        spriteVertexDescriptor.attributes[1].offset = 16
         spriteVertexDescriptor.attributes[1].bufferIndex = 0
         spriteVertexDescriptor.attributes[2].format = .float4
-        spriteVertexDescriptor.attributes[2].offset = MemoryLayout<SIMD3<Float>>.stride + MemoryLayout<SIMD4<Float>>.stride
+        spriteVertexDescriptor.attributes[2].offset = 32
         spriteVertexDescriptor.attributes[2].bufferIndex = 0
         spriteVertexDescriptor.attributes[3].format = .float4
-        spriteVertexDescriptor.attributes[3].offset = MemoryLayout<SIMD3<Float>>.stride + MemoryLayout<SIMD4<Float>>.stride * 2
+        spriteVertexDescriptor.attributes[3].offset = 48
         spriteVertexDescriptor.attributes[3].bufferIndex = 0
         spriteVertexDescriptor.attributes[4].format = .float2
-        spriteVertexDescriptor.attributes[4].offset = MemoryLayout<SIMD3<Float>>.stride + MemoryLayout<SIMD4<Float>>.stride * 3
+        spriteVertexDescriptor.attributes[4].offset = 64
         spriteVertexDescriptor.attributes[4].bufferIndex = 0
-        spriteVertexDescriptor.layouts[0].stride = MemoryLayout<ParticleSpriteVertex>.stride
+        spriteVertexDescriptor.layouts[0].stride = 80
         spriteVertexDescriptor.layouts[0].stepFunction = .perVertex
         
         let ropeVertexDescriptor = MTLVertexDescriptor()
@@ -107,33 +121,37 @@ class PipelineManager {
         ropeVertexDescriptor.attributes[0].offset = 0
         ropeVertexDescriptor.attributes[0].bufferIndex = 0
         ropeVertexDescriptor.attributes[1].format = .float4
-        ropeVertexDescriptor.attributes[1].offset = MemoryLayout<SIMD4<Float>>.stride
+        ropeVertexDescriptor.attributes[1].offset = 16
         ropeVertexDescriptor.attributes[1].bufferIndex = 0
         ropeVertexDescriptor.attributes[2].format = .float4
-        ropeVertexDescriptor.attributes[2].offset = MemoryLayout<SIMD4<Float>>.stride * 2
+        ropeVertexDescriptor.attributes[2].offset = 32
         ropeVertexDescriptor.attributes[2].bufferIndex = 0
         ropeVertexDescriptor.attributes[3].format = .float4
-        ropeVertexDescriptor.attributes[3].offset = MemoryLayout<SIMD4<Float>>.stride * 3
+        ropeVertexDescriptor.attributes[3].offset = 48
         ropeVertexDescriptor.attributes[3].bufferIndex = 0
         ropeVertexDescriptor.attributes[4].format = .float4
-        ropeVertexDescriptor.attributes[4].offset = MemoryLayout<SIMD4<Float>>.stride * 4
+        ropeVertexDescriptor.attributes[4].offset = 64
         ropeVertexDescriptor.attributes[4].bufferIndex = 0
         ropeVertexDescriptor.attributes[5].format = .float2
-        ropeVertexDescriptor.attributes[5].offset = MemoryLayout<SIMD4<Float>>.stride * 5
+        ropeVertexDescriptor.attributes[5].offset = 80
         ropeVertexDescriptor.attributes[5].bufferIndex = 0
         ropeVertexDescriptor.attributes[6].format = .float4
-        ropeVertexDescriptor.attributes[6].offset = MemoryLayout<SIMD4<Float>>.stride * 5 + MemoryLayout<SIMD2<Float>>.stride
+        ropeVertexDescriptor.attributes[6].offset = 96
         ropeVertexDescriptor.attributes[6].bufferIndex = 0
-        ropeVertexDescriptor.layouts[0].stride = MemoryLayout<ParticleRopeVertex>.stride
+        ropeVertexDescriptor.layouts[0].stride = 112
         ropeVertexDescriptor.layouts[0].stepFunction = .perVertex
+
+        let sv = try makeFunction(name: "spriteParticleVertex")
+        let rv = try makeFunction(name: "ropeParticleVertex")
+        let pf = try makeFunction(name: "particleFragment")
 
         for blendMode in 0...2 {
             let spriteDesc = MTLRenderPipelineDescriptor()
             spriteDesc.colorAttachments[0].pixelFormat = .rgba16Float
             spriteDesc.depthAttachmentPixelFormat = .depth32Float_stencil8
             spriteDesc.stencilAttachmentPixelFormat = .depth32Float_stencil8
-            spriteDesc.vertexFunction = library.makeFunction(name: "spriteParticleVertex")
-            spriteDesc.fragmentFunction = library.makeFunction(name: "particleFragment")
+            spriteDesc.vertexFunction = sv
+            spriteDesc.fragmentFunction = pf
             spriteDesc.vertexDescriptor = spriteVertexDescriptor
             configureBlendMode(spriteDesc.colorAttachments[0], mode: blendMode)
             spriteParticlePipelines[blendMode] = try device.makeRenderPipelineState(descriptor: spriteDesc)
@@ -142,8 +160,8 @@ class PipelineManager {
             ropeDesc.colorAttachments[0].pixelFormat = .rgba16Float
             ropeDesc.depthAttachmentPixelFormat = .depth32Float_stencil8
             ropeDesc.stencilAttachmentPixelFormat = .depth32Float_stencil8
-            ropeDesc.vertexFunction = library.makeFunction(name: "ropeParticleVertex")
-            ropeDesc.fragmentFunction = library.makeFunction(name: "particleFragment")
+            ropeDesc.vertexFunction = rv
+            ropeDesc.fragmentFunction = pf
             ropeDesc.vertexDescriptor = ropeVertexDescriptor
             configureBlendMode(ropeDesc.colorAttachments[0], mode: blendMode)
             ropeParticlePipelines[blendMode] = try device.makeRenderPipelineState(descriptor: ropeDesc)
@@ -151,37 +169,40 @@ class PipelineManager {
     }
 
     private func setupPostProcessPipelines() throws {
+        let qv = try makeFunction(name: "quadVertex")
+        
         let finalDesc = MTLRenderPipelineDescriptor()
         finalDesc.colorAttachments[0].pixelFormat = .bgra8Unorm
-        finalDesc.vertexFunction = library.makeFunction(name: "quadVertex")
-        finalDesc.fragmentFunction = library.makeFunction(name: "finalFragment")
+        finalDesc.vertexFunction = qv
+        finalDesc.fragmentFunction = try makeFunction(name: "finalFragment")
         finalPipeline = try device.makeRenderPipelineState(descriptor: finalDesc)
         
         let extractDesc = MTLRenderPipelineDescriptor()
         extractDesc.colorAttachments[0].pixelFormat = .rgba16Float
-        extractDesc.vertexFunction = library.makeFunction(name: "quadVertex")
-        extractDesc.fragmentFunction = library.makeFunction(name: "extractBloomFragment")
+        extractDesc.vertexFunction = qv
+        extractDesc.fragmentFunction = try makeFunction(name: "extractBloomFragment")
         extractPipeline = try device.makeRenderPipelineState(descriptor: extractDesc)
         
         let blurDesc = MTLRenderPipelineDescriptor()
         blurDesc.colorAttachments[0].pixelFormat = .rgba16Float
-        blurDesc.vertexFunction = library.makeFunction(name: "quadVertex")
-        blurDesc.fragmentFunction = library.makeFunction(name: "gaussianBlurFragment")
+        blurDesc.vertexFunction = qv
+        blurDesc.fragmentFunction = try makeFunction(name: "gaussianBlurFragment")
         blurPipeline = try device.makeRenderPipelineState(descriptor: blurDesc)
         
         let upsampleDesc = MTLRenderPipelineDescriptor()
         upsampleDesc.colorAttachments[0].pixelFormat = .rgba16Float
-        upsampleDesc.vertexFunction = library.makeFunction(name: "quadVertex")
-        upsampleDesc.fragmentFunction = library.makeFunction(name: "upsampleFragment")
+        upsampleDesc.vertexFunction = qv
+        upsampleDesc.fragmentFunction = try makeFunction(name: "upsampleFragment")
         
-        let upAtt = upsampleDesc.colorAttachments[0]!
-        upAtt.isBlendingEnabled = true
-        upAtt.sourceRGBBlendFactor = .one
-        upAtt.destinationRGBBlendFactor = .one
-        upAtt.rgbBlendOperation = .add
-        upAtt.sourceAlphaBlendFactor = .one
-        upAtt.destinationAlphaBlendFactor = .one
-        upAtt.alphaBlendOperation = .add
+        if let upAtt = upsampleDesc.colorAttachments[0] {
+            upAtt.isBlendingEnabled = true
+            upAtt.sourceRGBBlendFactor = .one
+            upAtt.destinationRGBBlendFactor = .one
+            upAtt.rgbBlendOperation = .add
+            upAtt.sourceAlphaBlendFactor = .one
+            upAtt.destinationAlphaBlendFactor = .one
+            upAtt.alphaBlendOperation = .add
+        }
         
         upsamplePipeline = try device.makeRenderPipelineState(descriptor: upsampleDesc)
     }

@@ -156,7 +156,7 @@ extension ParticleSimulator {
         if length(right) > 0.0001 { right = normalize(right) }
         else { right = SIMD3<Float>(1.0, 0.0, 0.0) }
 
-        let is2D = (particleDefinition.flags ?? 0 & 4) == 0
+        let is2D = ((particleDefinition.flags ?? 0) & 4) == 0
 
         return { [weak self] (p: inout ParticleInstance) in
             guard let self = self else { return }

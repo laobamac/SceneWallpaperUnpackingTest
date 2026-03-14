@@ -381,7 +381,7 @@ class ParticleRenderable: RenderableObject {
         m = matrix_multiply(m, sMat)
         let modelMatrix = m
         
-        let is3D = (simulator.particleDefinition.flags ?? 0 & 4) != 0
+        let is3D = ((simulator.particleDefinition.flags ?? 0) & 4) != 0
         var viewProj = matrix_identity_float4x4
         let eyePos = SIMD3<Float>(0, 0, 1000)
         

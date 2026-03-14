@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		BBC442662F6564E100CB4EE7 /* WEAssets in Resources */ = {isa = PBXBuildFile; fileRef = BBC442652F6564E100CB4EE7 /* WEAssets */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		BB5DEC5F2F1D139400DA9DA9 /* Renderer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Renderer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BBC442652F6564E100CB4EE7 /* WEAssets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = WEAssets; path = ../WEAssets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -32,6 +37,7 @@
 		BB5DEC562F1D139400DA9DA9 = {
 			isa = PBXGroup;
 			children = (
+				BBC442652F6564E100CB4EE7 /* WEAssets */,
 				BB5DEC612F1D139400DA9DA9 /* Renderer */,
 				BB5DEC602F1D139400DA9DA9 /* Products */,
 			);
@@ -109,6 +115,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BBC442662F6564E100CB4EE7 /* WEAssets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

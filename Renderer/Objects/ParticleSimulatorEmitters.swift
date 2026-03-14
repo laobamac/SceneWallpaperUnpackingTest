@@ -186,7 +186,7 @@ extension ParticleSimulator {
 
         let flags = emitter.flags ?? 0
         let limitOnePerFrame = (flags & 2) != 0
-        let is3D = (particleDefinition.flags ?? 0 & 4) != 0
+        let is3D = ((particleDefinition.flags ?? 0) & 4) != 0
 
         var emissionTimer: Float = 0.0
         var remaining: Int = emitter.instantaneous ?? 0
@@ -214,7 +214,7 @@ extension ParticleSimulator {
             }
 
             if remaining > 0 {
-                toEmit += remaining
+                toEmit = remaining
                 remaining = 0
             }
 
