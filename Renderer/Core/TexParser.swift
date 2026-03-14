@@ -64,30 +64,41 @@ struct BinaryReader {
 
 enum TexParser {
     static func parse(data: Data) throws -> TexFile {
+        Logger.debug("TexParser 开始解析数据，总大小: \(data.count) 字节")
         var reader = BinaryReader(data: data)
         
         let magic1 = reader.readNString(maxLength: 16)
         if magic1 != "TEXV0005" {
+            Logger.error("TEXV 魔法字不匹配，读取到: \(magic1)")
             throw NSError(domain: "TexParser", code: 1, userInfo: nil)
         }
         
         let magic2 = reader.readNString(maxLength: 16)
         if magic2 != "TEXI0001" {
+            Logger.error("TEXI 魔法字不匹配，读取到: \(magic2)")
             throw NSError(domain: "TexParser", code: 2, userInfo: nil)
         }
 
+        Logger.debug("魔法字校验通过")
         let header = readHeader(reader: &reader)
+        Logger.debug("头部解析完成: 格式=\(header.format), 宽度=\(header.textureWidth), 高度=\(header.textureHeight), 标志=\(header.flags.rawValue)")
+        
         let imageContainer = readImageContainer(reader: &reader, texFormat: header.format)
+        Logger.debug("图片容器解析完成: 包含 \(imageContainer.images.count) 张图像, 容器格式=\(imageContainer.imageFormat)")
 
         var frameInfo: TexFrameInfoContainer? = nil
         if header.flags.contains(.isGif) {
+            Logger.debug("检测到 GIF 标志，开始解析 FrameInfo")
             frameInfo = readFrameInfo(reader: &reader)
+            Logger.debug("FrameInfo 解析完成，帧数: \(frameInfo?.frames.count ?? 0)")
         }
 
+        Logger.debug("TEX 文件解析全部完成")
         return TexFile(magic1: magic1, magic2: magic2, header: header, imageContainer: imageContainer, frameInfoContainer: frameInfo)
     }
 
     static func parse(fileURL: URL) throws -> TexFile {
+        Logger.debug("读取 TEX 文件: \(fileURL.path)")
         let data = try Data(contentsOf: fileURL)
         return try parse(data: data)
     }
@@ -107,6 +118,7 @@ enum TexParser {
     private static func readImageContainer(reader: inout BinaryReader, texFormat: TexFormat) -> TexImageContainer {
         let magic = reader.readNString(maxLength: 16)
         let imageCount = reader.readInt32()
+        Logger.debug("ImageContainer 魔法字: \(magic), 图片数量: \(imageCount)")
         
         var imageFmt = FreeImageFormat.unknown
         var version = TexImageContainerVersion.version1
@@ -133,9 +145,12 @@ enum TexParser {
         if version == .version4 && imageFmt != .mp4 {
             version = .version3
         }
+        
+        Logger.debug("确定容器版本: \(version), 图片格式: \(imageFmt)")
 
         var images: [TexImage] = []
-        for _ in 0..<imageCount {
+        for i in 0..<imageCount {
+            Logger.debug("正在读取第 \(i) 张图片数据...")
             images.append(readImage(reader: &reader, version: version, containerFmt: imageFmt, texFmt: texFormat))
         }
         
@@ -144,16 +159,20 @@ enum TexParser {
 
     private static func readImage(reader: inout BinaryReader, version: TexImageContainerVersion, containerFmt: FreeImageFormat, texFmt: TexFormat) -> TexImage {
         let mipmapCount = reader.readInt32()
+        Logger.debug("  -> 包含 \(mipmapCount) 个 Mipmap 层级")
         var mipmaps: [TexMipmap] = []
         let mipmapFmt = getMipmapFormat(containerFmt: containerFmt, texFmt: texFmt)
 
-        for _ in 0..<mipmapCount {
+        for j in 0..<mipmapCount {
             var mm = readMipmap(reader: &reader, version: version)
             mm.format = mipmapFmt
             if mm.isLz4Compressed {
+                Logger.debug("    -> 发现 LZ4 压缩，尝试解压 Mipmap \(j) (未解压大小: \(mm.decompressedBytesCount))")
                 if let decompressedData = decompressLZ4(data: mm.bytesData, uncompressedSize: Int(mm.decompressedBytesCount)) {
                     mm.bytesData = decompressedData
+                    Logger.debug("    -> LZ4 解压成功")
                 } else {
+                    Logger.error("    -> LZ4 解压失败，填充空数据")
                     mm.bytesData = Data(count: Int(mm.decompressedBytesCount))
                 }
                 mm.isLz4Compressed = false
@@ -189,12 +208,14 @@ enum TexParser {
             decompLen = byteCount
         }
 
+        Logger.debug("    -> 读入 Mipmap: \(width)x\(height), 数据大小: \(byteCount), LZ4: \(isLz4)")
         return TexMipmap(width: width, height: height, isLz4Compressed: isLz4, decompressedBytesCount: decompLen, bytesData: data, format: .invalid)
     }
 
     private static func readFrameInfo(reader: inout BinaryReader) -> TexFrameInfoContainer {
         let magic = reader.readNString(maxLength: 16)
         let count = reader.readInt32()
+        Logger.debug("FrameInfo 魔法字: \(magic), 包含 \(count) 帧")
         
         var gifW: Int32 = 0
         var gifH: Int32 = 0

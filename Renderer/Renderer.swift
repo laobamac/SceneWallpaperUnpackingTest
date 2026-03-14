@@ -28,7 +28,10 @@ class Renderer: NSObject, MTKViewDelegate {
 
     init?(device: MTLDevice) {
         self.device = device
-        guard let queue = device.makeCommandQueue() else { return nil }
+        guard let queue = device.makeCommandQueue() else {
+            Logger.error("Renderer 初始化失败: 无法创建 CommandQueue")
+            return nil
+        }
         self.commandQueue = queue
         self.pipelineManager = PipelineManager(device: device)
         self.sceneLoader = SceneLoader(device: device, pipelineManager: self.pipelineManager)
@@ -36,19 +39,25 @@ class Renderer: NSObject, MTKViewDelegate {
 
         Task {
             do {
+                Logger.log("Renderer 开始异步初始化")
                 try await pipelineManager.setupPipelines()
                 pipelineManager.setupDepthStencilStates()
                 await TextureManager.shared.setup(device: device)
                 self.isReady = true
-            } catch {}
+                Logger.log("Renderer 异步初始化全部完成")
+            } catch {
+                Logger.error("Renderer 初始化异常: \(error.localizedDescription)")
+            }
         }
     }
 
     func loadScene(folder: URL) async {
+        Logger.log("Renderer 触发 loadScene，目标: \(folder.path)")
         let context = await sceneLoader.loadScene(folder: folder)
         self.sceneContext = context
         self.startTime = Date()
         self.lastTime = 0
+        Logger.log("Renderer 场景更新完成")
     }
 
     func updateMousePosition(_ position: CGPoint, in view: NSView) {
@@ -62,6 +71,7 @@ class Renderer: NSObject, MTKViewDelegate {
     }
 
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
+        Logger.debug("MTKView 视口尺寸改变: \(size)")
         let desc = MTLTextureDescriptor.texture2DDescriptor(
             pixelFormat: .rgba16Float,
             width: Int(size.width),
@@ -75,6 +85,7 @@ class Renderer: NSObject, MTKViewDelegate {
         bloomTempTextures.removeAll()
         var w = Int(size.width)
         var h = Int(size.height)
+        Logger.debug("准备重建 Bloom 纹理，迭代次数: \(sceneContext.bloomIterations)")
         for _ in 0...sceneContext.bloomIterations {
             let bDesc = MTLTextureDescriptor.texture2DDescriptor(
                 pixelFormat: .rgba16Float,

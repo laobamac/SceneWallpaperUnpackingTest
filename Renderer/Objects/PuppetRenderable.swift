@@ -59,6 +59,13 @@ class PuppetRenderable: RenderableObject {
         depthState: MTLDepthStencilState?,
         usePixelCoords: Bool
     ) {
+        Logger.debug("PuppetRenderable 准备初始化:")
+        Logger.debug("  => 顶点数: \(vertices.count), 索引数: \(indices.count)")
+        Logger.debug("  => 骨骼数: \(skeleton.count), 动画数: \(animations.count), 动画层数: \(animationLayers.count)")
+        Logger.debug("  => 子网格数: \(subMeshes?.count ?? 0), 遮罩绑定数: \(maskBindings?.count ?? 0)")
+        Logger.debug("  => 传入遮罩纹理数: \(maskTextures.count)")
+        Logger.debug("  => 是否使用像素坐标: \(usePixelCoords)")
+
         self.device = device
         guard
             let vb = device.makeBuffer(
@@ -67,9 +74,12 @@ class PuppetRenderable: RenderableObject {
                 options: .storageModeShared
             )
         else {
+            Logger.error("PuppetRenderable 创建顶点缓冲区失败 (大小: \(vertices.count * MemoryLayout<PuppetVertex>.stride) bytes)")
             return nil
         }
         self.vertexBuffer = vb
+        Logger.debug("  => 顶点缓冲区创建成功")
+
         guard
             let ib = device.makeBuffer(
                 bytes: indices,
@@ -77,10 +87,13 @@ class PuppetRenderable: RenderableObject {
                 options: .storageModeShared
             )
         else {
+            Logger.error("PuppetRenderable 创建索引缓冲区失败 (大小: \(indices.count * MemoryLayout<UInt32>.stride) bytes)")
             return nil
         }
         self.indexBuffer = ib
         self.indexCount = indices.count
+        Logger.debug("  => 索引缓冲区创建成功")
+
         self.usePixelCoords = usePixelCoords
         self.skeleton = skeleton
         self.animations = animations
@@ -95,15 +108,18 @@ class PuppetRenderable: RenderableObject {
             repeating: matrix_identity_float4x4,
             count: 100
         )
-        for _ in 0..<3 {
+        for i in 0..<3 {
             guard let ub = device.makeBuffer(
                 length: MemoryLayout<matrix_float4x4>.stride * 100,
                 options: .storageModeShared
             ) else {
+                Logger.error("PuppetRenderable 创建 Uniform 缓冲区失败: 索引 \(i)")
                 return nil
             }
             uniformBuffers.append(ub)
         }
+        Logger.debug("  => 3 个 Uniform 缓冲区创建成功")
+
         super.init(
             position: position,
             rotation: rotation,
@@ -113,17 +129,22 @@ class PuppetRenderable: RenderableObject {
             pipeline: pipeline,
             depthState: depthState
         )
+
+        Logger.debug("PuppetRenderable 开始计算逆绑定矩阵...")
         computeInverseBindMatrices()
+
         if let firstAnim = animations.first {
             for (index, track) in firstAnim.tracks.enumerated() {
                 boneToTrackIndex[track.track_id] = index
             }
+            Logger.debug("PuppetRenderable 骨骼到轨道映射完成, 映射了 \(firstAnim.tracks.count) 个轨道")
         }
         let ptr = uniformBuffers[0].contents()
         ptr.copyMemory(
             from: &boneMatrices,
             byteCount: MemoryLayout<matrix_float4x4>.stride * 100
         )
+        Logger.debug("PuppetRenderable 初始化流程全部完成")
     }
 
     func getGlobalBindMatrix(boneIndex: Int, localMatrices: [matrix_float4x4])
@@ -469,6 +490,8 @@ class PuppetRenderable: RenderableObject {
     static func parseOBJ(objContent: String, skinning: [PuppetSkinning]) -> (
         [PuppetVertex], [UInt32], Float
     ) {
+        Logger.debug("开始执行 parseOBJ, 输入字符数: \(objContent.count)")
+        Logger.debug("  => 提供的蒙皮权重数据节点数: \(skinning.count)")
         var rawPositions: [SIMD3<Float>] = []
         var rawUVs: [SIMD2<Float>] = []
         var finalVertices: [PuppetVertex] = []
@@ -577,6 +600,12 @@ class PuppetRenderable: RenderableObject {
                 }
             }
         }
+        Logger.debug("parseOBJ 循环解析结束")
+        Logger.debug("  => 原始位置坐标(v)数量: \(rawPositions.count)")
+        Logger.debug("  => 原始纹理坐标(vt)数量: \(rawUVs.count)")
+        Logger.debug("  => 生成最终独立顶点数: \(finalVertices.count)")
+        Logger.debug("  => 生成最终索引数: \(finalIndices.count) (即 \(finalIndices.count / 3) 个三角形)")
+        Logger.debug("  => 边界框宽度: \(maxPos.x - minPos.x)")
         return (finalVertices, finalIndices, maxPos.x - minPos.x)
     }
 }

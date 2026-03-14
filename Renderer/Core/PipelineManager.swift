@@ -29,6 +29,11 @@ class PipelineManager {
     init(device: MTLDevice) {
         self.device = device
         self.library = device.makeDefaultLibrary()
+        if self.library == nil {
+            Logger.error("PipelineManager 构造失败: 无法创建 DefaultLibrary")
+        } else {
+            Logger.debug("PipelineManager 构造成功, DefaultLibrary 已加载")
+        }
     }
 
     var pipelineState: MTLRenderPipelineState? {
@@ -40,6 +45,7 @@ class PipelineManager {
     }
 
     func configureBlend(descriptor: MTLRenderPipelineColorAttachmentDescriptor, blendMode: Int) {
+        Logger.debug("配置 BlendMode: \(blendMode)")
         descriptor.isBlendingEnabled = true
         switch blendMode {
         case 1, 7:
@@ -79,7 +85,13 @@ class PipelineManager {
         } else {
             if let state = pipelineStates[blendMode] { return state }
         }
-        guard let lib = library else { return nil }
+        
+        Logger.debug("缓存未命中，开始创建新的 Pipeline (isPuppet: \(isPuppet), blendMode: \(blendMode))")
+        
+        guard let lib = library else {
+            Logger.error("创建 Pipeline 失败: Library 为空")
+            return nil
+        }
         let descriptor = MTLRenderPipelineDescriptor()
         descriptor.label = isPuppet ? "Puppet_\(blendMode)" : "Standard_\(blendMode)"
         descriptor.vertexFunction = lib.makeFunction(name: isPuppet ? "vertex_puppet" : "vertex_main")
@@ -129,20 +141,25 @@ class PipelineManager {
             } else {
                 pipelineStates[blendMode] = state
             }
+            Logger.log("成功创建并缓存 Pipeline: \(descriptor.label ?? "未知")")
             return state
         } catch {
+            Logger.error("创建 Pipeline 失败: \(error.localizedDescription)")
             return nil
         }
     }
 
     func setupPipelines() async throws {
+        Logger.log("开始全局初始化 Pipelines 和相关状态")
         guard let lib = library else {
+            Logger.error("全局初始化失败: Library 为空")
             throw NSError(domain: "Renderer", code: 1, userInfo: [NSLocalizedDescriptionKey: "Library error"])
         }
 
         _ = getPipeline(isPuppet: false, blendMode: 0)
         _ = getPipeline(isPuppet: true, blendMode: 0)
 
+        Logger.debug("配置 PuppetMask Pipeline")
         let maskDesc = MTLRenderPipelineDescriptor()
         maskDesc.label = "PuppetMask"
         maskDesc.vertexFunction = lib.makeFunction(name: "vertex_puppet")
@@ -172,7 +189,9 @@ class PipelineManager {
         pvDesc.layouts[0].stride = 48
         maskDesc.vertexDescriptor = pvDesc
         puppetMaskPipelineState = try await device.makeRenderPipelineState(descriptor: maskDesc, options: []).0
+        Logger.debug("PuppetMask Pipeline 创建成功")
 
+        Logger.debug("配置后期处理 Pipeline")
         let postDesc = MTLRenderPipelineDescriptor()
         postDesc.vertexFunction = lib.makeFunction(name: "vertex_post")
         postDesc.colorAttachments[0].pixelFormat = hdrFormat
@@ -180,15 +199,22 @@ class PipelineManager {
         postDesc.stencilAttachmentPixelFormat = .invalid
         postDesc.fragmentFunction = lib.makeFunction(name: "fragment_extract")
         extractPipeline = try await device.makeRenderPipelineState(descriptor: postDesc, options: []).0
+        Logger.debug("提取 Pipeline 创建成功")
+        
         postDesc.fragmentFunction = lib.makeFunction(name: "fragment_blur")
         blurPipeline = try await device.makeRenderPipelineState(descriptor: postDesc, options: []).0
+        Logger.debug("模糊 Pipeline 创建成功")
+        
         postDesc.fragmentFunction = lib.makeFunction(name: "fragment_upsample")
         upsamplePipeline = try await device.makeRenderPipelineState(descriptor: postDesc, options: []).0
+        Logger.debug("上采样 Pipeline 创建成功")
+        
         postDesc.fragmentFunction = lib.makeFunction(name: "fragment_final")
         postDesc.colorAttachments[0].pixelFormat = .bgra8Unorm
         postDesc.depthAttachmentPixelFormat = depthFormat
         postDesc.stencilAttachmentPixelFormat = depthFormat
         finalPipeline = try await device.makeRenderPipelineState(descriptor: postDesc, options: []).0
+        Logger.debug("最终合成 Pipeline 创建成功")
 
         let samplerDesc = MTLSamplerDescriptor()
         samplerDesc.minFilter = .linear
@@ -197,9 +223,12 @@ class PipelineManager {
         samplerDesc.tAddressMode = .clampToEdge
         samplerDesc.normalizedCoordinates = true
         samplerState = device.makeSamplerState(descriptor: samplerDesc)
+        Logger.debug("默认 SamplerState 创建成功")
+        Logger.log("全局初始化 Pipelines 完成")
     }
 
     func setupDepthStencilStates() {
+        Logger.debug("开始设置 DepthStencil 状态")
         let depthDesc = MTLDepthStencilDescriptor()
         depthDesc.isDepthWriteEnabled = true
         depthDesc.depthCompareFunction = .lessEqual
@@ -237,5 +266,6 @@ class PipelineManager {
         maskTestDesc.frontFaceStencil = st
         maskTestDesc.backFaceStencil = st
         maskTestState = device.makeDepthStencilState(descriptor: maskTestDesc)
+        Logger.debug("DepthStencil 状态全部设置完成")
     }
 }
