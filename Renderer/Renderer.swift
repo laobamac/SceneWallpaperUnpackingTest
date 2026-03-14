@@ -145,7 +145,10 @@ class Renderer: NSObject, MTKViewDelegate {
         let fov = sceneContext.currentFOV * (.pi / 180.0)
         let aspect = Float(sceneContext.projectionSize.width / sceneContext.projectionSize.height)
         let camDist = (Float(sceneContext.projectionSize.height) / 2.0) / tan(fov / 2.0)
-        let proj = RendererMath.makePerspective(fovyRadians: fov, aspect: aspect, near: 10.0, far: 10000.0)
+        
+        let farPlane = max(10000.0, camDist + 10000.0)
+        
+        let proj = RendererMath.makePerspective(fovyRadians: fov, aspect: aspect, near: 10.0, far: farPlane)
         let viewMat = RendererMath.makeLookAt(
             eye: SIMD3<Float>(Float(sceneContext.projectionSize.width) / 2, Float(sceneContext.projectionSize.height) / 2, -camDist),
             center: SIMD3<Float>(Float(sceneContext.projectionSize.width) / 2, Float(sceneContext.projectionSize.height) / 2, 0),
