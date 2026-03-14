@@ -87,7 +87,7 @@ extension ParticleSimulator {
                     if periodicTimer >= periodicDelay {
                         emitting = true
                         periodicTimer = 0.0
-                        periodicDuration = Float.random(in: minPDur...maxPDur)
+                        periodicDuration = Float.random(in: min(minPDur, maxPDur)...max(minPDur, maxPDur))
                     } else {
                         return
                     }
@@ -95,7 +95,7 @@ extension ParticleSimulator {
                     if periodicTimer >= periodicDuration {
                         emitting = false
                         periodicTimer = 0.0
-                        periodicDelay = Float.random(in: minPDel...maxPDel)
+                        periodicDelay = Float.random(in: min(minPDel, maxPDel)...max(minPDel, maxPDel))
                         return
                     }
                 }
@@ -127,9 +127,9 @@ extension ParticleSimulator {
 
                 var randomPos = SIMD3<Float>()
                 for axis in 0..<3 {
-                    let minDist = dMin[axis]
-                    let maxDist = dMax[axis]
-                    var dist = Float.random(in: minDist...maxDist)
+                    let v1 = dMin[axis]
+                    let v2 = dMax[axis]
+                    var dist = Float.random(in: min(v1, v2)...max(v1, v2))
                     if Bool.random() { dist = -dist }
                     randomPos[axis] = dist
                 }
@@ -233,12 +233,12 @@ extension ParticleSimulator {
                     let maxRadius = dMax.x
                     let minRadiusSq = minRadius * minRadius
                     let maxRadiusSq = maxRadius * maxRadius
-                    let radiusXY = sqrt(Float.random(in: minRadiusSq...maxRadiusSq))
+                    let radiusXY = sqrt(Float.random(in: min(minRadiusSq, maxRadiusSq)...max(minRadiusSq, maxRadiusSq)))
 
                     randomPos = SIMD3<Float>(
                         radiusXY * cos(angle),
                         radiusXY * sin(angle),
-                        Float.random(in: -dMax.z...dMax.z)
+                        Float.random(in: min(-dMax.z, dMax.z)...max(-dMax.z, dMax.z))
                     )
                     randomPos *= directions
                 } else {
@@ -251,7 +251,7 @@ extension ParticleSimulator {
                     let maxRadius = dMax.x
                     let minRadiusCubed = minRadius * minRadius * minRadius
                     let maxRadiusCubed = maxRadius * maxRadius * maxRadius
-                    let radius = pow(Float.random(in: minRadiusCubed...maxRadiusCubed), 1.0/3.0)
+                    let radius = pow(Float.random(in: min(minRadiusCubed, maxRadiusCubed)...max(minRadiusCubed, maxRadiusCubed)), 1.0/3.0)
 
                     randomPos *= radius
                     randomPos *= directions
@@ -270,7 +270,7 @@ extension ParticleSimulator {
                 if sMax > 0.0 || sMin != 0.0 {
                     let len = length(randomPos)
                     let direction = len > 0.0 ? (randomPos / len) : SIMD3<Float>(0.0, 1.0, 0.0)
-                    let speed = Float.random(in: sMin...sMax)
+                    let speed = Float.random(in: min(sMin, sMax)...max(sMin, sMax))
                     particles[count].velocity = direction * speed
                 } else {
                     particles[count].velocity = .zero

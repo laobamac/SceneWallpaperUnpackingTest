@@ -46,9 +46,9 @@ extension ParticleSimulator {
         if adjMax.x > 1.0 || adjMax.y > 1.0 || adjMax.z > 1.0 { adjMax /= 255.0 }
 
         return { (p: inout ParticleInstance) in
-            let r = Float.random(in: adjMin.x...adjMax.x)
-            let g = Float.random(in: adjMin.y...adjMax.y)
-            let b = Float.random(in: adjMin.z...adjMax.z)
+            let r = Float.random(in: min(adjMin.x, adjMax.x)...max(adjMin.x, adjMax.x))
+            let g = Float.random(in: min(adjMin.y, adjMax.y)...max(adjMin.y, adjMax.y))
+            let b = Float.random(in: min(adjMin.z, adjMax.z)...max(adjMin.z, adjMax.z))
             p.color = SIMD3<Float>(r, g, b) * overrideV
             p.initial.color = p.color
         }
@@ -74,7 +74,7 @@ extension ParticleSimulator {
         let overrideV = instanceOverride?.alpha?.floatValue ?? 1.0
 
         return { (p: inout ParticleInstance) in
-            p.alpha = Float.random(in: minV...maxV) * overrideV
+            p.alpha = Float.random(in: min(minV, maxV)...max(minV, maxV)) * overrideV
             p.initial.alpha = p.alpha
         }
     }
@@ -85,7 +85,7 @@ extension ParticleSimulator {
         let overrideV = instanceOverride?.lifetime?.floatValue ?? 1.0
 
         return { (p: inout ParticleInstance) in
-            p.lifetime = Float.random(in: minV...maxV) * overrideV
+            p.lifetime = Float.random(in: min(minV, maxV)...max(minV, maxV)) * overrideV
             p.initial.lifetime = p.lifetime
         }
     }
@@ -97,9 +97,9 @@ extension ParticleSimulator {
 
         return { (p: inout ParticleInstance) in
             var vel = SIMD3<Float>(
-                Float.random(in: minV.x...maxV.x),
-                Float.random(in: minV.y...maxV.y),
-                Float.random(in: minV.z...maxV.z)
+                Float.random(in: min(minV.x, maxV.x)...max(minV.x, maxV.x)),
+                Float.random(in: min(minV.y, maxV.y)...max(minV.y, maxV.y)),
+                Float.random(in: min(minV.z, maxV.z)...max(minV.z, maxV.z))
             ) * overrideV
             vel.y = -vel.y
             p.velocity += vel
@@ -113,9 +113,9 @@ extension ParticleSimulator {
 
         return { (p: inout ParticleInstance) in
             p.rotation = SIMD3<Float>(
-                Float.random(in: minV.x...maxV.x),
-                Float.random(in: minV.y...maxV.y),
-                Float.random(in: minV.z...maxV.z)
+                Float.random(in: min(minV.x, maxV.x)...max(minV.x, maxV.x)),
+                Float.random(in: min(minV.y, maxV.y)...max(minV.y, maxV.y)),
+                Float.random(in: min(minV.z, maxV.z)...max(minV.z, maxV.z))
             ) * overrideV
         }
     }
@@ -160,11 +160,11 @@ extension ParticleSimulator {
 
         return { [weak self] (p: inout ParticleInstance) in
             guard let self = self else { return }
-            let speed = Float.random(in: speedMin...speedMax)
+            let speed = Float.random(in: min(speedMin, speedMax)...max(speedMin, speedMax))
             var noisePos = p.position * 0.1
             noisePos += SIMD3<Float>(repeating: self.time * timeScale)
 
-            let phase = Float.random(in: phaseMin...phaseMax)
+            let phase = Float.random(in: min(phaseMin, phaseMax)...max(phaseMin, phaseMax))
             let samplePos = noisePos + SIMD3<Float>(phase, phase * 0.7, phase * 1.3)
 
             var result = NoiseUtils.curlNoise(samplePos)
@@ -225,9 +225,9 @@ extension ParticleSimulator {
             p.position = centerPos
 
             var speed = SIMD3<Float>(
-                Float.random(in: speedMin.x...speedMax.x),
-                Float.random(in: speedMin.y...speedMax.y),
-                Float.random(in: speedMin.z...speedMax.z)
+                Float.random(in: min(speedMin.x, speedMax.x)...max(speedMin.x, speedMax.x)),
+                Float.random(in: min(speedMin.y, speedMax.y)...max(speedMin.y, speedMax.y)),
+                Float.random(in: min(speedMin.z, speedMax.z)...max(speedMin.z, speedMax.z))
             )
             speed.y = -speed.y
 

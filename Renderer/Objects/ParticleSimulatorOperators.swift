@@ -187,8 +187,8 @@ extension ParticleSimulator {
         let phaseMax = opData.phasemax?.floatValue ?? 0.0
         let overrideV = instanceOverride?.speed?.floatValue ?? 1.0
 
-        let phase = Float.random(in: phaseMin...phaseMax)
-        let turbSpeed = Float.random(in: speedMin...speedMax)
+        let phase = Float.random(in: min(phaseMin, phaseMax)...max(phaseMin, phaseMax))
+        let turbSpeed = Float.random(in: min(speedMin, speedMax)...max(speedMin, speedMax))
         let noiseScale = scale * 2.0
 
         return { (particles: inout [ParticleInstance], count: Int, controlPoints: [ControlPointData], time: Float, dt: Float) in
@@ -336,9 +336,10 @@ extension ParticleSimulator {
             guard let self = self else { return }
             for i in 0..<count {
                 if !particles[i].oscillateAlpha.initialized {
-                    particles[i].oscillateAlpha.frequency = Float.random(in: freqMin...freqMax)
-                    particles[i].oscillateAlpha.scale = Float.random(in: scaleMin...scaleMax)
-                    particles[i].oscillateAlpha.phase = Float.random(in: phaseMin...(phaseMax + 2.0 * Float.pi))
+                    particles[i].oscillateAlpha.frequency = Float.random(in: min(freqMin, freqMax)...max(freqMin, freqMax))
+                    particles[i].oscillateAlpha.scale = Float.random(in: min(scaleMin, scaleMax)...max(scaleMin, scaleMax))
+                    let p2 = phaseMax + 2.0 * Float.pi
+                    particles[i].oscillateAlpha.phase = Float.random(in: min(phaseMin, p2)...max(phaseMin, p2))
                     particles[i].oscillateAlpha.base = particles[i].alpha
                     particles[i].oscillateAlpha.initialized = true
                 }
@@ -363,9 +364,10 @@ extension ParticleSimulator {
             guard let self = self else { return }
             for i in 0..<count {
                 if !particles[i].oscillateSize.initialized {
-                    particles[i].oscillateSize.frequency = Float.random(in: freqMin...freqMax)
-                    particles[i].oscillateSize.scale = Float.random(in: scaleMin...scaleMax)
-                    particles[i].oscillateSize.phase = Float.random(in: phaseMin...(phaseMax + 2.0 * Float.pi))
+                    particles[i].oscillateSize.frequency = Float.random(in: min(freqMin, freqMax)...max(freqMin, freqMax))
+                    particles[i].oscillateSize.scale = Float.random(in: min(scaleMin, scaleMax)...max(scaleMin, scaleMax))
+                    let p2 = phaseMax + 2.0 * Float.pi
+                    particles[i].oscillateSize.phase = Float.random(in: min(phaseMin, p2)...max(phaseMin, p2))
                     particles[i].oscillateSize.base = particles[i].size
                     particles[i].oscillateSize.initialized = true
                 }
@@ -392,9 +394,10 @@ extension ParticleSimulator {
             for i in 0..<count {
                 if !particles[i].oscillatePosition.initialized {
                     for axis in 0..<3 {
-                        particles[i].oscillatePosition.frequency[axis] = Float.random(in: freqMin...freqMax)
-                        particles[i].oscillatePosition.scale[axis] = Float.random(in: scaleMin...scaleMax)
-                        particles[i].oscillatePosition.phase[axis] = Float.random(in: phaseMin...(phaseMax + 2.0 * Float.pi))
+                        particles[i].oscillatePosition.frequency[axis] = Float.random(in: min(freqMin, freqMax)...max(freqMin, freqMax))
+                        particles[i].oscillatePosition.scale[axis] = Float.random(in: min(scaleMin, scaleMax)...max(scaleMin, scaleMax))
+                        let p2 = phaseMax + 2.0 * Float.pi
+                        particles[i].oscillatePosition.phase[axis] = Float.random(in: min(phaseMin, p2)...max(phaseMin, p2))
                     }
                     particles[i].oscillatePosition.initialized = true
                 }
