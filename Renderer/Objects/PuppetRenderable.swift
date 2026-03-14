@@ -239,7 +239,10 @@ class PuppetRenderable: RenderableObject {
             let layerBlend = layer.blend ?? 1.0
             let fps = anim.fps > 0 ? anim.fps : 30.0
             let duration = Float(anim.length) / fps
-            let t = (duration > 0) ? fmod(time * layerRate, duration) : 0
+            
+            var t = (duration > 0) ? fmod(time * layerRate, duration) : 0.0
+            if t < 0 { t += duration }
+            
             for i in 0..<skeleton.count {
                 let bone = skeleton[i]
                 if let track = anim.tracks.first(where: {
@@ -260,40 +263,68 @@ class PuppetRenderable: RenderableObject {
                         var idx1 = 0
                         var fraction: Float = 0.0
                         let firstTime = track.frames[0].time ?? 0.0
-                        if t < firstTime {
-                            idx0 = track.frames.count - 1
-                            idx1 = 0
-                            let t1 = track.frames[idx0].time ?? (Float(idx0) / fps)
-                            let t2 = firstTime + duration
-                            let adjustedT = t + duration
-                            fraction = (t2 > t1) ? (adjustedT - t1) / (t2 - t1) : 0.0
+                        let trackMaxTime = track.frames.last?.time ?? (Float(track.frames.count - 1) / fps)
+                        
+                        var localT = t
+                        let expectedHalf = duration / 2.0
+                        let isPingPong = trackMaxTime > 0.0 && abs(trackMaxTime - expectedHalf) < (2.0 / fps)
+                        
+                        if isPingPong && localT > trackMaxTime {
+                            localT = 2.0 * trackMaxTime - localT
+                            if localT < 0 { localT = 0.0 }
+                        }
+                        
+                        if localT < firstTime {
+                            if isPingPong {
+                                idx0 = 0
+                                idx1 = 0
+                                fraction = 0.0
+                            } else {
+                                idx0 = track.frames.count - 1
+                                idx1 = 0
+                                let t1 = track.frames[idx0].time ?? (Float(idx0) / fps)
+                                let t2 = firstTime + duration
+                                let adjustedT = localT + duration
+                                fraction = (t2 > t1) ? (adjustedT - t1) / (t2 - t1) : 0.0
+                            }
                         } else {
                             for j in 0..<track.frames.count {
                                 let fTime = track.frames[j].time ?? (Float(j) / fps)
-                                if fTime <= t { idx0 = j }
+                                if fTime <= localT { idx0 = j }
                             }
-                            idx1 = (idx0 + 1) % track.frames.count
-                            let t1 = track.frames[idx0].time ?? (Float(idx0) / fps)
-                            var t2 = track.frames[idx1].time ?? (Float(idx1) / fps)
-                            if idx1 == 0 { t2 = duration }
-                            fraction = (t2 > t1) ? (t - t1) / (t2 - t1) : 0.0
+                            
+                            if idx0 >= track.frames.count - 1 {
+                                if isPingPong {
+                                    idx0 = track.frames.count - 1
+                                    idx1 = idx0
+                                    fraction = 0.0
+                                } else {
+                                    idx1 = 0
+                                    let t1 = track.frames[idx0].time ?? (Float(idx0) / fps)
+                                    let t2 = duration + firstTime
+                                    fraction = (t2 > t1) ? (localT - t1) / (t2 - t1) : 0.0
+                                }
+                            } else {
+                                idx1 = idx0 + 1
+                                let t1 = track.frames[idx0].time ?? (Float(idx0) / fps)
+                                let t2 = track.frames[idx1].time ?? (Float(idx1) / fps)
+                                fraction = (t2 > t1) ? (localT - t1) / (t2 - t1) : 0.0
+                            }
                         }
+                        
                         let k1 = track.frames[idx0]
                         let k2 = track.frames[idx1]
+                        
                         let p = mix(
                             SIMD3<Float>(k1.p[0], k1.p[1], k1.p[2]),
                             SIMD3<Float>(k2.p[0], k2.p[1], k2.p[2]),
                             t: fraction
                         )
-                        let matR = Quaternion.slerp(
-                            Quaternion.fromEuler(
-                                SIMD3<Float>(k1.r[0], k1.r[1], k1.r[2])
-                            ),
-                            Quaternion.fromEuler(
-                                SIMD3<Float>(k2.r[0], k2.r[1], k2.r[2])
-                            ),
-                            t: fraction
-                        ).toMatrix()
+                        let r1 = SIMD3<Float>(k1.r[0], k1.r[1], k1.r[2])
+                        let r2 = SIMD3<Float>(k2.r[0], k2.r[1], k2.r[2])
+                        let r = mix(r1, r2, t: fraction)
+                        let matR = Quaternion.fromEuler(r).toMatrix()
+                        
                         let s = mix(
                             SIMD3<Float>(k1.s[0], k1.s[1], k1.s[2]),
                             SIMD3<Float>(k2.s[0], k2.s[1], k2.s[2]),
