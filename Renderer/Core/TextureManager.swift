@@ -22,6 +22,7 @@ actor TextureManager {
         self.device = device
         self.loader = MTKTextureLoader(device: device)
         self.commandQueue = device.makeCommandQueue()
+        await Logger.log("TextureManager initialized")
     }
 
     func frameInfo(for url: URL) -> [TexFrameInfo]? {
@@ -35,8 +36,11 @@ actor TextureManager {
     ) async throws -> MTLTexture {
         if let cached = cache[url] { return cached }
         guard let device = self.device, let loader = self.loader else {
+            await Logger.error("TextureManager 尚未初始化")
             throw NSError(domain: "TextureManager", code: 0, userInfo: nil)
         }
+
+        await Logger.log("加载纹理: \(url.lastPathComponent) 从 \(url.path)")
 
         let texFile = try await TexParser.parse(fileURL: url)
         
@@ -67,16 +71,19 @@ actor TextureManager {
         if texWidth <= 0 { texWidth = 1 }
         if texHeight <= 0 { texHeight = 1 }
 
+        let formatName = String(describing: texFile.header.format)
         let isGif = await texFile.header.flags.contains(.isGif)
-        let arrayLength = (isGif && !isVideo) ? max(1, texFile.imageContainer.images.count) : 1
-        let finalArrayLength = force2D ? 1 : arrayLength
-        let isArray = finalArrayLength > 1
+        let typeString = isVideo ? "视频纹理" : (isGif ? "动画图集" : "静态贴图")
+        let embedStr = isVideo ? "MP4 视频流" : (isEmbedded ? "内嵌 \(firstMipmap?.format ?? .invalid)" : "原生 \(formatName)")
+        await Logger.log("  => 详情: [\(typeString)] 渲染尺寸:\(texWidth)x\(texHeight), 格式:\(embedStr), 容器V\(texFile.imageContainer.version.rawValue)")
 
         if isEmbedded && !isVideo, let data = firstMipmap?.bytesData {
+            await Logger.debug("  => 处理内嵌格式图像数据，大小: \(data.count) 字节")
             let tempTexture = try await loader.newTexture(data: data, options: options)
             
-            if !isArray {
+            if force2D {
                 cache[url] = tempTexture
+                await Logger.log("  => 成功加载强制 2D 纹理: \(url.lastPathComponent)")
                 return tempTexture
             }
 
@@ -85,12 +92,13 @@ actor TextureManager {
             desc.width = tempTexture.width
             desc.height = tempTexture.height
             desc.textureType = .type2DArray
-            desc.arrayLength = finalArrayLength
+            desc.arrayLength = 1
             desc.usage = [.shaderRead]
 
             guard let arrayTexture = device.makeTexture(descriptor: desc),
                   let cmd = commandQueue?.makeCommandBuffer(),
                   let blit = cmd.makeBlitCommandEncoder() else {
+                await Logger.error("  => 生成纹理数组失败，返回降级 2D 纹理")
                 return tempTexture
             }
 
@@ -99,6 +107,7 @@ actor TextureManager {
             cmd.commit()
             await cmd.completed()
             
+            await Logger.log("  => 成功加载并转换内嵌纹理为数组: \(url.lastPathComponent)")
             cache[url] = arrayTexture
             return arrayTexture
         }
@@ -142,15 +151,19 @@ actor TextureManager {
             }
         }
 
+        let arrayLength = (isGif && !isVideo) ? max(1, texFile.imageContainer.images.count) : 1
+        await Logger.debug("  => 分配纹理描述符: Format=\(pixelFormat), isCompressed=\(isCompressed), needsCPUExpansion=\(needsCPUExpansion), ArrayLength=\(arrayLength)")
+
         let desc = MTLTextureDescriptor()
         desc.pixelFormat = pixelFormat
         desc.width = texWidth
         desc.height = texHeight
-        desc.textureType = isArray ? .type2DArray : .type2D
-        desc.arrayLength = finalArrayLength
+        desc.textureType = force2D ? .type2D : .type2DArray
+        desc.arrayLength = force2D ? 1 : arrayLength
         desc.usage = [.shaderRead]
 
         guard let texture = device.makeTexture(descriptor: desc) else {
+            await Logger.log("  => 生成纹理对象失败: \(url.lastPathComponent)")
             throw NSError(domain: "TextureManager", code: 1, userInfo: nil)
         }
 
@@ -160,12 +173,13 @@ actor TextureManager {
                 try? mipmap.bytesData.write(to: tempURL)
                 let updater = await VideoTextureUpdater(url: tempURL, texture: texture)
                 videoUpdaters[url] = updater
+                await Logger.log("  => 开始后台解码视频: \(url.lastPathComponent), 写入临时路径: \(tempURL.path)")
             }
             cache[url] = texture
             return texture
         }
 
-        for i in 0..<finalArrayLength {
+        for i in 0..<arrayLength {
             if i < texFile.imageContainer.images.count {
                 let image = texFile.imageContainer.images[i]
                 if let mipmap = image.mipmaps.first {
@@ -174,6 +188,7 @@ actor TextureManager {
                     var finalData = mipmap.bytesData
 
                     if needsCPUExpansion {
+                        await Logger.debug("  => 正在 CPU 端扩展单/双通道数据")
                         var expandedData = Data(capacity: texWidth * texHeight * 4)
                         if texFile.header.format == .RG88 {
                             for j in stride(from: 0, to: finalData.count - 1, by: 2) {
@@ -201,6 +216,7 @@ actor TextureManager {
                     }
                     
                     if finalData.count < bytesPerImage {
+                        await Logger.debug("  => 数据长度不足(\(finalData.count) < \(bytesPerImage)), 进行补齐")
                         finalData.append(Data(count: bytesPerImage - finalData.count))
                     }
                     
@@ -210,7 +226,7 @@ actor TextureManager {
                             texture.replace(
                                 region: region,
                                 mipmapLevel: 0,
-                                slice: isArray ? i : 0,
+                                slice: force2D ? 0 : i,
                                 withBytes: baseAddress,
                                 bytesPerRow: bytesPerRow,
                                 bytesPerImage: bytesPerImage
@@ -221,11 +237,13 @@ actor TextureManager {
             }
         }
 
+        await Logger.log("  => 成功加载纹理: \(url.lastPathComponent)")
         cache[url] = texture
         return texture
     }
 
     func clear() async {
+        await Logger.log("清空纹理缓存")
         for updater in videoUpdaters.values {
             await updater.stop()
         }

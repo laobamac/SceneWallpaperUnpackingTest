@@ -41,7 +41,6 @@ struct SceneObject: Codable {
     let id: Int?
     let name: String?
     let image: String?
-    let particle: String?
     let type: String?
     let origin: ScriptableValue?
     let size: ScriptableValue?
@@ -53,7 +52,6 @@ struct SceneObject: Codable {
     let rawAlpha: ScriptableValue?
     let colorBlendMode: Int?
     let animationlayers: [AnimationLayer]?
-    let instanceoverride: ParticleInstanceOverride?
 
     var alpha: Float? {
         return rawAlpha?.floatValue
@@ -63,7 +61,6 @@ struct SceneObject: Codable {
         case id
         case name
         case image
-        case particle
         case type
         case origin
         case size
@@ -75,7 +72,6 @@ struct SceneObject: Codable {
         case rawAlpha = "alpha"
         case colorBlendMode
         case animationlayers
-        case instanceoverride
     }
 
     var isVisible: Bool {
