@@ -51,7 +51,7 @@ extension ParticleSimulator {
         } else if life >= endTime {
             return endValue
         } else {
-            let t = (life - startTime) / (endTime - startTime)
+            let t = (life - startTime) / max(0.0001, (endTime - startTime))
             return lerp(t: t, a: startValue, b: endValue)
         }
     }
@@ -99,8 +99,8 @@ extension ParticleSimulator {
     }
 
     private func createAlphaFadeOperator(_ opData: ParticleOperator) -> OperatorFunc {
-        let fadeInTime = opData.fadeintime?.floatValue ?? 0.5
-        let fadeOutTime = opData.fadeouttime?.floatValue ?? 0.5
+        let fadeInTime = opData.fadeintime?.floatValue ?? 0.0
+        let fadeOutTime = opData.fadeouttime?.floatValue ?? 1.0
 
         return { [weak self] (particles: inout [ParticleInstance], count: Int, controlPoints: [ControlPointData], time: Float, dt: Float) in
             guard let self = self else { return }
@@ -125,7 +125,7 @@ extension ParticleSimulator {
         let startTime = opData.starttime?.floatValue ?? 0.0
         let endTime = opData.endtime?.floatValue ?? 1.0
         let startValue = opData.startvalue?.floatValue ?? 1.0
-        let endValue = opData.endvalue?.floatValue ?? 0.0
+        let endValue = opData.endvalue?.floatValue ?? 1.0
 
         return { [weak self] (particles: inout [ParticleInstance], count: Int, controlPoints: [ControlPointData], time: Float, dt: Float) in
             guard let self = self else { return }
@@ -143,7 +143,7 @@ extension ParticleSimulator {
         let startTime = opData.starttime?.floatValue ?? 0.0
         let endTime = opData.endtime?.floatValue ?? 1.0
         let startValue = opData.startvalue?.floatValue ?? 1.0
-        let endValue = opData.endvalue?.floatValue ?? 0.0
+        let endValue = opData.endvalue?.floatValue ?? 1.0
 
         return { [weak self] (particles: inout [ParticleInstance], count: Int, controlPoints: [ControlPointData], time: Float, dt: Float) in
             guard let self = self else { return }
@@ -179,10 +179,10 @@ extension ParticleSimulator {
 
     private func createTurbulenceOperator(_ opData: ParticleOperator) -> OperatorFunc {
         let scale = opData.scale?.floatValue ?? 0.005
-        let speedMin = opData.speedmin?.floatValue ?? 500.0
-        let speedMax = opData.speedmax?.floatValue ?? 1000.0
+        let speedMin = opData.speedmin?.floatValue ?? 50.0
+        let speedMax = opData.speedmax?.floatValue ?? 100.0
         let timeScale = opData.timescale?.floatValue ?? 0.01
-        let mask = opData.mask?.float3Value ?? SIMD3<Float>(1.0, 1.0, 0.0)
+        let mask = opData.mask?.float3Value ?? SIMD3<Float>(1.0, 1.0, 1.0)
         let phaseMin = opData.phasemin?.floatValue ?? 0.0
         let phaseMax = opData.phasemax?.floatValue ?? 0.0
         let overrideV = instanceOverride?.speed?.floatValue ?? 1.0
@@ -214,11 +214,11 @@ extension ParticleSimulator {
         let flags = opData.flags ?? 0
         var axis = opData.axis?.float3Value ?? SIMD3<Float>(0.0, 0.0, 1.0)
         let offset = opData.offset?.float3Value ?? .zero
-        let distanceInner = opData.distanceinner?.floatValue ?? 500.0
-        let distanceOuter = opData.distanceouter?.floatValue ?? 650.0
-        let speedInner = opData.speedinner?.floatValue ?? 2500.0
-        let speedOuter = opData.speedouter?.floatValue ?? 0.0
-        let centerForce = opData.centerforce?.floatValue ?? 1.0
+        let distanceInner = opData.distanceinner?.floatValue ?? 0.0
+        let distanceOuter = opData.distanceouter?.floatValue ?? 1000.0
+        let speedInner = opData.speedinner?.floatValue ?? 100.0
+        let speedOuter = opData.speedouter?.floatValue ?? 100.0
+        let centerForce = opData.centerforce?.floatValue ?? 0.0
         let ringRadius = opData.ringradius?.floatValue ?? 300.0
         let ringWidth = opData.ringwidth?.floatValue ?? 50.0
         let ringPullDistance = opData.ringpulldistance?.floatValue ?? 50.0
@@ -325,12 +325,12 @@ extension ParticleSimulator {
     }
 
     private func createOscillateAlphaOperator(_ opData: ParticleOperator) -> OperatorFunc {
-        let freqMin = opData.frequencymin?.floatValue ?? 0.0
-        let freqMax = opData.frequencymax?.floatValue ?? 10.0
-        let scaleMin = opData.scalemin?.floatValue ?? 0.0
+        let freqMin = opData.frequencymin?.floatValue ?? 1.0
+        let freqMax = opData.frequencymax?.floatValue ?? 1.0
+        let scaleMin = opData.scalemin?.floatValue ?? 1.0
         let scaleMax = opData.scalemax?.floatValue ?? 1.0
         let phaseMin = opData.phasemin?.floatValue ?? 0.0
-        let phaseMax = opData.phasemax?.floatValue ?? (2.0 * Float.pi)
+        let phaseMax = opData.phasemax?.floatValue ?? 0.0
 
         return { [weak self] (particles: inout [ParticleInstance], count: Int, controlPoints: [ControlPointData], time: Float, dt: Float) in
             guard let self = self else { return }
@@ -353,12 +353,12 @@ extension ParticleSimulator {
     }
 
     private func createOscillateSizeOperator(_ opData: ParticleOperator) -> OperatorFunc {
-        let freqMin = opData.frequencymin?.floatValue ?? 0.0
-        let freqMax = opData.frequencymax?.floatValue ?? 10.0
-        let scaleMin = opData.scalemin?.floatValue ?? 0.8
-        let scaleMax = opData.scalemax?.floatValue ?? 1.2
+        let freqMin = opData.frequencymin?.floatValue ?? 1.0
+        let freqMax = opData.frequencymax?.floatValue ?? 1.0
+        let scaleMin = opData.scalemin?.floatValue ?? 1.0
+        let scaleMax = opData.scalemax?.floatValue ?? 1.0
         let phaseMin = opData.phasemin?.floatValue ?? 0.0
-        let phaseMax = opData.phasemax?.floatValue ?? (2.0 * Float.pi)
+        let phaseMax = opData.phasemax?.floatValue ?? 0.0
 
         return { [weak self] (particles: inout [ParticleInstance], count: Int, controlPoints: [ControlPointData], time: Float, dt: Float) in
             guard let self = self else { return }
@@ -381,13 +381,13 @@ extension ParticleSimulator {
     }
 
     private func createOscillatePositionOperator(_ opData: ParticleOperator) -> OperatorFunc {
-        let freqMin = opData.frequencymin?.floatValue ?? 0.0
-        let freqMax = opData.frequencymax?.floatValue ?? 5.0
-        let scaleMin = opData.scalemin?.floatValue ?? 0.0
-        let scaleMax = opData.scalemax?.floatValue ?? 10.0
+        let freqMin = opData.frequencymin?.floatValue ?? 1.0
+        let freqMax = opData.frequencymax?.floatValue ?? 1.0
+        let scaleMin = opData.scalemin?.floatValue ?? 1.0
+        let scaleMax = opData.scalemax?.floatValue ?? 1.0
         let phaseMin = opData.phasemin?.floatValue ?? 0.0
-        let phaseMax = opData.phasemax?.floatValue ?? (2.0 * Float.pi)
-        let mask = opData.mask?.float3Value ?? SIMD3<Float>(1.0, 1.0, 0.0)
+        let phaseMax = opData.phasemax?.floatValue ?? 0.0
+        let mask = opData.mask?.float3Value ?? SIMD3<Float>(1.0, 1.0, 1.0)
         let overrideV = instanceOverride?.speed?.floatValue ?? 1.0
 
         return { (particles: inout [ParticleInstance], count: Int, controlPoints: [ControlPointData], time: Float, dt: Float) in
@@ -404,7 +404,7 @@ extension ParticleSimulator {
                 let t = particles[i].age
                 var delta = SIMD3<Float>(0.0, 0.0, 0.0)
                 for axis in 0..<3 {
-                    let w = 2.0 * Float.pi * particles[i].oscillatePosition.frequency[axis] / (2.0 * Float.pi)
+                    let w = 2.0 * Float.pi * particles[i].oscillatePosition.frequency[axis]
                     let move = -particles[i].oscillatePosition.scale[axis] * w * sin(w * t + particles[i].oscillatePosition.phase[axis]) * dt
                     delta[axis] = move * mask[axis] * overrideV
                 }

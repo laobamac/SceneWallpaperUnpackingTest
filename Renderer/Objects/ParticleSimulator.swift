@@ -25,6 +25,7 @@ class ParticleSimulator {
     var initializers: [InitializerFunc] = []
     var operators: [OperatorFunc] = []
     var controlPoints: [ControlPointData]
+    var children: [ParticleSimulator] = []
 
     var time: Float = 0.0
     var transformedOrigin: SIMD3<Float> = .zero
@@ -68,6 +69,14 @@ class ParticleSimulator {
         setupEmitters()
         setupInitializers()
         setupOperators()
+        setupChildren()
+    }
+    
+    private func setupChildren() {
+        if let childrenDefs = particleDefinition.children {
+            for childDef in childrenDefs {
+            }
+        }
     }
 
     func update(dt: Float, currentTime: Float, screenWidth: Float, screenHeight: Float, mousePos: CGPoint?) {
@@ -122,14 +131,14 @@ class ParticleSimulator {
 
                 if animMode == "randomframe" {
                     if p.frame < 0.0 {
-                        particles[i].frame = Float(Int.random(in: 0..<texFrames))
+                        particles[i].frame = Float(Int.random(in: 0..<max(1, texFrames)))
                     }
                 } else if animMode == "once" {
-                    particles[i].frame = min(lifetimePos * Float(texFrames) * animSpeed, Float(texFrames - 1))
+                    particles[i].frame = min(lifetimePos * Float(texFrames) * animSpeed, Float(max(0, texFrames - 1)))
                 } else {
                     let timeInCycle = fmod(p.age * animSpeed, texDuration)
                     let cyclePos = timeInCycle / texDuration
-                    particles[i].frame = fmod(cyclePos * Float(texFrames), Float(texFrames))
+                    particles[i].frame = fmod(cyclePos * Float(texFrames), Float(max(1, texFrames)))
                 }
             }
         }
@@ -144,5 +153,9 @@ class ParticleSimulator {
             }
         }
         particleCount = writeIdx
+        
+        for child in children {
+            child.update(dt: dt, currentTime: currentTime, screenWidth: screenWidth, screenHeight: screenHeight, mousePos: mousePos)
+        }
     }
 }

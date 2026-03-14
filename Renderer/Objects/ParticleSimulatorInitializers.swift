@@ -36,14 +36,17 @@ extension ParticleSimulator {
     }
 
     private func createColorRandomInitializer(_ initData: ParticleInitializer) -> InitializerFunc {
-        let minV = initData.min?.float3Value ?? SIMD3<Float>(0,0,0)
-        let maxV = initData.max?.float3Value ?? SIMD3<Float>(255,255,255)
-        let overrideV = instanceOverride?.colorn?.float3Value ?? SIMD3<Float>(1,1,1)
+        let minV = initData.min?.float3Value ?? SIMD3<Float>(255, 255, 255)
+        let maxV = initData.max?.float3Value ?? SIMD3<Float>(255, 255, 255)
+        let overrideV = instanceOverride?.colorn?.float3Value ?? SIMD3<Float>(1, 1, 1)
         
         var adjMin = minV
         var adjMax = maxV
-        if adjMin.x > 1.0 || adjMin.y > 1.0 || adjMin.z > 1.0 { adjMin /= 255.0 }
-        if adjMax.x > 1.0 || adjMax.y > 1.0 || adjMax.z > 1.0 { adjMax /= 255.0 }
+        if adjMin.x > 1.0 || adjMin.y > 1.0 || adjMin.z > 1.0 ||
+           adjMax.x > 1.0 || adjMax.y > 1.0 || adjMax.z > 1.0 {
+            adjMin /= 255.0
+            adjMax /= 255.0
+        }
 
         return { (p: inout ParticleInstance) in
             let r = Float.random(in: min(adjMin.x, adjMax.x)...max(adjMin.x, adjMax.x))
@@ -55,8 +58,8 @@ extension ParticleSimulator {
     }
 
     private func createSizeRandomInitializer(_ initData: ParticleInitializer) -> InitializerFunc {
-        let minV = initData.min?.floatValue ?? 0.0
-        let maxV = initData.max?.floatValue ?? 20.0
+        let minV = initData.min?.floatValue ?? 10.0
+        let maxV = initData.max?.floatValue ?? 10.0
         let expV = initData.exponent?.floatValue ?? 1.0
         let overrideV = instanceOverride?.size?.floatValue ?? 1.0
 
@@ -69,7 +72,7 @@ extension ParticleSimulator {
     }
 
     private func createAlphaRandomInitializer(_ initData: ParticleInitializer) -> InitializerFunc {
-        let minV = initData.min?.floatValue ?? 0.05
+        let minV = initData.min?.floatValue ?? 1.0
         let maxV = initData.max?.floatValue ?? 1.0
         let overrideV = instanceOverride?.alpha?.floatValue ?? 1.0
 
@@ -80,7 +83,7 @@ extension ParticleSimulator {
     }
 
     private func createLifetimeRandomInitializer(_ initData: ParticleInitializer) -> InitializerFunc {
-        let minV = initData.min?.floatValue ?? 0.0
+        let minV = initData.min?.floatValue ?? 1.0
         let maxV = initData.max?.floatValue ?? 1.0
         let overrideV = instanceOverride?.lifetime?.floatValue ?? 1.0
 
@@ -91,8 +94,8 @@ extension ParticleSimulator {
     }
 
     private func createVelocityRandomInitializer(_ initData: ParticleInitializer) -> InitializerFunc {
-        let minV = initData.min?.float3Value ?? SIMD3<Float>(-32,-32,-32)
-        let maxV = initData.max?.float3Value ?? SIMD3<Float>(32,32,32)
+        let minV = initData.min?.float3Value ?? .zero
+        let maxV = initData.max?.float3Value ?? .zero
         let overrideV = instanceOverride?.speed?.floatValue ?? 1.0
 
         return { (p: inout ParticleInstance) in
@@ -108,7 +111,7 @@ extension ParticleSimulator {
 
     private func createRotationRandomInitializer(_ initData: ParticleInitializer) -> InitializerFunc {
         let minV = initData.min?.float3Value ?? .zero
-        let maxV = initData.max?.float3Value ?? SIMD3<Float>(0, 0, 2.0 * .pi)
+        let maxV = initData.max?.float3Value ?? .zero
         let overrideV = instanceOverride?.speed?.floatValue ?? 1.0
 
         return { (p: inout ParticleInstance) in
@@ -121,8 +124,8 @@ extension ParticleSimulator {
     }
 
     private func createAngularVelocityRandomInitializer(_ initData: ParticleInitializer) -> InitializerFunc {
-        let minV = initData.min?.float3Value ?? SIMD3<Float>(0, 0, -5.0)
-        let maxV = initData.max?.float3Value ?? SIMD3<Float>(0, 0, 5.0)
+        let minV = initData.min?.float3Value ?? .zero
+        let maxV = initData.max?.float3Value ?? .zero
         let expV = initData.exponent?.floatValue ?? 1.0
         let overrideV = instanceOverride?.speed?.floatValue ?? 1.0
 
@@ -137,8 +140,8 @@ extension ParticleSimulator {
     }
 
     private func createTurbulentVelocityRandomInitializer(_ initData: ParticleInitializer) -> InitializerFunc {
-        let speedMin = initData.speedmin?.floatValue ?? 100.0
-        let speedMax = initData.speedmax?.floatValue ?? 250.0
+        let speedMin = initData.speedmin?.floatValue ?? 10.0
+        let speedMax = initData.speedmax?.floatValue ?? 10.0
         let offset = initData.offset?.floatValue ?? 0.0
         let scale = initData.scale?.floatValue ?? 1.0
         var forward = initData.forward?.float3Value ?? SIMD3<Float>(0.0, 1.0, 0.0)

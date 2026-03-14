@@ -35,6 +35,7 @@ class ParticleRenderable: RenderableObject {
     var overbright: Float = 1.0
     
     var indexCount: Int = 0
+    var viewportSize: CGSize = CGSize(width: 3840, height: 2160)
     
     init(device: MTLDevice,
          object: SceneObject,
@@ -93,8 +94,8 @@ class ParticleRenderable: RenderableObject {
         let currentTime = Float(Date().timeIntervalSinceReferenceDate)
         let dt = min(Float(0.1), Float(1.0 / 60.0))
         
-        let screenWidth: Float = 3840.0
-        let screenHeight: Float = 2160.0
+        let screenWidth = Float(max(1.0, viewportSize.width))
+        let screenHeight = Float(max(1.0, viewportSize.height))
         
         simulator.update(dt: dt, currentTime: currentTime, screenWidth: screenWidth, screenHeight: screenHeight, mousePos: nil)
         
@@ -122,12 +123,18 @@ class ParticleRenderable: RenderableObject {
         vertices.reserveCapacity(maxParticles * 4)
         indices.reserveCapacity(maxParticles * 6)
         
+        var activeParticles = [ParticleInstance]()
+        for i in 0..<maxParticles {
+            if simulator.particles[i].alive {
+                activeParticles.append(simulator.particles[i])
+            }
+        }
+        
+        activeParticles.sort { $0.position.z < $1.position.z }
+        
         var vertexIndex: UInt32 = 0
         
-        for i in 0..<maxParticles {
-            let p = simulator.particles[i]
-            if !p.alive { continue }
-            
+        for p in activeParticles {
             var lifetime = p.getLifetimePos()
             if spritesheetFrames > 0 && p.frame >= 0.0 {
                 if simulator.particleDefinition.animationmode == "randomframe" {
@@ -201,7 +208,22 @@ class ParticleRenderable: RenderableObject {
             return
         }
         
-        let numSegments = aliveCount - 1
+        var activeParticles = [ParticleInstance]()
+        for i in 0..<aliveCount {
+            if simulator.particles[i].alive {
+                activeParticles.append(simulator.particles[i])
+            }
+        }
+        
+        activeParticles.sort { $0.position.z < $1.position.z }
+        let sortedCount = activeParticles.count
+        
+        if sortedCount < 2 {
+            indexCount = 0
+            return
+        }
+        
+        let numSegments = sortedCount - 1
         let subdivision = max(1, ropeSubdivision)
         let totalPoints = numSegments * subdivision + 1
         
@@ -210,10 +232,10 @@ class ParticleRenderable: RenderableObject {
         var splineColors = [SIMD4<Float>](repeating: .zero, count: totalPoints)
         
         for i in 0..<numSegments {
-            let p1 = simulator.particles[i]
-            let p2 = simulator.particles[i + 1]
-            let p0 = (i > 0) ? simulator.particles[i - 1] : p1
-            let p3 = (i + 2 < aliveCount) ? simulator.particles[i + 2] : p2
+            let p1 = activeParticles[i]
+            let p2 = activeParticles[i + 1]
+            let p0 = (i > 0) ? activeParticles[i - 1] : p1
+            let p3 = (i + 2 < sortedCount) ? activeParticles[i + 2] : p2
             
             for k in 0..<subdivision {
                 let t = Float(k) / Float(subdivision)
@@ -227,7 +249,7 @@ class ParticleRenderable: RenderableObject {
             }
         }
         
-        let pLast = simulator.particles[aliveCount - 1]
+        let pLast = activeParticles[sortedCount - 1]
         splinePositions[totalPoints - 1] = pLast.position
         splineSizes[totalPoints - 1] = pLast.size
         splineColors[totalPoints - 1] = SIMD4<Float>(pLast.color.x, pLast.color.y, pLast.color.z, pLast.alpha)
@@ -386,7 +408,9 @@ class ParticleRenderable: RenderableObject {
         let eyePos = SIMD3<Float>(0, 0, 1000)
         
         let fov = Float(50.0) * (Float.pi / Float(180.0))
-        let aspect = Float(3840.0) / Float(2160.0)
+        let screenWidth = Float(max(1.0, viewportSize.width))
+        let screenHeight = Float(max(1.0, viewportSize.height))
+        let aspect = screenWidth / screenHeight
         
         if is3D {
             let yMax = Float(0.01) * tan(fov * Float(0.5))
@@ -411,7 +435,7 @@ class ParticleRenderable: RenderableObject {
             
             viewProj = matrix_multiply(proj, view.inverse)
         } else {
-            let camDist = (Float(2160.0) / Float(2.0)) / tan(fov / Float(2.0))
+            let camDist = (screenHeight / Float(2.0)) / tan(fov / Float(2.0))
             
             let yMax = Float(10.0) * tan(fov * Float(0.5))
             let yMin = -yMax
@@ -431,7 +455,7 @@ class ParticleRenderable: RenderableObject {
             proj.columns.3.w = Float(0.0)
             
             var view = matrix_identity_float4x4
-            view.columns.3 = SIMD4<Float>(-Float(3840.0) / Float(2.0), -Float(2160.0) / Float(2.0), camDist, Float(1.0))
+            view.columns.3 = SIMD4<Float>(-screenWidth / Float(2.0), -screenHeight / Float(2.0), camDist, Float(1.0))
             
             viewProj = matrix_multiply(proj, view)
         }

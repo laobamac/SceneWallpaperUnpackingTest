@@ -84,7 +84,7 @@ vertex ParticleRasterizerData spriteParticleVertex(
     
     if (numFrames > 0.0 && frameWidth > 0.0 && frameHeight > 0.0) {
         float lifetime = vin.texCoordVec4C1.w;
-        float currentFrame = floor(lifetime * numFrames);
+        float currentFrame = min(floor(lifetime * numFrames), numFrames - 1.0);
         int cols = int(1.0 / frameWidth);
         float frameX = fmod(currentFrame, float(cols));
         float frameY = floor(currentFrame / float(cols));
