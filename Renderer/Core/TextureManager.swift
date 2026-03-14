@@ -22,45 +22,11 @@ actor TextureManager {
         self.device = device
         self.loader = MTKTextureLoader(device: device)
         self.commandQueue = device.makeCommandQueue()
+        await Logger.log("TextureManager initialized")
     }
 
     func frameInfo(for url: URL) -> [TexFrameInfo]? {
         return frameInfoCache[url]
-    }
-
-    func loadTexture(
-        path: String,
-        root: URL,
-        options: [MTKTextureLoader.Option: Any]? = nil,
-        force2D: Bool = false
-    ) async throws -> MTLTexture {
-        let texPath = path.hasSuffix(".tex") ? path : path + ".tex"
-        let localURL = root.appendingPathComponent(texPath)
-        
-        if FileManager.default.fileExists(atPath: localURL.path) {
-            return try await loadTexture(url: localURL, options: options, force2D: force2D)
-        }
-        
-        var name = path
-        if name.hasSuffix(".tex") {
-            name = String(name.dropLast(4))
-        }
-        if name.hasPrefix("materials/") {
-            name = String(name.dropFirst(10))
-        }
-
-        let searchPaths = [
-            "WEAssets/materials/\(name)",
-            "WEAssets/\(name)"
-        ]
-        
-        for p in searchPaths {
-            if let bundleURL = Bundle.main.url(forResource: p, withExtension: "tex") {
-                return try await loadTexture(url: bundleURL, options: options, force2D: force2D)
-            }
-        }
-        
-        return try await loadTexture(url: localURL, options: options, force2D: force2D)
     }
 
     func loadTexture(
@@ -70,8 +36,11 @@ actor TextureManager {
     ) async throws -> MTLTexture {
         if let cached = cache[url] { return cached }
         guard let device = self.device, let loader = self.loader else {
+            await Logger.error("TextureManager 尚未初始化")
             throw NSError(domain: "TextureManager", code: 0, userInfo: nil)
         }
+
+        await Logger.log("加载纹理: \(url.lastPathComponent) 从 \(url.path)")
 
         let texFile = try await TexParser.parse(fileURL: url)
         
@@ -91,7 +60,7 @@ actor TextureManager {
             texHeight = Int(mip.height)
         }
 
-        if isEmbedded && !isVideo, let data = firstMipmap?.bytesData {
+        if isEmbedded, let data = firstMipmap?.bytesData {
             if let source = CGImageSourceCreateWithData(data as CFData, nil),
                let cgImage = CGImageSourceCreateImageAtIndex(source, 0, nil) {
                 texWidth = cgImage.width
@@ -102,11 +71,19 @@ actor TextureManager {
         if texWidth <= 0 { texWidth = 1 }
         if texHeight <= 0 { texHeight = 1 }
 
+        let formatName = String(describing: texFile.header.format)
+        let isGif = await texFile.header.flags.contains(.isGif)
+        let typeString = isVideo ? "视频纹理" : (isGif ? "动画图集" : "静态贴图")
+        let embedStr = isVideo ? "MP4 视频流" : (isEmbedded ? "内嵌 \(firstMipmap?.format ?? .invalid)" : "原生 \(formatName)")
+        await Logger.log("  => 详情: [\(typeString)] 渲染尺寸:\(texWidth)x\(texHeight), 格式:\(embedStr), 容器V\(texFile.imageContainer.version.rawValue)")
+
         if isEmbedded && !isVideo, let data = firstMipmap?.bytesData {
+            await Logger.debug("  => 处理内嵌格式图像数据，大小: \(data.count) 字节")
             let tempTexture = try await loader.newTexture(data: data, options: options)
             
             if force2D {
                 cache[url] = tempTexture
+                await Logger.log("  => 成功加载强制 2D 纹理: \(url.lastPathComponent)")
                 return tempTexture
             }
 
@@ -121,6 +98,7 @@ actor TextureManager {
             guard let arrayTexture = device.makeTexture(descriptor: desc),
                   let cmd = commandQueue?.makeCommandBuffer(),
                   let blit = cmd.makeBlitCommandEncoder() else {
+                await Logger.error("  => 生成纹理数组失败，返回降级 2D 纹理")
                 return tempTexture
             }
 
@@ -129,6 +107,7 @@ actor TextureManager {
             cmd.commit()
             await cmd.completed()
             
+            await Logger.log("  => 成功加载并转换内嵌纹理为数组: \(url.lastPathComponent)")
             cache[url] = arrayTexture
             return arrayTexture
         }
@@ -143,36 +122,37 @@ actor TextureManager {
         var isCompressed = false
         var needsCPUExpansion = false
 
-        switch texFile.header.format {
-        case .DXT1:
-            pixelFormat = useSRGB ? .bc1_rgba_srgb : .bc1_rgba
-            bytesPerBlock = 8
-            isCompressed = true
-        case .DXT3:
-            pixelFormat = useSRGB ? .bc2_rgba_srgb : .bc2_rgba
-            bytesPerBlock = 16
-            isCompressed = true
-        case .DXT5:
-            pixelFormat = useSRGB ? .bc3_rgba_srgb : .bc3_rgba
-            bytesPerBlock = 16
-            isCompressed = true
-        case .RG88, .R8:
-            pixelFormat = useSRGB ? .rgba8Unorm_srgb : .rgba8Unorm
-            bytesPerBlock = 4
-            needsCPUExpansion = true
-        case .RGBA8888:
-            pixelFormat = useSRGB ? .rgba8Unorm_srgb : .rgba8Unorm
-            bytesPerBlock = 4
-        }
-
         if isVideo {
             pixelFormat = useSRGB ? .bgra8Unorm_srgb : .bgra8Unorm
             bytesPerBlock = 4
             isCompressed = false
             needsCPUExpansion = false
+        } else {
+            switch texFile.header.format {
+            case .DXT1:
+                pixelFormat = useSRGB ? .bc1_rgba_srgb : .bc1_rgba
+                bytesPerBlock = 8
+                isCompressed = true
+            case .DXT3:
+                pixelFormat = useSRGB ? .bc2_rgba_srgb : .bc2_rgba
+                bytesPerBlock = 16
+                isCompressed = true
+            case .DXT5:
+                pixelFormat = useSRGB ? .bc3_rgba_srgb : .bc3_rgba
+                bytesPerBlock = 16
+                isCompressed = true
+            case .RG88, .R8:
+                pixelFormat = useSRGB ? .rgba8Unorm_srgb : .rgba8Unorm
+                bytesPerBlock = 4
+                needsCPUExpansion = true
+            case .RGBA8888:
+                pixelFormat = useSRGB ? .rgba8Unorm_srgb : .rgba8Unorm
+                bytesPerBlock = 4
+            }
         }
 
-        let arrayLength = await (texFile.header.flags.contains(.isGif) && !isVideo) ? max(1, texFile.imageContainer.images.count) : 1
+        let arrayLength = (isGif && !isVideo) ? max(1, texFile.imageContainer.images.count) : 1
+        await Logger.debug("  => 分配纹理描述符: Format=\(pixelFormat), isCompressed=\(isCompressed), needsCPUExpansion=\(needsCPUExpansion), ArrayLength=\(arrayLength)")
 
         let desc = MTLTextureDescriptor()
         desc.pixelFormat = pixelFormat
@@ -183,6 +163,7 @@ actor TextureManager {
         desc.usage = [.shaderRead]
 
         guard let texture = device.makeTexture(descriptor: desc) else {
+            await Logger.log("  => 生成纹理对象失败: \(url.lastPathComponent)")
             throw NSError(domain: "TextureManager", code: 1, userInfo: nil)
         }
 
@@ -192,6 +173,7 @@ actor TextureManager {
                 try? mipmap.bytesData.write(to: tempURL)
                 let updater = await VideoTextureUpdater(url: tempURL, texture: texture)
                 videoUpdaters[url] = updater
+                await Logger.log("  => 开始后台解码视频: \(url.lastPathComponent), 写入临时路径: \(tempURL.path)")
             }
             cache[url] = texture
             return texture
@@ -206,17 +188,18 @@ actor TextureManager {
                     var finalData = mipmap.bytesData
 
                     if needsCPUExpansion {
+                        await Logger.debug("  => 正在 CPU 端扩展单/双通道数据")
                         var expandedData = Data(capacity: texWidth * texHeight * 4)
                         if texFile.header.format == .RG88 {
                             for j in stride(from: 0, to: finalData.count - 1, by: 2) {
                                 let r = finalData[j]
                                 let g = finalData[j+1]
-                                expandedData.append(contentsOf: [r, g, 0, 255])
+                                expandedData.append(contentsOf: [g, g, g, r])
                             }
                         } else if texFile.header.format == .R8 {
                             for j in 0..<finalData.count {
                                 let r = finalData[j]
-                                expandedData.append(contentsOf: [r, r, r, 255])
+                                expandedData.append(contentsOf: [r, r, r, r])
                             }
                         }
                         finalData = expandedData
@@ -233,6 +216,7 @@ actor TextureManager {
                     }
                     
                     if finalData.count < bytesPerImage {
+                        await Logger.debug("  => 数据长度不足(\(finalData.count) < \(bytesPerImage)), 进行补齐")
                         finalData.append(Data(count: bytesPerImage - finalData.count))
                     }
                     
@@ -253,11 +237,13 @@ actor TextureManager {
             }
         }
 
+        await Logger.log("  => 成功加载纹理: \(url.lastPathComponent)")
         cache[url] = texture
         return texture
     }
 
     func clear() async {
+        await Logger.log("清空纹理缓存")
         for updater in videoUpdaters.values {
             await updater.stop()
         }
