@@ -224,6 +224,7 @@ class SceneLoader {
             }
 
             var texture: MTLTexture!
+            var frameInfo: [TexFrameInfo]? = nil
             if let texName = firstPass.textures.first {
                 Logger.debug("正在加载纹理: \(texName)")
                 let texURL = resolveTextureURL(
@@ -236,6 +237,7 @@ class SceneLoader {
                         .origin: MTKTextureLoader.Origin.topLeft, .SRGB: true,
                     ]
                 )
+                frameInfo = await TextureManager.shared.frameInfo(for: texURL)
                 Logger.debug("纹理加载成功: \(texName)")
             } else {
                 Logger.debug("材质中没有纹理，创建纯色占位纹理")
@@ -286,6 +288,7 @@ class SceneLoader {
                 size: size,
                 scale: scale,
                 texture: texture,
+                frameInfo: frameInfo,
                 pipeline: pipeline,
                 depthState: depthState
             )
@@ -339,6 +342,7 @@ class SceneLoader {
                     .origin: MTKTextureLoader.Origin.topLeft, .SRGB: true,
                 ]
             )
+            let frameInfo = await TextureManager.shared.frameInfo(for: texURL)
 
             Logger.debug("开始解析 Puppet OBJ...")
             let (vertices, indices, bboxWidth) = PuppetRenderable.parseOBJ(
@@ -405,6 +409,7 @@ class SceneLoader {
                 size: size,
                 scale: scale,
                 texture: texture,
+                frameInfo: frameInfo,
                 maskTextures: maskTextures,
                 maskWriteState: pipelineManager.maskWriteState,
                 maskTestState: pipelineManager.maskTestState,

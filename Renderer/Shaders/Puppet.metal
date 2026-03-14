@@ -26,7 +26,7 @@ vertex VertexOut vertex_main(VertexIn in [[stage_in]],
     VertexOut out;
     float4 pos = float4(in.position, 1.0);
     out.position = globals.projectionMatrix * globals.viewMatrix * object.modelMatrix * pos;
-    out.texCoord = in.texCoord;
+    out.texCoord = in.texCoord * object.animInfo.zw + object.animInfo.xy;
     out.localCoord = in.texCoord - 0.5;
     return out;
 }
@@ -65,7 +65,7 @@ vertex VertexOut vertex_puppet(PuppetVertexIn in [[stage_in]],
     float4 worldPos = object.modelMatrix * localPos;
     
     out.position = globals.projectionMatrix * globals.viewMatrix * worldPos;
-    out.texCoord = in.texCoord;
+    out.texCoord = in.texCoord * object.animInfo.zw + object.animInfo.xy;
     out.localCoord = in.texCoord - 0.5;
     return out;
 }

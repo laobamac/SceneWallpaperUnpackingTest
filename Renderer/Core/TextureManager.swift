@@ -12,6 +12,7 @@ import CoreGraphics
 actor TextureManager {
     static let shared = TextureManager()
     private var cache: [URL: MTLTexture] = [:]
+    private var frameInfoCache: [URL: [TexFrameInfo]] = [:]
     private var videoUpdaters: [URL: VideoTextureUpdater] = [:]
     private var device: MTLDevice?
     private var loader: MTKTextureLoader?
@@ -22,6 +23,10 @@ actor TextureManager {
         self.loader = MTKTextureLoader(device: device)
         self.commandQueue = device.makeCommandQueue()
         await Logger.log("TextureManager initialized")
+    }
+
+    func frameInfo(for url: URL) -> [TexFrameInfo]? {
+        return frameInfoCache[url]
     }
 
     func loadTexture(
@@ -38,6 +43,11 @@ actor TextureManager {
         await Logger.log("加载纹理: \(url.lastPathComponent) 从 \(url.path)")
 
         let texFile = try await TexParser.parse(fileURL: url)
+        
+        if let frames = texFile.frameInfoContainer?.frames {
+            frameInfoCache[url] = frames
+        }
+        
         let firstMipmap = texFile.imageContainer.images.first?.mipmaps.first
         let isEmbedded = (firstMipmap?.format == .imagePNG || firstMipmap?.format == .imageJPEG || firstMipmap?.format == .imageGIF)
         let isVideo = await texFile.header.flags.contains(.isVideoTexture) || firstMipmap?.format == .videoMp4
@@ -239,5 +249,6 @@ actor TextureManager {
         }
         videoUpdaters.removeAll()
         cache.removeAll()
+        frameInfoCache.removeAll()
     }
 }

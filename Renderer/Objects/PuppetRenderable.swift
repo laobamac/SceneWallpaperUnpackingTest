@@ -51,6 +51,7 @@ class PuppetRenderable: RenderableObject {
         size: SIMD2<Float>,
         scale: SIMD3<Float>,
         texture: MTLTexture,
+        frameInfo: [TexFrameInfo]?,
         maskTextures: [MTLTexture],
         maskWriteState: MTLDepthStencilState?,
         maskTestState: MTLDepthStencilState?,
@@ -126,6 +127,7 @@ class PuppetRenderable: RenderableObject {
             size: size,
             scale: scale,
             texture: texture,
+            frameInfo: frameInfo,
             pipeline: pipeline,
             depthState: depthState
         )
@@ -229,6 +231,7 @@ class PuppetRenderable: RenderableObject {
     }
 
     func updateAnimation(time: Float) {
+        updateFrame(time: time)
         if animations.isEmpty { return }
         var localMatrices = Array(
             repeating: matrix_identity_float4x4,
@@ -406,7 +409,7 @@ class PuppetRenderable: RenderableObject {
             modelMatrix: finalModelMatrix,
             alpha: 1.0,
             color: SIMD4<Float>(1, 1, 1, 1),
-            animInfo: SIMD4<Float>(0, 0, 0, 0)
+            animInfo: currentAnimInfo
         )
         encoder.setVertexBytes(
             &objUniforms,

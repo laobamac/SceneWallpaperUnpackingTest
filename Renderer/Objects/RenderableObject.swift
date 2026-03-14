@@ -5,8 +5,16 @@
 //  Created by laobamac on 2026/1/23.
 //
 
+//
+//  RenderableObject.swift
+//  Renderer
+//
+//  Created by laobamac on 2026/1/23.
+//
+
 import MetalKit
 import simd
+import QuartzCore
 
 class RenderableObject {
     var id: Int = -1
@@ -20,6 +28,9 @@ class RenderableObject {
     var alpha: Float
 
     var texture: MTLTexture
+    var frameInfo: [TexFrameInfo]?
+    var currentAnimInfo: SIMD4<Float> = SIMD4<Float>(0, 0, 1, 1)
+
     let pipeline: MTLRenderPipelineState
     let depthState: MTLDepthStencilState?
 
@@ -37,6 +48,7 @@ class RenderableObject {
         scale: SIMD3<Float>,
         alpha: Float = 1.0,
         texture: MTLTexture,
+        frameInfo: [TexFrameInfo]? = nil,
         pipeline: MTLRenderPipelineState,
         depthState: MTLDepthStencilState? = nil
     ) {
@@ -46,6 +58,7 @@ class RenderableObject {
         self.scale = scale
         self.alpha = alpha
         self.texture = texture
+        self.frameInfo = frameInfo
         self.pipeline = pipeline
         self.depthState = depthState
     }
@@ -67,7 +80,43 @@ class RenderableObject {
         return local
     }
 
+    func updateFrame(time: Float) {
+        guard let frames = frameInfo, !frames.isEmpty else { return }
+        var totalDuration: Float = 0
+        for f in frames { totalDuration += f.frametime }
+        if totalDuration <= 0 { return }
+
+        var t = fmod(time, totalDuration)
+        if t < 0 { t += totalDuration }
+
+        var currentFrame = frames[0]
+        for f in frames {
+            if t < f.frametime {
+                currentFrame = f
+                break
+            }
+            t -= f.frametime
+        }
+
+        let tw = Float(texture.width)
+        let th = Float(texture.height)
+        if tw > 0 && th > 0 {
+            let nx = currentFrame.x / tw
+            let ny = currentFrame.y / th
+            let nw = currentFrame.width / tw
+            let nh = currentFrame.height / th
+            currentAnimInfo = SIMD4<Float>(nx, ny, nw, nh)
+        }
+    }
+
     func update(commandBuffer: MTLCommandBuffer) {
+        guard let frames = frameInfo, !frames.isEmpty else { return }
+        var totalDuration: Double = 0
+        for f in frames { totalDuration += Double(f.frametime) }
+        if totalDuration > 0 {
+            let t = CACurrentMediaTime().truncatingRemainder(dividingBy: totalDuration)
+            updateFrame(time: Float(t))
+        }
     }
 
     func draw(encoder: MTLRenderCommandEncoder) {
@@ -81,7 +130,7 @@ class RenderableObject {
             modelMatrix: finalModelMatrix,
             alpha: alpha,
             color: SIMD4<Float>(1, 1, 1, 1),
-            animInfo: SIMD4<Float>(0, 0, 0, 0)
+            animInfo: currentAnimInfo
         )
 
         encoder.setVertexBytes(
