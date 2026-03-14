@@ -132,7 +132,7 @@ class SceneLoader {
             }
             context.renderables = orderedList
         } catch {
-            Logger.log("Scene load error: \(error)")
+            
         }
         return context
     }
@@ -216,7 +216,8 @@ class SceneLoader {
             if let dw = firstPass.depthwrite, dw == "disabled" {
                 depthState = pipelineManager.depthWriteDisabledState
             }
-            guard let pipeline = pipelineManager.pipelineState else {
+            let blendMode = obj.colorBlendMode ?? 0
+            guard let pipeline = pipelineManager.getPipeline(isPuppet: false, blendMode: blendMode) else {
                 return nil
             }
             return RenderableObject(
@@ -278,9 +279,7 @@ class SceneLoader {
 
             var maskTextures: [MTLTexture] = []
             if let masks = puppetData.clipping_masks {
-                Logger.log("[Puppet] 发现 Clipping Masks 纹理，数量: \(masks.count)")
-                for (index, maskPath) in masks.enumerated() {
-                    Logger.log("[Puppet] 准备加载 Mask [\(index)]: \(maskPath)")
+                for (_, maskPath) in masks.enumerated() {
                     let mURL = resolveTextureURL(
                         base: baseFolder,
                         rawPath: maskPath
@@ -293,18 +292,16 @@ class SceneLoader {
                         ]
                     ) {
                         maskTextures.append(mTex)
-                        Logger.log(
-                            "[Puppet] Mask [\(index)] 加载成功: \(mTex.width)x\(mTex.height)"
-                        )
                     } else {
-                        Logger.log("[Puppet] Mask [\(index)] 加载失败!")
+                        
                     }
                 }
             } else {
-                Logger.log("[Puppet] 当前模型没有 clipping_masks 字段")
+                
             }
 
-            guard let pipeline = pipelineManager.puppetPipelineState,
+            let blendMode = obj.colorBlendMode ?? 0
+            guard let pipeline = pipelineManager.getPipeline(isPuppet: true, blendMode: blendMode),
                 let maskPipe = pipelineManager.puppetMaskPipelineState
             else { return nil }
             return PuppetRenderable(

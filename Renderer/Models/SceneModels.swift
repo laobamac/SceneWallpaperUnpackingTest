@@ -50,6 +50,7 @@ struct SceneObject: Codable {
     let visible: BoolOrObject?
     let color: ScriptableValue?
     let rawAlpha: ScriptableValue?
+    let colorBlendMode: Int?
     let animationlayers: [AnimationLayer]?
 
     var alpha: Float? {
@@ -69,6 +70,7 @@ struct SceneObject: Codable {
         case visible
         case color
         case rawAlpha = "alpha"
+        case colorBlendMode
         case animationlayers
     }
 
