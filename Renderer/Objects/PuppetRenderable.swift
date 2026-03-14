@@ -239,9 +239,11 @@ class PuppetRenderable: RenderableObject {
             let layerBlend = layer.blend ?? 1.0
             let fps = anim.fps > 0 ? anim.fps : 30.0
             let duration = Float(anim.length) / fps
+            let isPingPong = anim.mode == "ping_pong" || anim.mode == "mirror"
+            let cycleDuration = isPingPong ? duration * 2.0 : duration
             
-            var t = (duration > 0) ? fmod(time * layerRate, duration) : 0.0
-            if t < 0 { t += duration }
+            var t = (cycleDuration > 0) ? fmod(time * layerRate, cycleDuration) : 0.0
+            if t < 0 { t += cycleDuration }
             
             for i in 0..<skeleton.count {
                 let bone = skeleton[i]
@@ -263,14 +265,10 @@ class PuppetRenderable: RenderableObject {
                         var idx1 = 0
                         var fraction: Float = 0.0
                         let firstTime = track.frames[0].time ?? 0.0
-                        let trackMaxTime = track.frames.last?.time ?? (Float(track.frames.count - 1) / fps)
                         
                         var localT = t
-                        let expectedHalf = duration / 2.0
-                        let isPingPong = trackMaxTime > 0.0 && abs(trackMaxTime - expectedHalf) < (2.0 / fps)
-                        
-                        if isPingPong && localT > trackMaxTime {
-                            localT = 2.0 * trackMaxTime - localT
+                        if isPingPong && localT > duration {
+                            localT = 2.0 * duration - localT
                             if localT < 0 { localT = 0.0 }
                         }
                         
@@ -320,10 +318,13 @@ class PuppetRenderable: RenderableObject {
                             SIMD3<Float>(k2.p[0], k2.p[1], k2.p[2]),
                             t: fraction
                         )
+                        
                         let r1 = SIMD3<Float>(k1.r[0], k1.r[1], k1.r[2])
                         let r2 = SIMD3<Float>(k2.r[0], k2.r[1], k2.r[2])
-                        let r = mix(r1, r2, t: fraction)
-                        let matR = Quaternion.fromEuler(r).toMatrix()
+                        let q1 = Quaternion.fromEuler(r1)
+                        let q2 = Quaternion.fromEuler(r2)
+                        let q = Quaternion.slerp(q1, q2, t: fraction)
+                        let matR = q.toMatrix()
                         
                         let s = mix(
                             SIMD3<Float>(k1.s[0], k1.s[1], k1.s[2]),
