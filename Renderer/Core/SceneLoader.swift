@@ -178,6 +178,11 @@ class SceneLoader {
         raw: [String: Any]?,
         baseFolder: URL
     ) async -> RenderableObject? {
+        if let particlePath = obj.particle {
+            Logger.log("检测到粒子系统: \(particlePath)")
+            return await createParticleRenderable(from: obj, particlePath: particlePath, baseFolder: baseFolder)
+        }
+
         guard let imagePath = obj.image else {
             Logger.debug("对象 [\(obj.name ?? "Unknown")] 没有 imagePath，返回 nil")
             return nil
@@ -298,6 +303,86 @@ class SceneLoader {
         }
     }
 
+    private func createParticleRenderable(
+        from obj: SceneObject,
+        particlePath: String,
+        baseFolder: URL
+    ) async -> RenderableObject? {
+        do {
+            let particleURL = baseFolder.appendingPathComponent(particlePath)
+            let particleData = try Data(contentsOf: particleURL)
+            let particleDef = try JSONDecoder().decode(ParticleDefinition.self, from: particleData)
+            
+            var texture: MTLTexture? = nil
+            var overbright: Float = 1.0
+            var blendMode: Int = 1
+            var depthWriteDisabled = true
+            
+            if let matPath = particleDef.material {
+                let matURL = baseFolder.appendingPathComponent(matPath)
+                if FileManager.default.fileExists(atPath: matURL.path) {
+                    let matData = try Data(contentsOf: matURL)
+                    let matDef = try JSONDecoder().decode(MaterialJSON.self, from: matData)
+                    if let firstPass = matDef.passes.first {
+                        if let blending = firstPass.blending {
+                            if blending == "additive" { blendMode = 1 }
+                            else { blendMode = 0 }
+                        }
+                        if let dw = firstPass.depthwrite, dw != "disabled" {
+                            depthWriteDisabled = false
+                        }
+                        if let texName = firstPass.textures.first {
+                            let texURL = resolveTextureURL(base: baseFolder, rawPath: texName)
+                            texture = try await TextureManager.shared.loadTexture(url: texURL, options: [.origin: MTKTextureLoader.Origin.topLeft, .SRGB: true])
+                        }
+                        if let matDict = try? JSONSerialization.jsonObject(with: matData) as? [String: Any],
+                           let passesArray = matDict["passes"] as? [[String: Any]],
+                           let pass0 = passesArray.first,
+                           let constants = pass0["constantshadervalues"] as? [String: Any],
+                           let ob = constants["ui_editor_properties_overbright"] as? NSNumber {
+                            overbright = ob.floatValue
+                        }
+                    }
+                }
+            }
+            
+            var useRope = false
+            if let renderers = particleDef.renderer, let firstR = renderers.first {
+                let rName = firstR.name ?? "sprite"
+                if rName == "rope" || rName == "ropetrail" {
+                    useRope = true
+                }
+            }
+            
+            Logger.debug("粒子请求混合模式: \(blendMode)")
+            
+            let targetPipeline = pipelineManager.getParticlePipeline(isRope: useRope, blendMode: blendMode)
+            let depthState = depthWriteDisabled ? pipelineManager.depthWriteDisabledState : pipelineManager.depthStencilState
+            
+            guard let pipeline = targetPipeline else {
+                Logger.error("获取粒子 pipeline 失败")
+                return nil
+            }
+            
+            let renderable = ParticleRenderable(
+                device: device,
+                object: obj,
+                definition: particleDef,
+                override: obj.instanceoverride,
+                texture: texture,
+                pipeline: pipeline,
+                depthState: depthState
+            )
+            renderable.overbright = overbright
+            
+            Logger.log("成功创建 ParticleRenderable: \(obj.name ?? "")")
+            return renderable
+        } catch {
+            Logger.error("创建 Particle 对象失败: \(error.localizedDescription)")
+            return nil
+        }
+    }
+
     private func createPuppetRenderable(
         from obj: SceneObject,
         dataURL: URL,
@@ -387,6 +472,7 @@ class SceneLoader {
             }
 
             let blendMode = obj.colorBlendMode ?? 0
+            Logger.debug("Puppet 请求混合模式: \(blendMode)")
             guard let pipeline = pipelineManager.getPipeline(isPuppet: true, blendMode: blendMode),
                 let maskPipe = pipelineManager.puppetMaskPipelineState
             else {
