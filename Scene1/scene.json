@@ -16,21 +16,18 @@
 		"bloomhdrthreshold" : 1.0,
 		"bloomstrength" : 2.0,
 		"bloomthreshold" : 0.64999998,
+		"bloomtint" : "1.00000 1.00000 1.00000",
 		"camerafade" : true,
-		"cameraparallax" : false,
-		"cameraparallaxamount" : 0.5,
+		"cameraparallax" : true,
+		"cameraparallaxamount" : 0.15000001,
 		"cameraparallaxdelay" : 0.1,
 		"cameraparallaxmouseinfluence" : 0.5,
-		"camerapreview" : true,
-		"camerashake" : false,
-		"camerashakeamplitude" : 0.5,
-		"camerashakeroughness" : 1.0,
-		"camerashakespeed" : 3.0,
-		"clearcolor" : 
-		{
-			"user" : "schemecolor",
-			"value" : "0.49412 0.06667 0.05098"
-		},
+		"camerapreview" : false,
+		"camerashake" : true,
+		"camerashakeamplitude" : 1.0,
+		"camerashakeroughness" : 0.050000001,
+		"camerashakespeed" : 1.0,
+		"clearcolor" : "0.70000 0.70000 0.70000",
 		"clearenabled" : true,
 		"farz" : 10000.0,
 		"fov" : 50.0,
@@ -38,1153 +35,2518 @@
 		"nearz" : 0.0099999998,
 		"orthogonalprojection" : 
 		{
-			"height" : 1080,
-			"width" : 1920
+			"height" : 2160,
+			"width" : 3840
 		},
+		"perspectiveoverridefov" : 30.0,
 		"skylightcolor" : "0.30000 0.30000 0.30000",
 		"zoom" : 1.0
 	},
 	"objects" : 
 	[
 		{
-			"alpha" : 1.0,
-			"anchor" : "none",
-			"angles" : "0.00000 0.00000 0.00000",
-			"backgroundbrightness" : 1.0,
-			"backgroundcolor" : "0.00000 0.00000 0.00000",
-			"blockalign" : false,
-			"brightness" : 1.0,
-			"color" : "1.00000 1.00000 1.00000",
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"font" : "systemfont_arial",
-			"horizontalalign" : "center",
-			"id" : 269,
-			"ledsource" : false,
-			"limitrows" : false,
-			"limituseellipsis" : false,
-			"limitwidth" : false,
-			"locktransforms" : true,
-			"maxrows" : 1,
-			"maxwidth" : 500.0,
-			"name" : "————————",
-			"opaquebackground" : false,
-			"origin" : "960.00000 540.00000 0.00000",
-			"padding" : 32,
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"pointsize" : 32.0,
-			"scale" : "1.00000 1.00000 1.00000",
-			"size" : "615.00000 153.00000",
-			"solid" : true,
-			"text" : "Text Layer",
-			"verticalalign" : "center",
-			"visible" : false
-		},
-		{
-			"alignment" : "center",
-			"alpha" : 1.0,
-			"angles" : 
-			{
-				"script" : "'use strict';\n/** Bind this script to the \"Angles\" property of a layer for a simple 2D rotation. */\n\n/*\n * Adding new properties to the editor so you can tweak these values in the editor\n */\nexport let scriptProperties = createScriptProperties()\n\t.addSlider({\n\t\tname: 'speed',\n\t\tlabel: 'ui_editor_properties_speed',\n\t\tvalue: 0.1,\n\t\tmin: -1,\n\t\tmax: 1,\n\t\tinteger: false\n\t}).finish();\n\n/**\n * @param {Vec3} value\n */\nexport function update(value) {\n\tvalue.z = (engine.runtime * scriptProperties.speed) % 1.0 * 360;\n\treturn value;\n}\n",
-				"scriptproperties" : 
+			"castshadow" : false,
+			"effects" : 
+			[
 				{
-					"speed" : 0.1
-				},
-				"user" : "xzsd",
-				"value" : "0.10000 0.10000 0.10000"
-			},
-			"brightness" : 1.0,
-			"color" : "1.00000 1.00000 1.00000",
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"id" : 189,
-			"image" : "models/workshop/2093591151/r_angle.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "r_angle",
-			"origin" : "960.00000 540.00000 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : "8.50000 8.50000 1.00000",
-			"size" : "256.00000 256.00000",
-			"solid" : true,
+					"file" : "effects/waterflow/effect.json",
+					"id" : 949,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"phasescale" : 2.4300001,
+								"speed" : 0.31999999,
+								"strength" : 0.75
+							},
+							"id" : 950,
+							"textures" : [ null, "masks/waterflow_mask_a0374e8b", "effects/waterflowphase" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 941,
+			"image" : "models/背景 白天.json",
+			"name" : "背景 白天",
+			"origin" : "1920.00000 1080.00000 0.00000",
+			"parallaxDepth" : "-0.80000 -0.80000",
+			"scale" : "2.04000 2.04000 1.00000",
+			"size" : "2040.00000 1204.00000",
 			"visible" : 
 			{
-				"user" : "csbg",
+				"script" : "'use strict';\n\n// 创建可通过属性面板调整的时间段属性\nexport var scriptProperties = createScriptProperties()\n    .addCheckbox({\n        name: 'isEnabled',           // 新增的属性，用来控制图层是否根据时间显示\n        label: '启用时间控制',\n        value: true                  // 默认值为 true，表示启用时间控制\n    })\n    .addCheckbox({\n        name: 'reverseMode',         // 新增反向开关\n        label: '反向模式（关闭时图层始终开启）',\n        value: false                 // 默认值为 false，关闭状态\n    })\n    .addSlider({\n        name: 'visibleStart',\n        label: '开始显示图层时间',\n        value: 18.0,  // 默认值，表示下午6点\n        min: 0.0,     // 时间从0点开始\n        max: 23.999,  // 到23.999结束\n        step: 0.01    // 调整精度\n    })\n    .addSlider({\n        name: 'visibleEnd',\n        label: '结束显示图层时间',\n        value: 7.0,   // 默认值，表示早上7点\n        min: 0.0,\n        max: 23.999,\n        step: 0.01\n    })\n    .finish();\n\n// 该函数检查当前时间是否在给定的可见时间段内\nfunction isLayerVisible(currentTime, startTime, endTime) {\n    if (startTime < endTime) {\n        // 如果时间段不跨越午夜，检查当前时间是否在开始和结束之间\n        return currentTime >= startTime && currentTime < endTime;\n    } else {\n        // 如果时间段跨越午夜，检查当前时间是否在时间段的两侧\n        return currentTime >= startTime || currentTime < endTime;\n    }\n}\n\n// 更新图层的可见性\nexport function update(value) {\n    // 获取当前时间（以小时为单位，0表示午夜，23.999接近午夜结束）\n    let currentTime = engine.timeOfDay * 24.0;\n\n    // 从属性面板中获取用户设定的时间段\n    let visibleStart = scriptProperties.visibleStart;\n    let visibleEnd = scriptProperties.visibleEnd;\n    \n    // 获取用户开关状态\n    let isEnabled = scriptProperties.isEnabled;\n    \n    // 获取反向模式开关状态\n    let reverseMode = scriptProperties.reverseMode;\n\n    // 如果启用时间控制开关被关闭\n    if (!isEnabled) {\n        // 如果反向模式开启，则图层始终可见\n        if (reverseMode) {\n            return true;  // 始终可见\n        } else {\n            return false; // 始终不可见\n        }\n    }\n\n    // 否则，检查当前时间是否在设定的时间范围内\n    let visible = isLayerVisible(currentTime, visibleStart, visibleEnd);\n\n    // 返回是否显示该图层\n    return visible;\n}\n",
+				"scriptproperties" : 
+				{
+					"isEnabled" : 
+					{
+						"user" : "newproperty22",
+						"value" : true
+					},
+					"reverseMode" : true,
+					"visibleEnd" : 18,
+					"visibleStart" : 9
+				},
+				"value" : true
+			}
+		},
+		{
+			"alpha" : 
+			{
+				"script" : "'use strict';\n\nimport * as WEMath from 'WEMath';\n\n// 时间设定\nconst FADE_IN_START_HOUR = 18;  // 开始增加透明度的时间（下午6点）\nconst FADE_IN_END_HOUR = 19;    // 完全透明度的时间（晚上7点）\n\nconst FADE_OUT_START_HOUR = 6;  // 开始减少透明度的时间（早上6点）\nconst FADE_OUT_END_HOUR = 7;    // 完全透明的时间（早上7点）\n\nconst BLEND_DURATION = 0.3;     // 渐变效果的持续时间，0.3表示18分钟渐变\n\n// 更新透明度\nexport function update(value) {\n    const timeOfDay = engine.timeOfDay * 24;  // 当前时间，单位为小时\n\n    if (timeOfDay >= FADE_IN_END_HOUR && timeOfDay < FADE_OUT_START_HOUR) {\n        // 在19:00到6:00之间保持透明度为1\n        return 1.0;\n    } else if (timeOfDay >= FADE_OUT_END_HOUR && timeOfDay < FADE_IN_START_HOUR) {\n        // 在7:00到18:00之间保持透明度为0\n        return 0.0;\n    } else if (timeOfDay >= FADE_IN_START_HOUR && timeOfDay <= FADE_IN_END_HOUR) {\n        // 在18:00到19:00之间，从0变成1\n        return WEMath.smoothStep(\n            (FADE_IN_START_HOUR - BLEND_DURATION) / 24,\n            FADE_IN_END_HOUR / 24,\n            engine.timeOfDay\n        );\n    } else if (timeOfDay >= FADE_OUT_START_HOUR && timeOfDay <= FADE_OUT_END_HOUR) {\n        // 在6:00到7:00之间，从1变成0\n        return 1.0 - WEMath.smoothStep(\n            (FADE_OUT_START_HOUR - BLEND_DURATION) / 24,\n            FADE_OUT_END_HOUR / 24,\n            engine.timeOfDay\n        );\n    }\n\n    // 默认返回透明度为0\n    return 1.0;\n}\n",
+				"value" : 1.0
+			},
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/godrays/effect.json",
+					"id" : 953,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"noiseamount" : 0.95999998,
+								"noisescale" : 3.0,
+								"noisesmoothness" : 0.2,
+								"noisespeed" : 0.15000001,
+								"raythreshold" : 0.5
+							},
+							"id" : 954
+						},
+						{
+							"constantshadervalues" : 
+							{
+								"center" : "0 0",
+								"color" : "1 1 1",
+								"rayintensity" : 2,
+								"raylength" : 0.059999999
+							},
+							"id" : 956
+						},
+						{
+							"constantshadervalues" : 
+							{
+								"blurscale" : "1 1"
+							},
+							"id" : 957
+						},
+						{
+							"combos" : 
+							{
+								"VERTICAL" : 1
+							},
+							"constantshadervalues" : 
+							{
+								"blurscale" : "1 1"
+							},
+							"id" : 960
+						},
+						{
+							"combos" : 
+							{
+								"BLENDMODE" : 31
+							},
+							"id" : 961
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 937,
+			"image" : "models/星空.json",
+			"name" : "晚上背景",
+			"origin" : "1920.00000 1080.00000 0.00000",
+			"parallaxDepth" : "-0.40000 -0.40000",
+			"scale" : "2.04000 2.04000 1.00000",
+			"size" : "2040.00000 1204.00000",
+			"visible" : 
+			{
+				"script" : "'use strict';\n\n// 创建可通过属性面板调整的时间段属性\nexport var scriptProperties = createScriptProperties()\n    .addCheckbox({\n        name: 'isEnabled',           // 新增的属性，用来控制图层是否根据时间显示\n        label: '启用时间控制',\n        value: true                  // 默认值为 true，表示启用时间控制\n    })\n    .addCheckbox({\n        name: 'reverseMode',         // 新增反向开关\n        label: '反向模式（关闭时图层始终开启）',\n        value: false                 // 默认值为 false，关闭状态\n    })\n    .addSlider({\n        name: 'visibleStart',\n        label: '开始显示图层时间',\n        value: 18.0,  // 默认值，表示下午6点\n        min: 0.0,     // 时间从0点开始\n        max: 23.999,  // 到23.999结束\n        step: 0.01    // 调整精度\n    })\n    .addSlider({\n        name: 'visibleEnd',\n        label: '结束显示图层时间',\n        value: 7.0,   // 默认值，表示早上7点\n        min: 0.0,\n        max: 23.999,\n        step: 0.01\n    })\n    .finish();\n\n// 该函数检查当前时间是否在给定的可见时间段内\nfunction isLayerVisible(currentTime, startTime, endTime) {\n    if (startTime < endTime) {\n        // 如果时间段不跨越午夜，检查当前时间是否在开始和结束之间\n        return currentTime >= startTime && currentTime < endTime;\n    } else {\n        // 如果时间段跨越午夜，检查当前时间是否在时间段的两侧\n        return currentTime >= startTime || currentTime < endTime;\n    }\n}\n\n// 更新图层的可见性\nexport function update(value) {\n    // 获取当前时间（以小时为单位，0表示午夜，23.999接近午夜结束）\n    let currentTime = engine.timeOfDay * 24.0;\n\n    // 从属性面板中获取用户设定的时间段\n    let visibleStart = scriptProperties.visibleStart;\n    let visibleEnd = scriptProperties.visibleEnd;\n    \n    // 获取用户开关状态\n    let isEnabled = scriptProperties.isEnabled;\n    \n    // 获取反向模式开关状态\n    let reverseMode = scriptProperties.reverseMode;\n\n    // 如果启用时间控制开关被关闭\n    if (!isEnabled) {\n        // 如果反向模式开启，则图层始终可见\n        if (reverseMode) {\n            return true;  // 始终可见\n        } else {\n            return false; // 始终不可见\n        }\n    }\n\n    // 否则，检查当前时间是否在设定的时间范围内\n    let visible = isLayerVisible(currentTime, visibleStart, visibleEnd);\n\n    // 返回是否显示该图层\n    return visible;\n}\n",
+				"scriptproperties" : 
+				{
+					"isEnabled" : 
+					{
+						"user" : "newproperty22",
+						"value" : true
+					},
+					"reverseMode" : false,
+					"visibleEnd" : 7,
+					"visibleStart" : 18
+				},
 				"value" : false
 			}
 		},
 		{
-			"alignment" : "center",
-			"alpha" : 1.0,
-			"angles" : "0.00000 0.00000 0.00000",
-			"brightness" : 1.0,
-			"color" : 
-			{
-				"user" : "bjys",
-				"value" : "1.00000 1.00000 1.00000"
-			},
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"effects" : 
-			[
-				{
-					"file" : "effects/scroll/effect.json",
-					"id" : 173,
-					"name" : "",
-					"passes" : 
-					[
-						{
-							"constantshadervalues" : 
-							{
-								"repeat" : "1 1",
-								"speedx" : 
-								{
-									"user" : "sdx",
-									"value" : 0.1
-								},
-								"speedy" : 
-								{
-									"user" : "sdy",
-									"value" : 0
-								}
-							},
-							"id" : 174
-						}
-					],
-					"visible" : 
-					{
-						"user" : "bjgd",
-						"value" : true
-					}
-				}
-			],
-			"id" : 62,
-			"image" : "models/part2.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "part2",
-			"origin" : "960.00000 540.00000 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : "1.00000 1.00000 1.00000",
-			"size" : "1920.00000 1280.00000",
-			"solid" : true,
-			"visible" : true
-		},
-		{
-			"alignment" : "topleft",
-			"alpha" : 1.0,
-			"angles" : "0.00000 0.00000 0.00000",
-			"animationlayers" : 
-			[
-				{
-					"additive" : false,
-					"animation" : 161,
-					"blend" : 1.0,
-					"id" : 169,
-					"name" : "动画 1",
-					"rate" : 1.0,
-					"visible" : true
-				}
-			],
-			"brightness" : 1.0,
-			"color" : "1.00000 1.00000 1.00000",
-			"colorBlendMode" : 1,
-			"copybackground" : true,
-			"id" : 27,
-			"image" : "models/swiper_big_img1.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "swiper_big_img1",
-			"origin" : "0.00000 1080.00000 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : 
-			{
-				"script" : "'use strict';\n\n/*\n * Adding new properties to the editor so you can tweak these values in the editor\n */\nexport var scriptProperties = createScriptProperties()\n\t.addSlider({\n\t\tname: 'frequency',\n\t\tlabel: 'ui_editor_properties_audio_frequency',\n\t\tvalue: 0,\n\t\tmin: 0,\n\t\tmax: 15,\n\t\tinteger: true\n\t})\n\t.addSlider({\n\t\tname: 'smoothing',\n\t\tlabel: 'ui_editor_properties_audio_response',\n\t\tvalue: 15,\n\t\tmin: 0,\n\t\tmax: 25,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'minvalue',\n\t\tlabel: 'ui_editor_properties_min',\n\t\tvalue: 0.8,\n\t\tmin: 0,\n\t\tmax: 3,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'maxvalue',\n\t\tlabel: 'ui_editor_properties_max',\n\t\tvalue: 1.2,\n\t\tmin: 0,\n\t\tmax: 3,\n\t\tinteger: false\n\t})\n\t.finish();\n\n/**\n * This creates a permanent link to the audio response data.\n */\nconst audioBuffer = engine.registerAudioBuffers(engine.AUDIO_RESOLUTION_16);\nlet smoothValue = 0;\nlet initialValue;\n\n/**\n * Calculate new audio-scaled value\n */\nexport function update() {\n\tconst valueDelta = scriptProperties.maxvalue - scriptProperties.minvalue;\n\tconst audioDelta = audioBuffer.average[scriptProperties.frequency] - smoothValue;\n\t\n\tsmoothValue += audioDelta * Math.min(1.0, engine.frametime * scriptProperties.smoothing);\n\tsmoothValue = Math.min(1.0, smoothValue);\n\n\treturn initialValue * (smoothValue * valueDelta + scriptProperties.minvalue);\n}\n\nexport function init(value) {\n\tinitialValue = (typeof value === 'number') ? value : value.x;\n}\n",
-				"scriptproperties" : 
-				{
-					"frequency" : 0,
-					"maxvalue" : 1,
-					"minvalue" : 0.94999999,
-					"smoothing" : 15
-				},
-				"value" : "0.83000 0.83000 0.83000"
-			},
-			"size" : "1297.00000 1303.00000",
-			"solid" : true,
-			"visible" : true
-		},
-		{
-			"alignment" : "center",
-			"alpha" : 1.0,
-			"angles" : "0.00000 0.00000 0.00000",
-			"animationlayers" : 
-			[
-				{
-					"additive" : false,
-					"animation" : 344,
-					"blend" : 1.0,
-					"id" : 383,
-					"name" : "动画 1",
-					"rate" : 1.0,
-					"visible" : true
-				}
-			],
-			"brightness" : 1.0,
-			"color" : 
-			{
-				"user" : "schemecolor",
-				"value" : "0.49412 0.06667 0.05098"
-			},
-			"colorBlendMode" : 1,
-			"copybackground" : true,
-			"effects" : 
-			[
-				{
-					"file" : "effects/waterwaves/effect.json",
-					"id" : 41,
-					"name" : "",
-					"passes" : 
-					[
-						{
-							"constantshadervalues" : 
-							{
-								"direction" : 
-								{
-									"script" : "'use strict';\n\n/*\n * Adding new properties to the editor so you can tweak these values in the editor\n */\nexport var scriptProperties = createScriptProperties()\n\t.addSlider({\n\t\tname: 'frequency',\n\t\tlabel: 'ui_editor_properties_audio_frequency',\n\t\tvalue: 0,\n\t\tmin: 0,\n\t\tmax: 15,\n\t\tinteger: true\n\t})\n\t.addSlider({\n\t\tname: 'smoothing',\n\t\tlabel: 'ui_editor_properties_audio_response',\n\t\tvalue: 15,\n\t\tmin: 0,\n\t\tmax: 25,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'minvalue',\n\t\tlabel: 'ui_editor_properties_min',\n\t\tvalue: 0.8,\n\t\tmin: 0,\n\t\tmax: 3,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'maxvalue',\n\t\tlabel: 'ui_editor_properties_max',\n\t\tvalue: 1.2,\n\t\tmin: 0,\n\t\tmax: 3,\n\t\tinteger: false\n\t})\n\t.finish();\n\n/**\n * This creates a permanent link to the audio response data.\n */\nconst audioBuffer = engine.registerAudioBuffers(engine.AUDIO_RESOLUTION_16);\nlet smoothValue = 0;\nlet initialValue;\n\n/**\n * Calculate new audio-scaled value\n */\nexport function update() {\n\tconst valueDelta = scriptProperties.maxvalue - scriptProperties.minvalue;\n\tconst audioDelta = audioBuffer.average[scriptProperties.frequency] - smoothValue;\n\t\n\tsmoothValue += audioDelta * Math.min(1.0, engine.frametime * scriptProperties.smoothing);\n\tsmoothValue = Math.min(1.0, smoothValue);\n\n\treturn initialValue * (smoothValue * valueDelta + scriptProperties.minvalue);\n}\n\nexport function init(value) {\n\tinitialValue = (typeof value === 'number') ? value : value.x;\n}\n",
-									"scriptproperties" : 
-									{
-										"frequency" : 0,
-										"maxvalue" : 1.2,
-										"minvalue" : 0.80000001,
-										"smoothing" : 15
-									},
-									"value" : 1.5707963
-								},
-								"perspective" : 0.0,
-								"scale" : 5,
-								"speed" : 5.0,
-								"strength" : 
-								{
-									"script" : "'use strict';\n\n/*\n * Adding new properties to the editor so you can tweak these values in the editor\n */\nexport var scriptProperties = createScriptProperties()\n\t.addSlider({\n\t\tname: 'frequency',\n\t\tlabel: 'ui_editor_properties_audio_frequency',\n\t\tvalue: 0,\n\t\tmin: 0,\n\t\tmax: 15,\n\t\tinteger: true\n\t})\n\t.addSlider({\n\t\tname: 'smoothing',\n\t\tlabel: 'ui_editor_properties_audio_response',\n\t\tvalue: 15,\n\t\tmin: 0,\n\t\tmax: 25,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'minvalue',\n\t\tlabel: 'ui_editor_properties_min',\n\t\tvalue: 0.8,\n\t\tmin: 0,\n\t\tmax: 3,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'maxvalue',\n\t\tlabel: 'ui_editor_properties_max',\n\t\tvalue: 1.2,\n\t\tmin: 0,\n\t\tmax: 3,\n\t\tinteger: false\n\t})\n\t.finish();\n\n/**\n * This creates a permanent link to the audio response data.\n */\nconst audioBuffer = engine.registerAudioBuffers(engine.AUDIO_RESOLUTION_16);\nlet smoothValue = 0;\nlet initialValue;\n\n/**\n * Calculate new audio-scaled value\n */\nexport function update() {\n\tconst valueDelta = scriptProperties.maxvalue - scriptProperties.minvalue;\n\tconst audioDelta = audioBuffer.average[scriptProperties.frequency] - smoothValue;\n\t\n\tsmoothValue += audioDelta * Math.min(1.0, engine.frametime * scriptProperties.smoothing);\n\tsmoothValue = Math.min(1.0, smoothValue);\n\n\treturn initialValue * (smoothValue * valueDelta + scriptProperties.minvalue);\n}\n\nexport function init(value) {\n\tinitialValue = (typeof value === 'number') ? value : value.x;\n}\n",
-									"scriptproperties" : 
-									{
-										"frequency" : 0,
-										"maxvalue" : 1,
-										"minvalue" : 0.1,
-										"smoothing" : 15
-									},
-									"value" : 0.1
-								}
-							},
-							"id" : 42
-						}
-					],
-					"visible" : true
-				}
-			],
-			"id" : 34,
-			"image" : "models/swiper4_color_box1.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "swiper4_color_box1",
-			"origin" : 
-			{
-				"script" : "'use strict';\n\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'gifMove',\n\t\tlabel: '拖拽',\n\t\tvalue: false\n\t})\n\t.finish();\n/** 此脚本允许用户在屏幕上拖放元素。 */\n// 基于官方预设拖拽脚本修改\n\nlet isDragging = false;\nlet dragOffset;\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorDown(event) {\t\n\tif(scriptProperties.gifMove){\n\t\tisDragging = true;\n\t}\n\tdragOffset = thisLayer.origin.subtract(event.worldPosition);\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorUp(event) {\n\tisDragging = false;\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorMove(event) {\n\tif (isDragging) {\n\t\tthisLayer.origin = event.worldPosition.add(dragOffset);\n\t}\n}\n\n\n",
-				"scriptproperties" : 
-				{
-					"gifMove" : 
-					{
-						"user" : "ys_1tz",
-						"value" : false
-					}
-				},
-				"value" : "1015.00000 705.00000 0.00000"
-			},
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : "1.00000 1.00000 1.00000",
-			"size" : "265.00000 825.00000",
-			"solid" : true,
-			"visible" : true
-		},
-		{
-			"alignment" : "right",
-			"alpha" : 1.0,
-			"angles" : "0.00000 0.00000 0.00000",
-			"animationlayers" : 
-			[
-				{
-					"additive" : false,
-					"animation" : 210,
-					"blend" : 1.0,
-					"id" : 225,
-					"name" : "动画 1",
-					"rate" : 1.0,
-					"visible" : true
-				}
-			],
-			"brightness" : 1.0,
-			"color" : 
-			{
-				"user" : "bjys",
-				"value" : "1.00000 1.00000 1.00000"
-			},
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"id" : 58,
-			"image" : "models/swiper4_right_bg.c057a0f3.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "swiper4_right_bg.c057a0f3",
-			"origin" : "1920.00000 540.00000 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : "0.93000 0.93000 0.93000",
-			"size" : "971.00000 1165.00000",
-			"solid" : true,
-			"visible" : true
-		},
-		{
-			"alpha" : 1.0,
-			"anchor" : "none",
-			"angles" : "0.00000 0.00000 0.00000",
-			"backgroundbrightness" : 1.0,
-			"backgroundcolor" : "0.00000 0.00000 0.00000",
-			"blockalign" : false,
-			"brightness" : 1.0,
-			"color" : 
-			{
-				"user" : "schemecolor",
-				"value" : "0.49412 0.06667 0.05098"
-			},
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"font" : "fonts/CursedTimerUlil-Aznm.ttf",
-			"horizontalalign" : "center",
-			"id" : 700,
-			"ledsource" : false,
-			"limitrows" : false,
-			"limituseellipsis" : false,
-			"limitwidth" : false,
-			"locktransforms" : true,
-			"maxrows" : 1,
-			"maxwidth" : 500.0,
-			"name" : "Clock",
-			"opaquebackground" : false,
-			"origin" : 
-			{
-				"script" : "'use strict';\n\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'gifMove',\n\t\tlabel: '拖拽',\n\t\tvalue: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhix',\n\t\tlabel: 'X',\n\t\tvalue: 1920,\n\t\tmin: 0,\n\t\tmax: 3840,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiy',\n\t\tlabel: 'Y',\n\t\tvalue: 1080,\n\t\tmin: 0,\n\t\tmax: 2160,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiz',\n\t\tlabel: 'Z',\n\t\tvalue: 0,\n\t\tmin: -2000,\n\t\tmax: 2000,\n\t\tinteger: false\n\t})\n\t.finish();\n/** 此脚本允许用户在屏幕上拖放元素。 */\n// 基于官方预设拖拽脚本修改\n\nlet isDragging = false;\nlet dragOffset;\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorDown(event) {\t\n\tif(scriptProperties.gifMove){\n\t\tisDragging = true;\n\t}\n\tdragOffset = thisLayer.origin.subtract(event.worldPosition);\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorUp(event) {\n\tisDragging = false;\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorMove(event) {\n\tif (isDragging) {\n\t\tthisLayer.origin = event.worldPosition.add(dragOffset);\n\t\tscriptProperties.weizhix = thisLayer.origin.x;\n\t\tscriptProperties.weizhiy = thisLayer.origin.y;\n\t\tscriptProperties.weizhiz = thisLayer.origin.z;\n\t}\n}\n\n/**\n * @param {Vec3} value - for property 'origin'\n * @return {Vec3} - update current property value\n */\nexport function update(value) {\t\n\n\tvalue.x = scriptProperties.weizhix;\n\tvalue.y = scriptProperties.weizhiy;\n\tvalue.z = scriptProperties.weizhiz;\n\treturn value;\n}\n\n\n",
-				"scriptproperties" : 
-				{
-					"gifMove" : 
-					{
-						"user" : "sjtz",
-						"value" : false
-					},
-					"weizhix" : 1535,
-					"weizhiy" : 350,
-					"weizhiz" : 0
-				},
-				"value" : "1535.00000 350.00000 0.00000"
-			},
-			"padding" : 32,
-			"parallaxDepth" : "0.00000 0.00000",
-			"perspective" : false,
-			"pointsize" : 32.0,
-			"scale" : "1.00000 1.00000 1.00000",
-			"size" : "415.00000 145.00000",
-			"solid" : true,
-			"text" : 
-			{
-				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '2834605113';\n// Please note: Do not remove this line or asset references may break.\n\nexport var scriptProperties = createScriptProperties()\n\t// Whether you want a 24h or 12h style format\n\t.addCheckbox({\n\t\tname: 'use24hFormat',\n\t\tlabel: 'ui_editor_properties_use_24h_format',\n\t\tvalue: true\n\t})\n\t// Whether you want to see the seconds or not\n\t.addCheckbox({\n\t\tname: 'showSeconds',\n\t\tlabel: 'ui_editor_properties_show_seconds',\n\t\tvalue: false\n\t})\n\t// This will be used to separate each element\n\t.addText({\n\t\tname: 'delimiter',\n\t\tlabel: 'ui_editor_properties_delimiter',\n\t\tvalue: ':'\n\t})\n\t.finish();\n\n/**\n * @param {String} value (for property 'text')\n */\nexport function update(value) {\n\tlet time = new Date();\n\tvar hours = time.getHours();\n\tif (!scriptProperties.use24hFormat) {\n\t\thours %= 12;\n\t\tif (hours == 0) {\n\t\t\thours = 12;\n\t\t}\n\t}\n\thours = (\"00\" + hours).slice(-2);\n\tlet minutes = (\"00\" + time.getMinutes()).slice(-2);\n\tvalue = hours + scriptProperties.delimiter + minutes;\n\tif (scriptProperties.showSeconds) {\n\t\tlet seconds = (\"00\" + time.getSeconds()).slice(-2);\n\t\tvalue += scriptProperties.delimiter + seconds;\n\t}\n\treturn value;\n}\n",
-				"scriptproperties" : 
-				{
-					"delimiter" : ":",
-					"showSeconds" : false,
-					"use24hFormat" : true
-				},
-				"value" : "12:34"
-			},
-			"verticalalign" : "center",
-			"visible" : 
-			{
-				"user" : "sfxs",
-				"value" : true
-			}
-		},
-		{
-			"alpha" : 1.0,
-			"anchor" : "none",
-			"angles" : "0.00000 0.00000 0.00000",
-			"backgroundbrightness" : 1.0,
-			"backgroundcolor" : "0.00000 0.00000 0.00000",
-			"blockalign" : false,
-			"brightness" : 1.0,
-			"color" : 
-			{
-				"user" : "schemecolor",
-				"value" : "0.49412 0.06667 0.05098"
-			},
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"font" : "fonts/CursedTimerUlil-Aznm.ttf",
-			"horizontalalign" : "center",
-			"id" : 701,
-			"ledsource" : false,
-			"limitrows" : false,
-			"limituseellipsis" : false,
-			"limitwidth" : false,
-			"locktransforms" : true,
-			"maxrows" : 1,
-			"maxwidth" : 500.0,
-			"name" : "Date",
-			"opaquebackground" : false,
-			"origin" : 
-			{
-				"script" : "'use strict';\n\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'gifMove',\n\t\tlabel: '拖拽',\n\t\tvalue: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhix',\n\t\tlabel: 'X',\n\t\tvalue: 1920,\n\t\tmin: 0,\n\t\tmax: 3840,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiy',\n\t\tlabel: 'Y',\n\t\tvalue: 1080,\n\t\tmin: 0,\n\t\tmax: 2160,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiz',\n\t\tlabel: 'Z',\n\t\tvalue: 0,\n\t\tmin: -2000,\n\t\tmax: 2000,\n\t\tinteger: false\n\t})\n\t.finish();\n/** 此脚本允许用户在屏幕上拖放元素。 */\n// 基于官方预设拖拽脚本修改\n\nlet isDragging = false;\nlet dragOffset;\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorDown(event) {\t\n\tif(scriptProperties.gifMove){\n\t\tisDragging = true;\n\t}\n\tdragOffset = thisLayer.origin.subtract(event.worldPosition);\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorUp(event) {\n\tisDragging = false;\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorMove(event) {\n\tif (isDragging) {\n\t\tthisLayer.origin = event.worldPosition.add(dragOffset);\n\t\tscriptProperties.weizhix = thisLayer.origin.x;\n\t\tscriptProperties.weizhiy = thisLayer.origin.y;\n\t\tscriptProperties.weizhiz = thisLayer.origin.z;\n\t}\n}\n\n/**\n * @param {Vec3} value - for property 'origin'\n * @return {Vec3} - update current property value\n */\nexport function update(value) {\t\n\n\tvalue.x = scriptProperties.weizhix;\n\tvalue.y = scriptProperties.weizhiy;\n\tvalue.z = scriptProperties.weizhiz;\n\treturn value;\n}\n\n\n",
-				"scriptproperties" : 
-				{
-					"gifMove" : 
-					{
-						"user" : "sjtz",
-						"value" : false
-					},
-					"weizhix" : 1535,
-					"weizhiy" : 250,
-					"weizhiz" : 0
-				},
-				"value" : "1535.00000 250.00000 0.00000"
-			},
-			"padding" : 32,
-			"parallaxDepth" : "0.00000 0.00000",
-			"perspective" : false,
-			"pointsize" : 9.0,
-			"scale" : "1.00000 1.00000 1.00000",
-			"size" : "503.00000 42.00000",
-			"solid" : true,
-			"text" : 
-			{
-				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '2834605113';\n// Please note: Do not remove this line or asset references may break.\n\n\n/**\n * @param {String} value (for property 'text')\n */\nexport function update(value) {\n\tlet time = new Date();\n\tlet year = time.getFullYear();\n\tlet month = (\"00\" + (time.getMonth() + 1)).slice(-2);\n\tlet day = (\"00\" + time.getDate()).slice(-2);\n\tlet weekday = [\"星期日\", \"星期一\", \"星期二\", \"星期三\", \"星期四\", \"星期五\", \"星期六\"];\n\tvalue = year + \" | \" + month + \" | \" + day + \" | \" + weekday[time.getDay()];\n\treturn value;\n}\n",
-				"value" : "2021 | 02 | 01 | 星期一"
-			},
-			"verticalalign" : "center",
-			"visible" : 
-			{
-				"user" : "nyrxs",
-				"value" : true
-			}
-		},
-		{
-			"alignment" : "center",
-			"alpha" : 1.0,
-			"angles" : "0.00000 0.00000 0.00000",
-			"brightness" : 1.0,
-			"color" : 
-			{
-				"user" : "schemecolor",
-				"value" : "0.49412 0.06667 0.05098"
-			},
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"id" : 702,
-			"image" : "models/util/solidlayer.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "Second",
-			"origin" : 
-			{
-				"script" : "'use strict';\n\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'gifMove',\n\t\tlabel: '拖拽',\n\t\tvalue: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhix',\n\t\tlabel: 'X',\n\t\tvalue: 1920,\n\t\tmin: 0,\n\t\tmax: 3840,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiy',\n\t\tlabel: 'Y',\n\t\tvalue: 1080,\n\t\tmin: 0,\n\t\tmax: 2160,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiz',\n\t\tlabel: 'Z',\n\t\tvalue: 0,\n\t\tmin: -2000,\n\t\tmax: 2000,\n\t\tinteger: false\n\t})\n\t.finish();\n/** 此脚本允许用户在屏幕上拖放元素。 */\n// 基于官方预设拖拽脚本修改\n\nlet isDragging = false;\nlet dragOffset;\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorDown(event) {\t\n\tif(scriptProperties.gifMove){\n\t\tisDragging = true;\n\t}\n\tdragOffset = thisLayer.origin.subtract(event.worldPosition);\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorUp(event) {\n\tisDragging = false;\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorMove(event) {\n\tif (isDragging) {\n\t\tthisLayer.origin = event.worldPosition.add(dragOffset);\n\t\tscriptProperties.weizhix = thisLayer.origin.x;\n\t\tscriptProperties.weizhiy = thisLayer.origin.y;\n\t\tscriptProperties.weizhiz = thisLayer.origin.z;\n\t}\n}\n\n/**\n * @param {Vec3} value - for property 'origin'\n * @return {Vec3} - update current property value\n */\nexport function update(value) {\t\n\n\tvalue.x = scriptProperties.weizhix;\n\tvalue.y = scriptProperties.weizhiy;\n\tvalue.z = scriptProperties.weizhiz;\n\treturn value;\n}\n\n\n",
-				"scriptproperties" : 
-				{
-					"gifMove" : 
-					{
-						"user" : "sjtz",
-						"value" : false
-					},
-					"weizhix" : 1535,
-					"weizhiy" : 280,
-					"weizhiz" : 0
-				},
-				"value" : "1535.00000 280.00000 0.00000"
-			},
-			"parallaxDepth" : "0.00000 0.00000",
-			"perspective" : false,
-			"scale" : 
-			{
-				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '2834605113';\n// Please note: Do not remove this line or asset references may break.\n\n/**\n * @param {Vec3} value - for property 'scale'\n * @return {Vec3} - update current property value\n */\nexport function update(value) {\n\tlet second = new Date().getSeconds();\n\tvalue.x = second / 60;\n\treturn value;\n}\n",
-				"value" : "1.00000 1.00000 1.00000"
-			},
-			"size" : "400.00000 5.00000",
-			"solid" : true,
-			"visible" : 
-			{
-				"user" : "mxxs",
-				"value" : true
-			}
-		},
-		{
-			"alignment" : "center",
 			"alpha" : 
 			{
-				"animation" : 
-				{
-					"c0" : 
-					[
-						{
-							"back" : 
-							{
-								"enabled" : true,
-								"x" : -1,
-								"y" : 0
-							},
-							"frame" : 0,
-							"front" : 
-							{
-								"enabled" : true,
-								"x" : 1,
-								"y" : 0
-							},
-							"lockangle" : true,
-							"locklength" : true,
-							"value" : 0
-						},
-						{
-							"back" : 
-							{
-								"enabled" : true,
-								"x" : -1,
-								"y" : 0
-							},
-							"frame" : 180,
-							"front" : 
-							{
-								"enabled" : true,
-								"x" : 1,
-								"y" : 0
-							},
-							"lockangle" : true,
-							"locklength" : true,
-							"value" : 1
-						}
-					],
-					"options" : 
-					{
-						"fps" : 60,
-						"length" : 180,
-						"mode" : "single",
-						"parent" : 
-						{
-							"key" : "origin"
-						},
-						"wraploop" : null
-					}
-				},
+				"script" : "'use strict';\n\nimport * as WEMath from 'WEMath';\n\n// 时间设定\nconst FADE_IN_START_HOUR = 16;  // 开始增加透明度的时间（下午6点）\nconst FADE_IN_END_HOUR = 17;    // 完全透明度的时间（晚上7点）\n\nconst FADE_OUT_START_HOUR = 18;  // 开始减少透明度的时间（早上6点）\nconst FADE_OUT_END_HOUR = 19;    // 完全透明的时间（早上7点）\n\nconst BLEND_DURATION = 0.3;     // 渐变效果的持续时间，0.3表示18分钟渐变\n\n// 更新透明度\nexport function update(value) {\n    const timeOfDay = engine.timeOfDay * 24;  // 当前时间，单位为小时\n\n    if (timeOfDay >= FADE_IN_END_HOUR && timeOfDay < FADE_OUT_START_HOUR) {\n        // 在19:00到6:00之间保持透明度为1\n        return 1.0;\n    } else if (timeOfDay >= FADE_OUT_END_HOUR && timeOfDay < FADE_IN_START_HOUR) {\n        // 在7:00到18:00之间保持透明度为0\n        return 0.0;\n    } else if (timeOfDay >= FADE_IN_START_HOUR && timeOfDay <= FADE_IN_END_HOUR) {\n        // 在18:00到19:00之间，从0变成1\n        return WEMath.smoothStep(\n            (FADE_IN_START_HOUR - BLEND_DURATION) / 24,\n            FADE_IN_END_HOUR / 24,\n            engine.timeOfDay\n        );\n    } else if (timeOfDay >= FADE_OUT_START_HOUR && timeOfDay <= FADE_OUT_END_HOUR) {\n        // 在6:00到7:00之间，从1变成0\n        return 1.0 - WEMath.smoothStep(\n            (FADE_OUT_START_HOUR - BLEND_DURATION) / 24,\n            FADE_OUT_END_HOUR / 24,\n            engine.timeOfDay\n        );\n    }\n\n    // 默认返回透明度为0\n    return 0.0;\n}",
 				"value" : 1.0
 			},
-			"angles" : "0.00000 0.00000 0.00000",
-			"animationlayers" : 
-			[
-				{
-					"additive" : false,
-					"animation" : 459,
-					"blend" : 1.0,
-					"id" : 467,
-					"name" : "动画 1",
-					"rate" : 1.0,
-					"visible" : true
-				}
-			],
-			"brightness" : 1.0,
-			"color" : 
-			{
-				"script" : "'use strict';\n/** This script works on Color properties and cycles through all colors with a constant speed. */\n\n/**\n * Adding new properties to the editor so you can tweak these values in the editor\n */\nexport let scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'kaiguan',\n\t\tlabel: '开关',\n\t\tvalue: false\n\t})\n\t.addSlider({\n\t\tname: 'speed',\n\t\tlabel: 'ui_editor_properties_speed',\n\t\tvalue: 0.25,\n\t\tmin: 0,\n\t\tmax: 1,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'saturation',\n\t\tlabel: 'ui_editor_properties_saturation',\n\t\tvalue: 1,\n\t\tmin: 0,\n\t\tmax: 1,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'brightness',\n\t\tlabel: 'ui_editor_properties_brightness',\n\t\tvalue: 1,\n\t\tmin: 0,\n\t\tmax: 1,\n\t\tinteger: false\n\t}).finish();\n\nimport * as WEColor from 'WEColor';\n\n/**\n * @param {Vec3} value\n */\nlet isDragging = false;\n\nexport function update(value) {\n\tif(scriptProperties.kaiguan){\n\t\tisDragging = true;\n\t\n\tvalue = WEColor.hsv2rgb({\n\t\tx: engine.runtime * scriptProperties.speed,\n\t\ty: scriptProperties.saturation,\n\t\tz: scriptProperties.brightness\n\t});\n\t\n\treturn value;\n}\n}",
-				"scriptproperties" : 
-				{
-					"brightness" : 1,
-					"kaiguan" : false,
-					"saturation" : 1,
-					"speed" : 0.050000001
-				},
-				"value" : "0.19608 0.19608 0.19608"
-			},
-			"colorBlendMode" : 3,
-			"copybackground" : true,
-			"id" : 46,
-			"image" : "models/text_bg1.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "text_bg1",
-			"origin" : 
-			{
-				"script" : "'use strict';\n\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'gifMove',\n\t\tlabel: '拖拽',\n\t\tvalue: false\n\t})\n\t.finish();\n/** 此脚本允许用户在屏幕上拖放元素。 */\n// 基于官方预设拖拽脚本修改\n\nlet isDragging = false;\nlet dragOffset;\n\nexport function cursorDown(event) {\t\n\tif(scriptProperties.gifMove){\n\t\tisDragging = true;\n\t}\n\tdragOffset = thisLayer.origin.subtract(event.worldPosition);\n}\n\nexport function cursorUp(event) {\n\tisDragging = false;\n}\nexport function cursorMove(event) {\n\tif (isDragging) {\n\t\tthisLayer.origin = event.worldPosition.add(dragOffset);\n\t}\n}\n\n",
-				"scriptproperties" : 
-				{
-					"gifMove" : 
-					{
-						"user" : "logo2",
-						"value" : false
-					}
-				},
-				"value" : "750.00000 750.00000 0.00000"
-			},
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : "1.00000 1.00000 1.00000",
-			"size" : "820.00000 327.00000",
-			"solid" : true,
-			"visible" : true
-		},
-		{
-			"alignment" : "center",
-			"alpha" : 1.0,
-			"angles" : "0.00000 0.00000 0.00000",
-			"brightness" : 1.0,
-			"color" : "1.00000 1.00000 1.00000",
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"effects" : 
-			[
-				{
-					"file" : "effects/workshop/2440553694/constellation/effect.json",
-					"id" : 151,
-					"name" : "",
-					"passes" : 
-					[
-						{
-							"combos" : 
-							{
-								"AUDIOPROCESSING" : 3
-							},
-							"constantshadervalues" : 
-							{
-								"Opacity" : 1.0,
-								"Scale" : 2.0,
-								"Sparkle Glow" : 20.0,
-								"Sparkle Speed" : 1.0,
-								"Speed" : 1.0,
-								"audioamount" : 1.0,
-								"audiobounds" : "1.0 0.2",
-								"audioexponent" : 1.0,
-								"color 1" : 
-								{
-									"user" : "schemecolor",
-									"value" : "0.49412 0.06667 0.05098"
-								},
-								"frequencymax" : 1.0,
-								"frequencymin" : 0.0,
-								"pointerspeed" : 0.0
-							},
-							"id" : 152
-						}
-					],
-					"visible" : true
-				}
-			],
-			"id" : 216,
-			"image" : "models/logo.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "logo",
-			"origin" : 
-			{
-				"script" : "'use strict';\n\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'gifMove',\n\t\tlabel: '拖拽',\n\t\tvalue: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhix',\n\t\tlabel: 'X',\n\t\tvalue: 1920,\n\t\tmin: 0,\n\t\tmax: 3840,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiy',\n\t\tlabel: 'Y',\n\t\tvalue: 1080,\n\t\tmin: 0,\n\t\tmax: 2160,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiz',\n\t\tlabel: 'Z',\n\t\tvalue: 0,\n\t\tmin: -2000,\n\t\tmax: 2000,\n\t\tinteger: false\n\t})\n\t.finish();\n/** 此脚本允许用户在屏幕上拖放元素。 */\n// 基于官方预设拖拽脚本修改\n\nlet isDragging = false;\nlet dragOffset;\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorDown(event) {\t\n\tif(scriptProperties.gifMove){\n\t\tisDragging = true;\n\t}\n\tdragOffset = thisLayer.origin.subtract(event.worldPosition);\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorUp(event) {\n\tisDragging = false;\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorMove(event) {\n\tif (isDragging) {\n\t\tthisLayer.origin = event.worldPosition.add(dragOffset);\n\t\tscriptProperties.weizhix = thisLayer.origin.x;\n\t\tscriptProperties.weizhiy = thisLayer.origin.y;\n\t\tscriptProperties.weizhiz = thisLayer.origin.z;\n\t}\n}\n\n/**\n * @param {Vec3} value - for property 'origin'\n * @return {Vec3} - update current property value\n */\nexport function update(value) {\t\n\n\tvalue.x = scriptProperties.weizhix;\n\tvalue.y = scriptProperties.weizhiy;\n\tvalue.z = scriptProperties.weizhiz;\n\treturn value;\n}\n\n\n",
-				"scriptproperties" : 
-				{
-					"gifMove" : 
-					{
-						"user" : "logo1tz",
-						"value" : false
-					},
-					"weizhix" : 1560,
-					"weizhiy" : 600,
-					"weizhiz" : 0
-				},
-				"value" : "1560.00000 600.00000 0.00000"
-			},
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : "2.00000 2.00000 2.00000",
-			"size" : "192.00000 97.00000",
-			"solid" : true,
-			"visible" : true
-		},
-		{
-			"alignment" : "center",
-			"alpha" : 1.0,
-			"angles" : "0.00000 0.00000 0.00000",
-			"brightness" : 1.0,
-			"color" : 
-			{
-				"user" : "schemecolor",
-				"value" : "0.49412 0.06667 0.05098"
-			},
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"effects" : 
-			[
-				{
-					"file" : "effects/scroll/effect.json",
-					"id" : 176,
-					"name" : "",
-					"passes" : 
-					[
-						{
-							"constantshadervalues" : 
-							{
-								"repeat" : "1 1",
-								"speedx" : 0,
-								"speedy" : 
-								{
-									"script" : "'use strict';\n\n/*\n * Adding new properties to the editor so you can tweak these values in the editor\n */\nexport var scriptProperties = createScriptProperties()\n\t.addSlider({\n\t\tname: 'frequency',\n\t\tlabel: 'ui_editor_properties_audio_frequency',\n\t\tvalue: 0,\n\t\tmin: 0,\n\t\tmax: 15,\n\t\tinteger: true\n\t})\n\t.addSlider({\n\t\tname: 'smoothing',\n\t\tlabel: 'ui_editor_properties_audio_response',\n\t\tvalue: 15,\n\t\tmin: 0,\n\t\tmax: 25,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'minvalue',\n\t\tlabel: 'ui_editor_properties_min',\n\t\tvalue: 0.8,\n\t\tmin: 0,\n\t\tmax: 3,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'maxvalue',\n\t\tlabel: 'ui_editor_properties_max',\n\t\tvalue: 1.2,\n\t\tmin: 0,\n\t\tmax: 3,\n\t\tinteger: false\n\t})\n\t.finish();\n\n/**\n * This creates a permanent link to the audio response data.\n */\nconst audioBuffer = engine.registerAudioBuffers(engine.AUDIO_RESOLUTION_16);\nlet smoothValue = 0;\nlet initialValue;\n\n/**\n * Calculate new audio-scaled value\n */\nexport function update() {\n\tconst valueDelta = scriptProperties.maxvalue - scriptProperties.minvalue;\n\tconst audioDelta = audioBuffer.average[scriptProperties.frequency] - smoothValue;\n\t\n\tsmoothValue += audioDelta * Math.min(1.0, engine.frametime * scriptProperties.smoothing);\n\tsmoothValue = Math.min(1.0, smoothValue);\n\n\treturn initialValue * (smoothValue * valueDelta + scriptProperties.minvalue);\n}\n\nexport function init(value) {\n\tinitialValue = (typeof value === 'number') ? value : value.x;\n}\n",
-									"scriptproperties" : 
-									{
-										"frequency" : 0,
-										"maxvalue" : 1.1,
-										"minvalue" : 1,
-										"smoothing" : 15
-									},
-									"value" : 0.1
-								}
-							},
-							"id" : 177
-						}
-					],
-					"visible" : true
-				}
-			],
-			"id" : 170,
-			"image" : "models/swiper4_left_icon.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "swiper4_left_icon",
-			"origin" : "50.00000 540.00000 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : "1.50000 1.50000 1.50000",
-			"size" : "20.00000 740.00000",
-			"solid" : true,
-			"visible" : true
-		},
-		{
-			"alpha" : 1.0,
-			"anchor" : "none",
-			"angles" : "0.00000 0.00000 0.00000",
-			"backgroundbrightness" : 1.0,
-			"backgroundcolor" : "0.00000 0.00000 0.00000",
-			"blockalign" : false,
-			"brightness" : 1.0,
-			"color" : "1.00000 1.00000 1.00000",
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"font" : "systemfont_arial",
-			"horizontalalign" : "center",
-			"id" : 271,
-			"ledsource" : false,
-			"limitrows" : false,
-			"limituseellipsis" : false,
-			"limitwidth" : false,
-			"locktransforms" : true,
-			"maxrows" : 1,
-			"maxwidth" : 500.0,
-			"name" : "————————",
-			"opaquebackground" : false,
-			"origin" : "960.00000 540.00000 0.00000",
-			"padding" : 32,
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"pointsize" : 32.0,
-			"scale" : "1.00000 1.00000 1.00000",
-			"size" : "615.00000 153.00000",
-			"solid" : true,
-			"text" : "Text Layer",
-			"verticalalign" : "center",
-			"visible" : false
-		},
-		{
-			"alignment" : "center",
-			"alpha" : 1.0,
-			"angles" : "0.00000 0.00000 0.00000",
-			"animationlayers" : 
-			[
-				{
-					"additive" : false,
-					"animation" : 110,
-					"blend" : 1.0,
-					"id" : 118,
-					"name" : "动画 1",
-					"rate" : 1.0,
-					"visible" : true
-				}
-			],
-			"brightness" : 1.0,
-			"color" : "1.00000 1.00000 1.00000",
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"id" : 13,
-			"image" : "models/c010_idle00.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "c010_idle00",
-			"origin" : 
-			{
-				"animation" : 
-				{
-					"c0" : 
-					[
-						{
-							"back" : 
-							{
-								"enabled" : true,
-								"x" : -1,
-								"y" : 0
-							},
-							"frame" : 0,
-							"front" : 
-							{
-								"enabled" : true,
-								"x" : 1,
-								"y" : 0
-							},
-							"lockangle" : true,
-							"locklength" : true,
-							"value" : 490
-						},
-						{
-							"back" : 
-							{
-								"enabled" : true,
-								"x" : -1,
-								"y" : 0
-							},
-							"frame" : 180,
-							"front" : 
-							{
-								"enabled" : true,
-								"x" : 1,
-								"y" : 0
-							},
-							"lockangle" : true,
-							"locklength" : true,
-							"value" : 0
-						}
-					],
-					"c1" : 
-					[
-						{
-							"back" : 
-							{
-								"enabled" : true,
-								"x" : -1,
-								"y" : 0
-							},
-							"frame" : 0,
-							"front" : 
-							{
-								"enabled" : true,
-								"x" : 1,
-								"y" : 0
-							},
-							"lockangle" : true,
-							"locklength" : true,
-							"value" : 0
-						},
-						{
-							"back" : 
-							{
-								"enabled" : true,
-								"x" : -1,
-								"y" : 0
-							},
-							"frame" : 180,
-							"front" : 
-							{
-								"enabled" : true,
-								"x" : 1,
-								"y" : 0
-							},
-							"lockangle" : true,
-							"locklength" : true,
-							"value" : 0
-						}
-					],
-					"c2" : 
-					[
-						{
-							"back" : 
-							{
-								"enabled" : true,
-								"x" : -1,
-								"y" : 0
-							},
-							"frame" : 0,
-							"front" : 
-							{
-								"enabled" : true,
-								"x" : 1,
-								"y" : 0
-							},
-							"lockangle" : true,
-							"locklength" : true,
-							"value" : 0
-						},
-						{
-							"back" : 
-							{
-								"enabled" : true,
-								"x" : -1,
-								"y" : 0
-							},
-							"frame" : 180,
-							"front" : 
-							{
-								"enabled" : true,
-								"x" : 1,
-								"y" : 0
-							},
-							"lockangle" : true,
-							"locklength" : true,
-							"value" : 0
-						}
-					],
-					"options" : 
-					{
-						"children" : [],
-						"fps" : 60,
-						"length" : 180,
-						"mode" : "single",
-						"wraploop" : null
-					},
-					"relative" : true
-				},
-				"script" : "'use strict';\n\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'gifMove',\n\t\tlabel: '拖拽',\n\t\tvalue: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhix',\n\t\tlabel: 'X',\n\t\tvalue: 1920,\n\t\tmin: 0,\n\t\tmax: 3840,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiy',\n\t\tlabel: 'Y',\n\t\tvalue: 1080,\n\t\tmin: 0,\n\t\tmax: 2160,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiz',\n\t\tlabel: 'Z',\n\t\tvalue: 0,\n\t\tmin: -2000,\n\t\tmax: 2000,\n\t\tinteger: false\n\t})\n\t.finish();\n/** 此脚本允许用户在屏幕上拖放元素。 */\n// 基于官方预设拖拽脚本修改\n\nlet isDragging = false;\nlet dragOffset;\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorDown(event) {\t\n\tif(scriptProperties.gifMove){\n\t\tisDragging = true;\n\t}\n\tdragOffset = thisLayer.origin.subtract(event.worldPosition);\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorUp(event) {\n\tisDragging = false;\n}\n\n/**\n * @param {CursorEvent} event\n */\nexport function cursorMove(event) {\n\tif (isDragging) {\n\t\tthisLayer.origin = event.worldPosition.add(dragOffset);\n\t\tscriptProperties.weizhix = thisLayer.origin.x;\n\t\tscriptProperties.weizhiy = thisLayer.origin.y;\n\t\tscriptProperties.weizhiz = thisLayer.origin.z;\n\t}\n}\n\n/**\n * @param {Vec3} value - for property 'origin'\n * @return {Vec3} - update current property value\n */\nexport function update(value) {\t\n\n\tvalue.x = scriptProperties.weizhix;\n\tvalue.y = scriptProperties.weizhiy;\n\tvalue.z = scriptProperties.weizhiz;\n\treturn value;\n}\n\n\n",
-				"scriptproperties" : 
-				{
-					"gifMove" : 
-					{
-						"user" : "rwtz",
-						"value" : false
-					},
-					"weizhix" : 960,
-					"weizhiy" : 540,
-					"weizhiz" : 0
-				},
-				"value" : "960.00000 540.00000 0.00000"
-			},
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : 
-			{
-				"user" : "rwdx",
-				"value" : "1.00000 1.00000 1.00000"
-			},
-			"size" : "419.00000 900.00000",
-			"solid" : true,
+			"castshadow" : false,
+			"id" : 509,
+			"image" : "models/黄昏背景.json",
+			"name" : "黄昏背景",
+			"origin" : "1920.00000 1080.00000 0.00000",
+			"parallaxDepth" : "-0.40000 -0.40000",
+			"scale" : "4.08000 4.08000 1.00000",
+			"size" : "1020.00000 602.00000",
 			"visible" : 
 			{
-				"script" : "let count = 0, firstClickTime;\nlet doubleClickFrameTime = 500; //milliseconds\nexport function cursorClick(event) {\n\n\n    count++;\n    if (count % 2 !== 0) //if count of clicks is odd number (1, 3, 5)\n    {\n        firstClickTime = Date.now(); //remember time when clicked\n    }\n    if (count % 2 === 0) //if amount of clicks is even number (2, 4, 6)\n    {\n        if (Date.now() - firstClickTime > doubleClickFrameTime) //if amount of time from first click to second is more than expected time frame for double click\n        {\n            firstClickTime = Date.now(); //remember new time\n            count--; //-1 click\n        }\n        else //click is in expected time frame for double click\n        {\n           if (thisScene.getLayer(\"拉毗台词.mp3\").stop){\n\t\t\t   thisScene.getLayer(\"拉毗台词.mp3\").play();\n\t\t   }\n\t\t   else thisScene.getLayer(\"拉毗台词.mp3\").stop();\n            \n            count = 0; //reset click count\n        }\n    }\n}\n",
-				"value" : true
+				"script" : "'use strict';\n\n// 创建可通过属性面板调整的时间段属性\nexport var scriptProperties = createScriptProperties()\n    .addCheckbox({\n        name: 'isEnabled',           // 新增的属性，用来控制图层是否根据时间显示\n        label: '启用时间控制',\n        value: true                  // 默认值为 true，表示启用时间控制\n    })\n    .addCheckbox({\n        name: 'reverseMode',         // 新增反向开关\n        label: '反向模式（关闭时图层始终开启）',\n        value: false                 // 默认值为 false，关闭状态\n    })\n    .addSlider({\n        name: 'visibleStart',\n        label: '开始显示图层时间',\n        value: 18.0,  // 默认值，表示下午6点\n        min: 0.0,     // 时间从0点开始\n        max: 23.999,  // 到23.999结束\n        step: 0.01    // 调整精度\n    })\n    .addSlider({\n        name: 'visibleEnd',\n        label: '结束显示图层时间',\n        value: 7.0,   // 默认值，表示早上7点\n        min: 0.0,\n        max: 23.999,\n        step: 0.01\n    })\n    .finish();\n\n// 该函数检查当前时间是否在给定的可见时间段内\nfunction isLayerVisible(currentTime, startTime, endTime) {\n    if (startTime < endTime) {\n        // 如果时间段不跨越午夜，检查当前时间是否在开始和结束之间\n        return currentTime >= startTime && currentTime < endTime;\n    } else {\n        // 如果时间段跨越午夜，检查当前时间是否在时间段的两侧\n        return currentTime >= startTime || currentTime < endTime;\n    }\n}\n\n// 更新图层的可见性\nexport function update(value) {\n    // 获取当前时间（以小时为单位，0表示午夜，23.999接近午夜结束）\n    let currentTime = engine.timeOfDay * 24.0;\n\n    // 从属性面板中获取用户设定的时间段\n    let visibleStart = scriptProperties.visibleStart;\n    let visibleEnd = scriptProperties.visibleEnd;\n    \n    // 获取用户开关状态\n    let isEnabled = scriptProperties.isEnabled;\n    \n    // 获取反向模式开关状态\n    let reverseMode = scriptProperties.reverseMode;\n\n    // 如果启用时间控制开关被关闭\n    if (!isEnabled) {\n        // 如果反向模式开启，则图层始终可见\n        if (reverseMode) {\n            return true;  // 始终可见\n        } else {\n            return false; // 始终不可见\n        }\n    }\n\n    // 否则，检查当前时间是否在设定的时间范围内\n    let visible = isLayerVisible(currentTime, visibleStart, visibleEnd);\n\n    // 返回是否显示该图层\n    return visible;\n}\n",
+				"scriptproperties" : 
+				{
+					"isEnabled" : 
+					{
+						"user" : "newproperty22",
+						"value" : true
+					},
+					"reverseMode" : false,
+					"visibleEnd" : 19,
+					"visibleStart" : 16
+				},
+				"value" : false
 			}
 		},
 		{
-			"alpha" : 1.0,
-			"anchor" : "none",
-			"angles" : "0.00000 0.00000 0.00000",
-			"backgroundbrightness" : 1.0,
-			"backgroundcolor" : "0.00000 0.00000 0.00000",
-			"blockalign" : false,
-			"brightness" : 1.0,
-			"color" : "1.00000 1.00000 1.00000",
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"font" : "systemfont_arial",
-			"horizontalalign" : "center",
-			"id" : 263,
-			"ledsource" : false,
-			"limitrows" : false,
-			"limituseellipsis" : false,
-			"limitwidth" : false,
-			"locktransforms" : true,
-			"maxrows" : 1,
-			"maxwidth" : 500.0,
-			"name" : "————————",
-			"opaquebackground" : false,
-			"origin" : "960.00000 540.00000 0.00000",
-			"padding" : 32,
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"pointsize" : 32.0,
-			"scale" : "1.00000 1.00000 1.00000",
-			"size" : "615.00000 153.00000",
-			"solid" : true,
-			"text" : "Text Layer",
-			"verticalalign" : "center",
-			"visible" : false
+			"alpha" : 
+			{
+				"script" : "'use strict';\n\nimport * as WEMath from 'WEMath';\n\n// 时间设定\nconst FADE_IN_START_HOUR = 6;  // 开始增加透明度的时间（下午6点）\nconst FADE_IN_END_HOUR = 7;    // 完全透明度的时间（晚上7点）\n\nconst FADE_OUT_START_HOUR = 9;  // 开始减少透明度的时间（早上6点）\nconst FADE_OUT_END_HOUR = 10;    // 完全透明的时间（早上7点）\n\nconst BLEND_DURATION = 0.3;     // 渐变效果的持续时间，0.3表示18分钟渐变\n\n// 更新透明度\nexport function update(value) {\n    const timeOfDay = engine.timeOfDay * 24;  // 当前时间，单位为小时\n\n    if (timeOfDay >= FADE_IN_END_HOUR && timeOfDay < FADE_OUT_START_HOUR) {\n        // 在19:00到6:00之间保持透明度为1\n        return 1.0;\n    } else if (timeOfDay >= FADE_OUT_END_HOUR && timeOfDay < FADE_IN_START_HOUR) {\n        // 在7:00到18:00之间保持透明度为0\n        return 0.0;\n    } else if (timeOfDay >= FADE_IN_START_HOUR && timeOfDay <= FADE_IN_END_HOUR) {\n        // 在18:00到19:00之间，从0变成1\n        return WEMath.smoothStep(\n            (FADE_IN_START_HOUR - BLEND_DURATION) / 24,\n            FADE_IN_END_HOUR / 24,\n            engine.timeOfDay\n        );\n    } else if (timeOfDay >= FADE_OUT_START_HOUR && timeOfDay <= FADE_OUT_END_HOUR) {\n        // 在6:00到7:00之间，从1变成0\n        return 1.0 - WEMath.smoothStep(\n            (FADE_OUT_START_HOUR - BLEND_DURATION) / 24,\n            FADE_OUT_END_HOUR / 24,\n            engine.timeOfDay\n        );\n    }\n\n    // 默认返回透明度为0\n    return 0.0;\n}",
+				"value" : 1.0
+			},
+			"castshadow" : false,
+			"id" : 536,
+			"image" : "models/天空背景.json",
+			"name" : "早上背景",
+			"origin" : "1920.00000 1080.00000 0.00000",
+			"parallaxDepth" : "-0.40000 -0.40000",
+			"scale" : "4.08000 4.08000 1.00000",
+			"size" : "1020.00000 602.00000",
+			"visible" : 
+			{
+				"script" : "'use strict';\n\n// 创建可通过属性面板调整的时间段属性\nexport var scriptProperties = createScriptProperties()\n    .addCheckbox({\n        name: 'isEnabled',           // 新增的属性，用来控制图层是否根据时间显示\n        label: '启用时间控制',\n        value: true                  // 默认值为 true，表示启用时间控制\n    })\n    .addCheckbox({\n        name: 'reverseMode',         // 新增反向开关\n        label: '反向模式（关闭时图层始终开启）',\n        value: false                 // 默认值为 false，关闭状态\n    })\n    .addSlider({\n        name: 'visibleStart',\n        label: '开始显示图层时间',\n        value: 18.0,  // 默认值，表示下午6点\n        min: 0.0,     // 时间从0点开始\n        max: 23.999,  // 到23.999结束\n        step: 0.01    // 调整精度\n    })\n    .addSlider({\n        name: 'visibleEnd',\n        label: '结束显示图层时间',\n        value: 7.0,   // 默认值，表示早上7点\n        min: 0.0,\n        max: 23.999,\n        step: 0.01\n    })\n    .finish();\n\n// 该函数检查当前时间是否在给定的可见时间段内\nfunction isLayerVisible(currentTime, startTime, endTime) {\n    if (startTime < endTime) {\n        // 如果时间段不跨越午夜，检查当前时间是否在开始和结束之间\n        return currentTime >= startTime && currentTime < endTime;\n    } else {\n        // 如果时间段跨越午夜，检查当前时间是否在时间段的两侧\n        return currentTime >= startTime || currentTime < endTime;\n    }\n}\n\n// 更新图层的可见性\nexport function update(value) {\n    // 获取当前时间（以小时为单位，0表示午夜，23.999接近午夜结束）\n    let currentTime = engine.timeOfDay * 24.0;\n\n    // 从属性面板中获取用户设定的时间段\n    let visibleStart = scriptProperties.visibleStart;\n    let visibleEnd = scriptProperties.visibleEnd;\n    \n    // 获取用户开关状态\n    let isEnabled = scriptProperties.isEnabled;\n    \n    // 获取反向模式开关状态\n    let reverseMode = scriptProperties.reverseMode;\n\n    // 如果启用时间控制开关被关闭\n    if (!isEnabled) {\n        // 如果反向模式开启，则图层始终可见\n        if (reverseMode) {\n            return true;  // 始终可见\n        } else {\n            return false; // 始终不可见\n        }\n    }\n\n    // 否则，检查当前时间是否在设定的时间范围内\n    let visible = isLayerVisible(currentTime, visibleStart, visibleEnd);\n\n    // 返回是否显示该图层\n    return visible;\n}\n",
+				"scriptproperties" : 
+				{
+					"isEnabled" : 
+					{
+						"user" : "newproperty22",
+						"value" : true
+					},
+					"reverseMode" : false,
+					"visibleEnd" : 10,
+					"visibleStart" : 6
+				},
+				"value" : false
+			}
 		},
 		{
-			"alignment" : "bottom",
-			"alpha" : 1.0,
-			"angles" : "0.00000 0.00000 0.00000",
-			"brightness" : 1.0,
-			"color" : "1.00000 1.00000 1.00000",
-			"colorBlendMode" : 0,
-			"copybackground" : true,
+			"alpha" : 
+			{
+				"script" : "'use strict';\n\nimport * as WEMath from 'WEMath';\n\n// 时间设定\nconst FADE_IN_START_HOUR = 18;  // 开始增加透明度的时间（下午6点）\nconst FADE_IN_END_HOUR = 19;    // 完全透明度的时间（晚上7点）\n\nconst FADE_OUT_START_HOUR = 6;  // 开始减少透明度的时间（早上6点）\nconst FADE_OUT_END_HOUR = 7;    // 完全透明的时间（早上7点）\n\nconst BLEND_DURATION = 0.3;     // 渐变效果的持续时间，0.3表示18分钟渐变\n\n// 更新透明度\nexport function update(value) {\n    const timeOfDay = engine.timeOfDay * 24;  // 当前时间，单位为小时\n\n    if (timeOfDay >= FADE_IN_END_HOUR && timeOfDay < FADE_OUT_START_HOUR) {\n        // 在19:00到6:00之间保持透明度为1\n        return 1.0;\n    } else if (timeOfDay >= FADE_OUT_END_HOUR && timeOfDay < FADE_IN_START_HOUR) {\n        // 在7:00到18:00之间保持透明度为0\n        return 0.0;\n    } else if (timeOfDay >= FADE_IN_START_HOUR && timeOfDay <= FADE_IN_END_HOUR) {\n        // 在18:00到19:00之间，从0变成1\n        return WEMath.smoothStep(\n            (FADE_IN_START_HOUR - BLEND_DURATION) / 24,\n            FADE_IN_END_HOUR / 24,\n            engine.timeOfDay\n        );\n    } else if (timeOfDay >= FADE_OUT_START_HOUR && timeOfDay <= FADE_OUT_END_HOUR) {\n        // 在6:00到7:00之间，从1变成0\n        return 1.0 - WEMath.smoothStep(\n            (FADE_OUT_START_HOUR - BLEND_DURATION) / 24,\n            FADE_OUT_END_HOUR / 24,\n            engine.timeOfDay\n        );\n    }\n\n    // 默认返回透明度为0\n    return 1.0;\n}\n",
+				"value" : 1.0
+			},
+			"castshadow" : false,
 			"effects" : 
 			[
 				{
-					"file" : "effects/workshop/2846660316/_____________________/effect.json",
-					"id" : 626,
+					"file" : "effects/waterflow/effect.json",
+					"id" : 946,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"phasescale" : 2.4300001,
+								"speed" : 0.31999999,
+								"strength" : 0.75
+							},
+							"id" : 947,
+							"textures" : [ null, "masks/waterflow_mask_a0374e8b", "effects/waterflowphase" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 929,
+			"image" : "models/夜晚云.json",
+			"name" : "夜晚云",
+			"origin" : "1920.00000 1080.00000 0.00000",
+			"parallaxDepth" : "-0.80000 -0.80000",
+			"scale" : "2.04000 2.04000 1.00000",
+			"size" : "2040.00000 1204.00000",
+			"visible" : 
+			{
+				"script" : "'use strict';\n\n// 创建可通过属性面板调整的时间段属性\nexport var scriptProperties = createScriptProperties()\n    .addCheckbox({\n        name: 'isEnabled',           // 新增的属性，用来控制图层是否根据时间显示\n        label: '启用时间控制',\n        value: true                  // 默认值为 true，表示启用时间控制\n    })\n    .addCheckbox({\n        name: 'reverseMode',         // 新增反向开关\n        label: '反向模式（关闭时图层始终开启）',\n        value: false                 // 默认值为 false，关闭状态\n    })\n    .addSlider({\n        name: 'visibleStart',\n        label: '开始显示图层时间',\n        value: 18.0,  // 默认值，表示下午6点\n        min: 0.0,     // 时间从0点开始\n        max: 23.999,  // 到23.999结束\n        step: 0.01    // 调整精度\n    })\n    .addSlider({\n        name: 'visibleEnd',\n        label: '结束显示图层时间',\n        value: 7.0,   // 默认值，表示早上7点\n        min: 0.0,\n        max: 23.999,\n        step: 0.01\n    })\n    .finish();\n\n// 该函数检查当前时间是否在给定的可见时间段内\nfunction isLayerVisible(currentTime, startTime, endTime) {\n    if (startTime < endTime) {\n        // 如果时间段不跨越午夜，检查当前时间是否在开始和结束之间\n        return currentTime >= startTime && currentTime < endTime;\n    } else {\n        // 如果时间段跨越午夜，检查当前时间是否在时间段的两侧\n        return currentTime >= startTime || currentTime < endTime;\n    }\n}\n\n// 更新图层的可见性\nexport function update(value) {\n    // 获取当前时间（以小时为单位，0表示午夜，23.999接近午夜结束）\n    let currentTime = engine.timeOfDay * 24.0;\n\n    // 从属性面板中获取用户设定的时间段\n    let visibleStart = scriptProperties.visibleStart;\n    let visibleEnd = scriptProperties.visibleEnd;\n    \n    // 获取用户开关状态\n    let isEnabled = scriptProperties.isEnabled;\n    \n    // 获取反向模式开关状态\n    let reverseMode = scriptProperties.reverseMode;\n\n    // 如果启用时间控制开关被关闭\n    if (!isEnabled) {\n        // 如果反向模式开启，则图层始终可见\n        if (reverseMode) {\n            return true;  // 始终可见\n        } else {\n            return false; // 始终不可见\n        }\n    }\n\n    // 否则，检查当前时间是否在设定的时间范围内\n    let visible = isLayerVisible(currentTime, visibleStart, visibleEnd);\n\n    // 返回是否显示该图层\n    return visible;\n}\n",
+				"scriptproperties" : 
+				{
+					"isEnabled" : 
+					{
+						"user" : "newproperty22",
+						"value" : true
+					},
+					"reverseMode" : false,
+					"visibleEnd" : 7,
+					"visibleStart" : 18
+				},
+				"value" : false
+			}
+		},
+		{
+			"alpha" : 
+			{
+				"script" : "'use strict';\n\nimport * as WEMath from 'WEMath';\n\n// 时间设定\nconst FADE_IN_START_HOUR = 16;  // 开始增加透明度的时间（下午6点）\nconst FADE_IN_END_HOUR = 17;    // 完全透明度的时间（晚上7点）\n\nconst FADE_OUT_START_HOUR = 18;  // 开始减少透明度的时间（早上6点）\nconst FADE_OUT_END_HOUR = 19;    // 完全透明的时间（早上7点）\n\nconst BLEND_DURATION = 0.3;     // 渐变效果的持续时间，0.3表示18分钟渐变\n\n// 更新透明度\nexport function update(value) {\n    const timeOfDay = engine.timeOfDay * 24;  // 当前时间，单位为小时\n\n    if (timeOfDay >= FADE_IN_END_HOUR && timeOfDay < FADE_OUT_START_HOUR) {\n        // 在19:00到6:00之间保持透明度为1\n        return 1.0;\n    } else if (timeOfDay >= FADE_OUT_END_HOUR && timeOfDay < FADE_IN_START_HOUR) {\n        // 在7:00到18:00之间保持透明度为0\n        return 0.0;\n    } else if (timeOfDay >= FADE_IN_START_HOUR && timeOfDay <= FADE_IN_END_HOUR) {\n        // 在18:00到19:00之间，从0变成1\n        return WEMath.smoothStep(\n            (FADE_IN_START_HOUR - BLEND_DURATION) / 24,\n            FADE_IN_END_HOUR / 24,\n            engine.timeOfDay\n        );\n    } else if (timeOfDay >= FADE_OUT_START_HOUR && timeOfDay <= FADE_OUT_END_HOUR) {\n        // 在6:00到7:00之间，从1变成0\n        return 1.0 - WEMath.smoothStep(\n            (FADE_OUT_START_HOUR - BLEND_DURATION) / 24,\n            FADE_OUT_END_HOUR / 24,\n            engine.timeOfDay\n        );\n    }\n\n    // 默认返回透明度为0\n    return 0.0;\n}",
+				"value" : 1.0
+			},
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterflow/effect.json",
+					"id" : 530,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"phasescale" : 2.4300001,
+								"speed" : 0.31999999,
+								"strength" : 0.75
+							},
+							"id" : 531,
+							"textures" : [ null, "masks/waterflow_mask_a0374e8b", "effects/waterflowphase" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 522,
+			"image" : "models/黄昏云.json",
+			"name" : "黄昏云",
+			"origin" : "1920.00000 1080.00000 0.00000",
+			"parallaxDepth" : "-0.80000 -0.80000",
+			"scale" : "2.04000 2.04000 1.00000",
+			"size" : "2040.00000 1204.00000",
+			"visible" : 
+			{
+				"script" : "'use strict';\n\n// 创建可通过属性面板调整的时间段属性\nexport var scriptProperties = createScriptProperties()\n    .addCheckbox({\n        name: 'isEnabled',           // 新增的属性，用来控制图层是否根据时间显示\n        label: '启用时间控制',\n        value: true                  // 默认值为 true，表示启用时间控制\n    })\n    .addCheckbox({\n        name: 'reverseMode',         // 新增反向开关\n        label: '反向模式（关闭时图层始终开启）',\n        value: false                 // 默认值为 false，关闭状态\n    })\n    .addSlider({\n        name: 'visibleStart',\n        label: '开始显示图层时间',\n        value: 18.0,  // 默认值，表示下午6点\n        min: 0.0,     // 时间从0点开始\n        max: 23.999,  // 到23.999结束\n        step: 0.01    // 调整精度\n    })\n    .addSlider({\n        name: 'visibleEnd',\n        label: '结束显示图层时间',\n        value: 7.0,   // 默认值，表示早上7点\n        min: 0.0,\n        max: 23.999,\n        step: 0.01\n    })\n    .finish();\n\n// 该函数检查当前时间是否在给定的可见时间段内\nfunction isLayerVisible(currentTime, startTime, endTime) {\n    if (startTime < endTime) {\n        // 如果时间段不跨越午夜，检查当前时间是否在开始和结束之间\n        return currentTime >= startTime && currentTime < endTime;\n    } else {\n        // 如果时间段跨越午夜，检查当前时间是否在时间段的两侧\n        return currentTime >= startTime || currentTime < endTime;\n    }\n}\n\n// 更新图层的可见性\nexport function update(value) {\n    // 获取当前时间（以小时为单位，0表示午夜，23.999接近午夜结束）\n    let currentTime = engine.timeOfDay * 24.0;\n\n    // 从属性面板中获取用户设定的时间段\n    let visibleStart = scriptProperties.visibleStart;\n    let visibleEnd = scriptProperties.visibleEnd;\n    \n    // 获取用户开关状态\n    let isEnabled = scriptProperties.isEnabled;\n    \n    // 获取反向模式开关状态\n    let reverseMode = scriptProperties.reverseMode;\n\n    // 如果启用时间控制开关被关闭\n    if (!isEnabled) {\n        // 如果反向模式开启，则图层始终可见\n        if (reverseMode) {\n            return true;  // 始终可见\n        } else {\n            return false; // 始终不可见\n        }\n    }\n\n    // 否则，检查当前时间是否在设定的时间范围内\n    let visible = isLayerVisible(currentTime, visibleStart, visibleEnd);\n\n    // 返回是否显示该图层\n    return visible;\n}\n",
+				"scriptproperties" : 
+				{
+					"isEnabled" : 
+					{
+						"user" : "newproperty22",
+						"value" : true
+					},
+					"reverseMode" : false,
+					"visibleEnd" : 19,
+					"visibleStart" : 16
+				},
+				"value" : false
+			}
+		},
+		{
+			"alpha" : 
+			{
+				"script" : "'use strict';\n\nimport * as WEMath from 'WEMath';\n\n// 时间设定\nconst FADE_IN_START_HOUR = 6;  // 开始增加透明度的时间（下午6点）\nconst FADE_IN_END_HOUR = 7;    // 完全透明度的时间（晚上7点）\n\nconst FADE_OUT_START_HOUR = 9;  // 开始减少透明度的时间（早上6点）\nconst FADE_OUT_END_HOUR = 10;    // 完全透明的时间（早上7点）\n\nconst BLEND_DURATION = 0.3;     // 渐变效果的持续时间，0.3表示18分钟渐变\n\n// 更新透明度\nexport function update(value) {\n    const timeOfDay = engine.timeOfDay * 24;  // 当前时间，单位为小时\n\n    if (timeOfDay >= FADE_IN_END_HOUR && timeOfDay < FADE_OUT_START_HOUR) {\n        // 在19:00到6:00之间保持透明度为1\n        return 1.0;\n    } else if (timeOfDay >= FADE_OUT_END_HOUR && timeOfDay < FADE_IN_START_HOUR) {\n        // 在7:00到18:00之间保持透明度为0\n        return 0.0;\n    } else if (timeOfDay >= FADE_IN_START_HOUR && timeOfDay <= FADE_IN_END_HOUR) {\n        // 在18:00到19:00之间，从0变成1\n        return WEMath.smoothStep(\n            (FADE_IN_START_HOUR - BLEND_DURATION) / 24,\n            FADE_IN_END_HOUR / 24,\n            engine.timeOfDay\n        );\n    } else if (timeOfDay >= FADE_OUT_START_HOUR && timeOfDay <= FADE_OUT_END_HOUR) {\n        // 在6:00到7:00之间，从1变成0\n        return 1.0 - WEMath.smoothStep(\n            (FADE_OUT_START_HOUR - BLEND_DURATION) / 24,\n            FADE_OUT_END_HOUR / 24,\n            engine.timeOfDay\n        );\n    }\n\n    // 默认返回透明度为0\n    return 0.0;\n}",
+				"value" : 1.0
+			},
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterflow/effect.json",
+					"id" : 560,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"phasescale" : 2.4300001,
+								"speed" : 0.31999999,
+								"strength" : 0.75
+							},
+							"id" : 561,
+							"textures" : [ null, "masks/waterflow_mask_a0374e8b", "effects/waterflowphase" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 553,
+			"image" : "models/早上云.json",
+			"name" : "早上云",
+			"origin" : "1920.00000 1080.00000 0.00000",
+			"parallaxDepth" : "-0.80000 -0.80000",
+			"scale" : "2.04000 2.04000 1.00000",
+			"size" : "2040.00000 1204.00000",
+			"visible" : 
+			{
+				"script" : "'use strict';\n\n// 创建可通过属性面板调整的时间段属性\nexport var scriptProperties = createScriptProperties()\n    .addCheckbox({\n        name: 'isEnabled',           // 新增的属性，用来控制图层是否根据时间显示\n        label: '启用时间控制',\n        value: true                  // 默认值为 true，表示启用时间控制\n    })\n    .addCheckbox({\n        name: 'reverseMode',         // 新增反向开关\n        label: '反向模式（关闭时图层始终开启）',\n        value: false                 // 默认值为 false，关闭状态\n    })\n    .addSlider({\n        name: 'visibleStart',\n        label: '开始显示图层时间',\n        value: 18.0,  // 默认值，表示下午6点\n        min: 0.0,     // 时间从0点开始\n        max: 23.999,  // 到23.999结束\n        step: 0.01    // 调整精度\n    })\n    .addSlider({\n        name: 'visibleEnd',\n        label: '结束显示图层时间',\n        value: 7.0,   // 默认值，表示早上7点\n        min: 0.0,\n        max: 23.999,\n        step: 0.01\n    })\n    .finish();\n\n// 该函数检查当前时间是否在给定的可见时间段内\nfunction isLayerVisible(currentTime, startTime, endTime) {\n    if (startTime < endTime) {\n        // 如果时间段不跨越午夜，检查当前时间是否在开始和结束之间\n        return currentTime >= startTime && currentTime < endTime;\n    } else {\n        // 如果时间段跨越午夜，检查当前时间是否在时间段的两侧\n        return currentTime >= startTime || currentTime < endTime;\n    }\n}\n\n// 更新图层的可见性\nexport function update(value) {\n    // 获取当前时间（以小时为单位，0表示午夜，23.999接近午夜结束）\n    let currentTime = engine.timeOfDay * 24.0;\n\n    // 从属性面板中获取用户设定的时间段\n    let visibleStart = scriptProperties.visibleStart;\n    let visibleEnd = scriptProperties.visibleEnd;\n    \n    // 获取用户开关状态\n    let isEnabled = scriptProperties.isEnabled;\n    \n    // 获取反向模式开关状态\n    let reverseMode = scriptProperties.reverseMode;\n\n    // 如果启用时间控制开关被关闭\n    if (!isEnabled) {\n        // 如果反向模式开启，则图层始终可见\n        if (reverseMode) {\n            return true;  // 始终可见\n        } else {\n            return false; // 始终不可见\n        }\n    }\n\n    // 否则，检查当前时间是否在设定的时间范围内\n    let visible = isLayerVisible(currentTime, visibleStart, visibleEnd);\n\n    // 返回是否显示该图层\n    return visible;\n}\n",
+				"scriptproperties" : 
+				{
+					"isEnabled" : 
+					{
+						"user" : "newproperty22",
+						"value" : true
+					},
+					"reverseMode" : false,
+					"visibleEnd" : 10,
+					"visibleStart" : 6
+				},
+				"value" : false
+			}
+		},
+		{
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/workshop/2846660316/_________________________________/effect.json",
+					"id" : 244,
 					"name" : "",
 					"passes" : 
 					[
 						{
 							"combos" : 
 							{
-								"BLENDMODE" : 30
+								"BLENDMODE" : 31
 							},
 							"constantshadervalues" : 
 							{
 								"ui_browse_properties_scheme_color" : 
 								{
-									"user" : "schemecolor",
-									"value" : "0.49412 0.06667 0.05098"
+									"user" : "newproperty3",
+									"value" : "0.00000 1.00000 1.00000"
 								},
-								"ui_editor_properties_opacity" : 1.0,
-								"栏的上下限" : "0.0, 1.0",
-								"栏的条数" : 32.0,
-								"栏的间距" : 0.1
+								"ui_editor_properties_opacity" : 
+								{
+									"user" : "newproperty2",
+									"value" : 1
+								},
+								"栏的上下限" : "0 0.2",
+								"栏的条数" : 40,
+								"栏的间距" : 0.15000001
 							},
-							"id" : 627
+							"id" : 245
 						}
 					],
-					"visible" : 
-					{
-						"user" : "yl",
-						"value" : true
-					}
-				},
+					"visible" : true
+				}
+			],
+			"id" : 242,
+			"image" : "models/util/composelayer.json",
+			"name" : "音频响应条",
+			"origin" : "1920.00000 1080.00000 0.00000",
+			"parallaxDepth" : "-0.80000 0.00000",
+			"size" : "3840.00000 2160.00000",
+			"visible" : 
+			{
+				"user" : "newproperty18",
+				"value" : true
+			}
+		},
+		{
+			"castshadow" : false,
+			"effects" : 
+			[
 				{
-					"file" : "effects/opacity/effect.json",
-					"id" : 631,
+					"file" : "effects/workshop/2844906964/test_shader/effect.json",
+					"id" : 199,
+					"name" : "麻匪音圈",
+					"passes" : 
+					[
+						{
+							"combos" : 
+							{
+								"BLENDMODE" : 31
+							},
+							"constantshadervalues" : 
+							{
+								"Brightness" : 
+								{
+									"user" : "newproperty5",
+									"value" : 0.059999999
+								},
+								"Color" : 
+								{
+									"user" : "newproperty4",
+									"value" : "0.00000 1.00000 1.00000"
+								},
+								"Fixed Size" : "1 1",
+								"Max Freq Range" : 1,
+								"Min Freq Range" : 0,
+								"Radius" : 0.38,
+								"Suppression" : 5
+							},
+							"id" : 200
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 197,
+			"image" : "models/util/composelayer.json",
+			"name" : "音圈",
+			"origin" : 
+			{
+				"script" : "'use strict';\n\n// import * as WEVector from 'WEVector';\n\n/**\n * 此脚本允许用户在屏幕上拖放元素。\n * 基于官方预设拖拽、屏幕弹跳脚本修改。\n * 将此脚本附加到图像层的“原点”属性，使其在屏幕上反弹。\n * 图层必须小于壁纸，否则此脚本将无法运行！\n */\n\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'tz',\n\t\tlabel: 'ui_editor_script_snippet_drag_drop',\n\t\tvalue: false\n\t})\n\t// .addCheckbox({\n\t// \tname: 'tt',\n\t// \tlabel: 'ui_editor_script_snippet_screen_bounce',\n\t// \tvalue: false\n\t// })\n\t.addCheckbox({\n\t\tname: 'pmztz',\n\t\tlabel: '屏幕中拖拽',\n\t\tvalue: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhix',\n\t\tlabel: 'X',\n\t\tvalue: 0,\n\t\tmin: 0,\n\t\tmax: 3840,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiy',\n\t\tlabel: 'Y',\n\t\tvalue: 0,\n\t\tmin: 0,\n\t\tmax: 2160,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiz',\n\t\tlabel: 'Z',\n\t\tvalue: 0,\n\t\tmin: -2000,\n\t\tmax: 2000,\n\t\tinteger: false\n\t})\n\t.finish();\n\n// 以90度为步长随机选择方向\n// var direction = new Vec3(WEVector.angleVector2(45 + Math.floor(Math.random() * 4) * 90));\nvar direction = new Vec3\nlet isDragging = false;\nlet dragOffset;\nlet tuozuai = 1\nlet count = 0, firstClickTime;\nlet doubleClickFrameTime = 500; //毫秒\nexport function cursorClick(event) {\n\n\tcount++;\n\tif (count % 2 !== 0) //如果点击次数是奇数（1、3、5）\n\t{\n\t\tfirstClickTime = Date.now(); //记住点击的时间\n\t}\n\tif (count % 2 === 0) //如果点击次数是偶数（2、4、6）\n\t{\n\t\tif (Date.now() - firstClickTime > doubleClickFrameTime) //如果从第一次点击到第二次点击的时间超过双击的预期时间范围\n\t\t{\n\t\t\tfirstClickTime = Date.now(); //记住新的时间\n\t\t\tcount--; //-1 click\n\t\t}\n\t\telse //点击在双击的预期时间范围内\n\t\t{\n\t\t\tif (scriptProperties.tz){\n\t\t\tif (tuozuai == 1){\n\t\t\t\t\ttuozuai = 2\n\t\t\t}\n\t\t\telse if (tuozuai == 2){\n\t\t\ttuozuai = 1\n\t\t\t}\n\t\t\tcount = 0; //重置点击次数\n\t\t}\n\t}\n}\n}\n\nexport function cursorDown(event) {\t\n\tif(tuozuai == 2){\n\t\tisDragging = true;\n\t}\n\tdragOffset = thisLayer.origin.subtract(event.worldPosition);\n}\n\nexport function cursorUp(event) {\n\tisDragging = false;\n}\n//拖拽\nexport function cursorMove(event) {\n\tif (isDragging) {\n\t\tthisLayer.origin = event.worldPosition.add(dragOffset);\n\t\tweizhi = thisLayer.origin;\n\t\tscriptProperties.weizhix = thisLayer.origin.x - weizhix;\n\t\tscriptProperties.weizhiy = thisLayer.origin.y - weizhiy;\n\t\tscriptProperties.weizhiz = thisLayer.origin.z - weizhiz;\n\t}\n}\n\nexport function update(value) {\n\n\tvalue = weizhi;\n//滑块\n\tvalue.x = scriptProperties.weizhix + weizhix;\n\tvalue.y = scriptProperties.weizhiy + weizhiy;\n\tvalue.z = scriptProperties.weizhiz + weizhiz;\n\n\tlet scale = thisLayer.scale;\n\tlet imageSize = thisLayer.size;\n\tlet canvasSize = engine.canvasSize;\n\n\t// 我们需要从中心到边界的尺寸。\n\timageSize.x *= scale.x * 0.5;\n\timageSize.y *= scale.y * 0.5;\n\nif (scriptProperties.pmztz && tuozuai == 2){\n\n\t// 击中屏幕边界并反映方向。\nvalue.x = Math.min(Math.max(value.x, imageSize.x), canvasSize.x - imageSize.x);\nvalue.y = Math.min(Math.max(value.y, imageSize.y), canvasSize.y - imageSize.y);\n\n}\n\n// if (scriptProperties.tt){\n// value.x = Math.max(Math.min(value.x, canvasSize.x - imageSize.x), imageSize.x);\n// value.y = Math.max(Math.min(value.y, canvasSize.y - imageSize.y), imageSize.y);\n// const reflectVec = new Vec3(Math.sign(value.x - imageSize.x - canvasSize.x / 2), Math.sign(value.y - imageSize.y - canvasSize.y / 2), 0);\n// direction = direction.reflect(reflectVec);\n// }\n\n\t\nconsole.log(value)\n\treturn value;\n\t\n}\n\nvar weizhi= {\nx: 0,\ny: 0,\nz: 0\n};\nvar weizhix=0,weizhiy=0,weizhiz=0\nexport function init(value) {\n\tweizhi = value\n\tweizhix = value.x\n\tweizhiy = value.y\n\tweizhiz = value.z\n\treturn value;\n}\n",
+				"scriptproperties" : 
+				{
+					"pmztz" : false,
+					"tz" : false,
+					"weizhix" : 
+					{
+						"user" : "x2",
+						"value" : 0
+					},
+					"weizhiy" : 
+					{
+						"user" : "y2",
+						"value" : 0
+					},
+					"weizhiz" : 0
+				},
+				"value" : "0.00000 0.00000 0.00000"
+			},
+			"parallaxDepth" : "-0.40000 -0.40000",
+			"scale" : "1.74328 1.74328 1.74328",
+			"size" : "2000.00000 2000.00000",
+			"visible" : 
+			{
+				"user" : "newproperty19",
+				"value" : true
+			}
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"id" : 568,
+			"image" : "models/util/composelayer.json",
+			"name" : "可调整组合层",
+			"origin" : "1920.00000 1020.00000 0.00000",
+			"size" : "4500.00000 3840.00000",
+			"visible" : 
+			{
+				"script" : "'use strict';\n\nlet baseOG,baseRot,baseScale;\nlet ogOff,rotOff,scaleOff;\nlet ogOffM, rotOffM, scaleOffM;\nlet sqrRadius;\n\nexport var scriptProperties = createScriptProperties()\n\t.addSlider({\n\t\tname: 'time',\n\t\tlabel: 'Time',\n\t\tvalue: 1,\n\t\tmin: 0,\n\t\tmax: 10,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'timeOffset',\n\t\tlabel: 'Time Offset',\n\t\tvalue: 0,\n\t\tmin: -10,\n\t\tmax: 10,\n\t\tinteger: false\n\t})\n\t.addText({\n\t\tname: 'ogOff',\n\t\tlabel: 'Origin Offset',\n\t\tvalue: '0,0,0',\n\t})\n\t.addText({\n\t\tname: 'rotOff',\n\t\tlabel: 'Rotation Offset',\n\t\tvalue: '0,0,0',\n\t})\n\t.addText({\n\t\tname: 'scaleOff',\n\t\tlabel: 'Scale Offset',\n\t\tvalue: '0,0,0',\n\t})\n\t.addCheckbox({\n\t\tname: 'useMouseOffset',\n\t\tlabel: 'Use Mouse Offsets',\n\t\tvalue: false\n\t})\n\t.addSlider({\n\t\tname: 'mouseRadius',\n\t\tlabel: 'Mouse Push Radius',\n\t\tvalue: 500,\n\t\tmin: 0,\n\t\tmax: 1500,\n\t\tinteger: false\n\t})\n\t.addText({\n\t\tname: 'ogOffM',\n\t\tlabel: 'Mouse Origin Offset',\n\t\tvalue: '0,0,0',\n\t})\n\t.addText({\n\t\tname: 'rotOffM',\n\t\tlabel: 'Mouse Rotation Offset',\n\t\tvalue: '0,0,0',\n\t})\n\t.addText({\n\t\tname: 'scaleOffM',\n\t\tlabel: 'Mouse Scale Offset',\n\t\tvalue: '0,0,0',\n\t})\t\n\t.finish();\n\n/**\n * @param {String} value - vector string representation\n * @return {Vec3} - output vec3\n */\nfunction ParseVec3(value){\n\tlet split = value.split(',');\n\treturn new Vec3(\n\t\tparseFloat(split[0]),\n\t\tparseFloat(split[1]),\n\t\tparseFloat(split[2])\n\t);\n}\n\n/**\n * @param {Boolean} value - for property 'visible'\n * @return {Boolean} - update current property value\n */\nexport function init(value) {\n\n\tbaseOG = thisLayer.origin;\n\tbaseScale = thisLayer.scale;\n\tbaseRot = thisLayer.angles;\n\n\togOff = ParseVec3(scriptProperties.ogOff);\n\trotOff = ParseVec3(scriptProperties.rotOff);\n\tscaleOff = ParseVec3(scriptProperties.scaleOff);\n\n\togOffM = ParseVec3(scriptProperties.ogOffM);\n\trotOffM = ParseVec3(scriptProperties.rotOffM);\n\tscaleOffM = ParseVec3(scriptProperties.scaleOffM);\n\n\tsqrRadius = 1.0 / (scriptProperties.mouseRadius * scriptProperties.mouseRadius);\n\n\treturn value;\n}\n\n\n\nlet mouseDist = 0;\nfunction approxRollingAverage(avg, new_sample, N) {\n    avg -= avg / N;\n    avg += new_sample / N;\n    return avg;\n}\n\n/**\n * @param {Boolean} value - for property 'visible'\n * @return {Boolean} - update current property value\n */\nexport function update(value) {\n\n\tlet cos = Math.cos((engine.runtime + scriptProperties.timeOffset) / scriptProperties.time) * 0.5 + 0.5;\n\n\tlet og = baseOG.add(ogOff.multiply(cos));\n\tlet rot = baseRot.add(rotOff.multiply(cos));\n\tlet scale = baseScale.add(scaleOff.multiply(cos));\n\n\tif(scriptProperties.useMouseOffset){\n\t\tlet dir = og.subtract(input.cursorWorldPosition);\n\t\tlet dist = 1.0 - dir.lengthSqr() * sqrRadius;\n\n\t\tif(dist < mouseDist){\n\t\t\tmouseDist = Math.max(mouseDist * 0.95, dist);\n\t\t}else{\n\t\t\tmouseDist = approxRollingAverage(mouseDist, dist, 4);\n\t\t}\n\n\t\tif(mouseDist > 0){\n\t\t\tog = og.add(ogOffM.multiply(mouseDist));\n\t\t\trot = rot.add(rotOffM.multiply(mouseDist));\n\t\t\tscale = scale.add(scaleOffM.multiply(mouseDist));\n\t\t}\n\t}\n\n\tthisLayer.origin = og;\n\tthisLayer.angles = rot;\n\tthisLayer.scale = scale;\n\t\n\treturn value;\n}\n\n\n\n",
+				"scriptproperties" : 
+				{
+					"mouseRadius" : 500,
+					"ogOff" : "0,-30,0",
+					"ogOffM" : "0,0,0",
+					"rotOff" : "0,0,0",
+					"rotOffM" : "0,0,0",
+					"scaleOff" : "0,0,0",
+					"scaleOffM" : "0,0,0",
+					"time" : 1,
+					"timeOffset" : 0,
+					"useMouseOffset" : false
+				},
+				"value" : true
+			}
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 871,
 					"name" : "",
 					"passes" : 
 					[
 						{
 							"constantshadervalues" : 
 							{
-								"alpha" : 1
+								"direction" : 2.5472035,
+								"exponent" : 1,
+								"scale" : 10,
+								"speed" : 5,
+								"strength" : 0.1
 							},
-							"id" : 632,
-							"textures" : [ null, "masks/opacity_mask_3ac1a7fe" ]
+							"id" : 872,
+							"textures" : [ null, "masks/waterwaves_mask_b6f8d416" ]
 						}
 					],
-					"visible" : 
-					{
-						"user" : "yl",
-						"value" : true
-					}
+					"visible" : true
 				}
 			],
-			"id" : 623,
-			"image" : "models/util/solidlayer.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "音频响应",
-			"origin" : "960.00000 0.00000 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : "1.00000 1.00000 1.00000",
-			"size" : "1920.00000 150.00000",
-			"solid" : true,
-			"visible" : 
-			{
-				"user" : "yl",
-				"value" : true
-			}
+			"id" : 869,
+			"image" : "models/初音未来-云天_0025_头发4.json",
+			"name" : "0025_头发4",
+			"parent" : 568,
+			"scale" : "2.00000 2.00000 1.00000",
+			"size" : "1838.00000 1085.00000"
 		},
 		{
-			"alignment" : "center",
-			"alpha" : 1.0,
-			"angles" : "0.00000 0.00000 0.00000",
-			"brightness" : 1.0,
-			"color" : 
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 518,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 1.9923983,
+								"exponent" : 1.0,
+								"scale" : 10,
+								"speed" : 5.0,
+								"strength" : 0.12
+							},
+							"id" : 519
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 36,
+			"image" : "models/初音未来-云天_0022_发带4.json",
+			"name" : "0022_发带4",
+			"origin" : "-175.50012 444.50000 0.00000",
+			"parent" : 568,
+			"size" : "1144.00000 983.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 1667,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 2.5563829,
+								"exponent" : 1,
+								"scale" : 10,
+								"speed" : 5,
+								"strength" : 0.1
+							},
+							"id" : 1668
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 1665,
+			"image" : "models/初音未来-云天_0021_刘海5.json",
+			"name" : "0021_刘海5",
+			"parent" : 568,
+			"size" : "972.00000 1944.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 1405,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -2.7944114,
+								"exponent" : 1,
+								"scale" : 10,
+								"speed" : 5,
+								"strength" : 0.1
+							},
+							"id" : 1406,
+							"textures" : [ null, "masks/waterwaves_mask_a326edeb" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 1402,
+			"image" : "models/初音未来-云天_0019_发带3.json",
+			"name" : "0019_发带3",
+			"parent" : 568,
+			"scale" : "2.00000 2.00000 1.00000",
+			"size" : "900.00000 891.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 581,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 2.0554142,
+								"exponent" : 1,
+								"scale" : 10,
+								"speed" : 5,
+								"strength" : 0.1
+							},
+							"id" : 583,
+							"textures" : [ null, "masks/waterwaves_mask_d028bc3d" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/twirl/effect.json",
+					"id" : 589,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"combos" : 
+							{
+								"REPEAT" : 0
+							},
+							"constantshadervalues" : 
+							{
+								"amount" : 0.1,
+								"angle" : 0,
+								"center" : "0.42062 0.52658",
+								"feather" : 0.0020000001,
+								"phase" : 0,
+								"ratio" : 1,
+								"size" : 0.44719613,
+								"speed" : 1
+							},
+							"id" : 590,
+							"textures" : [ null, "masks/twirl_mask_968c3c5c_copy1" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/twirl/effect.json",
+					"id" : 594,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"amount" : 0.02,
+								"angle" : 0,
+								"center" : "0.43368 0.39720",
+								"feather" : 0.0020000001,
+								"phase" : 1,
+								"ratio" : 1,
+								"size" : 0.5,
+								"speed" : 1
+							},
+							"id" : 595
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 573,
+			"image" : "models/云天_0024_手.json",
+			"name" : "云天_0024_手",
+			"parent" : 568,
+			"scale" : "1.25000 1.25000 1.00000",
+			"size" : "1555.00000 1555.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/foliagesway/effect.json",
+					"id" : 2458,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"phase" : 0.5,
+								"power" : 1,
+								"ratio" : 0.30000001,
+								"scale" : 0.050000001,
+								"scrolldirection" : 0,
+								"speeduv" : 7.0900002,
+								"strength" : 0.5
+							},
+							"id" : 2459,
+							"textures" : [ null, "masks/foliagesway_mask_fa1c1d52", null ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/twirl/effect.json",
+					"id" : 544,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"combos" : 
+							{
+								"REPEAT" : 0
+							},
+							"constantshadervalues" : 
+							{
+								"amount" : 0.1,
+								"angle" : 0,
+								"center" : "0.42062 0.52658",
+								"feather" : 0.0020000001,
+								"phase" : 0,
+								"ratio" : 1,
+								"size" : 0.44719613,
+								"speed" : 1
+							},
+							"id" : 545,
+							"textures" : [ null, "masks/twirl_mask_968c3c5c_copy1" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/twirl/effect.json",
+					"id" : 309,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"amount" : 0.02,
+								"angle" : 0,
+								"center" : "0.43368 0.39720",
+								"feather" : 0.0020000001,
+								"phase" : 1,
+								"ratio" : 1,
+								"size" : 0.5,
+								"speed" : 1
+							},
+							"id" : 310
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 2456,
+			"image" : "models/初音未来-云天_0006_花束.json",
+			"name" : "0006_花束",
+			"parent" : 568,
+			"scale" : "1.25000 1.25000 1.00000",
+			"size" : "1555.00000 1555.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/twirl/effect.json",
+					"id" : 541,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"combos" : 
+							{
+								"REPEAT" : 0
+							},
+							"constantshadervalues" : 
+							{
+								"amount" : 0.1,
+								"angle" : 0,
+								"center" : "0.42062 0.52658",
+								"feather" : 0.0020000001,
+								"phase" : 0,
+								"ratio" : 1,
+								"size" : 0.44719613,
+								"speed" : 1
+							},
+							"id" : 542,
+							"textures" : [ null, "masks/twirl_mask_968c3c5c_copy1" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/twirl/effect.json",
+					"id" : 304,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"amount" : 0.02,
+								"angle" : 0,
+								"center" : "0.43368 0.39720",
+								"feather" : 0.0020000001,
+								"phase" : 1,
+								"ratio" : 1,
+								"size" : 0.5,
+								"speed" : 1
+							},
+							"id" : 305
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 2462,
+			"image" : "models/初音未来-云天_0005_手指.json",
+			"name" : "0005_手指",
+			"parent" : 568,
+			"scale" : "2.00000 2.00000 1.00000",
+			"size" : "972.00000 972.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 286,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 1.3697726,
+								"exponent" : 1.0,
+								"scale" : 20,
+								"speed" : 3,
+								"strength" : 0.039999999
+							},
+							"id" : 287,
+							"textures" : [ null, "masks/waterwaves_mask_825197bd" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 576,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 2.6030972,
+								"exponent" : 1,
+								"scale" : 10,
+								"speed" : 5,
+								"strength" : 0.1
+							},
+							"id" : 577,
+							"textures" : [ null, "masks/waterwaves_mask_3dc234fa" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 1292,
+			"image" : "models/初音未来-云天_0016_主体.json",
+			"name" : "初音未来-云天_0016_主体",
+			"parent" : 568,
+			"size" : "1944.00000 2169.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 1621,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 3.0752656,
+								"exponent" : 0.89999998,
+								"scale" : 10,
+								"speed" : 5,
+								"strength" : 0.07
+							},
+							"id" : 1622,
+							"textures" : [ null, "masks/waterwaves_mask_a4383a7d" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 1580,
+			"image" : "models/初音未来-云天_0010_刘海1.json",
+			"name" : "初音未来-云天_0010_刘海1",
+			"parent" : 568,
+			"size" : "3675.00000 2169.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 1624,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -2.9771798,
+								"exponent" : 1,
+								"scale" : 10,
+								"speed" : 5,
+								"strength" : 0.07
+							},
+							"id" : 1625,
+							"textures" : [ null, "masks/waterwaves_mask_5ab7fbbe" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 1593,
+			"image" : "models/初音未来-云天_0009_刘海2.json",
+			"name" : "初音未来-云天_0009_刘海2",
+			"parent" : 568,
+			"size" : "3675.00000 2169.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 1627,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -2.9836171,
+								"exponent" : 1,
+								"scale" : 10,
+								"speed" : 5,
+								"strength" : 0.07
+							},
+							"id" : 1628,
+							"textures" : [ null, "masks/waterwaves_mask_ce807d56" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 1606,
+			"image" : "models/初音未来-云天_0008_刘海3.json",
+			"name" : "初音未来-云天_0008_刘海3",
+			"parent" : 568,
+			"size" : "3675.00000 2169.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 1630,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -3.0893099,
+								"exponent" : 1,
+								"scale" : 10,
+								"speed" : 5,
+								"strength" : 0.07
+							},
+							"id" : 1631,
+							"textures" : [ null, "masks/waterwaves_mask_0e5b0210" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 1619,
+			"image" : "models/初音未来-云天_0007_刘海4.json",
+			"name" : "初音未来-云天_0007_刘海4",
+			"parent" : 568,
+			"size" : "3675.00000 2169.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 1122,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -1.352074,
+								"exponent" : 1,
+								"scale" : 10,
+								"speed" : 5,
+								"strength" : 0.059999999
+							},
+							"id" : 1123,
+							"textures" : [ null, "masks/waterwaves_mask_09baa4ed" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 1119,
+			"image" : "models/初音未来-云天_0003_发带1.json",
+			"name" : "初音未来-云天_0003_发带1",
+			"parent" : 568,
+			"scale" : "2.00000 2.00000 1.00000",
+			"size" : "972.00000 972.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 815,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 2.6030972,
+								"exponent" : 1,
+								"scale" : 10,
+								"speed" : 5,
+								"strength" : 0.1
+							},
+							"id" : 816,
+							"textures" : [ null, "masks/waterwaves_mask_3dc234fa_copy1" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 857,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -2.4689803,
+								"exponent" : 1,
+								"scale" : 10,
+								"speed" : 5,
+								"strength" : 0.1
+							},
+							"id" : 858,
+							"textures" : [ null, "masks/waterwaves_mask_b76bf109_copy4" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 907,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 2.9836171,
+								"exponent" : 1,
+								"scale" : 10,
+								"speed" : 5,
+								"strength" : 0.1
+							},
+							"id" : 908,
+							"textures" : [ null, "masks/waterwaves_mask_b76bf109_copy5" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 498,
+			"image" : "models/初音未来-云天_0001s_0006_裙子底.json",
+			"name" : "初音未来-云天_0001s_0006_裙子底",
+			"parent" : 568,
+			"scale" : "2.36000 2.36000 1.00000",
+			"size" : "1555.00000 918.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"id" : 1106,
+			"image" : "models/初音未来-云天_0001s_0004_腿1.json",
+			"name" : "腿1",
+			"parent" : 568,
+			"scale" : "2.00000 2.00000 1.00000",
+			"size" : "972.00000 1445.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 734,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"combos" : 
+							{
+								"PERSPECTIVE" : 1
+							},
+							"constantshadervalues" : 
+							{
+								"direction" : -3.0943954,
+								"exponent" : 1,
+								"point0" : "0 0",
+								"point1" : "1 0",
+								"point2" : "1 1",
+								"point3" : "0 1",
+								"scale" : 10,
+								"speed" : 5,
+								"strength" : 0.1
+							},
+							"id" : 735,
+							"textures" : [ null, "masks/waterwaves_mask_b76bf109_copy2" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 769,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 2.6030972,
+								"exponent" : 1.0,
+								"scale" : 10,
+								"speed" : 5.0,
+								"strength" : 0.1
+							},
+							"id" : 770,
+							"textures" : [ null, "masks/waterwaves_mask_3dc234fa" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 501,
+			"image" : "models/初音未来-云天_0001s_0003_裙子顶1.json",
+			"name" : "初音未来-云天_0001s_0003_裙子顶1",
+			"parent" : 568,
+			"scale" : "2.00000 2.00000 1.00000",
+			"size" : "1838.00000 1085.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 958,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -2.4062455,
+								"exponent" : 1.0,
+								"scale" : 10,
+								"speed" : 5.0,
+								"strength" : 0.1
+							},
+							"id" : 959,
+							"textures" : [ null, "masks/waterwaves_mask_64791592" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 504,
+			"image" : "models/初音未来-云天_0001s_0002_裙子顶2.json",
+			"name" : "初音未来-云天_0001s_0002_裙子顶2",
+			"parent" : 568,
+			"scale" : "2.00000 2.00000 1.00000",
+			"size" : "1838.00000 1085.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 555,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -2.4689803,
+								"exponent" : 1,
+								"scale" : 10,
+								"speed" : 5,
+								"strength" : 0.1
+							},
+							"id" : 556,
+							"textures" : [ null, "masks/waterwaves_mask_b76bf109_copy1" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 605,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"combos" : 
+							{
+								"PERSPECTIVE" : 1
+							},
+							"constantshadervalues" : 
+							{
+								"direction" : -3.0943954,
+								"exponent" : 1,
+								"point0" : "0 0",
+								"point1" : "1 0",
+								"point2" : "1 1",
+								"point3" : "0 1",
+								"scale" : 10,
+								"speed" : 5,
+								"strength" : 0.1
+							},
+							"id" : 606,
+							"textures" : [ null, "masks/waterwaves_mask_b76bf109_copy2" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 517,
+			"image" : "models/初音未来-云天_0001s_0001_裙子顶3.json",
+			"name" : "初音未来-云天_0001s_0001_裙子顶3",
+			"parent" : 568,
+			"scale" : "2.36000 2.36000 1.00000",
+			"size" : "1555.00000 918.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 523,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -2.4689803,
+								"exponent" : 1.0,
+								"scale" : 10,
+								"speed" : 5.0,
+								"strength" : 0.1
+							},
+							"id" : 524,
+							"textures" : [ null, "masks/waterwaves_mask_b76bf109" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 521,
+			"image" : "models/初音未来-云天_0001s_0000_裙子顶4.json",
+			"name" : "初音未来-云天_0001s_0000_裙子顶4",
+			"parent" : 568,
+			"size" : "3675.00000 2169.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 1088,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 2.3589213,
+								"exponent" : 1,
+								"scale" : 10,
+								"speed" : 5,
+								"strength" : 0.1
+							},
+							"id" : 1089
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 1085,
+			"image" : "models/初音未来-云天_0014_头发1.json",
+			"name" : "初音未来-云天_0014_头发1",
+			"parent" : 568,
+			"scale" : "2.36000 2.36000 1.00000",
+			"size" : "1555.00000 918.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 283,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -2.4490898,
+								"exponent" : 1,
+								"scale" : 10,
+								"speed" : 5,
+								"strength" : 0.079999998
+							},
+							"id" : 284,
+							"textures" : [ null, "masks/waterwaves_mask_0a852cab" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/twirl/effect.json",
+					"id" : 424,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"combos" : 
+							{
+								"REPEAT" : 0
+							},
+							"constantshadervalues" : 
+							{
+								"amount" : 0.050000001,
+								"angle" : 0,
+								"center" : "0.39620 0.36488",
+								"feather" : 0.0020000001,
+								"phase" : 0,
+								"ratio" : 1,
+								"size" : 0.68989402,
+								"speed" : 1
+							},
+							"id" : 425,
+							"textures" : [ null, "masks/twirl_mask_968c3c5c" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 68,
+			"image" : "models/初音未来-云天_0013_袖子底.json",
+			"name" : "初音未来-云天_0013_袖子底",
+			"parent" : 568,
+			"scale" : "2.36000 2.36000 1.00000",
+			"size" : "1555.00000 918.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 624,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -2.3589213,
+								"exponent" : 1,
+								"scale" : 10,
+								"speed" : 5,
+								"strength" : 0.1
+							},
+							"id" : 625,
+							"textures" : [ null, "masks/waterwaves_mask_bfd224cf" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 627,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 0.61845303,
+								"exponent" : 1,
+								"scale" : 10,
+								"speed" : 5,
+								"strength" : 0.1
+							},
+							"id" : 628,
+							"textures" : [ null, "masks/waterwaves_mask_fc5ae1ab" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/twirl/effect.json",
+					"id" : 632,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"combos" : 
+							{
+								"REPEAT" : 0
+							},
+							"constantshadervalues" : 
+							{
+								"amount" : 0.050000001,
+								"angle" : 0,
+								"center" : "0.39620 0.36488",
+								"feather" : 0.0020000001,
+								"phase" : 0,
+								"ratio" : 1,
+								"size" : 0.71713656,
+								"speed" : 1
+							},
+							"id" : 633,
+							"textures" : [ null, "masks/twirl_mask_968c3c5c" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 622,
+			"image" : "models/云天_0018_手臂.json",
+			"name" : "云天_0018_手臂",
+			"parent" : 568,
+			"size" : "3675.00000 2169.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 1387,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -2.4490898,
+								"exponent" : 1.0,
+								"scale" : 10,
+								"speed" : 5.0,
+								"strength" : 0.079999998
+							},
+							"id" : 1388,
+							"textures" : [ null, "masks/waterwaves_mask_0a852cab" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 378,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 1.3697726,
+								"exponent" : 1,
+								"scale" : 20,
+								"speed" : 3,
+								"strength" : 0.039999999
+							},
+							"id" : 379,
+							"textures" : [ null, "masks/waterwaves_mask_825197bd" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/twirl/effect.json",
+					"id" : 418,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"combos" : 
+							{
+								"REPEAT" : 0
+							},
+							"constantshadervalues" : 
+							{
+								"amount" : 0.050000001,
+								"angle" : 0,
+								"center" : "0.39620 0.36488",
+								"feather" : 0.0020000001,
+								"phase" : 0,
+								"ratio" : 1,
+								"size" : 0.68989402,
+								"speed" : 1
+							},
+							"id" : 419,
+							"textures" : [ null, "masks/twirl_mask_968c3c5c" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 76,
+			"image" : "models/初音未来-云天_0011_袖子.json",
+			"name" : "初音未来-云天_0011_袖子",
+			"parent" : 568,
+			"scale" : "2.00000 2.00000 1.00000",
+			"size" : "1838.00000 1085.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 916,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 2.7457676,
+								"exponent" : 1,
+								"scale" : 15,
+								"speed" : 5,
+								"strength" : 0.1
+							},
+							"id" : 917,
+							"textures" : [ null, "masks/waterwaves_mask_23537528" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 910,
+			"image" : "models/初音未来-云天_0002_发带2.json",
+			"name" : "初音未来-云天_0002_发带2",
+			"parent" : 568,
+			"scale" : "2.36000 2.36000 1.00000",
+			"size" : "1555.00000 918.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 195,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 0,
+								"exponent" : 1,
+								"scale" : 10.43,
+								"speed" : 5,
+								"strength" : 0.1
+							},
+							"id" : 0,
+							"textures" : [ null, "masks/waterwaves_mask_08ddbf6d" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 202,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 0.58100677,
+								"exponent" : 1,
+								"scale" : 10.43,
+								"speed" : 5,
+								"strength" : 0.1
+							},
+							"id" : 203,
+							"textures" : [ null, "masks/waterwaves_mask_cd213b39" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/twirl/effect.json",
+					"id" : 549,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"combos" : 
+							{
+								"REPEAT" : 0
+							},
+							"constantshadervalues" : 
+							{
+								"amount" : 0.1,
+								"angle" : 0,
+								"center" : "0.42062 0.52658",
+								"feather" : 0.0020000001,
+								"phase" : 0,
+								"ratio" : 1,
+								"size" : 0.96803635,
+								"speed" : 1
+							},
+							"id" : 550,
+							"textures" : [ null, "masks/twirl_mask_968c3c5c_copy1" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/twirl/effect.json",
+					"id" : 315,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"amount" : 0.02,
+								"angle" : 0,
+								"center" : "0.43368 0.39720",
+								"feather" : 0.0020000001,
+								"phase" : 1,
+								"ratio" : 1,
+								"size" : 0.96648765,
+								"speed" : 1
+							},
+							"id" : 316
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/twirl/effect.json",
+					"id" : 392,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"amount" : 0.02,
+								"angle" : 0,
+								"center" : "0.43368 0.39720",
+								"feather" : 0.0020000001,
+								"phase" : 1,
+								"ratio" : 1,
+								"size" : 0.96648765,
+								"speed" : 1
+							},
+							"id" : 393
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 162,
+			"image" : "models/初音未来-云天_0001_缎带2.json",
+			"name" : "初音未来-云天_0001_缎带2",
+			"parent" : 568,
+			"scale" : "2.36000 2.36000 1.00000",
+			"size" : "1555.00000 918.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 708,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 0.0,
+								"exponent" : 1.0,
+								"scale" : 10,
+								"speed" : 5.0,
+								"strength" : 0.059999999
+							},
+							"id" : 709,
+							"textures" : [ null, "masks/waterwaves_mask_52efbc92" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 240,
+			"image" : "models/初音未来-云天_0000s_0001_蝴蝶结左.json",
+			"name" : "初音未来-云天_0000s_0001_蝴蝶结左",
+			"parent" : 568,
+			"scale" : "2.36000 2.36000 1.00000",
+			"size" : "1555.00000 918.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 280,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : -1.5751714,
+								"exponent" : 1,
+								"scale" : 10,
+								"speed" : 5,
+								"strength" : 0.039999999
+							},
+							"id" : 281,
+							"textures" : [ null, "masks/waterwaves_mask_b11fef48" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 285,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 1.6776081,
+								"exponent" : 1,
+								"scale" : 10,
+								"speed" : 5,
+								"strength" : 0.039999999
+							},
+							"id" : 288,
+							"textures" : [ null, "masks/waterwaves_mask_88591ba0" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 264,
+			"image" : "models/初音未来-云天_0000s_0000_蝴蝶结主.json",
+			"name" : "初音未来-云天_0000s_0000_蝴蝶结主",
+			"parent" : 568,
+			"scale" : "2.36000 2.36000 1.00000",
+			"size" : "1555.00000 918.00000"
+		},
+		{
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"effects" : 
+			[
+				{
+					"file" : "effects/waterwaves/effect.json",
+					"id" : 168,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"direction" : 0,
+								"exponent" : 1,
+								"scale" : 10.43,
+								"speed" : 5,
+								"strength" : 0.1
+							},
+							"id" : 179,
+							"textures" : [ null, "masks/waterwaves_mask_ed7ab2b5" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/twirl/effect.json",
+					"id" : 429,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"combos" : 
+							{
+								"REPEAT" : 0
+							},
+							"constantshadervalues" : 
+							{
+								"amount" : 0.050000001,
+								"angle" : 0,
+								"center" : "0.39620 0.36488",
+								"feather" : 0.0020000001,
+								"phase" : 0,
+								"ratio" : 1,
+								"size" : 0.77554137,
+								"speed" : 1
+							},
+							"id" : 430,
+							"textures" : [ null, "masks/twirl_mask_968c3c5c" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/twirl/effect.json",
+					"id" : 669,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"combos" : 
+							{
+								"REPEAT" : 0
+							},
+							"constantshadervalues" : 
+							{
+								"amount" : 0.1,
+								"angle" : 0,
+								"center" : "0.42062 0.52658",
+								"feather" : 0.0020000001,
+								"phase" : 0,
+								"ratio" : 1,
+								"size" : 0.96803635,
+								"speed" : 1
+							},
+							"id" : 670,
+							"textures" : [ null, "masks/twirl_mask_d3241c6e" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/twirl/effect.json",
+					"id" : 492,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"amount" : 0.02,
+								"angle" : 0,
+								"center" : "0.43368 0.39720",
+								"feather" : 0.0020000001,
+								"phase" : 1,
+								"ratio" : 1,
+								"size" : 0.97622156,
+								"speed" : 1
+							},
+							"id" : 493,
+							"textures" : [ null, "masks/twirl_mask_d1bb3427" ]
+						}
+					],
+					"visible" : true
+				},
+				{
+					"file" : "effects/twirl/effect.json",
+					"id" : 499,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"amount" : 0.02,
+								"angle" : 0,
+								"center" : "0.43368 0.39720",
+								"feather" : 0.0020000001,
+								"phase" : 1,
+								"ratio" : 1,
+								"size" : 0.96648765,
+								"speed" : 1
+							},
+							"id" : 500,
+							"textures" : [ null, "masks/twirl_mask_f1f8499f" ]
+						}
+					],
+					"visible" : true
+				}
+			],
+			"id" : 159,
+			"image" : "models/初音未来-云天_0000_缎带1.json",
+			"name" : "初音未来-云天_0000_缎带1",
+			"parent" : 568,
+			"scale" : "2.36000 2.36000 1.00000",
+			"size" : "1555.00000 918.00000"
+		},
+		{
+			"alpha" : 
 			{
-				"user" : "schemecolor",
-				"value" : "0.49412 0.06667 0.05098"
+				"user" : "newproperty1",
+				"value" : 1.0
 			},
-			"colorBlendMode" : 1,
-			"copybackground" : true,
-			"id" : 220,
-			"image" : "models/video_bg_border.json",
-			"ledsource" : false,
-			"locktransforms" : true,
-			"name" : "video_bg_border",
-			"origin" : "960.00000 540.00000 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
-			"scale" : "2.87000 2.98000 1.00000",
-			"size" : "670.00000 365.00000",
-			"solid" : true,
-			"visible" : 
-			{
-				"user" : "bk",
-				"value" : true
-			}
-		},
-		{
-			"alpha" : 1.0,
 			"anchor" : "none",
-			"angles" : "0.00000 0.00000 0.00000",
+			"angles" : "-0.00000 -0.00000 -0.01036",
 			"backgroundbrightness" : 1.0,
 			"backgroundcolor" : "0.00000 0.00000 0.00000",
 			"blockalign" : false,
-			"brightness" : 1.0,
-			"color" : "1.00000 1.00000 1.00000",
-			"colorBlendMode" : 0,
-			"copybackground" : true,
-			"font" : "systemfont_arial",
+			"brightness" : 1.4,
+			"castshadow" : false,
+			"color" : 
+			{
+				"user" : "newproperty",
+				"value" : "0.00000 1.00000 1.00000"
+			},
+			"depthtest" : "enabled",
+			"effects" : 
+			[
+				{
+					"file" : "effects/workshop/2981960200/blurprecise/effect.json",
+					"id" : 596,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"scale" : "0.43 0.43"
+							},
+							"id" : 597
+						},
+						{
+							"combos" : 
+							{
+								"ENABLEMASK" : 1,
+								"VERTICAL" : 1
+							},
+							"constantshadervalues" : 
+							{
+								"scale" : "0.43 0.43"
+							},
+							"id" : 598
+						}
+					],
+					"visible" : true
+				}
+			],
+			"font" : "fonts/workshop/2981960200/Anurati-Regular.otf",
 			"horizontalalign" : "center",
-			"id" : 267,
-			"ledsource" : false,
+			"id" : 587,
 			"limitrows" : false,
 			"limituseellipsis" : false,
 			"limitwidth" : false,
-			"locktransforms" : true,
 			"maxrows" : 1,
 			"maxwidth" : 500.0,
-			"name" : "————————",
+			"name" : "D a y",
 			"opaquebackground" : false,
-			"origin" : "960.00000 540.00000 0.00000",
+			"origin" : 
+			{
+				"script" : "'use strict';\n\n// import * as WEVector from 'WEVector';\n\n/**\n * 此脚本允许用户在屏幕上拖放元素。\n * 基于官方预设拖拽、屏幕弹跳脚本修改。\n * 将此脚本附加到图像层的“原点”属性，使其在屏幕上反弹。\n * 图层必须小于壁纸，否则此脚本将无法运行！\n */\n\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'tz',\n\t\tlabel: 'ui_editor_script_snippet_drag_drop',\n\t\tvalue: false\n\t})\n\t// .addCheckbox({\n\t// \tname: 'tt',\n\t// \tlabel: 'ui_editor_script_snippet_screen_bounce',\n\t// \tvalue: false\n\t// })\n\t.addCheckbox({\n\t\tname: 'pmztz',\n\t\tlabel: '屏幕中拖拽',\n\t\tvalue: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhix',\n\t\tlabel: 'X',\n\t\tvalue: 0,\n\t\tmin: 0,\n\t\tmax: 3840,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiy',\n\t\tlabel: 'Y',\n\t\tvalue: 0,\n\t\tmin: 0,\n\t\tmax: 2160,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiz',\n\t\tlabel: 'Z',\n\t\tvalue: 0,\n\t\tmin: -2000,\n\t\tmax: 2000,\n\t\tinteger: false\n\t})\n\t.finish();\n\n// 以90度为步长随机选择方向\n// var direction = new Vec3(WEVector.angleVector2(45 + Math.floor(Math.random() * 4) * 90));\nvar direction = new Vec3\nlet isDragging = false;\nlet dragOffset;\nlet tuozuai = 1\nlet count = 0, firstClickTime;\nlet doubleClickFrameTime = 500; //毫秒\nexport function cursorClick(event) {\n\n\tcount++;\n\tif (count % 2 !== 0) //如果点击次数是奇数（1、3、5）\n\t{\n\t\tfirstClickTime = Date.now(); //记住点击的时间\n\t}\n\tif (count % 2 === 0) //如果点击次数是偶数（2、4、6）\n\t{\n\t\tif (Date.now() - firstClickTime > doubleClickFrameTime) //如果从第一次点击到第二次点击的时间超过双击的预期时间范围\n\t\t{\n\t\t\tfirstClickTime = Date.now(); //记住新的时间\n\t\t\tcount--; //-1 click\n\t\t}\n\t\telse //点击在双击的预期时间范围内\n\t\t{\n\t\t\tif (scriptProperties.tz){\n\t\t\tif (tuozuai == 1){\n\t\t\t\t\ttuozuai = 2\n\t\t\t}\n\t\t\telse if (tuozuai == 2){\n\t\t\ttuozuai = 1\n\t\t\t}\n\t\t\tcount = 0; //重置点击次数\n\t\t}\n\t}\n}\n}\n\nexport function cursorDown(event) {\t\n\tif(tuozuai == 2){\n\t\tisDragging = true;\n\t}\n\tdragOffset = thisLayer.origin.subtract(event.worldPosition);\n}\n\nexport function cursorUp(event) {\n\tisDragging = false;\n}\n//拖拽\nexport function cursorMove(event) {\n\tif (isDragging) {\n\t\tthisLayer.origin = event.worldPosition.add(dragOffset);\n\t\tweizhi = thisLayer.origin;\n\t\tscriptProperties.weizhix = thisLayer.origin.x - weizhix;\n\t\tscriptProperties.weizhiy = thisLayer.origin.y - weizhiy;\n\t\tscriptProperties.weizhiz = thisLayer.origin.z - weizhiz;\n\t}\n}\n\nexport function update(value) {\n\n\tvalue = weizhi;\n//滑块\n\tvalue.x = scriptProperties.weizhix + weizhix;\n\tvalue.y = scriptProperties.weizhiy + weizhiy;\n\tvalue.z = scriptProperties.weizhiz + weizhiz;\n\n\tlet scale = thisLayer.scale;\n\tlet imageSize = thisLayer.size;\n\tlet canvasSize = engine.canvasSize;\n\n\t// 我们需要从中心到边界的尺寸。\n\timageSize.x *= scale.x * 0.5;\n\timageSize.y *= scale.y * 0.5;\n\nif (scriptProperties.pmztz && tuozuai == 2){\n\n\t// 击中屏幕边界并反映方向。\nvalue.x = Math.min(Math.max(value.x, imageSize.x), canvasSize.x - imageSize.x);\nvalue.y = Math.min(Math.max(value.y, imageSize.y), canvasSize.y - imageSize.y);\n\n}\n\n// if (scriptProperties.tt){\n// value.x = Math.max(Math.min(value.x, canvasSize.x - imageSize.x), imageSize.x);\n// value.y = Math.max(Math.min(value.y, canvasSize.y - imageSize.y), imageSize.y);\n// const reflectVec = new Vec3(Math.sign(value.x - imageSize.x - canvasSize.x / 2), Math.sign(value.y - imageSize.y - canvasSize.y / 2), 0);\n// direction = direction.reflect(reflectVec);\n// }\n\n\t\nconsole.log(value)\n\treturn value;\n\t\n}\n\nvar weizhi= {\nx: 0,\ny: 0,\nz: 0\n};\nvar weizhix=0,weizhiy=0,weizhiz=0\nexport function init(value) {\n\tweizhi = value\n\tweizhix = value.x\n\tweizhiy = value.y\n\tweizhiz = value.z\n\treturn value;\n}\n",
+				"scriptproperties" : 
+				{
+					"pmztz" : false,
+					"tz" : false,
+					"weizhix" : 
+					{
+						"user" : "x",
+						"value" : 0
+					},
+					"weizhiy" : 
+					{
+						"user" : "y",
+						"value" : 0
+					},
+					"weizhiz" : 0
+				},
+				"value" : "0.00000 0.00000 0.00000"
+			},
 			"padding" : 32,
-			"parallaxDepth" : "1.00000 1.00000",
-			"perspective" : false,
+			"parallaxDepth" : "-0.60000 -0.60000",
 			"pointsize" : 32.0,
-			"scale" : "1.00000 1.00000 1.00000",
-			"size" : "615.00000 153.00000",
-			"solid" : true,
-			"text" : "Text Layer",
+			"scale" : "1.00000 1.00000 0.95818",
+			"size" : "368.00000 224.00000",
+			"text" : 
+			{
+				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '2981960200';\n// Please note: Do not remove this line or asset references may break.\n// Please note: Do not remove this line or asset references may break.\n\n\nexport var scriptProperties = createScriptProperties()\n\t.addCombo({\n\t\tname: 'monthFormat',\n\t\tlabel: 'Month Format',\n\t\toptions: [{\n\t\t\tlabel: 'Numeric',\n\t\t\tvalue: '1'\n\t\t}, {\n\t\t\tlabel: 'Abbreviated',\n\t\t\tvalue: '2'\n\t\t},{\n\t\t\tlabel: 'Full',\n\t\t\tvalue: '3'\n\t\t}]\n\t})\n\t.addCombo({\n\t\tname: 'dayFormat',\n\t\tlabel: 'Day Format',\n\t\toptions: [{\n\t\t\tlabel: 'Abbreviated',\n\t\t\tvalue: '1'\n\t\t}, {\n\t\t\tlabel: 'Full',\n\t\t\tvalue: '2'\n\t\t}]\n\t})\n\t.addCheckbox({\n\t\tname: 'showDay',\n\t\tlabel: 'Show Day',\n\t\tvalue: true\n\t})\n   .addCheckbox({\n\t\tname: 'alignVertical',\n\t\tlabel: 'Align Day Vertically',\n\t\tvalue: false\n\t})\n  .addCheckbox({\n\t\tname: 'useDelimiter',\n\t\tlabel: 'Use Delimiter',\n\t\tvalue: false\n\t})\n\t.addText({\n\t\tname: 'addDelimiter',\n\t\tlabel: 'Delimiter',\n\t\tvalue: '/'\n\t})\n\t.finish();\n\n\nlet months;\nlet day;\nvar delimiterValue;\nvar newLine;\n/**\n * @param {String} value (for property 'text')\n */\nexport function update(value){\n  if (scriptProperties.useDelimiter == true){\n  delimiterValue = scriptProperties.addDelimiter\n}\n  if (scriptProperties.useDelimiter == false){\n   delimiterValue = [\n  ' '\n]\n}\nif (scriptProperties.alignVertical == true){\n   newLine = [\n  '\\n'\n]\n}\nif (scriptProperties.alignVertical == false){\n   newLine = [\n  ''\n]\n}\n  if (scriptProperties.monthFormat == 1){\n  months = [\n  '1',\n  '2',\n  '3',\n  '4',\n  '5',\n  '6',\n  '7',\n  '8',\n  '9',\n  '10',\n  '11',\n  '12'\n]\n}\n if (scriptProperties.monthFormat == 2){\n months = [\n  'JAN',\n  'FEB',\n  'MAR',\n  'APR',\n  'MAY',\n  'JUN',\n  'JUL',\n  'AUG',\n  'SEP',\n  'OCT',\n  'NOV',\n  'DEC'\n]\n}\nif (scriptProperties.monthFormat == 3){\n months = [\n  'January',\n  'February',\n  'March',\n  'April',\n  'May',\n  'June',\n  'July',\n  'August',\n  'September',\n  'October',\n  'November',\n  'December'\n]\n}\nif (scriptProperties.dayFormat == 1){\n  day = [\n  'S U N',\n  'M O N',\n  'T U E',\n  'W E D',\n  'T H U',\n  'F R I',\n  'S A T'\n]\n}\nif (scriptProperties.dayFormat == 2){\n day = [\n  'S U N D A Y',\n  'M O N D A Y',\n  'T U E S D A Y',\n  'W E D N E S D A Y',\n  'T H U R S D A Y',\n  'F R I D A Y',\n  'S A T U R D A Y'\n]\n}\n\tlet date = new Date();{\n    if (scriptProperties.showDay == true ){\n    return day[date.getDay()]      }\n    if (scriptProperties.showDay == false ){\n\treturn   date.getDate() + delimiterValue + months[date.getMonth()] + delimiterValue + date.getFullYear();\n}\n}\n}\n",
+				"scriptproperties" : 
+				{
+					"addDelimiter" : "/",
+					"alignVertical" : false,
+					"dayFormat" : "2",
+					"monthFormat" : "1",
+					"showDay" : true,
+					"useDelimiter" : true
+				},
+				"value" : "DAY"
+			},
 			"verticalalign" : "center",
-			"visible" : false
+			"visible" : 
+			{
+				"user" : "newproperty20",
+				"value" : true
+			}
 		},
 		{
-			"angles" : "0.00000 0.00000 0.00000",
-			"id" : 102,
-			"locktransforms" : false,
-			"maxtime" : 5.0,
-			"mintime" : 1.0,
-			"muteineditor" : true,
-			"name" : "拉毗台词.mp3",
-			"origin" : "0.00000 0.00000 0.00000",
-			"parallaxDepth" : "1.00000 1.00000",
-			"playbackmode" : "single",
-			"scale" : "1.00000 1.00000 1.00000",
-			"sound" : [ "sounds/拉毗台词.mp3" ],
-			"startsilent" : true,
-			"volume" : 1.0
+			"alpha" : 
+			{
+				"user" : "newproperty1",
+				"value" : 1.0
+			},
+			"anchor" : "none",
+			"angles" : "0.00000 -0.00000 0.01036",
+			"backgroundbrightness" : 1.0,
+			"backgroundcolor" : "0.00000 0.00000 0.00000",
+			"blockalign" : false,
+			"brightness" : 2.3900001,
+			"castshadow" : false,
+			"color" : 
+			{
+				"user" : "newproperty",
+				"value" : "0.00000 1.00000 1.00000"
+			},
+			"depthtest" : "enabled",
+			"effects" : 
+			[
+				{
+					"file" : "effects/workshop/2981960200/blurprecise/effect.json",
+					"id" : 572,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"scale" : "1.28 1.28"
+							},
+							"id" : 574
+						},
+						{
+							"combos" : 
+							{
+								"ENABLEMASK" : 1,
+								"VERTICAL" : 1
+							},
+							"constantshadervalues" : 
+							{
+								"scale" : "1.28 1.28"
+							},
+							"id" : 582
+						}
+					],
+					"visible" : true
+				}
+			],
+			"font" : "fonts/workshop/2981960200/Quicksand-Bold.otf",
+			"horizontalalign" : "center",
+			"id" : 571,
+			"limitrows" : false,
+			"limituseellipsis" : false,
+			"limitwidth" : false,
+			"maxrows" : 1,
+			"maxwidth" : 500.0,
+			"name" : "Clock",
+			"opaquebackground" : false,
+			"origin" : "-20.27137 -90.00000 0.00000",
+			"padding" : 32,
+			"parent" : 587,
+			"pointsize" : 32.0,
+			"scale" : "0.50000 0.50000 0.29262",
+			"size" : "387.00000 219.00000",
+			"text" : 
+			{
+				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '2981960200';\n// Please note: Do not remove this line or asset references may break.\n\nexport var scriptProperties = createScriptProperties()\n\t// Whether you want a 24h or 12h style format\n\t.addCheckbox({\n\t\tname: 'use24hFormat',\n\t\tlabel: 'ui_editor_properties_use_24h_format',\n\t\tvalue: true\n\t})\n\t// Whether you want to see the seconds or not\n\t.addCheckbox({\n\t\tname: 'showSeconds',\n\t\tlabel: 'ui_editor_properties_show_seconds',\n\t\tvalue: false\n\t})\n\t// This will be used to separate each element\n\t.addText({\n\t\tname: 'delimiter',\n\t\tlabel: 'ui_editor_properties_delimiter',\n\t\tvalue: ':'\n\t})\n\t.finish();\n\n/**\n * @param {String} value (for property 'text')\n */\nexport function update(value) {\n\tlet time = new Date();\n\tvar hours = time.getHours();\n\tif (!scriptProperties.use24hFormat) {\n\t\thours %= 12;\n\t\tif (hours == 0) {\n\t\t\thours = 12;\n\t\t}\n\t}\n\thours = (\"00\" + hours).slice(-2);\n\tlet minutes = (\"00\" + time.getMinutes()).slice(-2);\n\tvalue = \"-\" + hours + scriptProperties.delimiter + minutes+\"-\";\n\tif (scriptProperties.showSeconds) {\n\t\tlet seconds = (\"00\" + time.getSeconds()).slice(-2);\n\t\tvalue += scriptProperties.delimiter + seconds;\n\t}\n\treturn value;\n}\n",
+				"scriptproperties" : 
+				{
+					"delimiter" : ":",
+					"showSeconds" : false,
+					"use24hFormat" : 
+					{
+						"user" : "_24",
+						"value" : false
+					}
+				},
+				"value" : "12:34"
+			},
+			"verticalalign" : "center"
+		},
+		{
+			"alpha" : 
+			{
+				"user" : "newproperty1",
+				"value" : 1.0
+			},
+			"anchor" : "none",
+			"angles" : "0.00000 -0.00000 0.01036",
+			"backgroundbrightness" : 1.0,
+			"backgroundcolor" : "0.00000 0.00000 0.00000",
+			"blockalign" : false,
+			"brightness" : 1.98,
+			"castshadow" : false,
+			"color" : 
+			{
+				"user" : "newproperty",
+				"value" : "0.00000 1.00000 1.00000"
+			},
+			"depthtest" : "enabled",
+			"effects" : 
+			[
+				{
+					"file" : "effects/workshop/2981960200/blurprecise/effect.json",
+					"id" : 601,
+					"name" : "",
+					"passes" : 
+					[
+						{
+							"constantshadervalues" : 
+							{
+								"scale" : "1.33 1.33"
+							},
+							"id" : 602
+						},
+						{
+							"combos" : 
+							{
+								"ENABLEMASK" : 1,
+								"VERTICAL" : 1
+							},
+							"constantshadervalues" : 
+							{
+								"scale" : "1.33 1.33"
+							},
+							"id" : 603
+						}
+					],
+					"visible" : true
+				}
+			],
+			"font" : "fonts/workshop/2981960200/Quicksand-Bold.otf",
+			"horizontalalign" : "center",
+			"id" : 600,
+			"limitrows" : false,
+			"limituseellipsis" : false,
+			"limitwidth" : false,
+			"maxrows" : 1,
+			"maxwidth" : 500.0,
+			"name" : "Date",
+			"opaquebackground" : false,
+			"origin" : "-21.70033 -145.00000 0.00000",
+			"padding" : 32,
+			"parent" : 587,
+			"pointsize" : 32.0,
+			"scale" : "0.27716 0.27019 0.46798",
+			"size" : "522.00000 219.00000",
+			"text" : 
+			{
+				"script" : "'use strict';\n// Please note: Do not remove this line or asset references may break.\nexport let __workshopId = '2981960200';\n// Please note: Do not remove this line or asset references may break.\n// Please note: Do not remove this line or asset references may break.\n\n\nexport var scriptProperties = createScriptProperties()\n\t.addCombo({\n\t\tname: 'monthFormat',\n\t\tlabel: 'Month Format',\n\t\toptions: [{\n\t\t\tlabel: 'Numeric',\n\t\t\tvalue: '1'\n\t\t}, {\n\t\t\tlabel: 'Abbreviated',\n\t\t\tvalue: '2'\n\t\t},{\n\t\t\tlabel: 'Full',\n\t\t\tvalue: '3'\n\t\t}]\n\t})\n\t.addCombo({\n\t\tname: 'dayFormat',\n\t\tlabel: 'Day Format',\n\t\toptions: [{\n\t\t\tlabel: 'Abbreviated',\n\t\t\tvalue: '1'\n\t\t}, {\n\t\t\tlabel: 'Full',\n\t\t\tvalue: '2'\n\t\t}]\n\t})\n\t.addCheckbox({\n\t\tname: 'showDay',\n\t\tlabel: 'Show Day',\n\t\tvalue: false\n\t})\n   .addCheckbox({\n\t\tname: 'alignVertical',\n\t\tlabel: 'Align Day Vertically',\n\t\tvalue: false\n\t})\n  .addCheckbox({\n\t\tname: 'useDelimiter',\n\t\tlabel: 'Use Delimiter',\n\t\tvalue: false\n\t})\n\t.addText({\n\t\tname: 'addDelimiter',\n\t\tlabel: 'Delimiter',\n\t\tvalue: '/'\n\t})\n\t.finish();\n\n\nlet months;\nlet day;\nvar delimiterValue;\nvar newLine;\n/**\n * @param {String} value (for property 'text')\n */\nexport function update(value){\n  if (scriptProperties.useDelimiter == true){\n  delimiterValue = scriptProperties.addDelimiter\n}\n  if (scriptProperties.useDelimiter == false){\n   delimiterValue = [\n  ' '\n]\n}\nif (scriptProperties.alignVertical == true){\n   newLine = [\n  '\\n'\n]\n}\nif (scriptProperties.alignVertical == false){\n   newLine = [\n  ''\n]\n}\n  if (scriptProperties.monthFormat == 1){\n  months = [\n  '1',\n  '2',\n  '3',\n  '4',\n  '5',\n  '6',\n  '7',\n  '8',\n  '9',\n  '10',\n  '11',\n  '12'\n]\n}\n if (scriptProperties.monthFormat == 2){\n months = [\n  ' JAN ',\n  ' FEB ',\n  ' MAR ',\n  ' APR ',\n  ' MAY ',\n  ' JUN ',\n  ' JUL ',\n  ' AUG ',\n  ' SEP ',\n  ' OCT ',\n  ' NOV ',\n  ' DEC '\n]\n}\nif (scriptProperties.monthFormat == 3){\n months = [\n  'January',\n  'February',\n  'March',\n  'April',\n  'May',\n  'June',\n  'July',\n  'August',\n  'September',\n  'October',\n  'November',\n  'December'\n]\n}\nif (scriptProperties.dayFormat == 1){\n  day = [\n  'Sun',\n  'Mon',\n  'Tue',\n  'Wed',\n  'Thu',\n  'Fri',\n  '\\nSat'\n]\n}\nif (scriptProperties.dayFormat == 2){\n day = [\n  'Sunday',\n  'Monday',\n  'Tuesday',\n  'Wednesday',\n  'Thursday',\n  'Friday',\n  '\\nSaturday'\n]\n}\n\tlet date = new Date();{\n    if (scriptProperties.showDay == true ){\n    return day[date.getDay()] + newLine + ' ' + date.getDate() + delimiterValue + months[date.getMonth()] + delimiterValue + date.getFullYear();\n    }\n    if (scriptProperties.showDay == false ){\n\treturn   date.getDate() + delimiterValue + months[date.getMonth()] + delimiterValue + date.getFullYear();\n}\n}\n}\n",
+				"scriptproperties" : 
+				{
+					"addDelimiter" : "",
+					"alignVertical" : false,
+					"dayFormat" : "2",
+					"monthFormat" : "2",
+					"showDay" : false,
+					"useDelimiter" : true
+				},
+				"value" : "<Date>"
+			},
+			"verticalalign" : "center"
+		},
+		{
+			"alpha" : 
+			{
+				"user" : "newproperty8",
+				"value" : 1.0
+			},
+			"anchor" : "none",
+			"angles" : "0.00000 -0.00000 0.00000",
+			"backgroundbrightness" : 1.0,
+			"backgroundcolor" : "0.00000 0.00000 0.00000",
+			"blockalign" : false,
+			"castshadow" : false,
+			"color" : 
+			{
+				"user" : "newproperty7",
+				"value" : "0.00000 1.00000 1.00000"
+			},
+			"depthtest" : "enabled",
+			"font" : "systemfont_arial",
+			"horizontalalign" : "center",
+			"id" : 554,
+			"limitrows" : false,
+			"limituseellipsis" : false,
+			"limitwidth" : false,
+			"maxrows" : 1,
+			"maxwidth" : 500.0,
+			"name" : "",
+			"opaquebackground" : false,
+			"origin" : 
+			{
+				"script" : "'use strict';\n\n// import * as WEVector from 'WEVector';\n\n/**\n * 此脚本允许用户在屏幕上拖放元素。\n * 基于官方预设拖拽、屏幕弹跳脚本修改。\n * 将此脚本附加到图像层的“原点”属性，使其在屏幕上反弹。\n * 图层必须小于壁纸，否则此脚本将无法运行！\n */\n\nexport var scriptProperties = createScriptProperties()\n\t.addCheckbox({\n\t\tname: 'tz',\n\t\tlabel: 'ui_editor_script_snippet_drag_drop',\n\t\tvalue: false\n\t})\n\t// .addCheckbox({\n\t// \tname: 'tt',\n\t// \tlabel: 'ui_editor_script_snippet_screen_bounce',\n\t// \tvalue: false\n\t// })\n\t.addCheckbox({\n\t\tname: 'pmztz',\n\t\tlabel: '屏幕中拖拽',\n\t\tvalue: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhix',\n\t\tlabel: 'X',\n\t\tvalue: 0,\n\t\tmin: 0,\n\t\tmax: 3840,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiy',\n\t\tlabel: 'Y',\n\t\tvalue: 0,\n\t\tmin: 0,\n\t\tmax: 2160,\n\t\tinteger: false\n\t})\n\t.addSlider({\n\t\tname: 'weizhiz',\n\t\tlabel: 'Z',\n\t\tvalue: 0,\n\t\tmin: -2000,\n\t\tmax: 2000,\n\t\tinteger: false\n\t})\n\t.finish();\n\n// 以90度为步长随机选择方向\n// var direction = new Vec3(WEVector.angleVector2(45 + Math.floor(Math.random() * 4) * 90));\nvar direction = new Vec3\nlet isDragging = false;\nlet dragOffset;\nlet tuozuai = 1\nlet count = 0, firstClickTime;\nlet doubleClickFrameTime = 500; //毫秒\nexport function cursorClick(event) {\n\n\tcount++;\n\tif (count % 2 !== 0) //如果点击次数是奇数（1、3、5）\n\t{\n\t\tfirstClickTime = Date.now(); //记住点击的时间\n\t}\n\tif (count % 2 === 0) //如果点击次数是偶数（2、4、6）\n\t{\n\t\tif (Date.now() - firstClickTime > doubleClickFrameTime) //如果从第一次点击到第二次点击的时间超过双击的预期时间范围\n\t\t{\n\t\t\tfirstClickTime = Date.now(); //记住新的时间\n\t\t\tcount--; //-1 click\n\t\t}\n\t\telse //点击在双击的预期时间范围内\n\t\t{\n\t\t\tif (scriptProperties.tz){\n\t\t\tif (tuozuai == 1){\n\t\t\t\t\ttuozuai = 2\n\t\t\t}\n\t\t\telse if (tuozuai == 2){\n\t\t\ttuozuai = 1\n\t\t\t}\n\t\t\tcount = 0; //重置点击次数\n\t\t}\n\t}\n}\n}\n\nexport function cursorDown(event) {\t\n\tif(tuozuai == 2){\n\t\tisDragging = true;\n\t}\n\tdragOffset = thisLayer.origin.subtract(event.worldPosition);\n}\n\nexport function cursorUp(event) {\n\tisDragging = false;\n}\n//拖拽\nexport function cursorMove(event) {\n\tif (isDragging) {\n\t\tthisLayer.origin = event.worldPosition.add(dragOffset);\n\t\tweizhi = thisLayer.origin;\n\t\tscriptProperties.weizhix = thisLayer.origin.x - weizhix;\n\t\tscriptProperties.weizhiy = thisLayer.origin.y - weizhiy;\n\t\tscriptProperties.weizhiz = thisLayer.origin.z - weizhiz;\n\t}\n}\n\nexport function update(value) {\n\n\tvalue = weizhi;\n//滑块\n\tvalue.x = scriptProperties.weizhix + weizhix;\n\tvalue.y = scriptProperties.weizhiy + weizhiy;\n\tvalue.z = scriptProperties.weizhiz + weizhiz;\n\n\tlet scale = thisLayer.scale;\n\tlet imageSize = thisLayer.size;\n\tlet canvasSize = engine.canvasSize;\n\n\t// 我们需要从中心到边界的尺寸。\n\timageSize.x *= scale.x * 0.5;\n\timageSize.y *= scale.y * 0.5;\n\nif (scriptProperties.pmztz && tuozuai == 2){\n\n\t// 击中屏幕边界并反映方向。\nvalue.x = Math.min(Math.max(value.x, imageSize.x), canvasSize.x - imageSize.x);\nvalue.y = Math.min(Math.max(value.y, imageSize.y), canvasSize.y - imageSize.y);\n\n}\n\n// if (scriptProperties.tt){\n// value.x = Math.max(Math.min(value.x, canvasSize.x - imageSize.x), imageSize.x);\n// value.y = Math.max(Math.min(value.y, canvasSize.y - imageSize.y), imageSize.y);\n// const reflectVec = new Vec3(Math.sign(value.x - imageSize.x - canvasSize.x / 2), Math.sign(value.y - imageSize.y - canvasSize.y / 2), 0);\n// direction = direction.reflect(reflectVec);\n// }\n\n\t\nconsole.log(value)\n\treturn value;\n\t\n}\n\nvar weizhi= {\nx: 0,\ny: 0,\nz: 0\n};\nvar weizhix=0,weizhiy=0,weizhiz=0\nexport function init(value) {\n\tweizhi = value\n\tweizhix = value.x\n\tweizhiy = value.y\n\tweizhiz = value.z\n\treturn value;\n}\n",
+				"scriptproperties" : 
+				{
+					"pmztz" : false,
+					"tz" : false,
+					"weizhix" : 
+					{
+						"user" : "x1",
+						"value" : 0
+					},
+					"weizhiy" : 
+					{
+						"user" : "y1",
+						"value" : 0
+					},
+					"weizhiz" : 0
+				},
+				"value" : "0.00000 0.00000 0.00000"
+			},
+			"padding" : 32,
+			"parallaxDepth" : "-0.60000 -0.60000",
+			"pointsize" : 
+			{
+				"user" : "newproperty9",
+				"value" : 10.0
+			},
+			"scale" : "0.66667 0.66667 1.00000",
+			"size" : "775.00000 48.00000",
+			"text" : 
+			{
+				"user" : "newproperty6",
+				"value" : "作者：秋枫·塔诺卡  （可自定义显示文本）"
+			},
+			"verticalalign" : "center",
+			"visible" : 
+			{
+				"user" : "newproperty21",
+				"value" : true
+			}
+		},
+		{
+			"id" : 247,
+			"instanceoverride" : 
+			{
+				"colorn" : "1.00000 0.64706 0.00000",
+				"count" : 0.2,
+				"id" : 222,
+				"lifetime" : 1.87,
+				"size" : 3.0
+			},
+			"name" : "樱花",
+			"origin" : "1920.00000 1080.00000 0.00000",
+			"parallaxDepth" : "0.20000 0.20000",
+			"particle" : "particles/presets/leaves5.json",
+			"scale" : "1.70273 1.70273 1.70273",
+			"visible" : 
+			{
+				"user" : "newproperty11",
+				"value" : true
+			}
+		},
+		{
+			"alpha" : 
+			{
+				"script" : "'use strict';\n\nimport * as WEMath from 'WEMath';\n\n// 时间设定\nconst FADE_IN_START_HOUR = 18;  // 开始增加透明度的时间（下午6点）\nconst FADE_IN_END_HOUR = 19;    // 完全透明度的时间（晚上7点）\n\nconst FADE_OUT_START_HOUR = 6;  // 开始减少透明度的时间（早上6点）\nconst FADE_OUT_END_HOUR = 7;    // 完全透明的时间（早上7点）\n\nconst BLEND_DURATION = 0.3;     // 渐变效果的持续时间，0.3表示18分钟渐变\n\n// 更新透明度\nexport function update(value) {\n    const timeOfDay = engine.timeOfDay * 24;  // 当前时间，单位为小时\n\n    if (timeOfDay >= FADE_IN_END_HOUR && timeOfDay < FADE_OUT_START_HOUR) {\n        // 在19:00到6:00之间保持透明度为1\n        return 1.0;\n    } else if (timeOfDay >= FADE_OUT_END_HOUR && timeOfDay < FADE_IN_START_HOUR) {\n        // 在7:00到18:00之间保持透明度为0\n        return 0.0;\n    } else if (timeOfDay >= FADE_IN_START_HOUR && timeOfDay <= FADE_IN_END_HOUR) {\n        // 在18:00到19:00之间，从0变成1\n        return WEMath.smoothStep(\n            (FADE_IN_START_HOUR - BLEND_DURATION) / 24,\n            FADE_IN_END_HOUR / 24,\n            engine.timeOfDay\n        );\n    } else if (timeOfDay >= FADE_OUT_START_HOUR && timeOfDay <= FADE_OUT_END_HOUR) {\n        // 在6:00到7:00之间，从1变成0\n        return 1.0 - WEMath.smoothStep(\n            (FADE_OUT_START_HOUR - BLEND_DURATION) / 24,\n            FADE_OUT_END_HOUR / 24,\n            engine.timeOfDay\n        );\n    }\n\n    // 默认返回透明度为0\n    return 1.0;\n}\n",
+				"value" : 1.0
+			},
+			"castshadow" : false,
+			"color" : "0.40784 0.41176 1.00000",
+			"colorBlendMode" : 12,
+			"id" : 469,
+			"image" : "models/solid_instance_model_2105b34d.json",
+			"instance" : 
+			{
+				"combos" : 
+				{
+					"version" : 2
+				},
+				"id" : 470,
+				"textures" : [ "util/white" ]
+			},
+			"name" : "晚上",
+			"origin" : "1920.00000 1080.00000 0.00000",
+			"scale" : "415.00000 415.00000 1.00000",
+			"size" : "10.00000 6.00000",
+			"visible" : 
+			{
+				"script" : "'use strict';\n\n// 创建可通过属性面板调整的时间段属性\nexport var scriptProperties = createScriptProperties()\n    .addCheckbox({\n        name: 'isEnabled',           // 新增的属性，用来控制图层是否根据时间显示\n        label: '启用时间控制',\n        value: true                  // 默认值为 true，表示启用时间控制\n    })\n    .addCheckbox({\n        name: 'reverseMode',         // 新增反向开关\n        label: '反向模式（关闭时图层始终开启）',\n        value: false                 // 默认值为 false，关闭状态\n    })\n    .addSlider({\n        name: 'visibleStart',\n        label: '开始显示图层时间',\n        value: 18.0,  // 默认值，表示下午6点\n        min: 0.0,     // 时间从0点开始\n        max: 23.999,  // 到23.999结束\n        step: 0.01    // 调整精度\n    })\n    .addSlider({\n        name: 'visibleEnd',\n        label: '结束显示图层时间',\n        value: 7.0,   // 默认值，表示早上7点\n        min: 0.0,\n        max: 23.999,\n        step: 0.01\n    })\n    .finish();\n\n// 该函数检查当前时间是否在给定的可见时间段内\nfunction isLayerVisible(currentTime, startTime, endTime) {\n    if (startTime < endTime) {\n        // 如果时间段不跨越午夜，检查当前时间是否在开始和结束之间\n        return currentTime >= startTime && currentTime < endTime;\n    } else {\n        // 如果时间段跨越午夜，检查当前时间是否在时间段的两侧\n        return currentTime >= startTime || currentTime < endTime;\n    }\n}\n\n// 更新图层的可见性\nexport function update(value) {\n    // 获取当前时间（以小时为单位，0表示午夜，23.999接近午夜结束）\n    let currentTime = engine.timeOfDay * 24.0;\n\n    // 从属性面板中获取用户设定的时间段\n    let visibleStart = scriptProperties.visibleStart;\n    let visibleEnd = scriptProperties.visibleEnd;\n    \n    // 获取用户开关状态\n    let isEnabled = scriptProperties.isEnabled;\n    \n    // 获取反向模式开关状态\n    let reverseMode = scriptProperties.reverseMode;\n\n    // 如果启用时间控制开关被关闭\n    if (!isEnabled) {\n        // 如果反向模式开启，则图层始终可见\n        if (reverseMode) {\n            return true;  // 始终可见\n        } else {\n            return false; // 始终不可见\n        }\n    }\n\n    // 否则，检查当前时间是否在设定的时间范围内\n    let visible = isLayerVisible(currentTime, visibleStart, visibleEnd);\n\n    // 返回是否显示该图层\n    return visible;\n}\n",
+				"scriptproperties" : 
+				{
+					"isEnabled" : 
+					{
+						"user" : "newproperty22",
+						"value" : true
+					},
+					"reverseMode" : false,
+					"visibleEnd" : 7,
+					"visibleStart" : 18
+				},
+				"value" : false
+			}
+		},
+		{
+			"alpha" : 
+			{
+				"script" : "'use strict';\n\nimport * as WEMath from 'WEMath';\n\n// 时间设定\nconst FADE_IN_START_HOUR = 16;  // 开始增加透明度的时间（下午6点）\nconst FADE_IN_END_HOUR = 17;    // 完全透明度的时间（晚上7点）\n\nconst FADE_OUT_START_HOUR = 18;  // 开始减少透明度的时间（早上6点）\nconst FADE_OUT_END_HOUR = 19;    // 完全透明的时间（早上7点）\n\nconst BLEND_DURATION = 0.3;     // 渐变效果的持续时间，0.3表示18分钟渐变\n\n// 更新透明度\nexport function update(value) {\n    const timeOfDay = engine.timeOfDay * 24;  // 当前时间，单位为小时\n\n    if (timeOfDay >= FADE_IN_END_HOUR && timeOfDay < FADE_OUT_START_HOUR) {\n        // 在19:00到6:00之间保持透明度为1\n        return 1.0;\n    } else if (timeOfDay >= FADE_OUT_END_HOUR && timeOfDay < FADE_IN_START_HOUR) {\n        // 在7:00到18:00之间保持透明度为0\n        return 0.0;\n    } else if (timeOfDay >= FADE_IN_START_HOUR && timeOfDay <= FADE_IN_END_HOUR) {\n        // 在18:00到19:00之间，从0变成1\n        return WEMath.smoothStep(\n            (FADE_IN_START_HOUR - BLEND_DURATION) / 24,\n            FADE_IN_END_HOUR / 24,\n            engine.timeOfDay\n        );\n    } else if (timeOfDay >= FADE_OUT_START_HOUR && timeOfDay <= FADE_OUT_END_HOUR) {\n        // 在6:00到7:00之间，从1变成0\n        return 1.0 - WEMath.smoothStep(\n            (FADE_OUT_START_HOUR - BLEND_DURATION) / 24,\n            FADE_OUT_END_HOUR / 24,\n            engine.timeOfDay\n        );\n    }\n\n    // 默认返回透明度为0\n    return 0.0;\n}",
+				"value" : 1.0
+			},
+			"angles" : "0.00000 -0.00000 0.00000",
+			"castshadow" : false,
+			"color" : "0.67843 0.49804 0.29804",
+			"colorBlendMode" : 11,
+			"id" : 463,
+			"image" : "models/solid_instance_model_83e01b12.json",
+			"instance" : 
+			{
+				"combos" : 
+				{
+					"version" : 2
+				},
+				"id" : 464,
+				"textures" : [ "util/white" ]
+			},
+			"name" : "黄昏",
+			"origin" : "1920.00000 1080.00000 0.00000",
+			"scale" : "415.00000 415.00000 1.00000",
+			"size" : "10.00000 6.00000",
+			"visible" : 
+			{
+				"script" : "'use strict';\n\n// 创建可通过属性面板调整的时间段属性\nexport var scriptProperties = createScriptProperties()\n    .addCheckbox({\n        name: 'isEnabled',           // 新增的属性，用来控制图层是否根据时间显示\n        label: '启用时间控制',\n        value: true                  // 默认值为 true，表示启用时间控制\n    })\n    .addCheckbox({\n        name: 'reverseMode',         // 新增反向开关\n        label: '反向模式（关闭时图层始终开启）',\n        value: false                 // 默认值为 false，关闭状态\n    })\n    .addSlider({\n        name: 'visibleStart',\n        label: '开始显示图层时间',\n        value: 18.0,  // 默认值，表示下午6点\n        min: 0.0,     // 时间从0点开始\n        max: 23.999,  // 到23.999结束\n        step: 0.01    // 调整精度\n    })\n    .addSlider({\n        name: 'visibleEnd',\n        label: '结束显示图层时间',\n        value: 7.0,   // 默认值，表示早上7点\n        min: 0.0,\n        max: 23.999,\n        step: 0.01\n    })\n    .finish();\n\n// 该函数检查当前时间是否在给定的可见时间段内\nfunction isLayerVisible(currentTime, startTime, endTime) {\n    if (startTime < endTime) {\n        // 如果时间段不跨越午夜，检查当前时间是否在开始和结束之间\n        return currentTime >= startTime && currentTime < endTime;\n    } else {\n        // 如果时间段跨越午夜，检查当前时间是否在时间段的两侧\n        return currentTime >= startTime || currentTime < endTime;\n    }\n}\n\n// 更新图层的可见性\nexport function update(value) {\n    // 获取当前时间（以小时为单位，0表示午夜，23.999接近午夜结束）\n    let currentTime = engine.timeOfDay * 24.0;\n\n    // 从属性面板中获取用户设定的时间段\n    let visibleStart = scriptProperties.visibleStart;\n    let visibleEnd = scriptProperties.visibleEnd;\n    \n    // 获取用户开关状态\n    let isEnabled = scriptProperties.isEnabled;\n    \n    // 获取反向模式开关状态\n    let reverseMode = scriptProperties.reverseMode;\n\n    // 如果启用时间控制开关被关闭\n    if (!isEnabled) {\n        // 如果反向模式开启，则图层始终可见\n        if (reverseMode) {\n            return true;  // 始终可见\n        } else {\n            return false; // 始终不可见\n        }\n    }\n\n    // 否则，检查当前时间是否在设定的时间范围内\n    let visible = isLayerVisible(currentTime, visibleStart, visibleEnd);\n\n    // 返回是否显示该图层\n    return visible;\n}\n",
+				"scriptproperties" : 
+				{
+					"isEnabled" : true,
+					"reverseMode" : false,
+					"visibleEnd" : 19,
+					"visibleStart" : 16
+				},
+				"value" : false
+			}
+		},
+		{
+			"alpha" : 
+			{
+				"script" : "'use strict';\n\nimport * as WEMath from 'WEMath';\n\n// 时间设定\nconst FADE_IN_START_HOUR = 6;  // 开始增加透明度的时间（下午6点）\nconst FADE_IN_END_HOUR = 7;    // 完全透明度的时间（晚上7点）\n\nconst FADE_OUT_START_HOUR = 9;  // 开始减少透明度的时间（早上6点）\nconst FADE_OUT_END_HOUR = 10;    // 完全透明的时间（早上7点）\n\nconst BLEND_DURATION = 0.3;     // 渐变效果的持续时间，0.3表示18分钟渐变\n\n// 更新透明度\nexport function update(value) {\n    const timeOfDay = engine.timeOfDay * 24;  // 当前时间，单位为小时\n\n    if (timeOfDay >= FADE_IN_END_HOUR && timeOfDay < FADE_OUT_START_HOUR) {\n        // 在19:00到6:00之间保持透明度为1\n        return 1.0;\n    } else if (timeOfDay >= FADE_OUT_END_HOUR && timeOfDay < FADE_IN_START_HOUR) {\n        // 在7:00到18:00之间保持透明度为0\n        return 0.0;\n    } else if (timeOfDay >= FADE_IN_START_HOUR && timeOfDay <= FADE_IN_END_HOUR) {\n        // 在18:00到19:00之间，从0变成1\n        return WEMath.smoothStep(\n            (FADE_IN_START_HOUR - BLEND_DURATION) / 24,\n            FADE_IN_END_HOUR / 24,\n            engine.timeOfDay\n        );\n    } else if (timeOfDay >= FADE_OUT_START_HOUR && timeOfDay <= FADE_OUT_END_HOUR) {\n        // 在6:00到7:00之间，从1变成0\n        return 1.0 - WEMath.smoothStep(\n            (FADE_OUT_START_HOUR - BLEND_DURATION) / 24,\n            FADE_OUT_END_HOUR / 24,\n            engine.timeOfDay\n        );\n    }\n\n    // 默认返回透明度为0\n    return 0.0;\n}",
+				"value" : 1.0
+			},
+			"castshadow" : false,
+			"color" : "0.30980 0.65098 0.52157",
+			"colorBlendMode" : 12,
+			"id" : 480,
+			"image" : "models/solid_instance_model_48dcad03.json",
+			"instance" : 
+			{
+				"combos" : 
+				{
+					"version" : 2
+				},
+				"id" : 481,
+				"textures" : [ "util/white" ]
+			},
+			"name" : "早上",
+			"origin" : "1920.00000 1080.00000 0.00000",
+			"scale" : "415.00000 415.00000 1.00000",
+			"size" : "10.00000 6.00000",
+			"visible" : 
+			{
+				"script" : "'use strict';\n\n// 创建可通过属性面板调整的时间段属性\nexport var scriptProperties = createScriptProperties()\n    .addCheckbox({\n        name: 'isEnabled',           // 新增的属性，用来控制图层是否根据时间显示\n        label: '启用时间控制',\n        value: true                  // 默认值为 true，表示启用时间控制\n    })\n    .addCheckbox({\n        name: 'reverseMode',         // 新增反向开关\n        label: '反向模式（关闭时图层始终开启）',\n        value: false                 // 默认值为 false，关闭状态\n    })\n    .addSlider({\n        name: 'visibleStart',\n        label: '开始显示图层时间',\n        value: 18.0,  // 默认值，表示下午6点\n        min: 0.0,     // 时间从0点开始\n        max: 23.999,  // 到23.999结束\n        step: 0.01    // 调整精度\n    })\n    .addSlider({\n        name: 'visibleEnd',\n        label: '结束显示图层时间',\n        value: 7.0,   // 默认值，表示早上7点\n        min: 0.0,\n        max: 23.999,\n        step: 0.01\n    })\n    .finish();\n\n// 该函数检查当前时间是否在给定的可见时间段内\nfunction isLayerVisible(currentTime, startTime, endTime) {\n    if (startTime < endTime) {\n        // 如果时间段不跨越午夜，检查当前时间是否在开始和结束之间\n        return currentTime >= startTime && currentTime < endTime;\n    } else {\n        // 如果时间段跨越午夜，检查当前时间是否在时间段的两侧\n        return currentTime >= startTime || currentTime < endTime;\n    }\n}\n\n// 更新图层的可见性\nexport function update(value) {\n    // 获取当前时间（以小时为单位，0表示午夜，23.999接近午夜结束）\n    let currentTime = engine.timeOfDay * 24.0;\n\n    // 从属性面板中获取用户设定的时间段\n    let visibleStart = scriptProperties.visibleStart;\n    let visibleEnd = scriptProperties.visibleEnd;\n    \n    // 获取用户开关状态\n    let isEnabled = scriptProperties.isEnabled;\n    \n    // 获取反向模式开关状态\n    let reverseMode = scriptProperties.reverseMode;\n\n    // 如果启用时间控制开关被关闭\n    if (!isEnabled) {\n        // 如果反向模式开启，则图层始终可见\n        if (reverseMode) {\n            return true;  // 始终可见\n        } else {\n            return false; // 始终不可见\n        }\n    }\n\n    // 否则，检查当前时间是否在设定的时间范围内\n    let visible = isLayerVisible(currentTime, visibleStart, visibleEnd);\n\n    // 返回是否显示该图层\n    return visible;\n}\n",
+				"scriptproperties" : 
+				{
+					"isEnabled" : true,
+					"reverseMode" : false,
+					"visibleEnd" : 10,
+					"visibleStart" : 6
+				},
+				"value" : false
+			}
 		}
 	],
-	"version" : 1
+	"version" : 4
 }
