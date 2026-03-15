@@ -425,36 +425,26 @@ class SceneLoader {
     }
 
     private func resolveTextureURL(base: URL, rawPath: String) -> URL {
-        let fileManager = FileManager.default
-        let fileName = URL(fileURLWithPath: rawPath).deletingPathExtension().lastPathComponent
-        
-        var searchRoots: [URL] = [base]
-        if let bundleAssets = Bundle.main.resourceURL?.appendingPathComponent("WEAssets") {
-            searchRoots.append(bundleAssets)
+        let fileName = URL(fileURLWithPath: rawPath).deletingPathExtension()
+            .lastPathComponent
+        let directURL = base.appendingPathComponent("materials/\(rawPath).tex")
+        if FileManager.default.fileExists(atPath: directURL.path) {
+            Logger.debug("找到纹理 (Direct): \(directURL.path)")
+            return directURL
         }
-
-        for root in searchRoots {
-            let directURL = root.appendingPathComponent("materials/\(rawPath).tex")
-            if fileManager.fileExists(atPath: directURL.path) {
-                Logger.debug("查找到纹理 (Direct/Materials): \(directURL.path)")
-                return directURL
-            }
-
-            let folderURL = root.appendingPathComponent(rawPath).deletingPathExtension().appendingPathExtension("tex")
-            if fileManager.fileExists(atPath: folderURL.path) {
-                Logger.debug("查找到纹理 (Path Replace): \(folderURL.path)")
-                return folderURL
-            }
-            
-            let flatURL = root.appendingPathComponent("materials/\(fileName).tex")
-            if fileManager.fileExists(atPath: flatURL.path) {
-                Logger.debug("查找到纹理 (Flat/Materials): \(flatURL.path)")
-                return flatURL
-            }
+        let flatURL = base.appendingPathComponent("materials/\(fileName).tex")
+        if FileManager.default.fileExists(atPath: flatURL.path) {
+            Logger.debug("找到纹理 (Flat): \(flatURL.path)")
+            return flatURL
         }
-
+        let folderURL = base.appendingPathComponent(rawPath)
+            .deletingPathExtension().appendingPathExtension("tex")
+        if FileManager.default.fileExists(atPath: folderURL.path) {
+            Logger.debug("找到纹理 (Folder): \(folderURL.path)")
+            return folderURL
+        }
         let fallbackURL = base.appendingPathComponent("materials/\(fileName).tex")
-        Logger.debug("所有路径均未找到纹理，使用 Fallback: \(fallbackURL.path)")
+        Logger.debug("未找到精确匹配纹理，使用 Fallback: \(fallbackURL.path)")
         return fallbackURL
     }
 }
