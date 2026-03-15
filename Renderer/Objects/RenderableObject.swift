@@ -5,15 +5,8 @@
 //  Created by laobamac on 2026/1/23.
 //
 
-//
-//  RenderableObject.swift
-//  Renderer
-//
-//  Created by laobamac on 2026/1/23.
-//
-
 import MetalKit
-import simd
+internal import simd
 import QuartzCore
 
 class RenderableObject {
@@ -28,6 +21,7 @@ class RenderableObject {
     var alpha: Float
 
     var texture: MTLTexture
+    var textureURL: URL?
     var frameInfo: [TexFrameInfo]?
     var currentAnimInfo: SIMD4<Float> = SIMD4<Float>(0, 0, 1, 1)
 
@@ -48,6 +42,7 @@ class RenderableObject {
         scale: SIMD3<Float>,
         alpha: Float = 1.0,
         texture: MTLTexture,
+        textureURL: URL? = nil,
         frameInfo: [TexFrameInfo]? = nil,
         pipeline: MTLRenderPipelineState,
         depthState: MTLDepthStencilState? = nil
@@ -58,6 +53,7 @@ class RenderableObject {
         self.scale = scale
         self.alpha = alpha
         self.texture = texture
+        self.textureURL = textureURL
         self.frameInfo = frameInfo
         self.pipeline = pipeline
         self.depthState = depthState

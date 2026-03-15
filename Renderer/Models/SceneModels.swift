@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import simd
+internal import simd
 
 struct SceneRoot: Codable {
     let general: GeneralSettings?

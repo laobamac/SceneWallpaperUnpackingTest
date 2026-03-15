@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import simd
+internal import simd
 
 struct RendererMath {
     static func makePerspective(fovyRadians: Float, aspect: Float, near: Float, far: Float) -> matrix_float4x4 {

@@ -8,7 +8,7 @@
 import AppKit
 import Foundation
 import MetalKit
-import simd
+internal import simd
 
 class Renderer: NSObject, MTKViewDelegate {
     let device: MTLDevice
@@ -57,6 +57,9 @@ class Renderer: NSObject, MTKViewDelegate {
         self.sceneContext = context
         self.startTime = Date()
         self.lastTime = 0
+        DispatchQueue.main.async {
+            DebuggerState.shared.sceneContext = context
+        }
         Logger.log("Renderer 场景更新完成")
     }
 
@@ -118,6 +121,7 @@ class Renderer: NSObject, MTKViewDelegate {
         let time = Float(currentTime)
 
         for obj in sceneContext.renderables {
+            if DebuggerState.shared.isObjectHidden(obj.id) { continue }
             obj.update(commandBuffer: commandBuffer)
         }
 
@@ -170,6 +174,7 @@ class Renderer: NSObject, MTKViewDelegate {
         encoder.setFragmentSamplerState(sampler, index: 0)
 
         for obj in sceneContext.renderables {
+            if DebuggerState.shared.isObjectHidden(obj.id) { continue }
             encoder.setVertexBytes(&globals, length: MemoryLayout<GlobalUniforms>.size, index: 1)
             encoder.setFragmentBytes(&globals, length: MemoryLayout<GlobalUniforms>.size, index: 1)
             if let puppet = obj as? PuppetRenderable {

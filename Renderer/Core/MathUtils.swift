@@ -5,7 +5,7 @@
 //  Created by laobamac on 2026/1/23.
 //
 
-import simd
+internal import simd
 import Foundation
 
 struct Quaternion {
