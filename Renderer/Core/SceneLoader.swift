@@ -7,10 +7,12 @@
 
 import Foundation
 import MetalKit
+import simd
 
 struct SceneContext {
     var baseFolder: URL?
     var renderables: [RenderableObject] = []
+    var particles: [ParticleRenderable] = []
     var projectionSize: CGSize = CGSize(width: 1920, height: 1080)
     var currentFOV: Float = 50.0
     var bloomThreshold: Float = 1.0
@@ -18,6 +20,7 @@ struct SceneContext {
     var bloomIterations: Int = 8
     var isHDREnabled: Bool = false
 }
+
 class SceneLoader {
     let device: MTLDevice
     let pipelineManager: PipelineManager
@@ -164,6 +167,7 @@ class SceneLoader {
             }
             var tempRenderables: [Int: RenderableObject] = [:]
             var orderedList: [RenderableObject] = []
+            var orderedParticles: [ParticleRenderable] = []
             Logger.log("开始遍历并创建场景对象...")
             for obj in sceneRoot.objects {
                 if !obj.isVisible {
@@ -175,6 +179,14 @@ class SceneLoader {
                 Logger.debug(
                     "正在处理对象 [\(obj.name ?? "Unknown")] (ID:\(obj.id ?? -1))"
                 )
+                
+                if let particlePath = obj.particle {
+                    if let pRenderable = await createParticleRenderable(from: obj, baseFolder: folder, particlePath: particlePath) {
+                        orderedParticles.append(pRenderable)
+                    }
+                    continue
+                }
+
                 let rawObj = rawObjects[obj.id ?? -1]
                 if let renderable = await createRenderable(
                     from: obj,
@@ -206,12 +218,55 @@ class SceneLoader {
                 }
             }
             context.renderables = orderedList
-            Logger.log("场景加载完成，总共包含 \(orderedList.count) 个活跃渲染对象")
+            context.particles = orderedParticles
+            Logger.log("场景加载完成，包含 \(orderedList.count) 个模型/图层对象，以及 \(orderedParticles.count) 个粒子系统")
         } catch {
             Logger.error("加载场景时发生错误: \(error.localizedDescription)")
         }
         return context
     }
+    
+    private func createParticleRenderable(from obj: SceneObject, baseFolder: URL, particlePath: String) async -> ParticleRenderable? {
+        let pURL = baseFolder.appendingPathComponent(particlePath)
+        do {
+            Logger.debug("解析粒子配置文件: \(pURL.path)")
+            let data = try Data(contentsOf: pURL)
+            let config = try JSONDecoder().decode(ParticleSystemConfig.self, from: data)
+            
+            let (pos, rotation, _, scale) = RenderableObject.parseTransforms(obj)
+            var transform = matrix_identity_float4x4
+            transform.columns.0 = SIMD4<Float>(scale.x, 0, 0, 0)
+            transform.columns.1 = SIMD4<Float>(0, scale.y, 0, 0)
+            transform.columns.2 = SIMD4<Float>(0, 0, 1, 0)
+            transform.columns.3 = SIMD4<Float>(pos.x, pos.y, pos.z, 1)
+            
+            let system = ParticleSystem(config: config, override: obj.instanceoverride, transform: transform)
+            let renderable = ParticleRenderable(device: device, particleSystem: system)
+            
+            var blendMode = "alpha"
+            if let matPath = config.material {
+                let matURL = baseFolder.appendingPathComponent(matPath)
+                if let matData = try? Data(contentsOf: matURL),
+                   let matDef = try? JSONDecoder().decode(MaterialJSON.self, from: matData),
+                   let firstPass = matDef.passes.first {
+                    if firstPass.blending == "additive" {
+                        blendMode = "additive"
+                    }
+                    if let texName = firstPass.textures.first {
+                        let texURL = resolveTextureURL(base: baseFolder, rawPath: texName)
+                        renderable.texture = try? await TextureManager.shared.loadTexture(url: texURL, options: [.origin: MTKTextureLoader.Origin.topLeft, .SRGB: true], force2D: true)
+                    }
+                }
+            }
+            renderable.pipelineState = pipelineManager.getParticlePipelineState(blendMode: blendMode)
+            Logger.log("成功创建 ParticleRenderable: \(obj.name ?? "")")
+            return renderable
+        } catch {
+            Logger.error("解析 Particle 失败: \(error.localizedDescription)")
+            return nil
+        }
+    }
+
     private func createRenderable(
         from obj: SceneObject,
         raw: [String: Any]?,
@@ -463,28 +518,40 @@ class SceneLoader {
             return nil
         }
     }
+    
     private func resolveTextureURL(base: URL, rawPath: String) -> URL {
-        let fileName = URL(fileURLWithPath: rawPath).deletingPathExtension()
-            .lastPathComponent
-        let directURL = base.appendingPathComponent("materials/\(rawPath).tex")
-        if FileManager.default.fileExists(atPath: directURL.path) {
-            Logger.debug("找到纹理 (Direct): \(directURL.path)")
-            return directURL
+        let fileManager = FileManager.default
+        let fileName = URL(fileURLWithPath: rawPath).deletingPathExtension().lastPathComponent
+        
+        let localSearchPaths = [
+            base.appendingPathComponent("materials/\(rawPath).tex"),
+            base.appendingPathComponent("materials/\(fileName).tex"),
+            base.appendingPathComponent(rawPath).deletingPathExtension().appendingPathExtension("tex")
+        ]
+        
+        for url in localSearchPaths {
+            if fileManager.fileExists(atPath: url.path) {
+                Logger.debug("找到纹理 (本地壁纸): \(url.path)")
+                return url
+            }
         }
-        let flatURL = base.appendingPathComponent("materials/\(fileName).tex")
-        if FileManager.default.fileExists(atPath: flatURL.path) {
-            Logger.debug("找到纹理 (Flat): \(flatURL.path)")
-            return flatURL
+        
+        if let weAssetsBase = Bundle.main.resourceURL?.appendingPathComponent("WEAssets") {
+            let globalSearchPaths = [
+                weAssetsBase.appendingPathComponent("materials/\(rawPath).tex"),
+                weAssetsBase.appendingPathComponent("materials/\(fileName).tex"),
+                weAssetsBase.appendingPathComponent("\(rawPath).tex")
+            ]
+            
+            for url in globalSearchPaths {
+                if fileManager.fileExists(atPath: url.path) {
+                    Logger.debug("找到纹理 (全局 WEAssets): \(url.path)")
+                    return url
+                }
+            }
         }
-        let folderURL = base.appendingPathComponent(rawPath)
-            .deletingPathExtension().appendingPathExtension("tex")
-        if FileManager.default.fileExists(atPath: folderURL.path) {
-            Logger.debug("找到纹理 (Folder): \(folderURL.path)")
-            return folderURL
-        }
-        let fallbackURL = base.appendingPathComponent(
-            "materials/\(fileName).tex"
-        )
+        
+        let fallbackURL = base.appendingPathComponent("materials/\(fileName).tex")
         Logger.debug("未找到精确匹配纹理，使用 Fallback: \(fallbackURL.path)")
         return fallbackURL
     }

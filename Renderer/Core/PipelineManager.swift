@@ -15,6 +15,7 @@ class PipelineManager {
 
     var pipelineStates: [Int: MTLRenderPipelineState] = [:]
     var puppetPipelineStates: [Int: MTLRenderPipelineState] = [:]
+    var particlePipelineStates: [String: MTLRenderPipelineState] = [:]
     var puppetMaskPipelineState: MTLRenderPipelineState?
     var extractPipeline: MTLRenderPipelineState?
     var blurPipeline: MTLRenderPipelineState?
@@ -76,6 +77,77 @@ class PipelineManager {
             descriptor.destinationRGBBlendFactor = .oneMinusSourceAlpha
             descriptor.sourceAlphaBlendFactor = .sourceAlpha
             descriptor.destinationAlphaBlendFactor = .oneMinusSourceAlpha
+        }
+    }
+
+    func getParticlePipelineState(blendMode: String) -> MTLRenderPipelineState? {
+        let identifier = "Particle_\(blendMode)"
+        if let state = particlePipelineStates[identifier] { return state }
+        
+        guard let lib = library else { return nil }
+        
+        let descriptor = MTLRenderPipelineDescriptor()
+        descriptor.label = identifier
+        descriptor.vertexFunction = lib.makeFunction(name: "particle_vertex")
+        descriptor.fragmentFunction = lib.makeFunction(name: "particle_fragment")
+        descriptor.colorAttachments[0].pixelFormat = hdrFormat
+        
+        descriptor.colorAttachments[0].isBlendingEnabled = true
+        if blendMode == "additive" {
+            descriptor.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
+            descriptor.colorAttachments[0].destinationRGBBlendFactor = .one
+            descriptor.colorAttachments[0].sourceAlphaBlendFactor = .sourceAlpha
+            descriptor.colorAttachments[0].destinationAlphaBlendFactor = .one
+        } else {
+            descriptor.colorAttachments[0].sourceRGBBlendFactor = .sourceAlpha
+            descriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
+            descriptor.colorAttachments[0].sourceAlphaBlendFactor = .one
+            descriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
+        }
+        
+        descriptor.depthAttachmentPixelFormat = depthFormat
+        descriptor.stencilAttachmentPixelFormat = depthFormat
+        
+        let vertexDescriptor = MTLVertexDescriptor()
+        vertexDescriptor.attributes[0].format = .float3
+        vertexDescriptor.attributes[0].offset = 0
+        vertexDescriptor.attributes[0].bufferIndex = 0
+        vertexDescriptor.attributes[1].format = .float2
+        vertexDescriptor.attributes[1].offset = 12
+        vertexDescriptor.attributes[1].bufferIndex = 0
+        vertexDescriptor.layouts[0].stride = 20
+        vertexDescriptor.layouts[0].stepFunction = .perVertex
+        vertexDescriptor.layouts[0].stepRate = 1
+        
+        vertexDescriptor.attributes[2].format = .float3
+        vertexDescriptor.attributes[2].offset = 0
+        vertexDescriptor.attributes[2].bufferIndex = 1
+        vertexDescriptor.attributes[3].format = .float2
+        vertexDescriptor.attributes[3].offset = 12
+        vertexDescriptor.attributes[3].bufferIndex = 1
+        vertexDescriptor.attributes[4].format = .float
+        vertexDescriptor.attributes[4].offset = 20
+        vertexDescriptor.attributes[4].bufferIndex = 1
+        vertexDescriptor.attributes[5].format = .float4
+        vertexDescriptor.attributes[5].offset = 24
+        vertexDescriptor.attributes[5].bufferIndex = 1
+        vertexDescriptor.attributes[6].format = .float4
+        vertexDescriptor.attributes[6].offset = 40
+        vertexDescriptor.attributes[6].bufferIndex = 1
+        vertexDescriptor.layouts[1].stride = MemoryLayout<ParticleInstanceData>.stride
+        vertexDescriptor.layouts[1].stepFunction = .perInstance
+        vertexDescriptor.layouts[1].stepRate = 1
+        
+        descriptor.vertexDescriptor = vertexDescriptor
+        
+        do {
+            let state = try device.makeRenderPipelineState(descriptor: descriptor)
+            particlePipelineStates[identifier] = state
+            Logger.log("成功创建并缓存 Particle Pipeline: \(identifier)")
+            return state
+        } catch {
+            Logger.error("创建 Particle Pipeline 失败: \(error.localizedDescription)")
+            return nil
         }
     }
 

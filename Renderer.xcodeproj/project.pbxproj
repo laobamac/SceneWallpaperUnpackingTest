@@ -8,11 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		BBF268AC2F66DDAE000E4AF1 /* Utils in Resources */ = {isa = PBXBuildFile; fileRef = BBF268AB2F66DDAE000E4AF1 /* Utils */; };
+		BBF269282F66EF6A000E4AF1 /* WEAssets in Resources */ = {isa = PBXBuildFile; fileRef = BBF269272F66EF6A000E4AF1 /* WEAssets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		BB5DEC5F2F1D139400DA9DA9 /* Renderer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Renderer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBF268AB2F66DDAE000E4AF1 /* Utils */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Utils; sourceTree = "<group>"; };
+		BBF269272F66EF6A000E4AF1 /* WEAssets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = WEAssets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -37,6 +39,7 @@
 		BB5DEC562F1D139400DA9DA9 = {
 			isa = PBXGroup;
 			children = (
+				BBF269272F66EF6A000E4AF1 /* WEAssets */,
 				BBF268AB2F66DDAE000E4AF1 /* Utils */,
 				BB5DEC612F1D139400DA9DA9 /* Renderer */,
 				BB5DEC602F1D139400DA9DA9 /* Products */,
@@ -101,7 +104,7 @@
 			mainGroup = BB5DEC562F1D139400DA9DA9;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = BB5DEC562F1D139400DA9DA9 /* Products */;
+			productRefGroup = BB5DEC562F1D139400DA9DA9;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -116,6 +119,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BBF268AC2F66DDAE000E4AF1 /* Utils in Resources */,
+				BBF269282F66EF6A000E4AF1 /* WEAssets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
