@@ -17,8 +17,6 @@ struct SceneContext {
     var bloomStrength: Float = 2.0
     var bloomIterations: Int = 8
     var isHDREnabled: Bool = false
-    var rawSceneRoot: SceneRoot?
-    var rawObjects: [Int: [String: Any]] = [:]
 }
 
 class SceneLoader {
@@ -71,7 +69,6 @@ class SceneLoader {
                 SceneRoot.self,
                 from: sceneData
             )
-            context.rawSceneRoot = sceneRoot
             Logger.log("scene.json 解码成功，共找到 \(sceneRoot.objects.count) 个对象定义")
 
             var rawObjects: [Int: [String: Any]] = [:]
@@ -84,7 +81,6 @@ class SceneLoader {
                         rawObjects[id] = o
                     }
                 }
-                context.rawObjects = rawObjects
                 Logger.debug("成功提取 \(rawObjects.count) 个对象的原始 JSON 字典")
             }
 
@@ -229,15 +225,12 @@ class SceneLoader {
 
             var texture: MTLTexture!
             var frameInfo: [TexFrameInfo]? = nil
-            var finalTexURL: URL? = nil
-            
             if let texName = firstPass.textures.first {
                 Logger.debug("正在加载纹理: \(texName)")
                 let texURL = resolveTextureURL(
                     base: baseFolder,
                     rawPath: texName
                 )
-                finalTexURL = texURL
                 texture = try await TextureManager.shared.loadTexture(
                     url: texURL,
                     options: [
@@ -295,7 +288,6 @@ class SceneLoader {
                 size: size,
                 scale: scale,
                 texture: texture,
-                textureURL: finalTexURL,
                 frameInfo: frameInfo,
                 pipeline: pipeline,
                 depthState: depthState
@@ -417,7 +409,6 @@ class SceneLoader {
                 size: size,
                 scale: scale,
                 texture: texture,
-                textureURL: texURL,
                 frameInfo: frameInfo,
                 maskTextures: maskTextures,
                 maskWriteState: pipelineManager.maskWriteState,
@@ -425,8 +416,7 @@ class SceneLoader {
                 puppetMaskPipeline: maskPipe,
                 pipeline: pipeline,
                 depthState: depthState,
-                usePixelCoords: bboxWidth > 2.0,
-                puppetData: puppetData
+                usePixelCoords: bboxWidth > 2.0
             )
         } catch {
             Logger.error("创建 Puppet 对象失败: \(error.localizedDescription)")

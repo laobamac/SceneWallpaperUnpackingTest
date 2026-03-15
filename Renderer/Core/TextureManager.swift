@@ -4,20 +4,14 @@
 //
 //  Created by laobamac on 2026/2/7.
 //
-//
 
 import MetalKit
 import ImageIO
 import CoreGraphics
 
-struct TextureResource: Sendable {
-    let texture: MTLTexture
-    let file: TexFile?
-}
-
 actor TextureManager {
     static let shared = TextureManager()
-    private var cache: [URL: TextureResource] = [:]
+    private var cache: [URL: MTLTexture] = [:]
     private var frameInfoCache: [URL: [TexFrameInfo]] = [:]
     private var videoUpdaters: [URL: VideoTextureUpdater] = [:]
     private var device: MTLDevice?
@@ -34,17 +28,13 @@ actor TextureManager {
     func frameInfo(for url: URL) -> [TexFrameInfo]? {
         return frameInfoCache[url]
     }
-    
-    func resource(for url: URL) -> TextureResource? {
-        return cache[url]
-    }
 
     func loadTexture(
         url: URL,
         options: [MTKTextureLoader.Option: Any]? = nil,
         force2D: Bool = false
     ) async throws -> MTLTexture {
-        if let cached = cache[url] { return await cached.texture }
+        if let cached = cache[url] { return cached }
         guard let device = self.device, let loader = self.loader else {
             await Logger.error("TextureManager 尚未初始化")
             throw NSError(domain: "TextureManager", code: 0, userInfo: nil)
@@ -92,7 +82,7 @@ actor TextureManager {
             let tempTexture = try await loader.newTexture(data: data, options: options)
             
             if force2D {
-                cache[url] = TextureResource(texture: tempTexture, file: texFile)
+                cache[url] = tempTexture
                 await Logger.log("  => 成功加载强制 2D 纹理: \(url.lastPathComponent)")
                 return tempTexture
             }
@@ -118,7 +108,7 @@ actor TextureManager {
             await cmd.completed()
             
             await Logger.log("  => 成功加载并转换内嵌纹理为数组: \(url.lastPathComponent)")
-            cache[url] = TextureResource(texture: arrayTexture, file: texFile)
+            cache[url] = arrayTexture
             return arrayTexture
         }
 
@@ -185,7 +175,7 @@ actor TextureManager {
                 videoUpdaters[url] = updater
                 await Logger.log("  => 开始后台解码视频: \(url.lastPathComponent), 写入临时路径: \(tempURL.path)")
             }
-            cache[url] = TextureResource(texture: texture, file: texFile)
+            cache[url] = texture
             return texture
         }
 
@@ -248,7 +238,7 @@ actor TextureManager {
         }
 
         await Logger.log("  => 成功加载纹理: \(url.lastPathComponent)")
-        cache[url] = TextureResource(texture: texture, file: texFile)
+        cache[url] = texture
         return texture
     }
 

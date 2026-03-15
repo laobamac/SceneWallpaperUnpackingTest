@@ -10,31 +10,8 @@ import SwiftUI
 struct ContentView: View {
     @State private var wallpaperFolder: URL?
     @State private var isHovering = false
-    @StateObject private var debuggerState = DebuggerState.shared
 
     var body: some View {
-        ZStack {
-            if wallpaperFolder != nil {
-                HSplitView {
-                    DebuggerSidebarView()
-                        .frame(minWidth: 200, idealWidth: 250, maxWidth: 350)
-                        .environmentObject(debuggerState)
-
-                    mainRenderView
-                        .frame(minWidth: 400, maxWidth: .infinity, minHeight: 600, maxHeight: .infinity)
-
-                    InspectorPanelView()
-                        .frame(minWidth: 250, idealWidth: 300, maxWidth: 400)
-                        .environmentObject(debuggerState)
-                }
-            } else {
-                mainRenderView
-                    .frame(minWidth: 800, minHeight: 600)
-            }
-        }
-    }
-
-    private var mainRenderView: some View {
         ZStack {
             if let folder = wallpaperFolder {
                 MetalWallpaperView(folderURL: folder)
@@ -45,12 +22,12 @@ struct ContentView: View {
             
             VStack {
                 if wallpaperFolder == nil {
-                    Text("Wallpaper Engine Metal 渲染器")
+                    Text("Wallpaper Engine Metal Renderer")
                         .font(.largeTitle)
                         .foregroundColor(.white)
                         .padding(.bottom, 20)
                     
-                    Button("打开壁纸文件夹") {
+                    Button("Open Wallpaper Folder") {
                         openFolder()
                     }
                     .buttonStyle(.borderedProminent)
@@ -66,7 +43,7 @@ struct ContentView: View {
                             Spacer()
                             HStack {
                                 Spacer()
-                                Button("更换壁纸") {
+                                Button("Change Wallpaper") {
                                     openFolder()
                                 }
                                 .buttonStyle(.bordered)
@@ -83,6 +60,7 @@ struct ContentView: View {
                 isHovering = hover
             }
         }
+        .frame(minWidth: 800, minHeight: 600)
     }
     
     func openFolder() {
@@ -90,8 +68,8 @@ struct ContentView: View {
         panel.canChooseFiles = false
         panel.canChooseDirectories = true
         panel.allowsMultipleSelection = false
-        panel.title = "选择壁纸文件夹"
-        panel.prompt = "渲染"
+        panel.title = "Select Wallpaper Folder"
+        panel.prompt = "Render"
         
         if panel.runModal() == .OK {
             self.wallpaperFolder = panel.url

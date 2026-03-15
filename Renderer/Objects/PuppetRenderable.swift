@@ -8,7 +8,7 @@
 import CoreGraphics
 import Foundation
 import MetalKit
-internal import simd
+import simd
 
 class PuppetRenderable: RenderableObject {
     let device: MTLDevice
@@ -33,8 +33,6 @@ class PuppetRenderable: RenderableObject {
     let maskWriteState: MTLDepthStencilState?
     let maskTestState: MTLDepthStencilState?
     let puppetMaskPipeline: MTLRenderPipelineState?
-    
-    let puppetData: PuppetData
 
     private var lastAnimCycle: Int = -1
     private var boneToTrackIndex: [Int: Int] = [:]
@@ -53,7 +51,6 @@ class PuppetRenderable: RenderableObject {
         size: SIMD2<Float>,
         scale: SIMD3<Float>,
         texture: MTLTexture,
-        textureURL: URL? = nil,
         frameInfo: [TexFrameInfo]?,
         maskTextures: [MTLTexture],
         maskWriteState: MTLDepthStencilState?,
@@ -61,8 +58,7 @@ class PuppetRenderable: RenderableObject {
         puppetMaskPipeline: MTLRenderPipelineState?,
         pipeline: MTLRenderPipelineState,
         depthState: MTLDepthStencilState?,
-        usePixelCoords: Bool,
-        puppetData: PuppetData
+        usePixelCoords: Bool
     ) {
         Logger.debug("PuppetRenderable 准备初始化:")
         Logger.debug("  => 顶点数: \(vertices.count), 索引数: \(indices.count)")
@@ -109,7 +105,6 @@ class PuppetRenderable: RenderableObject {
         self.maskWriteState = maskWriteState
         self.maskTestState = maskTestState
         self.puppetMaskPipeline = puppetMaskPipeline
-        self.puppetData = puppetData
         self.boneMatrices = Array(
             repeating: matrix_identity_float4x4,
             count: 100
@@ -131,9 +126,7 @@ class PuppetRenderable: RenderableObject {
             rotation: rotation,
             size: size,
             scale: scale,
-            alpha: 1.0,
             texture: texture,
-            textureURL: textureURL,
             frameInfo: frameInfo,
             pipeline: pipeline,
             depthState: depthState
@@ -400,12 +393,7 @@ class PuppetRenderable: RenderableObject {
                 computed: &globalComputed,
                 result: &globalMatrices
             )
-            var skinMatrix = global * inverseBindMatrices[i]
-            
-            if DebuggerState.shared.isBoneHidden(objectID: self.id, boneIndex: i) {
-                skinMatrix = matrix_float4x4(diagonal: SIMD4<Float>(0, 0, 0, 1))
-            }
-            
+            let skinMatrix = global * inverseBindMatrices[i]
             if i < 100 { boneMatrices[i] = skinMatrix }
         }
         currentBufferIndex = (currentBufferIndex + 1) % uniformBuffers.count
@@ -464,9 +452,6 @@ class PuppetRenderable: RenderableObject {
             encoder.setFragmentTexture(texture, index: 0)
             if let meshes = subMeshes {
                 for (index, mesh) in meshes.enumerated() {
-                    if DebuggerState.shared.isMeshHidden(objectID: self.id, meshIndex: index) {
-                        continue
-                    }
                     if maskBindings!.contains(where: {
                         $0.target_group == index
                     }) {
@@ -492,10 +477,7 @@ class PuppetRenderable: RenderableObject {
             if let ds = depthState { encoder.setDepthStencilState(ds) }
             encoder.setFragmentTexture(texture, index: 0)
             if let meshes = subMeshes, !meshes.isEmpty {
-                for (index, mesh) in meshes.enumerated() {
-                    if DebuggerState.shared.isMeshHidden(objectID: self.id, meshIndex: index) {
-                        continue
-                    }
+                for mesh in meshes {
                     encoder.drawIndexedPrimitives(
                         type: .triangle,
                         indexCount: mesh.count,
