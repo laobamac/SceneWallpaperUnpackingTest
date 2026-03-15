@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		BBF268AC2F66DDAE000E4AF1 /* Utils in Resources */ = {isa = PBXBuildFile; fileRef = BBF268AB2F66DDAE000E4AF1 /* Utils */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		BB5DEC5F2F1D139400DA9DA9 /* Renderer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Renderer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BBF268AB2F66DDAE000E4AF1 /* Utils */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Utils; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -32,6 +37,7 @@
 		BB5DEC562F1D139400DA9DA9 = {
 			isa = PBXGroup;
 			children = (
+				BBF268AB2F66DDAE000E4AF1 /* Utils */,
 				BB5DEC612F1D139400DA9DA9 /* Renderer */,
 				BB5DEC602F1D139400DA9DA9 /* Products */,
 			);
@@ -95,7 +101,7 @@
 			mainGroup = BB5DEC562F1D139400DA9DA9;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = BB5DEC602F1D139400DA9DA9 /* Products */;
+			productRefGroup = BB5DEC562F1D139400DA9DA9 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -109,6 +115,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BBF268AC2F66DDAE000E4AF1 /* Utils in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

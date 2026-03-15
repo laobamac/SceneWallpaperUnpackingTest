@@ -18,18 +18,59 @@ struct SceneContext {
     var bloomIterations: Int = 8
     var isHDREnabled: Bool = false
 }
-
 class SceneLoader {
     let device: MTLDevice
     let pipelineManager: PipelineManager
-
     init(device: MTLDevice, pipelineManager: PipelineManager) {
         self.device = device
         self.pipelineManager = pipelineManager
         Logger.debug("SceneLoader 初始化完成")
     }
+    private func unpackIfNeeded(folder: URL) async {
+        let fileManager = FileManager.default
+        let materialsURL = folder.appendingPathComponent("materials")
+        let pkgURL = folder.appendingPathComponent("scene.pkg")
 
+        if !fileManager.fileExists(atPath: materialsURL.path)
+            && fileManager.fileExists(atPath: pkgURL.path)
+        {
+            if let pkgParserURL = Bundle.main.resourceURL?
+                .appendingPathComponent("Utils/pkg_parser")
+            {
+                await Task.detached(priority: .background) {
+                    let process = Process()
+                    process.executableURL = pkgParserURL
+                    process.arguments = ["-d", pkgURL.path, "-o", folder.path]
+                    try? process.run()
+                    process.waitUntilExit()
+                }.value
+            }
+
+            let enumerator = fileManager.enumerator(
+                at: folder,
+                includingPropertiesForKeys: [.isRegularFileKey]
+            )
+            guard let allFiles = enumerator?.allObjects as? [URL] else {
+                return
+            }
+
+            if let mdlParserURL = Bundle.main.resourceURL?
+                .appendingPathComponent("Utils/mdl_parser")
+            {
+                for fileURL in allFiles where fileURL.pathExtension == "mdl" {
+                    await Task.detached(priority: .background) {
+                        let process = Process()
+                        process.executableURL = mdlParserURL
+                        process.arguments = ["-d", fileURL.path]
+                        try? process.run()
+                        process.waitUntilExit()
+                    }.value
+                }
+            }
+        }
+    }
     func loadScene(folder: URL) async -> SceneContext {
+        await unpackIfNeeded(folder: folder)
         Logger.log("开始加载场景文件夹: \(folder.path)")
         var context = SceneContext()
         context.baseFolder = folder
@@ -40,12 +81,10 @@ class SceneLoader {
                 Logger.debug("释放安全作用域资源访问权限: \(folder.path)")
             }
         }
-
         Logger.debug("开始设置 TextureManager")
         await TextureManager.shared.setup(device: device)
         await TextureManager.shared.clear()
         Logger.debug("TextureManager 设置并清理完成")
-
         let projectURL = folder.appendingPathComponent("project.json")
         do {
             Logger.log("正在读取 project.json: \(projectURL.path)")
@@ -60,7 +99,6 @@ class SceneLoader {
                 Logger.error("解析 project.json 失败或找不到 file 字段")
                 return context
             }
-
             Logger.log("发现场景文件: \(sceneFile)")
             let sceneURL = folder.appendingPathComponent(sceneFile)
             Logger.log("正在读取 scene.json: \(sceneURL.path)")
@@ -70,7 +108,6 @@ class SceneLoader {
                 from: sceneData
             )
             Logger.log("scene.json 解码成功，共找到 \(sceneRoot.objects.count) 个对象定义")
-
             var rawObjects: [Int: [String: Any]] = [:]
             if let sceneDict = try JSONSerialization.jsonObject(with: sceneData)
                 as? [String: Any],
@@ -83,7 +120,6 @@ class SceneLoader {
                 }
                 Logger.debug("成功提取 \(rawObjects.count) 个对象的原始 JSON 字典")
             }
-
             var isBloomEnabled = false
             if let sceneDict = try? JSONSerialization.jsonObject(
                 with: sceneData
@@ -99,16 +135,16 @@ class SceneLoader {
                     Logger.debug("General 设置: hdr = \(hdr)")
                 }
             }
-
             if let gen = sceneRoot.general {
                 context.bloomThreshold = gen.bloomhdrthreshold ?? 1.0
                 context.bloomStrength =
                     isBloomEnabled ? (gen.bloomhdrstrength ?? 2.0) : 0.0
                 context.bloomIterations =
                     isBloomEnabled ? (gen.bloomhdriterations ?? 8) : 0
-                Logger.debug("泛光设置: 阈值=\(context.bloomThreshold), 强度=\(context.bloomStrength), 迭代=\(context.bloomIterations)")
+                Logger.debug(
+                    "泛光设置: 阈值=\(context.bloomThreshold), 强度=\(context.bloomStrength), 迭代=\(context.bloomIterations)"
+                )
             }
-
             if let proj = sceneRoot.general?.orthogonalprojection {
                 context.projectionSize = CGSize(
                     width: Double(proj.width),
@@ -116,7 +152,6 @@ class SceneLoader {
                 )
                 Logger.debug("正交投影尺寸: \(context.projectionSize)")
             }
-
             if let fov = sceneRoot.general?.fov {
                 context.currentFOV = fov
                 Logger.debug("基础 FOV: \(fov)")
@@ -127,17 +162,19 @@ class SceneLoader {
                 context.currentFOV = overrideFov
                 Logger.debug("覆盖 FOV: \(overrideFov)")
             }
-
             var tempRenderables: [Int: RenderableObject] = [:]
             var orderedList: [RenderableObject] = []
-
             Logger.log("开始遍历并创建场景对象...")
             for obj in sceneRoot.objects {
                 if !obj.isVisible {
-                    Logger.debug("对象 [\(obj.name ?? "Unknown")] (ID:\(obj.id ?? -1)) 设为不可见，跳过")
+                    Logger.debug(
+                        "对象 [\(obj.name ?? "Unknown")] (ID:\(obj.id ?? -1)) 设为不可见，跳过"
+                    )
                     continue
                 }
-                Logger.debug("正在处理对象 [\(obj.name ?? "Unknown")] (ID:\(obj.id ?? -1))")
+                Logger.debug(
+                    "正在处理对象 [\(obj.name ?? "Unknown")] (ID:\(obj.id ?? -1))"
+                )
                 let rawObj = rawObjects[obj.id ?? -1]
                 if let renderable = await createRenderable(
                     from: obj,
@@ -147,15 +184,18 @@ class SceneLoader {
                     if let id = obj.id {
                         tempRenderables[id] = renderable
                         renderable.id = id
-                        Logger.debug("对象 [\(obj.name ?? "Unknown")] (ID:\(id)) 成功加入渲染列表")
+                        Logger.debug(
+                            "对象 [\(obj.name ?? "Unknown")] (ID:\(id)) 成功加入渲染列表"
+                        )
                     }
                     renderable.parentId = obj.parent
                     orderedList.append(renderable)
                 } else {
-                    Logger.error("对象 [\(obj.name ?? "Unknown")] (ID:\(obj.id ?? -1)) 创建 Renderable 失败")
+                    Logger.error(
+                        "对象 [\(obj.name ?? "Unknown")] (ID:\(obj.id ?? -1)) 创建 Renderable 失败"
+                    )
                 }
             }
-
             Logger.log("开始建立父子层级关系...")
             for renderable in orderedList {
                 if let pid = renderable.parentId,
@@ -172,7 +212,6 @@ class SceneLoader {
         }
         return context
     }
-
     private func createRenderable(
         from obj: SceneObject,
         raw: [String: Any]?,
@@ -189,9 +228,10 @@ class SceneLoader {
             .appendingPathComponent("\(fileName)_puppet_data.json")
         let puppetObjURL = modelURL.deletingLastPathComponent()
             .appendingPathComponent("\(fileName)_puppet.obj")
-
         if FileManager.default.fileExists(atPath: puppetDataURL.path) {
-            Logger.log("检测到 Puppet 数据文件: \(puppetDataURL.lastPathComponent)，进入 Puppet 创建流程")
+            Logger.log(
+                "检测到 Puppet 数据文件: \(puppetDataURL.lastPathComponent)，进入 Puppet 创建流程"
+            )
             return await createPuppetRenderable(
                 from: obj,
                 dataURL: puppetDataURL,
@@ -199,7 +239,6 @@ class SceneLoader {
                 baseFolder: baseFolder
             )
         }
-
         Logger.debug("未检测到 Puppet 数据，按普通模型/图片处理: \(modelURL.path)")
         do {
             let modelData = try Data(contentsOf: modelURL)
@@ -222,7 +261,6 @@ class SceneLoader {
                 Logger.error("材质文件没有 passes")
                 return nil
             }
-
             var texture: MTLTexture!
             var frameInfo: [TexFrameInfo]? = nil
             if let texName = firstPass.textures.first {
@@ -262,25 +300,30 @@ class SceneLoader {
                     bytesPerImage: w * h * 8
                 )
             }
-
             let (pos, rotation, size, scale) = RenderableObject.parseTransforms(
                 obj
             )
-            Logger.debug("对象变换 - 位置:\(pos), 旋转:\(rotation), 尺寸:\(size), 缩放:\(scale)")
-            
+            Logger.debug(
+                "对象变换 - 位置:\(pos), 旋转:\(rotation), 尺寸:\(size), 缩放:\(scale)"
+            )
             var depthState = pipelineManager.depthStencilState
             if let dw = firstPass.depthwrite, dw == "disabled" {
                 Logger.debug("对象关闭深度写入")
                 depthState = pipelineManager.depthWriteDisabledState
             }
-            
             let blendMode = obj.colorBlendMode ?? 0
             Logger.debug("请求混合模式: \(blendMode)")
-            guard let pipeline = pipelineManager.getPipeline(isPuppet: false, blendMode: blendMode) else {
-                Logger.error("获取 pipeline 失败 (isPuppet: false, blendMode: \(blendMode))")
+            guard
+                let pipeline = pipelineManager.getPipeline(
+                    isPuppet: false,
+                    blendMode: blendMode
+                )
+            else {
+                Logger.error(
+                    "获取 pipeline 失败 (isPuppet: false, blendMode: \(blendMode))"
+                )
                 return nil
             }
-            
             Logger.log("成功创建普通 RenderableObject: \(obj.name ?? "")")
             return RenderableObject(
                 position: pos,
@@ -297,7 +340,6 @@ class SceneLoader {
             return nil
         }
     }
-
     private func createPuppetRenderable(
         from obj: SceneObject,
         dataURL: URL,
@@ -313,12 +355,10 @@ class SceneLoader {
             )
             Logger.debug("读取 Puppet OBJ: \(objURL.path)")
             let objContent = try String(contentsOf: objURL, encoding: .utf8)
-            
             guard let matFile = puppetData.info.material_file else {
                 Logger.error("Puppet JSON 缺少 material_file")
                 return nil
             }
-            
             Logger.debug("读取 Puppet 材质: \(matFile)")
             let matURL = baseFolder.appendingPathComponent(matFile)
             let matData = try Data(contentsOf: matURL)
@@ -326,14 +366,12 @@ class SceneLoader {
                 MaterialJSON.self,
                 from: matData
             )
-            
             guard let firstPass = matDef.passes.first,
                 let texName = firstPass.textures.first
             else {
                 Logger.error("Puppet 材质缺少纹理配置")
                 return nil
             }
-            
             let texURL = resolveTextureURL(base: baseFolder, rawPath: texName)
             Logger.debug("开始加载 Puppet 基础纹理: \(texURL.lastPathComponent)")
             let texture = try await TextureManager.shared.loadTexture(
@@ -343,23 +381,21 @@ class SceneLoader {
                 ]
             )
             let frameInfo = await TextureManager.shared.frameInfo(for: texURL)
-
             Logger.debug("开始解析 Puppet OBJ...")
             let (vertices, indices, bboxWidth) = PuppetRenderable.parseOBJ(
                 objContent: objContent,
                 skinning: puppetData.skeleton.isEmpty ? [] : puppetData.skinning
             )
-            Logger.debug("Puppet OBJ 解析完成, 顶点:\(vertices.count), 索引:\(indices.count), 边界宽:\(bboxWidth)")
-
+            Logger.debug(
+                "Puppet OBJ 解析完成, 顶点:\(vertices.count), 索引:\(indices.count), 边界宽:\(bboxWidth)"
+            )
             let (pos, rotation, size, scale) = RenderableObject.parseTransforms(
                 obj
             )
-            
             var depthState = pipelineManager.depthStencilState
             if let dw = firstPass.depthwrite, dw == "disabled" {
                 depthState = pipelineManager.depthWriteDisabledState
             }
-
             var maskTextures: [MTLTexture] = []
             if let masks = puppetData.clipping_masks {
                 Logger.debug("Puppet 包含 \(masks.count) 个裁剪遮罩")
@@ -368,7 +404,9 @@ class SceneLoader {
                         base: baseFolder,
                         rawPath: maskPath
                     )
-                    Logger.debug("正在加载第 \(index) 个遮罩: \(mURL.lastPathComponent)")
+                    Logger.debug(
+                        "正在加载第 \(index) 个遮罩: \(mURL.lastPathComponent)"
+                    )
                     if let mTex = try? await TextureManager.shared.loadTexture(
                         url: mURL,
                         options: [
@@ -385,15 +423,17 @@ class SceneLoader {
             } else {
                 Logger.debug("Puppet 不包含裁剪遮罩")
             }
-
             let blendMode = obj.colorBlendMode ?? 0
-            guard let pipeline = pipelineManager.getPipeline(isPuppet: true, blendMode: blendMode),
+            guard
+                let pipeline = pipelineManager.getPipeline(
+                    isPuppet: true,
+                    blendMode: blendMode
+                ),
                 let maskPipe = pipelineManager.puppetMaskPipelineState
             else {
                 Logger.error("Puppet pipeline 获取失败")
                 return nil
             }
-            
             Logger.log("成功创建 PuppetRenderable: \(obj.name ?? "")")
             return PuppetRenderable(
                 device: device,
@@ -423,7 +463,6 @@ class SceneLoader {
             return nil
         }
     }
-
     private func resolveTextureURL(base: URL, rawPath: String) -> URL {
         let fileName = URL(fileURLWithPath: rawPath).deletingPathExtension()
             .lastPathComponent
@@ -443,7 +482,9 @@ class SceneLoader {
             Logger.debug("找到纹理 (Folder): \(folderURL.path)")
             return folderURL
         }
-        let fallbackURL = base.appendingPathComponent("materials/\(fileName).tex")
+        let fallbackURL = base.appendingPathComponent(
+            "materials/\(fileName).tex"
+        )
         Logger.debug("未找到精确匹配纹理，使用 Fallback: \(fallbackURL.path)")
         return fallbackURL
     }
