@@ -25,7 +25,6 @@ class Renderer: NSObject, MTKViewDelegate {
     var bloomTextures: [MTLTexture] = []
     var bloomTempTextures: [MTLTexture] = []
     var mousePosition: CGPoint?
-    var globalUniformsBuffer: MTLBuffer?
 
     init?(device: MTLDevice) {
         self.device = device
@@ -36,9 +35,6 @@ class Renderer: NSObject, MTKViewDelegate {
         self.commandQueue = queue
         self.pipelineManager = PipelineManager(device: device)
         self.sceneLoader = SceneLoader(device: device, pipelineManager: self.pipelineManager)
-        
-        self.globalUniformsBuffer = device.makeBuffer(length: MemoryLayout<GlobalUniforms>.stride, options: .storageModeShared)
-        
         super.init()
 
         Task {
@@ -118,17 +114,11 @@ class Renderer: NSObject, MTKViewDelegate {
               let fPipeline = pipelineManager.finalPipeline else { return }
 
         let currentTime = Date().timeIntervalSince(startTime)
-        var deltaTime = Float(currentTime - lastTime)
-        if lastTime == 0 { deltaTime = 0 }
         lastTime = currentTime
         let time = Float(currentTime)
 
         for obj in sceneContext.renderables {
             obj.update(commandBuffer: commandBuffer)
-        }
-        
-        for particle in sceneContext.particles {
-            particle.update(deltaTime: deltaTime)
         }
 
         let hdrPassDesc = MTLRenderPassDescriptor()
@@ -177,12 +167,6 @@ class Renderer: NSObject, MTKViewDelegate {
         )
 
         var globals = GlobalUniforms(projectionMatrix: proj, viewMatrix: viewMat, time: time, padding: .zero)
-        
-        if let buffer = globalUniformsBuffer {
-            let pointer = buffer.contents().bindMemory(to: GlobalUniforms.self, capacity: 1)
-            pointer.pointee = globals
-        }
-        
         encoder.setFragmentSamplerState(sampler, index: 0)
 
         for obj in sceneContext.renderables {
@@ -193,13 +177,6 @@ class Renderer: NSObject, MTKViewDelegate {
             }
             obj.draw(encoder: encoder)
         }
-        
-        if let globalsBuf = globalUniformsBuffer {
-            for particle in sceneContext.particles {
-                particle.draw(in: view, renderEncoder: encoder, globalUniformsBuffer: globalsBuf)
-            }
-        }
-        
         encoder.endEncoding()
 
         if bloomTextures.count > 1 {

@@ -36,12 +36,4 @@ struct ObjectUniforms {
     float4 animInfo;
 };
 
-struct ParticleInstanceData {
-    float3 position;
-    float2 size;
-    float rotation;
-    float4 color;
-    float4 uvOffset;
-};
-
 #endif // !Puppet_H
