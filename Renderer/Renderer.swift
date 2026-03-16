@@ -24,7 +24,6 @@ class Renderer: NSObject, MTKViewDelegate {
     var hdrTexture: MTLTexture?
     var bloomTextures: [MTLTexture] = []
     var bloomTempTextures: [MTLTexture] = []
-    var mousePosition: CGPoint?
 
     init?(device: MTLDevice) {
         self.device = device
@@ -61,7 +60,11 @@ class Renderer: NSObject, MTKViewDelegate {
     }
 
     func updateMousePosition(_ position: CGPoint, in view: NSView) {
-        self.mousePosition = position
+        let normalizedX = position.x / view.bounds.width
+        let normalizedY = position.y / view.bounds.height
+        let sceneX = normalizedX * sceneContext.projectionSize.width
+        let sceneY = (1.0 - normalizedY) * sceneContext.projectionSize.height
+        self.sceneContext.mousePosition = CGPoint(x: sceneX, y: sceneY)
     }
 
     func mouseDown(at position: CGPoint, in view: NSView) {
@@ -72,12 +75,7 @@ class Renderer: NSObject, MTKViewDelegate {
 
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
         Logger.debug("MTKView 视口尺寸改变: \(size)")
-        let desc = MTLTextureDescriptor.texture2DDescriptor(
-            pixelFormat: .rgba16Float,
-            width: Int(size.width),
-            height: Int(size.height),
-            mipmapped: false
-        )
+        let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Float, width: Int(size.width), height: Int(size.height), mipmapped: false)
         desc.usage = [.renderTarget, .shaderRead]
         hdrTexture = device.makeTexture(descriptor: desc)
 
@@ -87,12 +85,7 @@ class Renderer: NSObject, MTKViewDelegate {
         var h = Int(size.height)
         Logger.debug("准备重建 Bloom 纹理，迭代次数: \(sceneContext.bloomIterations)")
         for _ in 0...sceneContext.bloomIterations {
-            let bDesc = MTLTextureDescriptor.texture2DDescriptor(
-                pixelFormat: .rgba16Float,
-                width: w,
-                height: h,
-                mipmapped: false
-            )
+            let bDesc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .rgba16Float, width: w, height: h, mipmapped: false)
             bDesc.usage = [.renderTarget, .shaderRead]
             if let tex = device.makeTexture(descriptor: bDesc) {
                 bloomTextures.append(tex)
@@ -114,11 +107,26 @@ class Renderer: NSObject, MTKViewDelegate {
               let fPipeline = pipelineManager.finalPipeline else { return }
 
         let currentTime = Date().timeIntervalSince(startTime)
+        let dt = Float(currentTime - lastTime)
         lastTime = currentTime
         let time = Float(currentTime)
 
         for obj in sceneContext.renderables {
             obj.update(commandBuffer: commandBuffer)
+            if let particle = obj as? ParticleRenderable {
+                particle.lastScreenWidth = Float(sceneContext.projectionSize.width)
+                particle.lastScreenHeight = Float(sceneContext.projectionSize.height)
+                if let mPos = sceneContext.mousePosition {
+                    for i in 0..<particle.controlPoints.count {
+                        if particle.controlPoints[i].linkMouse {
+                            let px = Float(mPos.x) - Float(sceneContext.projectionSize.width) / 2.0
+                            let py = Float(mPos.y) - Float(sceneContext.projectionSize.height) / 2.0
+                            particle.controlPoints[i].position = simd_float3(px, py, 0) + particle.controlPoints[i].offset - particle.transformedOrigin
+                        }
+                    }
+                }
+                particle.update(dt: dt)
+            }
         }
 
         let hdrPassDesc = MTLRenderPassDescriptor()
