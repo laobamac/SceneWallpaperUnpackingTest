@@ -160,10 +160,6 @@ class PipelineManager {
         descriptor.fragmentFunction = lib.makeFunction(name: isRope ? "fragment_particle_rope" : "fragment_particle_sprite")
         descriptor.colorAttachments[0].pixelFormat = hdrFormat
         
-        if #available(macOS 11.0, *) {
-            descriptor.depthClipMode = .clamp
-        }
-        
         if let colorAttachment = descriptor.colorAttachments[0] {
             configureBlend(descriptor: colorAttachment, blendMode: blendMode)
         }

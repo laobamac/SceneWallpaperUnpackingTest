@@ -311,13 +311,14 @@ class SceneLoader {
             if let info = frameInfo, info.count > 0 {
                 renderable?.spritesheetFrames = info.count
                 if let tex = texture {
-                    renderable?.spritesheetCols = tex.width / Int(info[0].size.x)
-                    renderable?.spritesheetRows = tex.height / Int(info[0].size.y)
+                    renderable?.spritesheetCols = tex.width / Int(info[0].width)
+                    renderable?.spritesheetRows = tex.height / Int(info[0].height)
                 }
             }
             
             if let objOrigin = obj.origin {
-                renderable?.transformedOrigin = simd_float3(Float(objOrigin.x), Float(objOrigin.y), Float(objOrigin.z))
+                let originVec = objOrigin.float3Value
+                renderable?.transformedOrigin = simd_float3(Float(originVec.x), Float(originVec.y), Float(originVec.z))
             }
             
             return renderable

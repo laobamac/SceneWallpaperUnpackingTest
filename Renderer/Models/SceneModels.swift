@@ -40,6 +40,7 @@ struct AnimationLayer: Codable {
 struct SceneObject: Codable {
     let id: Int?
     let name: String?
+    let file: String?
     let image: String?
     let type: String?
     let origin: ScriptableValue?
@@ -60,6 +61,7 @@ struct SceneObject: Codable {
     enum CodingKeys: String, CodingKey {
         case id
         case name
+        case file
         case image
         case type
         case origin
@@ -299,4 +301,5 @@ struct MaterialPass: Codable {
     let cullmode: String?
     let depthtest: String?
     let depthwrite: String?
+    let constants: [String: Float]?
 }

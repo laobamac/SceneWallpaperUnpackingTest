@@ -23,4 +23,8 @@ struct RendererMath {
         let t = SIMD3<Float>(-dot(x, eye), -dot(y, eye), -dot(z, eye))
         return matrix_float4x4.init(columns: (vector_float4(x.x, y.x, z.x, 0), vector_float4(x.y, y.y, z.y, 0), vector_float4(x.z, y.z, z.z, 0), vector_float4(t.x, t.y, t.z, 1)))
     }
+
+    static func lerp(a: Float, b: Float, t: Float) -> Float {
+        return a + (b - a) * t
+    }
 }
