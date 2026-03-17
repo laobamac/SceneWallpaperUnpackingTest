@@ -15,15 +15,11 @@ class PipelineManager {
 
     var pipelineStates: [Int: MTLRenderPipelineState] = [:]
     var puppetPipelineStates: [Int: MTLRenderPipelineState] = [:]
-    var particleSpritePipelineStates: [Int: MTLRenderPipelineState] = [:]
-    var particleRopePipelineStates: [Int: MTLRenderPipelineState] = [:]
-    
     var puppetMaskPipelineState: MTLRenderPipelineState?
     var extractPipeline: MTLRenderPipelineState?
     var blurPipeline: MTLRenderPipelineState?
     var upsamplePipeline: MTLRenderPipelineState?
     var finalPipeline: MTLRenderPipelineState?
-    
     var samplerState: MTLSamplerState?
     var depthStencilState: MTLDepthStencilState?
     var depthWriteDisabledState: MTLDepthStencilState?
@@ -38,6 +34,14 @@ class PipelineManager {
         } else {
             Logger.debug("PipelineManager 构造成功, DefaultLibrary 已加载")
         }
+    }
+
+    var pipelineState: MTLRenderPipelineState? {
+        return getPipeline(isPuppet: false, blendMode: 0)
+    }
+
+    var puppetPipelineState: MTLRenderPipelineState? {
+        return getPipeline(isPuppet: true, blendMode: 0)
     }
 
     func configureBlend(descriptor: MTLRenderPipelineColorAttachmentDescriptor, blendMode: Int) {
@@ -141,87 +145,6 @@ class PipelineManager {
             return state
         } catch {
             Logger.error("创建 Pipeline 失败: \(error.localizedDescription)")
-            return nil
-        }
-    }
-    
-    func getParticlePipeline(isRope: Bool, blendMode: Int) -> MTLRenderPipelineState? {
-        if isRope {
-            if let state = particleRopePipelineStates[blendMode] { return state }
-        } else {
-            if let state = particleSpritePipelineStates[blendMode] { return state }
-        }
-        
-        guard let lib = library else { return nil }
-        
-        let descriptor = MTLRenderPipelineDescriptor()
-        descriptor.label = isRope ? "ParticleRope_\(blendMode)" : "ParticleSprite_\(blendMode)"
-        descriptor.vertexFunction = lib.makeFunction(name: isRope ? "vertex_particle_rope" : "vertex_particle_sprite")
-        descriptor.fragmentFunction = lib.makeFunction(name: isRope ? "fragment_particle_rope" : "fragment_particle_sprite")
-        descriptor.colorAttachments[0].pixelFormat = hdrFormat
-        
-        if let colorAttachment = descriptor.colorAttachments[0] {
-            configureBlend(descriptor: colorAttachment, blendMode: blendMode)
-        }
-        descriptor.depthAttachmentPixelFormat = depthFormat
-        descriptor.stencilAttachmentPixelFormat = depthFormat
-        
-        let vertexDescriptor = MTLVertexDescriptor()
-        
-        if isRope {
-            vertexDescriptor.attributes[0].format = .float4
-            vertexDescriptor.attributes[0].offset = 0
-            vertexDescriptor.attributes[0].bufferIndex = 0
-            vertexDescriptor.attributes[1].format = .float4
-            vertexDescriptor.attributes[1].offset = 16
-            vertexDescriptor.attributes[1].bufferIndex = 0
-            vertexDescriptor.attributes[2].format = .float4
-            vertexDescriptor.attributes[2].offset = 32
-            vertexDescriptor.attributes[2].bufferIndex = 0
-            vertexDescriptor.attributes[3].format = .float4
-            vertexDescriptor.attributes[3].offset = 48
-            vertexDescriptor.attributes[3].bufferIndex = 0
-            vertexDescriptor.attributes[4].format = .float4
-            vertexDescriptor.attributes[4].offset = 64
-            vertexDescriptor.attributes[4].bufferIndex = 0
-            vertexDescriptor.attributes[5].format = .float2
-            vertexDescriptor.attributes[5].offset = 80
-            vertexDescriptor.attributes[5].bufferIndex = 0
-            vertexDescriptor.attributes[6].format = .float4
-            vertexDescriptor.attributes[6].offset = 88
-            vertexDescriptor.attributes[6].bufferIndex = 0
-            vertexDescriptor.layouts[0].stride = 104
-        } else {
-            vertexDescriptor.attributes[0].format = .float3
-            vertexDescriptor.attributes[0].offset = 0
-            vertexDescriptor.attributes[0].bufferIndex = 0
-            vertexDescriptor.attributes[1].format = .float4
-            vertexDescriptor.attributes[1].offset = 12
-            vertexDescriptor.attributes[1].bufferIndex = 0
-            vertexDescriptor.attributes[2].format = .float4
-            vertexDescriptor.attributes[2].offset = 28
-            vertexDescriptor.attributes[2].bufferIndex = 0
-            vertexDescriptor.attributes[3].format = .float4
-            vertexDescriptor.attributes[3].offset = 44
-            vertexDescriptor.attributes[3].bufferIndex = 0
-            vertexDescriptor.attributes[4].format = .float2
-            vertexDescriptor.attributes[4].offset = 60
-            vertexDescriptor.attributes[4].bufferIndex = 0
-            vertexDescriptor.layouts[0].stride = 68
-        }
-        
-        descriptor.vertexDescriptor = vertexDescriptor
-        
-        do {
-            let state = try device.makeRenderPipelineState(descriptor: descriptor)
-            if isRope {
-                particleRopePipelineStates[blendMode] = state
-            } else {
-                particleSpritePipelineStates[blendMode] = state
-            }
-            return state
-        } catch {
-            Logger.error("创建 Particle Pipeline 失败: \(error.localizedDescription)")
             return nil
         }
     }
