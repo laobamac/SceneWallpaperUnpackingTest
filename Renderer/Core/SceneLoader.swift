@@ -228,6 +228,7 @@ class SceneLoader {
             .appendingPathComponent("\(fileName)_puppet_data.json")
         let puppetObjURL = modelURL.deletingLastPathComponent()
             .appendingPathComponent("\(fileName)_puppet.obj")
+        
         if FileManager.default.fileExists(atPath: puppetDataURL.path) {
             Logger.log(
                 "检测到 Puppet 数据文件: \(puppetDataURL.lastPathComponent)，进入 Puppet 创建流程"
@@ -239,9 +240,16 @@ class SceneLoader {
                 baseFolder: baseFolder
             )
         }
-        Logger.debug("未检测到 Puppet 数据，按普通模型/图片处理: \(modelURL.path)")
+        
         do {
             let modelData = try Data(contentsOf: modelURL)
+            if let jsonDict = try? JSONSerialization.jsonObject(with: modelData, options: []) as? [String: Any],
+               jsonDict.keys.contains("emitter") || jsonDict.keys.contains("initializer") || jsonDict.keys.contains("particlesystem") || jsonDict.keys.contains("children") {
+                Logger.log("检测到粒子系统 JSON: \(modelURL.lastPathComponent)")
+                return await createParticleRenderable(from: obj, json: jsonDict, jsonURL: modelURL, baseFolder: baseFolder)
+            }
+            
+            Logger.debug("未检测到 Puppet 和粒子数据，按普通模型处理: \(modelURL.path)")
             let modelDef = try JSONDecoder().decode(
                 ModelJSON.self,
                 from: modelData
@@ -336,10 +344,131 @@ class SceneLoader {
                 depthState: depthState
             )
         } catch {
-            Logger.error("创建普通对象失败: \(error.localizedDescription)")
+            Logger.error("创建普通/粒子对象失败: \(error.localizedDescription)")
             return nil
         }
     }
+    
+    private func createParticleRenderable(from obj: SceneObject, json: [String: Any], jsonURL: URL, baseFolder: URL) async -> RenderableObject? {
+        let system = ParticleSystem()
+        
+        func parseSubSystem(json: [String: Any], folder: URL) -> ParticleSubSystem {
+            var maxcount: UInt32 = 50
+            if let val = json["maxcount"] as? NSNumber { maxcount = val.uint32Value }
+            
+            var rate: Double = 10
+            var spawnType: ParticleSpawnType = .static
+            var maxcountInstance: UInt32 = 1
+            var probability: Double = 1.0
+            
+            var emittersOp: [ParticleEmittOp] = []
+            if let emitters = json["emitter"] as? [[String: Any]] {
+                for em in emitters {
+                    if let r = em["rate"] as? NSNumber { rate = r.doubleValue }
+                    
+                    if let name = em["name"] as? String {
+                        if name == "sphererandom" {
+                            let originArr = (em["origin"] as? String)?.components(separatedBy: " ").compactMap { Float($0) } ?? [0,0,0]
+                            let origin = SIMD3<Float>(originArr.count > 0 ? originArr[0] : 0,
+                                                      originArr.count > 1 ? originArr[1] : 0,
+                                                      originArr.count > 2 ? originArr[2] : 0)
+                            
+                            var dmin: Float = 0
+                            var dmax: Float = 0
+                            if let minVal = em["distancemin"] as? NSNumber { dmin = minVal.floatValue }
+                            if let maxVal = em["distancemax"] as? NSNumber { dmax = maxVal.floatValue }
+                            
+                            let eRate = rate
+                            let eOp: ParticleEmittOp = { particles, initializers, maxCnt, pTime in
+                                let emitCount = Int(eRate * pTime)
+                                for _ in 0..<emitCount {
+                                    if particles.count >= maxCnt { break }
+                                    var p = Particle()
+                                    let theta = ParticleMath.random(min: 0, max: Float.pi * 2.0)
+                                    let phi = acos(ParticleMath.random(min: -1.0, max: 1.0))
+                                    let r = ParticleMath.random(min: dmin, max: dmax)
+                                    
+                                    p.position = origin + SIMD3<Float>(
+                                        r * sin(phi) * cos(theta),
+                                        r * sin(phi) * sin(theta),
+                                        r * cos(phi)
+                                    )
+                                    
+                                    for initOp in initializers { initOp(&p, pTime) }
+                                    particles.append(p)
+                                }
+                            }
+                            emittersOp.append(eOp)
+                        }
+                    }
+                }
+            }
+            
+            let subSystem = ParticleSubSystem(maxcount: maxcount, rate: rate, maxcountInstance: maxcountInstance, probability: probability, type: spawnType)
+            subSystem.emitters = emittersOp
+            
+            if let inits = json["initializer"] as? [[String: Any]] {
+                for ini in inits {
+                    subSystem.initializers.append(WPParticleParser.genParticleInitOp(ini))
+                }
+            }
+            
+            if let ops = json["operator"] as? [[String: Any]] {
+                for op in ops {
+                    subSystem.operators.append(WPParticleParser.genParticleOperatorOp(op, speedOver: 1.0, sizeOver: 1.0))
+                }
+            }
+            
+            if let children = json["children"] as? [[String: Any]] {
+                for child in children {
+                    if let childPath = child["name"] as? String {
+                        let childURL = folder.appendingPathComponent(childPath)
+                        if let childData = try? Data(contentsOf: childURL),
+                           let childJson = try? JSONSerialization.jsonObject(with: childData, options: []) as? [String: Any] {
+                            let childSys = parseSubSystem(json: childJson, folder: folder)
+                            subSystem.children.append(childSys)
+                        }
+                    }
+                }
+            }
+            
+            return subSystem
+        }
+        
+        let rootFolder = jsonURL.deletingLastPathComponent().deletingLastPathComponent()
+        let mainSystem = parseSubSystem(json: json, folder: rootFolder)
+        system.subsystems.append(mainSystem)
+        
+        let renderable = ParticleRenderable(device: device, particleSystem: system)
+        renderable.pipelineState = pipelineManager.particlePipelineState
+        
+        if let materialPath = json["material"] as? String {
+            let matURL = rootFolder.appendingPathComponent(materialPath)
+            if let matData = try? Data(contentsOf: matURL),
+               let matJson = try? JSONSerialization.jsonObject(with: matData, options: []) as? [String: Any] {
+                
+                var texPath = ""
+                if let basetexture = matJson["basetexture"] as? String {
+                    texPath = basetexture
+                } else if let over = matJson["overrides"] as? [[String: Any]], over.count > 0 {
+                    if let bt = over[0]["basetexture"] as? String {
+                        texPath = bt
+                    }
+                }
+                
+                if !texPath.isEmpty {
+                    let fullTexPath = rootFolder.appendingPathComponent(texPath).path
+                    let pngPath = fullTexPath.replacingOccurrences(of: ".tex", with: ".png")
+                    Task {
+                        renderable.texture = await TextureManager.shared.loadTexture(path: pngPath, device: device)
+                    }
+                }
+            }
+        }
+        
+        return renderable
+    }
+
     private func createPuppetRenderable(
         from obj: SceneObject,
         dataURL: URL,

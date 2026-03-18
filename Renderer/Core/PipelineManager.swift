@@ -16,6 +16,7 @@ class PipelineManager {
     var pipelineStates: [Int: MTLRenderPipelineState] = [:]
     var puppetPipelineStates: [Int: MTLRenderPipelineState] = [:]
     var puppetMaskPipelineState: MTLRenderPipelineState?
+    var particlePipelineState: MTLRenderPipelineState?
     var extractPipeline: MTLRenderPipelineState?
     var blurPipeline: MTLRenderPipelineState?
     var upsamplePipeline: MTLRenderPipelineState?
@@ -190,6 +191,26 @@ class PipelineManager {
         maskDesc.vertexDescriptor = pvDesc
         puppetMaskPipelineState = try await device.makeRenderPipelineState(descriptor: maskDesc, options: []).0
         Logger.debug("PuppetMask Pipeline 创建成功")
+        
+        Logger.debug("配置 Particle Pipeline")
+        let particleDesc = MTLRenderPipelineDescriptor()
+        particleDesc.label = "Particle"
+        particleDesc.vertexFunction = lib.makeFunction(name: "particle_vertex")
+        particleDesc.fragmentFunction = lib.makeFunction(name: "particle_fragment")
+        particleDesc.colorAttachments[0].pixelFormat = hdrFormat
+        if let ca = particleDesc.colorAttachments[0] {
+            ca.isBlendingEnabled = true
+            ca.sourceRGBBlendFactor = .sourceAlpha
+            ca.destinationRGBBlendFactor = .oneMinusSourceAlpha
+            ca.rgbBlendOperation = .add
+            ca.sourceAlphaBlendFactor = .sourceAlpha
+            ca.destinationAlphaBlendFactor = .oneMinusSourceAlpha
+            ca.alphaBlendOperation = .add
+        }
+        particleDesc.depthAttachmentPixelFormat = depthFormat
+        particleDesc.stencilAttachmentPixelFormat = depthFormat
+        particlePipelineState = try await device.makeRenderPipelineState(descriptor: particleDesc, options: []).0
+        Logger.debug("Particle Pipeline 创建成功")
 
         Logger.debug("配置后期处理 Pipeline")
         let postDesc = MTLRenderPipelineDescriptor()
