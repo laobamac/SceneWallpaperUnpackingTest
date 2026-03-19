@@ -33,12 +33,3 @@ struct PuppetVertex {
     var j1: UInt16, j2: UInt16, j3: UInt16, j4: UInt16
     var w1: Float, w2: Float, w3: Float, w4: Float
 }
-
-struct ParticleInstanceData {
-    var position: (Float, Float, Float)
-    var size: Float
-    var color: (Float, Float, Float)
-    var alpha: Float
-    var rotation: (Float, Float, Float)
-    var padding: Float
-}
