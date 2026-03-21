@@ -44,10 +44,7 @@ class PipelineManager {
         return getPipeline(isPuppet: true, blendMode: 0)
     }
 
-    func configureBlend(
-        descriptor: MTLRenderPipelineColorAttachmentDescriptor,
-        blendMode: Int
-    ) {
+    func configureBlend(descriptor: MTLRenderPipelineColorAttachmentDescriptor, blendMode: Int) {
         Logger.debug("配置 BlendMode: \(blendMode)")
         descriptor.isBlendingEnabled = true
         switch blendMode {
@@ -82,28 +79,22 @@ class PipelineManager {
         }
     }
 
-    func getPipeline(isPuppet: Bool, blendMode: Int) -> MTLRenderPipelineState?
-    {
+    func getPipeline(isPuppet: Bool, blendMode: Int) -> MTLRenderPipelineState? {
         if isPuppet {
             if let state = puppetPipelineStates[blendMode] { return state }
         } else {
             if let state = pipelineStates[blendMode] { return state }
         }
-
-        Logger.debug(
-            "缓存未命中，开始创建新的 Pipeline (isPuppet: \(isPuppet), blendMode: \(blendMode))"
-        )
-
+        
+        Logger.debug("缓存未命中，开始创建新的 Pipeline (isPuppet: \(isPuppet), blendMode: \(blendMode))")
+        
         guard let lib = library else {
             Logger.error("创建 Pipeline 失败: Library 为空")
             return nil
         }
         let descriptor = MTLRenderPipelineDescriptor()
-        descriptor.label =
-            isPuppet ? "Puppet_\(blendMode)" : "Standard_\(blendMode)"
-        descriptor.vertexFunction = lib.makeFunction(
-            name: isPuppet ? "vertex_puppet" : "vertex_main"
-        )
+        descriptor.label = isPuppet ? "Puppet_\(blendMode)" : "Standard_\(blendMode)"
+        descriptor.vertexFunction = lib.makeFunction(name: isPuppet ? "vertex_puppet" : "vertex_main")
         descriptor.fragmentFunction = lib.makeFunction(name: "fragment_main")
         descriptor.colorAttachments[0].pixelFormat = hdrFormat
         if let colorAttachment = descriptor.colorAttachments[0] {
@@ -144,9 +135,7 @@ class PipelineManager {
         descriptor.vertexDescriptor = vertexDescriptor
 
         do {
-            let state = try device.makeRenderPipelineState(
-                descriptor: descriptor
-            )
+            let state = try device.makeRenderPipelineState(descriptor: descriptor)
             if isPuppet {
                 puppetPipelineStates[blendMode] = state
             } else {
@@ -160,77 +149,11 @@ class PipelineManager {
         }
     }
 
-    func getParticlePipeline(isRope: Bool, blendMode: Int)
-        -> MTLRenderPipelineState?
-    {
-        let cacheKey = "particle_\(isRope)_\(blendMode)"
-
-        guard let library = device.makeDefaultLibrary() else { return nil }
-
-        let vertexFunction = library.makeFunction(
-            name: isRope
-                ? "particleRopeVertexShader" : "particleSpriteVertexShader"
-        )
-        let fragmentFunction = library.makeFunction(
-            name: "particleFragmentShader"
-        )
-
-        let pipelineDescriptor = MTLRenderPipelineDescriptor()
-        pipelineDescriptor.vertexFunction = vertexFunction
-        pipelineDescriptor.fragmentFunction = fragmentFunction
-        pipelineDescriptor.colorAttachments[0].pixelFormat = .rgba16Float
-
-        pipelineDescriptor.colorAttachments[0].isBlendingEnabled = true
-        if blendMode == 1 {
-            pipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor =
-                .sourceAlpha
-            pipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor =
-                .one
-            pipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor =
-                .sourceAlpha
-            pipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor =
-                .one
-        } else if blendMode == 2 {
-            pipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor =
-                .destinationColor
-            pipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor =
-                .zero
-            pipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor =
-                .destinationAlpha
-            pipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor =
-                .zero
-        } else {
-            pipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor =
-                .sourceAlpha
-            pipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor =
-                .oneMinusSourceAlpha
-            pipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = .one
-            pipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor =
-                .oneMinusSourceAlpha
-        }
-
-        pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float_stencil8
-        pipelineDescriptor.stencilAttachmentPixelFormat = .depth32Float_stencil8
-
-        do {
-            let state = try device.makeRenderPipelineState(
-                descriptor: pipelineDescriptor
-            )
-            return state
-        } catch {
-            return nil
-        }
-    }
-
     func setupPipelines() async throws {
         Logger.log("开始全局初始化 Pipelines 和相关状态")
         guard let lib = library else {
             Logger.error("全局初始化失败: Library 为空")
-            throw NSError(
-                domain: "Renderer",
-                code: 1,
-                userInfo: [NSLocalizedDescriptionKey: "Library error"]
-            )
+            throw NSError(domain: "Renderer", code: 1, userInfo: [NSLocalizedDescriptionKey: "Library error"])
         }
 
         _ = getPipeline(isPuppet: false, blendMode: 0)
@@ -240,9 +163,7 @@ class PipelineManager {
         let maskDesc = MTLRenderPipelineDescriptor()
         maskDesc.label = "PuppetMask"
         maskDesc.vertexFunction = lib.makeFunction(name: "vertex_puppet")
-        maskDesc.fragmentFunction = lib.makeFunction(
-            name: "fragment_puppet_mask"
-        )
+        maskDesc.fragmentFunction = lib.makeFunction(name: "fragment_puppet_mask")
         maskDesc.colorAttachments[0].pixelFormat = hdrFormat
         maskDesc.colorAttachments[0].writeMask = []
         maskDesc.depthAttachmentPixelFormat = depthFormat
@@ -267,10 +188,7 @@ class PipelineManager {
         offset += 16
         pvDesc.layouts[0].stride = 48
         maskDesc.vertexDescriptor = pvDesc
-        puppetMaskPipelineState = try await device.makeRenderPipelineState(
-            descriptor: maskDesc,
-            options: []
-        ).0
+        puppetMaskPipelineState = try await device.makeRenderPipelineState(descriptor: maskDesc, options: []).0
         Logger.debug("PuppetMask Pipeline 创建成功")
 
         Logger.debug("配置后期处理 Pipeline")
@@ -280,34 +198,22 @@ class PipelineManager {
         postDesc.depthAttachmentPixelFormat = .invalid
         postDesc.stencilAttachmentPixelFormat = .invalid
         postDesc.fragmentFunction = lib.makeFunction(name: "fragment_extract")
-        extractPipeline = try await device.makeRenderPipelineState(
-            descriptor: postDesc,
-            options: []
-        ).0
+        extractPipeline = try await device.makeRenderPipelineState(descriptor: postDesc, options: []).0
         Logger.debug("提取 Pipeline 创建成功")
-
+        
         postDesc.fragmentFunction = lib.makeFunction(name: "fragment_blur")
-        blurPipeline = try await device.makeRenderPipelineState(
-            descriptor: postDesc,
-            options: []
-        ).0
+        blurPipeline = try await device.makeRenderPipelineState(descriptor: postDesc, options: []).0
         Logger.debug("模糊 Pipeline 创建成功")
-
+        
         postDesc.fragmentFunction = lib.makeFunction(name: "fragment_upsample")
-        upsamplePipeline = try await device.makeRenderPipelineState(
-            descriptor: postDesc,
-            options: []
-        ).0
+        upsamplePipeline = try await device.makeRenderPipelineState(descriptor: postDesc, options: []).0
         Logger.debug("上采样 Pipeline 创建成功")
-
+        
         postDesc.fragmentFunction = lib.makeFunction(name: "fragment_final")
         postDesc.colorAttachments[0].pixelFormat = .bgra8Unorm
         postDesc.depthAttachmentPixelFormat = depthFormat
         postDesc.stencilAttachmentPixelFormat = depthFormat
-        finalPipeline = try await device.makeRenderPipelineState(
-            descriptor: postDesc,
-            options: []
-        ).0
+        finalPipeline = try await device.makeRenderPipelineState(descriptor: postDesc, options: []).0
         Logger.debug("最终合成 Pipeline 创建成功")
 
         let samplerDesc = MTLSamplerDescriptor()
@@ -331,9 +237,7 @@ class PipelineManager {
         let depthDisabledDesc = MTLDepthStencilDescriptor()
         depthDisabledDesc.isDepthWriteEnabled = false
         depthDisabledDesc.depthCompareFunction = .lessEqual
-        depthWriteDisabledState = device.makeDepthStencilState(
-            descriptor: depthDisabledDesc
-        )
+        depthWriteDisabledState = device.makeDepthStencilState(descriptor: depthDisabledDesc)
 
         let maskWriteDesc = MTLDepthStencilDescriptor()
         maskWriteDesc.isDepthWriteEnabled = false

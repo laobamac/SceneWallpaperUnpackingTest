@@ -114,14 +114,10 @@ class Renderer: NSObject, MTKViewDelegate {
               let fPipeline = pipelineManager.finalPipeline else { return }
 
         let currentTime = Date().timeIntervalSince(startTime)
-        let dt = currentTime - lastTime
         lastTime = currentTime
         let time = Float(currentTime)
 
         for obj in sceneContext.renderables {
-            if let particleObj = obj as? ParticleRenderable {
-                particleObj.simulator.update(dt: Float(dt), currentTime: currentTime, screenWidth: Float(view.drawableSize.width), screenHeight: Float(view.drawableSize.height), mousePos: self.mousePosition)
-            }
             obj.update(commandBuffer: commandBuffer)
         }
 
