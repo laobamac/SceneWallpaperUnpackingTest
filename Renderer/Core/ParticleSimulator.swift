@@ -81,6 +81,15 @@ class ParticleSimulator {
                 }
             }
         }
+        
+        if let starttime = def.starttime, starttime > 0.0 {
+            let step: Float = 0.1
+            var t: Float = 0.0
+            while t < starttime {
+                self.update(dt: step, currentTime: Double(t), screenWidth: screenWidth, screenHeight: screenHeight, mousePos: nil)
+                t += step
+            }
+        }
     }
     
     func update(dt: Float, currentTime: Double, screenWidth: Float, screenHeight: Float, mousePos: CGPoint?) {
@@ -125,6 +134,11 @@ class ParticleSimulator {
         
         for i in 0..<operators.count {
             operators[i](&particles, particleCount, controlPoints, Float(self.time), safeDt)
+        }
+        
+        let animSpeed = def.sequencemultiplier ?? 1.0
+        for i in 0..<particleCount {
+            particles[i].frame = particles[i].getLifetimePos() * animSpeed * 60.0
         }
         
         var writeIdx = 0
@@ -399,7 +413,7 @@ class ParticleSimulator {
         
         let flags = eDef.flags ?? 0
         let limitOnePerFrame = (flags & 2) != 0
-        let is3D = (def.flags ?? 0 & 4) != 0
+        let is3D = ((def.flags ?? 0) & 4) != 0
         let minDist = eDef.distancemin?.float3Value ?? SIMD3<Float>(0, 0, 0)
         let maxDist = eDef.distancemax?.float3Value ?? SIMD3<Float>(0, 0, 0)
         let directions = eDef.directions?.float3Value ?? SIMD3<Float>(1, 1, 1)
@@ -696,7 +710,7 @@ class ParticleSimulator {
                 let q = simd_quatf(angle: -offsetV, axis: right)
                 result = q.act(result)
             }
-            if !self.isOrthographic && (self.def.flags ?? 0 & 4) == 0 {
+            if !self.isOrthographic && ((self.def.flags ?? 0) & 4) == 0 {
                 result.z = 0.0
                 let len2d = length(result)
                 if len2d > 0.0001 { result /= len2d }

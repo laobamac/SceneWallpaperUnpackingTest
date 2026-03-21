@@ -118,10 +118,10 @@ class ParticleRenderable: RenderableObject {
             }
             
             let baseV = vIdx
-            addVertex(0.0, 1.0, vIdx * 17); vIdx += 1
-            addVertex(1.0, 1.0, vIdx * 17); vIdx += 1
-            addVertex(1.0, 0.0, vIdx * 17); vIdx += 1
             addVertex(0.0, 0.0, vIdx * 17); vIdx += 1
+            addVertex(1.0, 0.0, vIdx * 17); vIdx += 1
+            addVertex(1.0, 1.0, vIdx * 17); vIdx += 1
+            addVertex(0.0, 1.0, vIdx * 17); vIdx += 1
             
             iPtr[iIdx] = UInt32(baseV + 0); iIdx += 1
             iPtr[iIdx] = UInt32(baseV + 1); iIdx += 1
@@ -317,8 +317,8 @@ class ParticleRenderable: RenderableObject {
             renderVar1.w = Float(tex.height) / Float(tex.width)
             if let frames = frameInfo, frames.count > 0 {
                 renderVar1.z = Float(frames.count)
-                renderVar1.x = 1.0 / Float(frames.last?.row ?? 1)
-                renderVar1.y = 1.0 / Float(frames.last?.col ?? 1)
+                renderVar1.x = 1.0 / Float(frames.last?.col ?? 1)
+                renderVar1.y = 1.0 / Float(frames.last?.row ?? 1)
             }
         }
         uniforms.renderVar1 = renderVar1
