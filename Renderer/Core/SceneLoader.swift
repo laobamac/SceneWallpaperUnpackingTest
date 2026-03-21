@@ -179,7 +179,8 @@ class SceneLoader {
                 if let renderable = await createRenderable(
                     from: obj,
                     raw: rawObj,
-                    baseFolder: folder
+                    baseFolder: folder,
+                    projectionSize: context.projectionSize
                 ) {
                     if let id = obj.id {
                         tempRenderables[id] = renderable
@@ -212,11 +213,74 @@ class SceneLoader {
         }
         return context
     }
+    
+    private func createParticleRenderable(from obj: SceneObject, particlePath: String, baseFolder: URL, projectionSize: CGSize) async -> RenderableObject? {
+        do {
+            let particleURL = baseFolder.appendingPathComponent(particlePath)
+            Logger.debug("读取 Particle JSON: \(particleURL.path)")
+            let particleData = try Data(contentsOf: particleURL)
+            let particleDef = try JSONDecoder().decode(ParticleSystemDef.self, from: particleData)
+            
+            guard let matFile = particleDef.material else {
+                Logger.error("Particle JSON 缺少 material 字段")
+                return nil
+            }
+            
+            Logger.debug("读取 Particle 材质: \(matFile)")
+            let matURL = baseFolder.appendingPathComponent(matFile)
+            let matData = try Data(contentsOf: matURL)
+            let matDef = try JSONDecoder().decode(MaterialJSON.self, from: matData)
+            
+            var texture: MTLTexture?
+            var frameInfo: [TexFrameInfo]?
+            var depthState = pipelineManager.depthStencilState
+            
+            if let firstPass = matDef.passes.first {
+                if let texName = firstPass.textures.first {
+                    let texURL = resolveTextureURL(base: baseFolder, rawPath: texName)
+                    Logger.debug("开始加载 Particle 纹理: \(texURL.lastPathComponent)")
+                    texture = try? await TextureManager.shared.loadTexture(url: texURL, options: [.origin: MTKTextureLoader.Origin.topLeft, .SRGB: true])
+                    frameInfo = await TextureManager.shared.frameInfo(for: texURL)
+                }
+                if let dw = firstPass.depthwrite, dw == "disabled" {
+                    depthState = pipelineManager.depthWriteDisabledState
+                }
+            }
+            
+            let blendMode = obj.colorBlendMode ?? 1
+            let useRope = particleDef.renderer?.first?.name == "rope" || particleDef.renderer?.first?.name == "ropetrail"
+            
+            guard let pipeline = pipelineManager.getParticlePipeline(isRope: useRope, blendMode: blendMode) else {
+                Logger.error("Particle pipeline 获取失败")
+                return nil
+            }
+            
+            let isOrthographic = (particleDef.flags ?? 0 & 4) == 0
+            let origin = obj.origin?.float3Value ?? SIMD3<Float>(0, 0, 0)
+            
+            let simulator = ParticleSimulator(def: particleDef, instanceOverride: obj.instanceoverride, origin: origin, isOrthographic: isOrthographic)
+            simulator.setup(screenWidth: Float(projectionSize.width), screenHeight: Float(projectionSize.height))
+            
+            Logger.log("成功创建 ParticleRenderable: \(obj.name ?? "")")
+            return ParticleRenderable(device: device, simulator: simulator, texture: texture, frameInfo: frameInfo, pipeline: pipeline, depthState: depthState, useRopeRenderer: useRope)
+            
+        } catch {
+            Logger.error("创建 Particle 对象失败: \(error.localizedDescription)")
+            return nil
+        }
+    }
+    
     private func createRenderable(
         from obj: SceneObject,
         raw: [String: Any]?,
-        baseFolder: URL
+        baseFolder: URL,
+        projectionSize: CGSize
     ) async -> RenderableObject? {
+        if let particlePath = obj.particle {
+            Logger.log("检测到 Particle 数据文件: \(particlePath)，进入 Particle 创建流程")
+            return await createParticleRenderable(from: obj, particlePath: particlePath, baseFolder: baseFolder, projectionSize: projectionSize)
+        }
+        
         guard let imagePath = obj.image else {
             Logger.debug("对象 [\(obj.name ?? "Unknown")] 没有 imagePath，返回 nil")
             return nil

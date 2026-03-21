@@ -42,6 +42,8 @@ struct SceneObject: Codable {
     let name: String?
     let image: String?
     let type: String?
+    let particle: String?
+    let instanceoverride: ScriptableValue?
     let origin: ScriptableValue?
     let size: ScriptableValue?
     let scale: ScriptableValue?
@@ -62,6 +64,8 @@ struct SceneObject: Codable {
         case name
         case image
         case type
+        case particle
+        case instanceoverride
         case origin
         case size
         case scale
